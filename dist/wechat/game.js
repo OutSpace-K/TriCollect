@@ -104,8 +104,8 @@
   }
 
   // src/config.ts
-  var VERSION = "0.1.5";
-  var RULE = "tricollect-3-fiveballs";
+  var VERSION = "0.1.6";
+  var RULE = "tricollect-4-fixedslots-front";
   var CONFIG = Object.freeze({
     baseMs: 3e5,
     capacity: 7,
@@ -186,7 +186,7 @@
     for (const t of ordered) {
       const { lane, depth } = faceCoordinates(t, b.side, view), center = 2 * lane + depth;
       const segments = [center - 1, center], windows = segments.filter((i) => !covered.has(i));
-      if (windows.length && outside.has(t.id)) result.set(t.id, windows);
+      if (windows.length === 2 && outside.has(t.id)) result.set(t.id, windows);
       for (const segment of segments) covered.add(segment);
     }
     return result;
@@ -811,6 +811,38 @@
     }
   };
 
+  // src/render/projection.ts
+  function worldPosition(t, side) {
+    const edge = side - 1;
+    return {
+      x: t.q + t.r / 2 - edge / 2,
+      z: (t.r - edge / 3) * Math.sqrt(3) / 2
+    };
+  }
+  function rotateWorld(p, angle) {
+    return {
+      x: p.x * Math.cos(angle) + p.z * Math.sin(angle),
+      z: -p.x * Math.sin(angle) + p.z * Math.cos(angle)
+    };
+  }
+  function projection(side, width2, top, bottom, angle) {
+    const edge = side - 1;
+    const lane = (width2 - 32) / (2 * edge / Math.sqrt(3) + 1), radius = lane / 2;
+    const depthSpace = Math.min(108, edge * 18, (bottom - top) * 0.24);
+    const zScale = depthSpace / (edge * Math.sqrt(3) / 2), extent = depthSpace * 2 / 3;
+    const height2 = Math.min(220, bottom - top - 75 - extent * 2);
+    const axis = {
+      x: width2 / 2,
+      y: top + 55 + height2 + extent + Math.max(0, (bottom - top - 75 - height2 - extent * 2) / 2)
+    };
+    const step = (height2 - 30) / 5, ballRadius = Math.min(radius * 0.64, step * 0.43);
+    const point = (t) => {
+      const p = rotateWorld(worldPosition(t, side), angle);
+      return { x: axis.x + p.x * lane, y: axis.y - p.z * zScale, depth: p.z };
+    };
+    return { axis, lane, radius, height: height2, step, ballRadius, zScale, point };
+  }
+
   // src/render/scene.ts
   var Scene = class {
     constructor(ctx2, game, width2, height2) {
@@ -820,6 +852,10 @@
       this.height = height2;
       __publicField(this, "buttons", []);
       __publicField(this, "renderedIds", []);
+      __publicField(this, "ballPositions", []);
+      __publicField(this, "flightOrigin", null);
+      __publicField(this, "rotationAxis", { x: 0, y: 0 });
+      __publicField(this, "projectionScale", { x: 1, z: 1 });
       __publicField(this, "visibleBalls", []);
       __publicField(this, "tubeLayout", []);
       __publicField(this, "silhouetteIds", []);
@@ -895,6 +931,8 @@
     render() {
       const c = this.ctx, g = this.game, w = this.width, h = this.height;
       this.renderedIds = [];
+      this.ballPositions = [];
+      this.flightOrigin = null;
       this.visibleBalls = [];
       this.tubeLayout = [];
       this.silhouetteIds = [];
@@ -1142,18 +1180,18 @@
       return t.length > n ? t.slice(0, n - 1) + "\u2026" : t;
     }
     drawBoard(top, bottom) {
+      var _a;
       const c = this.ctx, g = this.game, w = this.width, n = g.board.side;
-      const view = g.presentationView, face = FACES[view];
-      const windows = faceWindows(g.board, view);
-      const visible = new Set(windows.keys());
+      const view = g.presentationView, face = FACES[view], turning = g.phase === "rotating", p = g.turnProgress;
+      const ease = p * p * (3 - 2 * p);
+      const angle = (turning ? g.turnFrom + g.turnDirection * ease : g.state.view) * Math.PI * 2 / 3;
+      const layout = projection(n, w, top, bottom, angle);
+      const { radius, height: height2, step, ballRadius, point, axis } = layout;
+      this.rotationAxis = axis;
+      this.projectionScale = { x: layout.lane, z: layout.zScale };
+      const visible = turning ? /* @__PURE__ */ new Set() : faceVisible(g.board, view);
       this.renderedFace = view;
       this.renderedIds = [...visible];
-      const lane = (w - 32) / n, radius = lane / 2;
-      const depthSpace = Math.min(126, (n - 1) * 21);
-      const height2 = Math.min(208, bottom - top - 65 - depthSpace), by = top + 55 + depthSpace + height2 + Math.max(0, (bottom - top - 65 - depthSpace - height2) / 2);
-      const step = Math.min(49, (height2 - 35) / 3);
-      const turning = g.phase === "rotating", progress = g.turnProgress;
-      const squeeze = turning ? Math.max(0.035, Math.abs(Math.cos(Math.PI * progress))) : 1;
       this.text(
         `\u7B2C ${view + 1} \u9762 / 3 \xB7 ${face.name}`,
         w / 2,
@@ -1163,153 +1201,164 @@
         "center"
       );
       this.text(
-        `${g.board.tubes.filter((t) => t.balls.length).length} \u7BA1\u5F85\u6E05\u7A7A \xB7 \u524D\u7BA1\u6E05\u7A7A\u540E\u9732\u51FA\u540E\u7BA1`,
+        `${g.board.tubes.filter((t) => t.balls.length).length} \u7BA1\u5F85\u6E05\u7A7A \xB7 \u4EC5\u6B63\u9762\u9876\u90E8\u53EF\u53D6`,
         w / 2,
         top + 34,
         11,
         "#a9c6bd",
         "center"
       );
-      c.save();
-      try {
-        c.translate(
-          w / 2 + (turning ? Math.sin(Math.PI * progress) * w * 0.1 * g.turnDirection * (progress < 0.5 ? -1 : 1) : 0),
-          0
+      const ordered = g.board.tubes.filter((t) => t.balls.length).map((t) => ({ t, ...point(t) })).sort((a, b) => b.depth - a.depth);
+      this.tubeLayout = ordered.map((t) => ({
+        id: t.t.id,
+        x: t.x,
+        y: t.y,
+        r: radius,
+        depth: faceCoordinates(t.t, n, view).depth
+      }));
+      this.silhouetteIds = ordered.filter((p2) => !visible.has(p2.t.id)).map((p2) => p2.t.id);
+      const corners = [
+        { q: 0, r: 0 },
+        { q: n - 1, r: 0 },
+        { q: 0, r: n - 1 }
+      ].map(point);
+      c.beginPath();
+      corners.forEach(
+        (t, i) => i ? c.lineTo(t.x, t.y + 7) : c.moveTo(t.x, t.y + 7)
+      );
+      c.closePath();
+      c.fillStyle = face.shell;
+      c.fill();
+      const opening = Math.min(
+        9,
+        Math.max(4, radius * layout.zScale / layout.lane)
+      );
+      for (const item of ordered) {
+        const { t, x, y } = item, ty = y - height2, front = visible.has(t.id);
+        this.rect(
+          x - radius,
+          ty,
+          radius * 2,
+          height2,
+          front ? face.shell : "#1b343b",
+          Math.min(10, radius * 0.4)
         );
-        c.scale(squeeze, 1);
-        c.translate(-w / 2, 0);
-        this.rect(12, by + 9, w - 24, 18, face.shell, 8);
-        const depthStep = depthSpace / (n - 1);
-        const position = (t) => {
-          const { lane: column, depth } = faceCoordinates(t, n, view);
-          return {
-            x: 16 + lane * (column + 0.5 + depth / 2),
-            y: by - depth * depthStep
-          };
-        };
-        this.tubeLayout = g.board.tubes.filter((t) => t.balls.length).map((t) => ({
-          ...position(t),
-          id: t.id,
-          r: radius,
-          depth: faceCoordinates(t, n, view).depth
-        }));
-        const rear = g.board.tubes.filter((t) => t.balls.length && !visible.has(t.id)).sort(
-          (a, b) => faceCoordinates(b, n, view).depth - faceCoordinates(a, n, view).depth
-        );
-        this.silhouetteIds = rear.map((t) => t.id);
-        for (const t of rear) {
-          const { x, y } = position(t), ty = y - height2;
-          this.rearOpenings.push({ id: t.id, x, y: ty + 4, rx: radius, ry: 8 });
-          this.rect(x - radius, ty, radius * 2, height2, "#1b343b", 10);
-          c.strokeStyle = "#54706e";
-          c.lineWidth = 1;
-          c.beginPath();
-          c.moveTo(x - radius, ty + 3);
-          c.lineTo(x - radius, y - 4);
-          c.moveTo(x + radius, ty + 3);
-          c.lineTo(x + radius, y - 4);
-          c.stroke();
-          c.fillStyle = "#36514f";
-          c.beginPath();
-          c.ellipse(x, ty + 4, radius, 8, 0, 0, Math.PI * 2);
-          c.fill();
-          c.stroke();
-          c.fillStyle = "#0a2028";
-          c.beginPath();
-          c.ellipse(x, ty + 3, radius * 0.74, 5, 0, 0, Math.PI * 2);
-          c.fill();
-        }
-        for (const t of g.board.tubes.filter((t2) => visible.has(t2.id)).sort(
-          (a, b) => faceCoordinates(b, n, view).depth - faceCoordinates(a, n, view).depth
-        )) {
-          const { x, y } = position(t), ty = y - height2;
-          this.rect(x - radius, ty, radius * 2, height2, face.shell, 12);
+        c.strokeStyle = front ? face.color : "#54706e";
+        c.lineWidth = 1;
+        c.beginPath();
+        c.moveTo(x - radius, ty + 2);
+        c.lineTo(x - radius, y - 3);
+        c.moveTo(x + radius, ty + 2);
+        c.lineTo(x + radius, y - 3);
+        c.stroke();
+        if (front) {
           this.rect(
             x - radius + 5,
             ty + 18,
             radius * 2 - 10,
-            height2 - 29,
+            height2 - 27,
             "#112e35",
-            7
+            5
+          );
+          for (let j = 0; j < 5; j++) {
+            const yy = y - ballRadius - 6 - j * step;
+            c.beginPath();
+            c.moveTo(x - radius + 1, yy);
+            c.lineTo(x - radius + 4, yy + 5);
+            c.moveTo(x + radius - 4, yy + 5);
+            c.lineTo(x + radius - 1, yy);
+            c.stroke();
+          }
+        } else
+          this.rearOpenings.push({
+            id: t.id,
+            x,
+            y: ty + 3,
+            rx: radius,
+            ry: opening
+          });
+        c.fillStyle = front ? face.shell : "#36514f";
+        c.beginPath();
+        c.ellipse(x, ty + 3, radius, opening, 0, 0, Math.PI * 2);
+        c.fill();
+        c.stroke();
+        c.fillStyle = "#071c23";
+        c.beginPath();
+        c.ellipse(x, ty + 2, radius * 0.74, opening * 0.66, 0, 0, Math.PI * 2);
+        c.fill();
+        if (!front) continue;
+        const previous = g.phase === "resolving" ? (_a = g.state.history.at(-1)) == null ? void 0 : _a.tubes.find((old) => old.id === t.id) : void 0;
+        const visibleCountBase = previous && previous.balls.length > t.balls.length ? previous.balls.length : t.balls.length;
+        const first = Math.max(0, visibleCountBase - 3), shown = t.balls.slice(first);
+        if (first > 0) {
+          const coverY = y - ballRadius - 6 - (first - 0.5) * step;
+          this.rect(
+            x - radius + 5,
+            coverY,
+            radius * 2 - 10,
+            Math.max(0, y - 9 - coverY),
+            face.shell,
+            3
           );
           c.strokeStyle = face.color;
-          c.lineWidth = 1.2;
           c.beginPath();
-          c.ellipse(x, ty + 5, radius, 8, 0, 0, Math.PI * 2);
-          c.fillStyle = "#11272c";
-          c.fill();
+          c.moveTo(x - radius + 5, coverY);
+          c.lineTo(x + radius - 5, coverY);
           c.stroke();
-          c.beginPath();
-          c.ellipse(x, ty + 4, radius * 0.72, 5, 0, 0, Math.PI * 2);
-          c.fillStyle = "#071c23";
-          c.fill();
-          for (let j = 0; j < 4; j++) {
-            c.beginPath();
-            c.moveTo(x - radius + 1, ty + 26 + j * 36);
-            c.lineTo(x - radius + 4, ty + 31 + j * 36);
-            c.stroke();
-            c.beginPath();
-            c.moveTo(x + radius - 4, ty + 31 + j * 36);
-            c.lineTo(x + radius - 1, ty + 26 + j * 36);
-            c.stroke();
-          }
-          const shown = t.balls.slice(-3);
-          this.visibleBalls.push({ tube: t.id, ids: shown.map((b) => b.id) });
-          for (let i = 0; i < shown.length; i++) {
-            const drop = g.phase === "intro" ? (1 - g.introProgress) * (145 - i * 30) : 0;
-            this.ball(shown[i].type, x, y - 20 - i * step - drop, radius * 0.72);
-          }
-          const topY = y - 20 - (Math.min(3, t.balls.length) - 1) * step;
-          c.strokeStyle = g.hint === t.id ? "#ffdc7f" : face.color;
-          c.lineWidth = 2;
-          c.beginPath();
-          c.arc(x, topY, radius * 0.84, 0, Math.PI * 2);
-          c.stroke();
-          this.text(
-            String(g.board.tubes.indexOf(t) + 1),
+        }
+        this.visibleBalls.push({ tube: t.id, ids: shown.map((b) => b.id) });
+        for (let i = first; i < t.balls.length; i++) {
+          const by = y - ballRadius - 6 - i * step;
+          this.ballPositions.push({
+            id: t.balls[i].id,
+            tube: t.id,
+            slot: i,
             x,
-            ty - 8,
-            11,
-            face.color,
-            "center"
-          );
-          if (!turning) {
-            this.bodies.push({
-              id: t.id,
-              x: x - lane * 0.46,
-              y: ty - 5,
-              w: lane * 0.92,
-              h: height2 + 8,
-              topY
-            });
-            const center = 2 * faceCoordinates(t, n, view).lane + faceCoordinates(t, n, view).depth;
-            const halves = windows.get(t.id);
-            const offset = halves.length === 2 ? 0 : halves[0] === center - 1 ? -0.36 : 0.36;
-            this.targets.push({
-              id: t.id,
-              x: x + radius * offset,
-              y: topY,
-              r: radius * (halves.length === 2 ? 0.84 : 0.3)
-            });
-          }
+            y: by,
+            r: ballRadius
+          });
+          const drop = g.phase === "intro" ? (1 - g.introProgress) * (145 - i * 20) : 0;
+          this.ball(t.balls[i].type, x, by - drop, ballRadius);
         }
-        if (g.phase === "resolving") {
-          const prev = g.state.history.at(-1);
-          const t = prev == null ? void 0 : prev.tubes.find(
-            (t2) => t2.balls.length > g.board.tubes.find((n2) => n2.id === t2.id).balls.length
+        const topY = y - ballRadius - 6 - (t.balls.length - 1) * step, hitRadius = Math.min(radius * 0.77, step * 0.48);
+        c.strokeStyle = g.hint === t.id ? "#ffdc7f" : face.color;
+        c.lineWidth = 2;
+        c.beginPath();
+        c.arc(x, topY, hitRadius, 0, Math.PI * 2);
+        c.stroke();
+        this.text(
+          String(g.board.tubes.indexOf(t) + 1),
+          x,
+          ty - 7,
+          11,
+          face.color,
+          "center"
+        );
+        this.targets.push({ id: t.id, x, y: topY, r: hitRadius });
+        this.bodies.push({
+          id: t.id,
+          x: x - radius,
+          y: ty,
+          w: radius * 2,
+          h: height2,
+          topY
+        });
+      }
+      if (g.phase === "resolving") {
+        const prev = g.state.history.at(-1), t = prev == null ? void 0 : prev.tubes.find(
+          (t2) => t2.balls.length > g.board.tubes.find((n2) => n2.id === t2.id).balls.length
+        );
+        if (t && prev && faceVisible(prev, view).has(t.id)) {
+          const from = point(t), a = g.transitionProgress, ball = t.balls.at(-1);
+          const sy = from.y - ballRadius - 6 - (t.balls.length - 1) * step;
+          this.flightOrigin = { id: ball.id, x: from.x, y: sy };
+          this.ball(
+            ball.type,
+            from.x + (w / 2 - from.x) * a,
+            sy + (this.height - 122 - sy) * a,
+            ballRadius
           );
-          if (t && prev && faceVisible(prev, view).has(t.id)) {
-            const x = position(t).x, a = g.transitionProgress;
-            this.ball(
-              t.balls.at(-1).type,
-              x + (w / 2 - x) * a,
-              by - height2 / 2 + (this.height - 122 - by + height2 / 2) * a,
-              radius * 0.72
-            );
-          }
         }
-      } finally {
-        c.restore();
       }
     }
     home() {

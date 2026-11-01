@@ -1,5 +1,5 @@
-export const VERSION = "0.1.5";
-export const RULE = "tricollect-3-fiveballs";
+export const VERSION = "0.1.6";
+export const RULE = "tricollect-4-fixedslots-front";
 export const CONFIG = Object.freeze({
   baseMs: 300_000,
   capacity: 7,

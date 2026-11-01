@@ -1,5 +1,5 @@
 
-> tricollect@0.1.5 verify:seeds
+> tricollect@0.1.6 verify:seeds
 > tsx scripts/verify-seeds.ts
 
-Verified 300 seeds across 3 presets, all witnesses won with identity conservation, 16547.32ms
+Verified 300 seeds across 3 presets, all witnesses won with identity conservation, 17530.74ms

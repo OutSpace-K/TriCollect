@@ -125,7 +125,7 @@ test("front faces hide deeper tubes and peeling reveals the same shared lattice"
   }
   const a = clone(b);
   a.tubes.find((t) => t.id === "1,0")!.balls = [];
-  assert.ok(faceVisible(a, 0).has("1,1"));
+  assert.ok(!faceVisible(a, 0).has("1,1"));
   assert.ok(!faceVisible(a, 0).has("1,0"));
   assert.ok(!faceVisible(b, 0).has("0,1"));
   assert.ok(available(b).has("0,1"));
@@ -151,7 +151,9 @@ test("five-ball presets have divisible totals and reveal only actual front windo
   }
   const b = createLevel(0).board;
   b.tubes.find((t) => t.id === "1,0")!.balls = [];
-  assert.ok(faceVisible(b, 0).has("0,1"));
+  assert.ok(!faceVisible(b, 0).has("0,1"));
+  assert.ok(!faceVisible(b, 0).has("1,1"));
+  b.tubes.find((t) => t.id === "2,0")!.balls = [];
   assert.ok(faceVisible(b, 0).has("1,1"));
   assert.ok(!faceVisible(b, 0).has("0,2"));
 });

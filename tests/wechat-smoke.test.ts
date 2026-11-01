@@ -357,17 +357,19 @@ for (const units of [1, 1000])
     r.tap("开始 ·");
     r.tap("选球", true);
     r.tap("1", true);
-    const movingCircles = r.circles.length;
+    const movingCircles = r.circles.map((c) => ({ ...c }));
     const transferMs = await driveUntil(
       r,
       () => r.labels.some((l) => l.s === "撤销" && l.color === "#eef7ed"),
       800,
     );
     assert.ok(transferMs <= 500);
-    assert.equal(
-      r.circles.length,
-      movingCircles - 1,
-      "flying sprite removed after transfer",
+    assert.ok(
+      movingCircles.some(
+        (a) =>
+          !r.circles.some((b) => a.x === b.x && a.y === b.y && a.r === b.r),
+      ),
+      "departing sprite position disappears; next fixed slot is revealed",
     );
     const settled = JSON.stringify(r.circles);
     await new Promise((resolve) => setTimeout(resolve, 100));
@@ -402,7 +404,7 @@ for (const units of [1, 1000])
       secondPickAccepted: true,
     });
     writeFileSync(
-      "evidence/v0.1.5-animation-wallclock.json",
+      "evidence/v0.1.6-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -447,7 +449,7 @@ for (const units of [1, 1000])
       });
     }
     writeFileSync(
-      "evidence/v0.1.5-animation-wallclock.json",
+      "evidence/v0.1.6-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -494,7 +496,7 @@ for (const units of [1, 1000])
       frozenRotationPauseMs: interrupted,
     });
     writeFileSync(
-      "evidence/v0.1.5-animation-wallclock.json",
+      "evidence/v0.1.6-animation-wallclock.json",
       JSON.stringify(
         {
           scope:

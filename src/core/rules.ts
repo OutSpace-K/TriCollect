@@ -52,7 +52,7 @@ export function faceCoordinates(t: Tube, side: number, view: number) {
   return { lane: axes[view], depth: axes[(view + 1) % 3] };
 }
 /** Front projection is centered: horizontal center = 2*lane + depth.
- * Each opaque tube covers two half-width segments. Only uncovered segments grant access. */
+ * Each opaque tube covers two half-width segments. Both half-width segments must be uncovered to grant front access. */
 export function faceWindows(b: Board, view: number): Map<string, number[]> {
   const result = new Map<string, number[]>();
   if (!Number.isInteger(view) || view < 0 || view > 2) return result;
@@ -70,7 +70,7 @@ export function faceWindows(b: Board, view: number): Map<string, number[]> {
       center = 2 * lane + depth;
     const segments = [center - 1, center],
       windows = segments.filter((i) => !covered.has(i));
-    if (windows.length && outside.has(t.id)) result.set(t.id, windows);
+    if (windows.length === 2 && outside.has(t.id)) result.set(t.id, windows);
     for (const segment of segments) covered.add(segment);
   }
   return result;
