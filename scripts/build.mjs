@@ -42,6 +42,14 @@ await mkdir("dist/browser/assets", { recursive: true });
 await cp("assets/ambience.wav", "dist/browser/assets/ambience.wav");
 await cp("assets/background.png", "dist/browser/assets/background.png");
 await cp("assets/background.png", "dist/wechat/assets/background.png");
+await cp(
+  "assets/play-background.png",
+  "dist/browser/assets/play-background.png",
+);
+await cp(
+  "assets/play-background.png",
+  "dist/wechat/assets/play-background.png",
+);
 await writeFile(
   "dist/wechat/game.json",
   JSON.stringify(

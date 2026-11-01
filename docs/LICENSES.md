@@ -17,3 +17,5 @@
 补充：官方类型声明仅证明文档规定微秒，不证明所有运行环境实测一致。v0.1.2 使用运行时单位校准。浏览器性能时钟规范：https://w3c.github.io/hr-time/#dom-performance-now 。
 
 v0.1.4 音频接口核验：官方类型中的 InnerAudioContext `loop`、`volume`、`play()`、`pause()`、`onError()`；浏览器使用 HTMLAudioElement，不依赖外部服务。实际设备播放与音质未验收。
+
+- v0.1.10局内背景 `assets/play-background.png`：本项目原创程序绘制墙面陈列、光束与台面，按MIT随工程提供。生成脚本 `scripts/make-play-background.py`，无外部图片或采样；首页原图片保留。

@@ -132,7 +132,7 @@ test("background and UI taps never start feedback; valid pick and lifecycle clea
 test("confirmed display name and home effect lettering fit a narrow viewport", () => {
   assert.equal(DISPLAY_NAME, "转个“球”");
   const x = setup();
-  assert.ok(x.labels.includes(DISPLAY_NAME));
+  assert.ok(!x.labels.includes(DISPLAY_NAME), "in-game title is removed");
   x.game.home();
   x.scene.width = 320;
   x.scene.height = 660;
@@ -141,4 +141,21 @@ test("confirmed display name and home effect lettering fit a narrow viewport", (
     assert.ok(x.labels.includes(text));
   for (const b of x.scene.buttons)
     assert.ok(b.x >= 0 && b.x + b.w <= 320 && b.y >= 0 && b.y + b.h <= 660);
+});
+test("play backdrop is distinct with home fallback; decorative tray never selects or pulses", () => {
+  const x = setup();
+  assert.equal(x.scene.backgroundKind, "fallback");
+  x.scene.setBackground({ width: 600, height: 1040 } as CanvasImageSource);
+  assert.equal(x.scene.backgroundKind, "home");
+  x.scene.setPlayBackground({ width: 600, height: 1040 } as CanvasImageSource);
+  assert.equal(x.scene.backgroundKind, "play");
+  x.scene.render();
+  const tray = x.scene.decorativeTray!;
+  assert.equal(tray.corners.length, 3);
+  const history = x.game.state.history.length;
+  x.scene.tap(tray.axis.x, tray.frontY);
+  assert.equal(x.game.state.history.length, history);
+  assert.equal(x.scene.misclickFeedback, null);
+  x.game.home();
+  assert.equal(x.scene.backgroundKind, "home");
 });

@@ -461,7 +461,7 @@ for (const units of [1, 1000])
       secondPickAccepted: true,
     });
     writeFileSync(
-      "evidence/v0.1.9-animation-wallclock.json",
+      "evidence/v0.1.10-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -505,7 +505,7 @@ for (const units of [1, 1000])
       });
     }
     writeFileSync(
-      "evidence/v0.1.9-animation-wallclock.json",
+      "evidence/v0.1.10-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -548,7 +548,7 @@ for (const units of [1, 1000])
       frozenRotationPauseMs: interrupted,
     });
     writeFileSync(
-      "evidence/v0.1.9-animation-wallclock.json",
+      "evidence/v0.1.10-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -601,7 +601,10 @@ test("native image asset loads and image failure leaves gameplay available", asy
   for (const fail of [false, true]) {
     const r = await boot(new Map(), 1, false, false, false, fail);
     beginRuntime(r);
-    assert.deepEqual(r.images, ["assets/background.png"]);
+    assert.deepEqual(r.images, [
+      "assets/background.png",
+      "assets/play-background.png",
+    ]);
     assert.equal(r.backgroundDraws() > 0, !fail);
     r.tapTube(1);
     r.advance(250000);

@@ -1,0 +1,6 @@
+
+> tricollect@0.1.10 format:check
+> prettier --check src tests scripts config *.json README.md docs
+
+Checking formatting...
+All matched files use Prettier code style!

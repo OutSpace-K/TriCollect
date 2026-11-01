@@ -1,11 +1,11 @@
 {
   "project": "TriCollect",
   "displayName": "转个“球”",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "ruleVersion": "tricollect-4-fixedslots-front",
-  "baseCommit": "6c7949ed8cbf24b0bccfcdd515aa412f96cf36f3",
+  "baseCommit": "f70fa105f4c6cfca3e052932fb6bc9508e67a942",
   "unitAndMockTests": {
-    "passed": 68,
+    "passed": 70,
     "failed": 0,
     "fullFinalRun": true
   },
@@ -17,8 +17,8 @@
     "errors": []
   },
   "misclick": "Single neutral 280ms local pulse for invalid chamber taps; no pick or time penalty; background/UI excluded; phase/view/session/valid-pick cancellation passed",
-  "display": "Exact Chinese curved double quotes; home effect lettering and 320px button bounds passed",
-  "visual": "Actual v0.1.8/v0.1.9 browser pixel comparison, three faces, turning, 320px, glossy spheres, faceted glass, original background and pulse inspected; not aesthetic acceptance",
+  "display": "Home effect title retained; duplicate active title removed, timer/score/face retained.",
+  "visual": "Actual Chromium v0.1.9/v0.1.10 pixel comparison: home, active, all three faces, rotation, inner reveal and 320px inspected. Glass mouths, polished spheres, lower depth and decorative tray; not aesthetic acceptance.",
   "background": {
     "file": "assets/background.png",
     "bytes": 289789,
@@ -26,14 +26,19 @@
   },
   "audio": "Unchanged original 32s music; real HTMLAudio lifecycle passed; no human listening",
   "typecheck": "passed",
-  "cleanBuild": "npm ci/build/typecheck; bundles/title/background/audio byte-identical",
+  "cleanBuild": "Clean npm ci/build/typecheck; all 12 dist files byte-identical",
   "scope": "Node, simulated wx and Chromium only; not actual WeChat Developer Tools or devices",
-  "publication": "Version 0.1.9 source, prebuilt game and validation records. No deployment.",
+  "publication": "Version 0.1.10 source, prebuilt game and validation records. No deployment.",
   "remaining": [
     "Actual WeChat import/device/performance",
     "Visual preference and playtest acceptance",
     "Real ad completion/cancellation/error callbacks",
     "Human musical taste/listening",
     "Human 300s balance"
-  ]
+  ],
+  "playBackground": {
+    "file": "assets/play-background.png",
+    "bytes": 107137,
+    "sha256": "737015be0726f96f67dcfbe7b33d990817a269bd190d936ee9f1bfaacbb6e6d1"
+  }
 }

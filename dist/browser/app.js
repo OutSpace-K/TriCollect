@@ -71,8 +71,7 @@
   }
 
   // src/config.ts
-  var VERSION = "0.1.9";
-  var DISPLAY_NAME = "\u8F6C\u4E2A\u201C\u7403\u201D";
+  var VERSION = "0.1.10";
   var RULE = "tricollect-4-fixedslots-front";
   var CONFIG = Object.freeze({
     baseMs: 3e5,
@@ -799,9 +798,10 @@
   function projection(side, width, top, bottom, angle) {
     const edge = side - 1;
     const lane = (width - 32) / (2 * edge / Math.sqrt(3) + 1), radius = lane / 2;
-    const depthSpace = Math.min(108, edge * 18, (bottom - top) * 0.24);
+    const originalDepth = Math.min(108, edge * 18, (bottom - top) * 0.24);
+    const depthSpace = originalDepth * 0.62;
     const zScale = depthSpace / (edge * Math.sqrt(3) / 2), extent = depthSpace * 2 / 3;
-    const maxHeight = Math.min(220, bottom - top - 75 - extent * 2);
+    const maxHeight = Math.min(220, bottom - top - 75 - originalDepth * 4 / 3);
     const ballRadius = Math.min(radius * 0.78, (maxHeight - 20) / 10), step = ballRadius * 2, height = step * 5 + 20;
     const axis = {
       x: width / 2,
@@ -825,11 +825,14 @@
       __publicField(this, "misclickFeedback", null);
       __publicField(this, "backgroundLoaded", false);
       __publicField(this, "background", null);
+      __publicField(this, "playBackground", null);
+      __publicField(this, "playBackgroundLoaded", false);
       __publicField(this, "renderedIds", []);
       __publicField(this, "ghostPositions", []);
       __publicField(this, "ballPositions", []);
       __publicField(this, "flightOrigin", null);
       __publicField(this, "rotationAxis", { x: 0, y: 0 });
+      __publicField(this, "decorativeTray", null);
       __publicField(this, "projectionScale", { x: 1, z: 1 });
       __publicField(this, "visibleBalls", []);
       __publicField(this, "tubeLayout", []);
@@ -838,6 +841,16 @@
       __publicField(this, "renderedFace", 0);
       __publicField(this, "targets", []);
       __publicField(this, "bodies", []);
+    }
+    get backgroundKind() {
+      return this.game.phase === "home" ? this.background ? "home" : "fallback" : this.playBackground ? "play" : this.background ? "home" : "fallback";
+    }
+    get currentBackground() {
+      return this.game.phase === "home" ? this.background : this.playBackground ?? this.background;
+    }
+    setPlayBackground(image) {
+      this.playBackground = image;
+      this.playBackgroundLoaded = true;
     }
     setBackground(image) {
       this.background = image;
@@ -911,11 +924,11 @@
           y,
           r
         );
-        gradient.addColorStop(0, shade(0.72));
-        gradient.addColorStop(0.25, shade(0.26));
+        gradient.addColorStop(0, shade(0.34));
+        gradient.addColorStop(0.3, shade(0.08));
         gradient.addColorStop(0.5, PALETTE[type]);
         gradient.addColorStop(0.78, shade(-0.12));
-        gradient.addColorStop(1, shade(-0.46));
+        gradient.addColorStop(1, shade(-0.52));
         c.fillStyle = gradient;
         c.beginPath();
         c.arc(x, y, r, 0, Math.PI * 2);
@@ -926,18 +939,18 @@
           0,
           x - r * 0.31,
           y - r * 0.4,
-          r * 0.48
+          r * 0.29
         );
         glint.addColorStop(0, "#ffffffdc");
-        glint.addColorStop(0.38, "#ffffff84");
+        glint.addColorStop(0.3, "#ffffff60");
         glint.addColorStop(1, "#ffffff00");
         c.fillStyle = glint;
         c.beginPath();
         c.ellipse(
           x - r * 0.31,
           y - r * 0.4,
-          r * 0.48,
-          r * 0.4,
+          r * 0.29,
+          r * 0.23,
           -0.5,
           0,
           Math.PI * 2
@@ -951,6 +964,18 @@
           r * 0.19,
           r * 0.085,
           -0.55,
+          0,
+          Math.PI * 2
+        );
+        c.fill();
+        c.fillStyle = "#d4eaff44";
+        c.beginPath();
+        c.ellipse(
+          x + r * 0.35,
+          y + r * 0.42,
+          r * 0.23,
+          r * 0.075,
+          -0.62,
           0,
           Math.PI * 2
         );
@@ -1002,27 +1027,29 @@
       c.stroke();
     }
     chamberPath(x, top, y, r) {
-      const c = this.ctx, bevel = Math.min(9, r * 0.3);
+      const c = this.ctx, neck = r * 0.86, shoulder = Math.min(20, (y - top) * 0.15);
       c.beginPath();
-      c.moveTo(x - r + bevel, top);
-      c.lineTo(x + r - bevel, top);
-      c.quadraticCurveTo(x + r, top, x + r, top + bevel);
-      c.lineTo(x + r, y - bevel);
-      c.lineTo(x + r - bevel, y);
-      c.lineTo(x - r + bevel, y);
-      c.lineTo(x - r, y - bevel);
-      c.lineTo(x - r, top + bevel);
-      c.quadraticCurveTo(x - r, top, x - r + bevel, top);
+      c.moveTo(x - neck, top);
+      c.lineTo(x + neck, top);
+      c.lineTo(x + neck, top + 6);
+      c.bezierCurveTo(x + neck, top + 11, x + r, top + 11, x + r, top + shoulder);
+      c.lineTo(x + r, y - 7);
+      c.quadraticCurveTo(x + r, y + 2, x + r * 0.72, y + 2);
+      c.lineTo(x - r * 0.72, y + 2);
+      c.quadraticCurveTo(x - r, y + 2, x - r, y - 7);
+      c.lineTo(x - r, top + shoulder);
+      c.bezierCurveTo(x - r, top + 11, x - neck, top + 11, x - neck, top + 6);
+      c.lineTo(x - neck, top);
       c.closePath();
     }
     transmittedBackdrop(x, y, w, h) {
       const c = this.ctx;
       c.fillStyle = "#f8f2e4";
       c.fillRect(x, y, w, h);
-      if (this.background) {
+      if (this.currentBackground) {
         const scale = Math.max(this.width / 600, this.height / 1040), left = (this.width - 600 * scale) / 2, top = (this.height - 1040 * scale) / 2;
         c.drawImage(
-          this.background,
+          this.currentBackground,
           (x - left) / scale,
           (y - top) / scale,
           w / scale,
@@ -1070,6 +1097,7 @@
       const c = this.ctx, g = this.game, w = this.width, h = this.height;
       if (this.misclickFeedback && (g.phase !== "active" || this.misclickFeedback.session !== g.state.session || this.misclickFeedback.view !== g.state.view))
         this.misclickFeedback = null;
+      this.decorativeTray = null;
       this.renderedIds = [];
       this.ghostPositions = [];
       this.ballPositions = [];
@@ -1087,10 +1115,10 @@
       bg.addColorStop(1, "#f4e4cf");
       c.fillStyle = bg;
       c.fillRect(0, 0, w, h);
-      if (this.background) {
+      if (this.currentBackground) {
         const scale = Math.max(w / 600, h / 1040);
         c.drawImage(
-          this.background,
+          this.currentBackground,
           (w - 600 * scale) / 2,
           (h - 1040 * scale) / 2,
           600 * scale,
@@ -1111,12 +1139,11 @@
         return;
       }
       this.text("\u65CB\u8F6C \xB7 \u6536\u96C6 \xB7 \u6D88\u9664", 22, 35, 12, "#786254");
-      this.text(DISPLAY_NAME, 22, 66, 26, "#3c302a");
       this.text(
         PRESETS[g.state.preset].name + " \xB7 " + g.state.seed,
         22,
-        88,
-        11,
+        63,
+        13,
         "#786254"
       );
       this.text(
@@ -1301,13 +1328,37 @@
         { q: n - 1, r: 0 },
         { q: 0, r: n - 1 }
       ].map(point);
-      c.beginPath();
-      corners.forEach(
-        (t, i) => i ? c.lineTo(t.x, t.y + 7) : c.moveTo(t.x, t.y + 7)
-      );
-      c.closePath();
-      c.fillStyle = face.shell;
-      c.fill();
+      const ratio = layout.zScale / layout.lane, padding = radius + 4;
+      this.decorativeTray = {
+        corners: corners.map((p2) => ({ x: p2.x, y: p2.y })),
+        frontY: Math.max(...corners.map((p2) => p2.y)) + padding * ratio + 13,
+        axis: { ...axis },
+        thickness: 9
+      };
+      const dish = (offset, color, inset = 0) => {
+        c.save();
+        try {
+          c.translate(0, axis.y + offset);
+          c.scale(1, ratio);
+          c.lineJoin = "round";
+          c.beginPath();
+          corners.forEach(
+            (p2, i) => i ? c.lineTo(p2.x, (p2.y - axis.y) / ratio) : c.moveTo(p2.x, (p2.y - axis.y) / ratio)
+          );
+          c.closePath();
+          c.fillStyle = color;
+          c.strokeStyle = color;
+          c.lineWidth = 2 * (padding - inset);
+          c.stroke();
+          c.fill();
+        } finally {
+          c.restore();
+        }
+      };
+      dish(19, "#755e4b20");
+      dish(13, "#ab9580");
+      dish(4, "#d8c5a6");
+      dish(3, "#fff5df", 2.2);
       const opening = Math.min(
         9,
         Math.max(4, radius * layout.zScale / layout.lane)
@@ -1334,11 +1385,11 @@
           c.clip();
           this.transmittedBackdrop(x - radius, ty, radius * 2, height);
           const glass = c.createLinearGradient(x - radius, 0, x + radius, 0);
-          glass.addColorStop(0, face.color + "66");
-          glass.addColorStop(0.09, "#efffffda");
-          glass.addColorStop(0.19, "#d6f5ff38");
+          glass.addColorStop(0, "#6a919b8c");
+          glass.addColorStop(0.09, "#f4ffffd9");
+          glass.addColorStop(0.19, "#e5fbff30");
           glass.addColorStop(0.65, "#ffffff08");
-          glass.addColorStop(0.85, face.color + "22");
+          glass.addColorStop(0.85, "#a2d3dc30");
           glass.addColorStop(1, "#647b8a88");
           c.fillStyle = glass;
           c.fillRect(x - radius, ty, radius * 2, height);
@@ -1366,55 +1417,66 @@
         c.lineWidth = 1;
         this.chamberPath(x, ty, y, radius);
         c.stroke();
-        const metal = c.createLinearGradient(
+        const rim = c.createLinearGradient(
           x - radius,
           ty - opening,
           x + radius,
           ty + opening
         );
-        metal.addColorStop(0, "#fff8d8");
-        metal.addColorStop(0.45, "#d5dfea");
-        metal.addColorStop(1, "#8b939f");
-        c.fillStyle = metal;
+        rim.addColorStop(0, "#f6ffff");
+        rim.addColorStop(0.22, "#d6ecec");
+        rim.addColorStop(0.6, "#91b3bc");
+        rim.addColorStop(1, "#5d7e8b");
+        c.fillStyle = rim;
         c.beginPath();
-        c.moveTo(x - radius, ty + 2);
-        c.lineTo(x - radius * 0.63, ty - opening * 0.65);
-        c.lineTo(x + radius * 0.52, ty - opening * 0.65);
-        c.lineTo(x + radius, ty + 2);
-        c.lineTo(x + radius * 0.68, ty + opening);
-        c.lineTo(x - radius * 0.68, ty + opening);
-        c.closePath();
+        c.ellipse(x, ty + 4, radius * 0.98, opening, 0, 0, Math.PI * 2);
         c.fill();
-        c.stroke();
-        const well = c.createLinearGradient(
-          x - radius,
-          ty - opening,
-          x + radius,
-          ty + opening
-        );
-        well.addColorStop(0, "#768b9e");
-        well.addColorStop(0.4, face.shell);
-        well.addColorStop(1, "#f4ffff");
+        c.fillStyle = "#b6d6dc88";
+        c.fillRect(x - radius * 0.86, ty + 1, radius * 1.72, 7);
+        c.fillStyle = rim;
+        c.beginPath();
+        c.ellipse(x, ty - 1, radius * 0.98, opening, 0, 0, Math.PI * 2);
+        c.fill();
+        const well = c.createLinearGradient(x, ty - opening, x, ty + opening);
+        well.addColorStop(0, "#557684");
+        well.addColorStop(0.5, "#9fb9bc");
+        well.addColorStop(1, "#e8f5e8");
         c.fillStyle = well;
         c.beginPath();
-        c.ellipse(x, ty + 2, radius * 0.72, opening * 0.58, 0, 0, Math.PI * 2);
+        c.ellipse(x, ty - 1, radius * 0.8, opening * 0.57, 0, 0, Math.PI * 2);
         c.fill();
-        c.strokeStyle = "#ffffffdd";
+        c.strokeStyle = "#ffffffd9";
+        c.lineWidth = 1.2;
         c.beginPath();
-        c.moveTo(x - radius * 0.55, ty + opening * 0.8);
-        c.lineTo(x + radius * 0.55, ty + opening * 0.8);
+        c.ellipse(
+          x - radius * 0.04,
+          ty - 2,
+          radius * 0.91,
+          opening * 0.72,
+          0,
+          Math.PI,
+          Math.PI * 1.9
+        );
         c.stroke();
-        c.fillStyle = metal;
-        this.chamberPath(x, y - 7, y + 3, radius);
+        const foot = c.createLinearGradient(x - radius, y - 7, x + radius, y + 4);
+        foot.addColorStop(0, "#f7ffffc9");
+        foot.addColorStop(0.35, "#b6d3d577");
+        foot.addColorStop(1, "#73949caa");
+        c.fillStyle = foot;
+        c.beginPath();
+        c.ellipse(x, y - 2, radius, opening * 0.8, 0, 0, Math.PI * 2);
         c.fill();
-        c.fillStyle = face.color + "66";
-        c.fillRect(x - radius * 0.6, y - 1, radius * 1.2, 1.5);
+        c.strokeStyle = "#f2ffffbb";
+        c.lineWidth = 1;
+        c.beginPath();
+        c.ellipse(x, y - 3, radius * 0.82, opening * 0.46, 0, 0, Math.PI);
+        c.stroke();
         if (!front)
           this.rearOpenings.push({
             id: t.id,
             x,
-            y: ty + 3,
-            rx: radius,
+            y: ty - 1,
+            rx: radius * 0.98,
             ry: opening
           });
         const previous = g.phase === "resolving" ? g.state.history.at(-1)?.tubes.find((old) => old.id === t.id) : void 0;
@@ -1445,7 +1507,7 @@
         try {
           this.chamberPath(x, ty, y, radius);
           c.clip();
-          c.fillStyle = "#ffffff14";
+          c.fillStyle = "#ffffff0b";
           c.beginPath();
           c.moveTo(x - radius, ty + height * 0.16);
           c.lineTo(x + radius, ty + height * 0.34);
@@ -1456,8 +1518,8 @@
         } finally {
           c.restore();
         }
-        c.strokeStyle = "#ffffff8c";
-        c.lineWidth = Math.max(1, radius * 0.075);
+        c.strokeStyle = "#ffffff75";
+        c.lineWidth = Math.max(1.4, radius * 0.14);
         c.beginPath();
         c.moveTo(x - radius * 0.7, ty + 16);
         c.bezierCurveTo(
@@ -1580,7 +1642,16 @@
         for (let j = 0; j < 3; j++)
           this.ball((i * 2 + j) % 7, x, top + 22 + j * 32, 16);
         c.fillStyle = "#bec9d5";
-        this.chamberPath(x, bottom - 5, bottom + 3, 23);
+        c.beginPath();
+        c.ellipse(x, bottom, 23, 4, 0, 0, Math.PI * 2);
+        c.fill();
+        c.fillStyle = "#d3eaed";
+        c.beginPath();
+        c.ellipse(x, top, 22, 4, 0, 0, Math.PI * 2);
+        c.fill();
+        c.fillStyle = "#91b1ba";
+        c.beginPath();
+        c.ellipse(x, top, 18, 2.3, 0, 0, Math.PI * 2);
         c.fill();
         c.strokeStyle = "#ffffffe0";
         c.beginPath();
@@ -1829,13 +1900,15 @@
     return player;
   });
   var scene = new Scene(ctx, game, 390, 844);
-  try {
-    const background = new Image();
-    background.onload = () => scene.setBackground(background);
-    background.onerror = () => {
-    };
-    background.src = "assets/background.png";
-  } catch {
+  for (const file of ["background.png", "play-background.png"]) {
+    try {
+      const image = new Image();
+      image.onload = () => file === "background.png" ? scene.setBackground(image) : scene.setPlayBackground(image);
+      image.onerror = () => {
+      };
+      image.src = "assets/" + file;
+    } catch {
+    }
   }
   function resize() {
     const w = Math.min(innerWidth, 500), h = Math.max(innerHeight, 660), dpr = Math.min(devicePixelRatio, 2);

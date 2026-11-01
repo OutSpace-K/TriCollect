@@ -24,10 +24,11 @@ export function projection(
   // Reserve the complete circumcircle so intermediate angles never crop the bundle.
   const lane = (width - 32) / ((2 * edge) / Math.sqrt(3) + 1),
     radius = lane / 2;
-  const depthSpace = Math.min(108, edge * 18, (bottom - top) * 0.24);
+  const originalDepth = Math.min(108, edge * 18, (bottom - top) * 0.24);
+  const depthSpace = originalDepth * 0.62;
   const zScale = depthSpace / ((edge * Math.sqrt(3)) / 2),
     extent = (depthSpace * 2) / 3;
-  const maxHeight = Math.min(220, bottom - top - 75 - extent * 2);
+  const maxHeight = Math.min(220, bottom - top - 75 - (originalDepth * 4) / 3);
   const ballRadius = Math.min(radius * 0.78, (maxHeight - 20) / 10),
     step = ballRadius * 2,
     height = step * 5 + 20;
