@@ -1,0 +1,11 @@
+{
+  "durationSeconds": 16.0,
+  "sampleRate": 22050,
+  "channels": 1,
+  "bytes": 705644,
+  "peak": 0.179443359375,
+  "rms": 0.05280351804782057,
+  "boundaryStep": 0.0008544921875,
+  "clippedSamples": 0,
+  "humanListeningPerformed": false
+}

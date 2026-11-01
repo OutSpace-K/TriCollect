@@ -12,7 +12,11 @@ http
       if (!file.startsWith(root + path.sep)) throw Error();
       res.setHeader(
         "Content-Type",
-        file.endsWith(".js") ? "text/javascript" : "text/html; charset=utf-8",
+        file.endsWith(".js")
+          ? "text/javascript"
+          : file.endsWith(".wav")
+            ? "audio/wav"
+            : "text/html; charset=utf-8",
       );
       res.end(await readFile(file));
     } catch {

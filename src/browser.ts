@@ -1,3 +1,4 @@
+import { Music } from "./platform/music";
 import { startFrames } from "./platform/frame";
 import { Controller } from "./controller";
 import { Scene } from "./render/scene";
@@ -6,13 +7,25 @@ import { createLevel } from "./core/generation";
 const canvas = document.querySelector("canvas")!,
   ctx = canvas.getContext("2d")!;
 let audio: AudioContext | undefined;
+const ads = new MockAd();
 const game = new Controller(
   () => performance.now(),
   {
     get: (k) => localStorage.getItem(k),
     set: (k, v) => localStorage.setItem(k, v),
   },
-  new MockAd(),
+  {
+    get available() {
+      return ads.available;
+    },
+    get label() {
+      return ads.label;
+    },
+    request() {
+      music.suspend();
+      return ads.request();
+    },
+  },
   () => {
     try {
       audio ??= new AudioContext();
@@ -29,6 +42,12 @@ const game = new Controller(
     } catch {}
   },
 );
+const music = new Music(() => {
+  const player = new Audio("assets/ambience.wav");
+  player.loop = true;
+  player.volume = 0.22;
+  return player;
+});
 const scene = new Scene(ctx, game, 390, 844);
 function resize() {
   const w = Math.min(innerWidth, 500),
@@ -45,9 +64,15 @@ function resize() {
 resize();
 addEventListener("resize", resize);
 document.addEventListener("visibilitychange", () => {
-  if (document.hidden) game.hide();
+  if (document.hidden) {
+    music.suspend();
+    game.hide();
+  }
 });
-addEventListener("pagehide", () => game.hide());
+addEventListener("pagehide", () => {
+  music.suspend();
+  game.hide();
+});
 let start: { x: number; y: number } | null = null;
 canvas.addEventListener("pointerdown", (e) => {
   start = { x: e.offsetX, y: e.offsetY };
@@ -61,14 +86,19 @@ canvas.addEventListener("pointerup", (e) => {
   if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy))
     game.rotate(dx > 0 ? 1 : -1);
   else if (Math.hypot(dx, dy) < 15) scene.tap(e.offsetX, e.offsetY);
+  music.gesture(game.state.sound, game.phase);
 });
 startFrames(
   requestAnimationFrame,
   () => {
     game.tick();
+    music.update(game.state.sound, game.phase);
     scene.render();
   },
-  (error) => game.interrupt(error),
+  (error) => {
+    music.suspend();
+    game.interrupt(error);
+  },
 );
 // Browser-only test surface; never imported by the WeChat entry.
 Object.assign(window, { tri: { game, scene, createLevel } });

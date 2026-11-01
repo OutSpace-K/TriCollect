@@ -37,6 +37,9 @@ await build({
   target: "es2020",
 });
 await cp("assets/tap.wav", "dist/wechat/assets/tap.wav");
+await cp("assets/ambience.wav", "dist/wechat/assets/ambience.wav");
+await mkdir("dist/browser/assets", { recursive: true });
+await cp("assets/ambience.wav", "dist/browser/assets/ambience.wav");
 await writeFile(
   "dist/wechat/game.json",
   JSON.stringify(

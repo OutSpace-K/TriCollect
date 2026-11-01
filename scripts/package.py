@@ -21,7 +21,7 @@ output = root.parent / f'TriCollect-v{version}-source.zip'
 with zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED) as archive:
     for f in files:
         archive.write(f, 'TriCollect/' + str(f.relative_to(root)))
-    archive.writestr('TriCollect/SHA256SUMS.json', json.dumps(manifest, indent=2))
+    archive.writestr('TriCollect/SHA256SUMS.json', json.dumps(manifest, indent=2) + "\n")
 with zipfile.ZipFile(output) as archive:
     assert archive.testzip() is None
     for name, digest in manifest.items():

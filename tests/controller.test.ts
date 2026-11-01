@@ -426,3 +426,18 @@ test("corrupted temporary readback cannot replace the committed save", () => {
   assert.throws(() => save(broken, x.g.state), /readback/);
   assert.equal(x.data.get(SAVE_KEY), committed);
 });
+test("sound preference survives new rounds, home and runtime restart", () => {
+  const x = setup();
+  x.g.toggleSound();
+  assert.equal(x.g.state.sound, false);
+  start(x.g);
+  assert.equal(x.g.state.sound, false);
+  x.g.home();
+  const next = new Controller(() => 0, x.store, x.g.ads);
+  assert.equal(next.state.sound, false);
+  next.start();
+  assert.equal(next.state.sound, false);
+  next.toggleSound();
+  next.start();
+  assert.equal(next.state.sound, true);
+});

@@ -1,4 +1,4 @@
-export const VERSION = "0.1.3";
+export const VERSION = "0.1.4";
 export const RULE = "tricollect-2-frontfaces";
 export const CONFIG = Object.freeze({
   baseMs: 300_000,

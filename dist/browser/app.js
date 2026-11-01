@@ -4,6 +4,59 @@
   var __defNormalProp = (obj, key2, value) => key2 in obj ? __defProp(obj, key2, { enumerable: true, configurable: true, writable: true, value }) : obj[key2] = value;
   var __publicField = (obj, key2, value) => __defNormalProp(obj, typeof key2 !== "symbol" ? key2 + "" : key2, value);
 
+  // src/platform/music.ts
+  var Music = class {
+    constructor(create) {
+      this.create = create;
+      __publicField(this, "player");
+      __publicField(this, "unlocked", false);
+      __publicField(this, "playing", false);
+      __publicField(this, "failed", false);
+      __publicField(this, "attempt", 0);
+    }
+    gesture(enabled, phase) {
+      this.unlocked = true;
+      this.update(enabled, phase);
+    }
+    update(enabled, phase) {
+      const wanted = enabled && this.unlocked && ["intro", "ready", "active", "resolving", "rotating"].includes(phase);
+      if (!wanted || this.failed) {
+        this.suspend();
+        return;
+      }
+      if (this.playing) return;
+      try {
+        if (!this.player) {
+          this.player = this.create();
+          this.player.onError?.(() => this.fail());
+        }
+        if (this.failed) return;
+        this.playing = true;
+        const attempt = ++this.attempt;
+        const result = this.player.play();
+        if (result && typeof result.then === "function")
+          void result.catch(() => {
+            if (this.playing && attempt === this.attempt) this.fail();
+          });
+      } catch {
+        this.fail();
+      }
+    }
+    suspend() {
+      if (!this.playing) return;
+      this.playing = false;
+      this.attempt++;
+      try {
+        this.player?.pause();
+      } catch {
+      }
+    }
+    fail() {
+      this.failed = true;
+      this.suspend();
+    }
+  };
+
   // src/platform/frame.ts
   function startFrames(schedule, work, onError) {
     const frame = () => {
@@ -18,7 +71,7 @@
   }
 
   // src/config.ts
-  var VERSION = "0.1.3";
+  var VERSION = "0.1.4";
   var RULE = "tricollect-2-frontfaces";
   var CONFIG = Object.freeze({
     baseMs: 3e5,
@@ -369,11 +422,11 @@
 
   // src/controller.ts
   var Controller = class {
-    constructor(now, store, ads, playSound = () => {
+    constructor(now, store, ads2, playSound = () => {
     }) {
       this.now = now;
       this.store = store;
-      this.ads = ads;
+      this.ads = ads2;
       this.playSound = playSound;
       __publicField(this, "phase", "home");
       __publicField(this, "state");
@@ -416,7 +469,7 @@
         hintsUsed: 0,
         undosUsed: 0,
         phase: "ready",
-        sound: true
+        sound: this.soundPreference()
       };
     }
     get board() {
@@ -461,6 +514,7 @@
     continueSaved() {
       if (!this.resume) return;
       this.state = clone(this.resume);
+      this.state.sound = this.soundPreference(this.state.sound);
       this.resume = null;
       this.phase = this.state.phase === "ready" ? "ready" : this.state.board.status === "blocked" ? "blocked" : this.state.remaining <= 0 ? "expired" : "paused";
       for (const r of this.state.rewards)
@@ -648,8 +702,20 @@
       this.resume = this.phase === "result" ? null : clone(this.state);
       this.phase = "home";
     }
+    soundPreference(fallback = true) {
+      try {
+        const value = this.store.get("tricollect.sound.v1");
+        return value === null ? fallback : value !== "off";
+      } catch {
+        return fallback;
+      }
+    }
     toggleSound() {
       this.state.sound = !this.state.sound;
+      try {
+        this.store.set("tricollect.sound.v1", this.state.sound ? "on" : "off");
+      } catch {
+      }
       this.checkpoint();
     }
     async extend() {
@@ -713,6 +779,8 @@
       this.height = height;
       __publicField(this, "buttons", []);
       __publicField(this, "renderedIds", []);
+      __publicField(this, "silhouetteIds", []);
+      __publicField(this, "rearOpenings", []);
       __publicField(this, "renderedFace", 0);
       __publicField(this, "page", 0);
       __publicField(this, "drawer", false);
@@ -784,6 +852,8 @@
     render() {
       const c = this.ctx, g = this.game, w = this.width, h = this.height;
       this.renderedIds = [];
+      this.silhouetteIds = [];
+      this.rearOpenings = [];
       this.buttons = [];
       this.bodies = [];
       this.targets = [];
@@ -793,6 +863,15 @@
       bg.addColorStop(1, "#18444a");
       c.fillStyle = bg;
       c.fillRect(0, 0, w, h);
+      this.button(
+        "sound-toggle",
+        g.state.sound ? "\u58F0\u97F3\uFF1A\u5F00" : "\u58F0\u97F3\uFF1A\u5173",
+        g.phase === "home" ? w - 106 : w / 2 - 42,
+        g.phase === "home" ? 18 : 100,
+        84,
+        34,
+        () => g.toggleSound()
+      );
       if (g.phase === "home") {
         this.home();
         return;
@@ -1024,7 +1103,8 @@
       this.renderedFace = view;
       this.renderedIds = [...visible];
       const lane = (w - 32) / n, radius = Math.min(22, lane * 0.38);
-      const height = Math.min(208, bottom - top - 65), by = top + (bottom - top + height) / 2;
+      const depthSpace = Math.min(126, (n - 1) * 21);
+      const height = Math.min(208, bottom - top - 65 - depthSpace), by = top + 55 + depthSpace + height + Math.max(0, (bottom - top - 65 - depthSpace - height) / 2);
       const step = Math.min(49, (height - 35) / 3);
       const turning = g.phase === "rotating", progress = g.turnProgress;
       const squeeze = turning ? Math.max(0.035, Math.abs(Math.cos(Math.PI * progress))) : 1;
@@ -1053,9 +1133,42 @@
         c.scale(squeeze, 1);
         c.translate(-w / 2, 0);
         this.rect(12, by + 9, w - 24, 18, face.shell, 8);
+        const depthStep = depthSpace / (n - 1);
+        const position = (t) => {
+          const { lane: column, depth } = faceCoordinates(t, n, view);
+          return {
+            x: 16 + lane * (column + 0.5) + depth / (n - 1) * lane * 0.16,
+            y: by - depth * depthStep - column * 2.5
+          };
+        };
+        const rear = g.board.tubes.filter((t) => t.balls.length && !visible.has(t.id)).sort(
+          (a, b) => faceCoordinates(b, n, view).depth - faceCoordinates(a, n, view).depth
+        );
+        this.silhouetteIds = rear.map((t) => t.id);
+        for (const t of rear) {
+          const { x, y } = position(t), ty = y - height;
+          this.rearOpenings.push({ id: t.id, x, y: ty + 4, rx: radius, ry: 8 });
+          this.rect(x - radius, ty, radius * 2, height, "#1b343b", 10);
+          c.strokeStyle = "#54706e";
+          c.lineWidth = 1;
+          c.beginPath();
+          c.moveTo(x - radius, ty + 3);
+          c.lineTo(x - radius, y - 4);
+          c.moveTo(x + radius, ty + 3);
+          c.lineTo(x + radius, y - 4);
+          c.stroke();
+          c.fillStyle = "#36514f";
+          c.beginPath();
+          c.ellipse(x, ty + 4, radius, 8, 0, 0, Math.PI * 2);
+          c.fill();
+          c.stroke();
+          c.fillStyle = "#0a2028";
+          c.beginPath();
+          c.ellipse(x, ty + 3, radius * 0.74, 5, 0, 0, Math.PI * 2);
+          c.fill();
+        }
         for (const t of g.board.tubes.filter((t2) => visible.has(t2.id))) {
-          const { lane: column, depth } = faceCoordinates(t, g.board.side, view);
-          const x = 16 + lane * (column + 0.5), y = by - Math.min(depth, 5) * 4, ty = y - height;
+          const { x, y } = position(t), ty = y - height;
           this.rect(x - radius, ty, radius * 2, height, face.shell, 12);
           this.rect(
             x - radius + 5,
@@ -1068,8 +1181,14 @@
           c.strokeStyle = face.color;
           c.lineWidth = 1.2;
           c.beginPath();
-          c.ellipse(x, ty + 5, radius, 5, 0, 0, Math.PI * 2);
+          c.ellipse(x, ty + 5, radius, 8, 0, 0, Math.PI * 2);
+          c.fillStyle = "#11272c";
+          c.fill();
           c.stroke();
+          c.beginPath();
+          c.ellipse(x, ty + 4, radius * 0.72, 5, 0, 0, Math.PI * 2);
+          c.fillStyle = "#071c23";
+          c.fill();
           for (let j = 0; j < 4; j++) {
             c.beginPath();
             c.moveTo(x - radius + 1, ty + 26 + j * 36);
@@ -1295,12 +1414,6 @@
           () => g.start(g.state.preset, g.state.seed + 1 >>> 0)
         );
       add("home", "\u8FD4\u56DE\u9996\u9875", () => g.home());
-      if (g.phase === "paused")
-        add(
-          "sound",
-          g.state.sound ? "\u97F3\u6548\uFF1A\u5F00" : "\u97F3\u6548\uFF1A\u5173",
-          () => g.toggleSound()
-        );
       this.text(
         this.fit(g.message, Math.floor((w - 55) / 12)),
         w / 2,
@@ -1344,13 +1457,25 @@
   var canvas = document.querySelector("canvas");
   var ctx = canvas.getContext("2d");
   var audio;
+  var ads = new MockAd();
   var game = new Controller(
     () => performance.now(),
     {
       get: (k) => localStorage.getItem(k),
       set: (k, v) => localStorage.setItem(k, v)
     },
-    new MockAd(),
+    {
+      get available() {
+        return ads.available;
+      },
+      get label() {
+        return ads.label;
+      },
+      request() {
+        music.suspend();
+        return ads.request();
+      }
+    },
     () => {
       try {
         audio ?? (audio = new AudioContext());
@@ -1367,6 +1492,12 @@
       }
     }
   );
+  var music = new Music(() => {
+    const player = new Audio("assets/ambience.wav");
+    player.loop = true;
+    player.volume = 0.22;
+    return player;
+  });
   var scene = new Scene(ctx, game, 390, 844);
   function resize() {
     const w = Math.min(innerWidth, 500), h = Math.max(innerHeight, 660), dpr = Math.min(devicePixelRatio, 2);
@@ -1381,9 +1512,15 @@
   resize();
   addEventListener("resize", resize);
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) game.hide();
+    if (document.hidden) {
+      music.suspend();
+      game.hide();
+    }
   });
-  addEventListener("pagehide", () => game.hide());
+  addEventListener("pagehide", () => {
+    music.suspend();
+    game.hide();
+  });
   var start = null;
   canvas.addEventListener("pointerdown", (e) => {
     start = { x: e.offsetX, y: e.offsetY };
@@ -1396,14 +1533,19 @@
     if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy))
       game.rotate(dx > 0 ? 1 : -1);
     else if (Math.hypot(dx, dy) < 15) scene.tap(e.offsetX, e.offsetY);
+    music.gesture(game.state.sound, game.phase);
   });
   startFrames(
     requestAnimationFrame,
     () => {
       game.tick();
+      music.update(game.state.sound, game.phase);
       scene.render();
     },
-    (error) => game.interrupt(error)
+    (error) => {
+      music.suspend();
+      game.interrupt(error);
+    }
   );
   Object.assign(window, { tri: { game, scene, createLevel } });
 })();

@@ -13,6 +13,9 @@ export type Button = {
 export class Scene {
   buttons: Button[] = [];
   renderedIds: string[] = [];
+  silhouetteIds: string[] = [];
+  rearOpenings: { id: string; x: number; y: number; rx: number; ry: number }[] =
+    [];
   renderedFace = 0;
   page = 0;
   drawer = false;
@@ -123,6 +126,8 @@ export class Scene {
       w = this.width,
       h = this.height;
     this.renderedIds = [];
+    this.silhouetteIds = [];
+    this.rearOpenings = [];
     this.buttons = [];
     this.bodies = [];
     this.targets = [];
@@ -132,6 +137,15 @@ export class Scene {
     bg.addColorStop(1, "#18444a");
     c.fillStyle = bg;
     c.fillRect(0, 0, w, h);
+    this.button(
+      "sound-toggle",
+      g.state.sound ? "声音：开" : "声音：关",
+      g.phase === "home" ? w - 106 : w / 2 - 42,
+      g.phase === "home" ? 18 : 100,
+      84,
+      34,
+      () => g.toggleSound(),
+    );
     if (g.phase === "home") {
       this.home();
       return;
@@ -378,8 +392,14 @@ export class Scene {
     this.renderedIds = [...visible];
     const lane = (w - 32) / n,
       radius = Math.min(22, lane * 0.38);
-    const height = Math.min(208, bottom - top - 65),
-      by = top + (bottom - top + height) / 2;
+    const depthSpace = Math.min(126, (n - 1) * 21);
+    const height = Math.min(208, bottom - top - 65 - depthSpace),
+      by =
+        top +
+        55 +
+        depthSpace +
+        height +
+        Math.max(0, (bottom - top - 65 - depthSpace - height) / 2);
     const step = Math.min(49, (height - 35) / 3);
     const turning = g.phase === "rotating",
       progress = g.turnProgress;
@@ -418,10 +438,49 @@ export class Scene {
       c.scale(squeeze, 1);
       c.translate(-w / 2, 0);
       this.rect(12, by + 9, w - 24, 18, face.shell, 8);
+      // Rear bodies have NO balls or hit regions: dark inner walls only.
+      // Elevation separates their openings; a bounded lateral offset preserves front hit lanes.
+      const depthStep = depthSpace / (n - 1);
+      const position = (t: (typeof g.board.tubes)[number]) => {
+        const { lane: column, depth } = faceCoordinates(t, n, view);
+        return {
+          x: 16 + lane * (column + 0.5) + (depth / (n - 1)) * lane * 0.16,
+          y: by - depth * depthStep - column * 2.5,
+        };
+      };
+      const rear = g.board.tubes
+        .filter((t) => t.balls.length && !visible.has(t.id))
+        .sort(
+          (a, b) =>
+            faceCoordinates(b, n, view).depth -
+            faceCoordinates(a, n, view).depth,
+        );
+      this.silhouetteIds = rear.map((t) => t.id);
+      for (const t of rear) {
+        const { x, y } = position(t),
+          ty = y - height;
+        this.rearOpenings.push({ id: t.id, x, y: ty + 4, rx: radius, ry: 8 });
+        this.rect(x - radius, ty, radius * 2, height, "#1b343b", 10);
+        c.strokeStyle = "#54706e";
+        c.lineWidth = 1;
+        c.beginPath();
+        c.moveTo(x - radius, ty + 3);
+        c.lineTo(x - radius, y - 4);
+        c.moveTo(x + radius, ty + 3);
+        c.lineTo(x + radius, y - 4);
+        c.stroke();
+        c.fillStyle = "#36514f";
+        c.beginPath();
+        c.ellipse(x, ty + 4, radius, 8, 0, 0, Math.PI * 2);
+        c.fill();
+        c.stroke();
+        c.fillStyle = "#0a2028";
+        c.beginPath();
+        c.ellipse(x, ty + 3, radius * 0.74, 5, 0, 0, Math.PI * 2);
+        c.fill();
+      }
       for (const t of g.board.tubes.filter((t) => visible.has(t.id))) {
-        const { lane: column, depth } = faceCoordinates(t, g.board.side, view);
-        const x = 16 + lane * (column + 0.5),
-          y = by - Math.min(depth, 5) * 4,
+        const { x, y } = position(t),
           ty = y - height;
         this.rect(x - radius, ty, radius * 2, height, face.shell, 12);
         // Opaque decorated shell; the narrow observation window belongs only to this face.
@@ -436,8 +495,14 @@ export class Scene {
         c.strokeStyle = face.color;
         c.lineWidth = 1.2;
         c.beginPath();
-        c.ellipse(x, ty + 5, radius, 5, 0, 0, Math.PI * 2);
+        c.ellipse(x, ty + 5, radius, 8, 0, 0, Math.PI * 2);
+        c.fillStyle = "#11272c";
+        c.fill();
         c.stroke();
+        c.beginPath();
+        c.ellipse(x, ty + 4, radius * 0.72, 5, 0, 0, Math.PI * 2);
+        c.fillStyle = "#071c23";
+        c.fill();
         for (let j = 0; j < 4; j++) {
           c.beginPath();
           c.moveTo(x - radius + 1, ty + 26 + j * 36);
@@ -683,10 +748,7 @@ export class Scene {
         g.start(g.state.preset, (g.state.seed + 1) >>> 0),
       );
     add("home", "返回首页", () => g.home());
-    if (g.phase === "paused")
-      add("sound", g.state.sound ? "音效：开" : "音效：关", () =>
-        g.toggleSound(),
-      );
+
     this.text(
       this.fit(g.message, Math.floor((w - 55) / 12)),
       w / 2,

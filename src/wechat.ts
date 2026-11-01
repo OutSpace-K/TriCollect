@@ -1,3 +1,4 @@
+import { Music } from "./platform/music";
 import { calibrateClock } from "./platform/clock";
 import { startFrames } from "./platform/frame";
 import { Controller } from "./controller";
@@ -14,8 +15,14 @@ canvas.height = height * dpr;
 const ctx = canvas.getContext("2d") as unknown as CanvasRenderingContext2D;
 ctx.scale(dpr, dpr);
 const perf = wx.getPerformance();
-const audio = wx.createInnerAudioContext();
-audio.src = "assets/tap.wav";
+let audio: WechatMinigame.InnerAudioContext | undefined;
+const music = new Music(() => {
+  const player = wx.createInnerAudioContext();
+  player.src = "assets/ambience.wav";
+  player.loop = true;
+  player.volume = 0.22;
+  return player;
+});
 const ads = AD_UNIT
   ? new WeChatAd(
       wx.createRewardedVideoAd({ adUnitId: AD_UNIT }) as unknown as Video,
@@ -38,8 +45,24 @@ async function boot() {
       },
       set: (k, v) => wx.setStorageSync(k, v),
     },
-    ads,
+    {
+      get available() {
+        return ads.available;
+      },
+      get label() {
+        return ads.label;
+      },
+      request() {
+        music.suspend();
+        return ads.request();
+      },
+    },
     () => {
+      if (!audio) {
+        audio = wx.createInnerAudioContext();
+        audio.src = "assets/tap.wav";
+        audio.onError(() => {});
+      }
       audio.stop();
       audio.play();
     },
@@ -67,20 +90,24 @@ async function boot() {
     if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy))
       game.rotate(dx > 0 ? 1 : -1);
     else if (Math.hypot(dx, dy) < 15) scene.tap(x, y);
+    music.gesture(game.state.sound, game.phase);
   });
   wx.onHide(() => {
     pointer = null;
+    music.suspend();
     game.hide();
-    audio.stop();
+    try {
+      audio?.stop();
+    } catch {}
   });
   wx.onShow(() => {
     pointer = null;
   });
-  audio.onError(() => {});
   startFrames(
     requestAnimationFrame,
     () => {
       game.tick();
+      music.update(game.state.sound, game.phase);
       ctx.save();
       try {
         ctx.translate(0, top);
@@ -90,7 +117,10 @@ async function boot() {
         ctx.restore();
       }
     },
-    (error) => game.interrupt(error),
+    (error) => {
+      music.suspend();
+      game.interrupt(error);
+    },
   );
 }
 void boot().catch((error) => {

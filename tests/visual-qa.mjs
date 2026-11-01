@@ -47,11 +47,33 @@ async function visibility() {
       targets: s.targets.map((t) => t.id).sort(),
       view: g.state.view,
       face: s.renderedFace,
+      silhouettes: s.silhouetteIds,
+      openings: s.rearOpenings,
+      remaining: g.board.tubes.filter((t) => t.balls.length).map((t) => t.id),
     };
   });
   assert.deepEqual(report.drawn, report.expected);
+  assert.deepEqual(
+    [...report.drawn, ...report.silhouettes].sort(),
+    report.remaining.sort(),
+  );
+  assert.ok(report.silhouettes.every((id) => !report.targets.includes(id)));
   assert.deepEqual(report.targets, report.expected);
   assert.equal(report.face, report.view);
+  for (const opening of report.openings) {
+    assert.ok(
+      opening.y - opening.ry >= 192,
+      "rear opening must stay below face header",
+    );
+  }
+  const before = await page.evaluate(() => tri.game.state.history.length);
+  for (const opening of report.openings)
+    await page.mouse.click(opening.x, opening.y);
+  assert.equal(
+    await page.evaluate(() => tri.game.state.history.length),
+    before,
+    "rear opening clicks must never pick balls",
+  );
   await click("select");
   const ids = await page.evaluate(() =>
     tri.scene.buttons
@@ -74,7 +96,7 @@ try {
   await stable();
   for (let face = 0; face < 3; face++) {
     results.push(await visibility());
-    await page.screenshot({ path: `evidence/v013-face-${face + 1}.png` });
+    await page.screenshot({ path: `evidence/v014-face-${face + 1}.png` });
     await click("rotate-right");
     await stable();
   }
@@ -89,7 +111,7 @@ try {
   assert.ok(revealed.drawn.includes("1,1"));
   assert.ok(!revealed.drawn.includes("1,0"));
   results.push({ innerReveal: revealed });
-  await page.screenshot({ path: "evidence/v013-inner.png" });
+  await page.screenshot({ path: "evidence/v014-inner.png" });
   await page.evaluate(() => {
     tri.game.start();
     tri.game.skipIntro();
@@ -121,10 +143,10 @@ try {
   const targets = await page.evaluate(() => tri.scene.targets);
   assert.equal(targets.length, 8);
   for (const t of targets) assert.ok(t.x - t.r >= 0 && t.x + t.r <= 320);
-  await page.screenshot({ path: "evidence/v013-narrow.png" });
+  await page.screenshot({ path: "evidence/v014-narrow.png" });
   results.push("320x660: 36 tubes, 8 visible front targets within viewport");
   await writeFile(
-    "evidence/v0.1.3-visual-qa.json",
+    "evidence/v0.1.4-visual-qa.json",
     JSON.stringify(
       { passed: true, platform: "Chromium, not WeChat DevTools", results },
       null,

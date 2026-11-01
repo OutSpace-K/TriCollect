@@ -65,7 +65,7 @@ export class Controller {
       hintsUsed: 0,
       undosUsed: 0,
       phase: "ready",
-      sound: true,
+      sound: this.soundPreference(),
     };
   }
   get board(): Board {
@@ -116,6 +116,7 @@ export class Controller {
   continueSaved() {
     if (!this.resume) return;
     this.state = clone(this.resume);
+    this.state.sound = this.soundPreference(this.state.sound);
     this.resume = null;
     this.phase =
       this.state.phase === "ready"
@@ -335,8 +336,19 @@ export class Controller {
     this.resume = this.phase === "result" ? null : clone(this.state);
     this.phase = "home";
   }
+  private soundPreference(fallback = true) {
+    try {
+      const value = this.store.get("tricollect.sound.v1");
+      return value === null ? fallback : value !== "off";
+    } catch {
+      return fallback;
+    }
+  }
   toggleSound() {
     this.state.sound = !this.state.sound;
+    try {
+      this.store.set("tricollect.sound.v1", this.state.sound ? "on" : "off");
+    } catch {}
     this.checkpoint();
   }
   async extend() {

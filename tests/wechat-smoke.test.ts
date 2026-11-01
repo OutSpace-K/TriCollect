@@ -56,6 +56,18 @@ async function boot(
       },
     },
   );
+  const audioPlayers: {
+    src: string;
+    loop: boolean;
+    volume: number;
+    plays: number;
+    pauses: number;
+    playing: boolean;
+    play: () => void;
+    pause: () => void;
+    stop: () => void;
+    onError: (f: () => void) => void;
+  }[] = [];
   const wx = {
     createCanvas: () => ({ getContext: () => ctx }),
     getWindowInfo: () => ({
@@ -67,13 +79,31 @@ async function boot(
     getPerformance: () => ({
       now: () => frozenRaw ?? rawMs() * unitsPerMs,
     }),
-    createInnerAudioContext: () => ({
-      play: () => {
-        if (brokenAudio) throw Error("injected audio failure");
-      },
-      stop: noop,
-      onError: noop,
-    }),
+    createInnerAudioContext: () => {
+      const player = {
+        src: "",
+        loop: false,
+        volume: 1,
+        plays: 0,
+        pauses: 0,
+        playing: false,
+        play() {
+          if (brokenAudio) throw Error("injected audio failure");
+          this.plays++;
+          this.playing = true;
+        },
+        pause() {
+          this.pauses++;
+          this.playing = false;
+        },
+        stop() {
+          this.playing = false;
+        },
+        onError: noop,
+      };
+      audioPlayers.push(player);
+      return player;
+    },
     getStorageSync: (k: string) => storage.get(k),
     setStorageSync: (k: string, v: string) => storage.set(k, v),
     onTouchStart: (f: Function) => (handlers.start = f),
@@ -135,6 +165,7 @@ async function boot(
   };
   return {
     storage,
+    audioPlayers,
     canvasDepth: () => saveDepth,
     failNextRender: (text?: string) => {
       failRender = text ?? true;
@@ -371,7 +402,7 @@ for (const units of [1, 1000])
       secondPickAccepted: true,
     });
     writeFileSync(
-      "evidence/v0.1.3-animation-wallclock.json",
+      "evidence/v0.1.4-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -416,7 +447,7 @@ for (const units of [1, 1000])
       });
     }
     writeFileSync(
-      "evidence/v0.1.3-animation-wallclock.json",
+      "evidence/v0.1.4-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -463,7 +494,7 @@ for (const units of [1, 1000])
       frozenRotationPauseMs: interrupted,
     });
     writeFileSync(
-      "evidence/v0.1.3-animation-wallclock.json",
+      "evidence/v0.1.4-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -475,3 +506,39 @@ for (const units of [1, 1000])
       ),
     );
   });
+
+test("native music starts on touch, pauses on hide and reuses one loop across rounds", async () => {
+  const r = await boot();
+  assert.equal(r.audioPlayers.length, 0);
+  beginRuntime(r);
+  const music = r.audioPlayers.find((p) => p.src.endsWith("ambience.wav"))!;
+  assert.ok(music);
+  assert.equal(music.loop, true);
+  assert.equal(music.volume, 0.22);
+  assert.equal(music.plays, 1);
+  for (let i = 0; i < 20; i++) r.render();
+  assert.equal(music.plays, 1);
+  r.hide();
+  assert.equal(music.playing, false);
+  r.show();
+  assert.equal(music.playing, false);
+  r.tap("继续游戏");
+  assert.equal(music.plays, 2);
+  r.tap("声音：开", true);
+  assert.equal(music.playing, false);
+  r.tap("暂停", true);
+  r.tap("返回首页");
+  beginRuntime(r);
+  assert.equal(music.playing, false);
+  r.tap("声音：关", true);
+  assert.equal(music.playing, true);
+  for (let i = 0; i < 3; i++) {
+    r.tap("暂停", true);
+    r.tap("返回首页");
+    beginRuntime(r);
+  }
+  assert.equal(
+    r.audioPlayers.filter((p) => p.src.endsWith("ambience.wav")).length,
+    1,
+  );
+});
