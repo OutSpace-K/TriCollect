@@ -21,7 +21,7 @@
   "typecheck": "passed",
   "cleanBuild": "npm ci/build/typecheck; bundle and audio byte-identical",
   "scope": "Node, simulated wx and Chromium only; not WeChat Developer Tools or real devices",
-  "publication": "User confirmed public repository for Gitee synchronization; authorized push to OutSpace-K/TriCollect main resumed. No visibility changes, credentials or deployment.",
+  "publication": "Version 0.1.7 source, prebuilt WeChat game and validation records are committed to OutSpace-K/TriCollect main. No deployment.",
   "remaining": [
     "Actual WeChat import/device/performance",
     "Real ad IDs and completion callbacks",

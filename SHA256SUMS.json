@@ -32,7 +32,7 @@
   "config/platform.example.json": "54350a82fdfb5e17596c10d649f4bcee95f0df654045e354732e1ade3683aa65",
   "docs/DEVICE-CHECKLIST.md": "556a53d1a35db9439ee0c155d0c94071f7ac0fe7d2782693c776206e323e9f44",
   "docs/LICENSES.md": "09286b76a90051835319ba738c0741d5ddce6e680f063e00d3148edd7d14a396",
-  "docs/STATUS.md": "73a384895b91b584249bcde174d713516239072353c10eecaff51fe0cb6cc623",
+  "docs/STATUS.md": "c594498dcdd047ca0e0bc2e6c81c4f10a8205f61310082c1bd44a0fa8068eb76",
   "docs/third-party/@types_node-LICENSE": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
   "docs/third-party/dependencies.json": "d4750ad00750f4e7c2bcd51f7cf2e2bb4f34ef7dc57e17b0a15e9c125e3199d4",
   "docs/third-party/esbuild-LICENSE.md": "b40ec5baec7bb34fa5b1c09521fa3cd52d5fad7adafed74932a2010d3612a681",
@@ -65,7 +65,7 @@
   "evidence/seed-check.txt": "59d8015d08b894fb157e19999ccdf69853f0e1fd24172ef48c6a9b6b64435852",
   "evidence/seeds-run.txt": "9eda5444ec421b701a728639c2e9e5c2aaa8326999f6f94b53705bd5e8ff3f18",
   "evidence/seeds.json": "27445fef1de4dcfd5b40daefd9a220dd3e754fd390b863cd5f59959294af735a",
-  "evidence/summary.json": "76f7d15533d7264b1cbf71b01f3f874df66d7425b330b355aee6f3d850aa8224",
+  "evidence/summary.json": "10bf6fa09acd40c3ccda20046481f43b4be26224501afcf59d163122aa9f0865",
   "evidence/typecheck.txt": "5a90e45b2d8f4a4cc6ca96b3d83d75e09bcb7e9b02a15c50394c9989bb424287",
   "evidence/unit-tests.txt": "033bfa0700257c82e01cf83d47e9ec1cdc5946639d46dbfd345796bd571c69b4",
   "evidence/v0.1.1-native-regression.txt": "7ef9c5930e96a27757b3b8865022838c059969b3122029e35da4f15508e91a4d",
@@ -134,7 +134,7 @@
   "package.json": "762183576499952a5969e7d1725d9de0026c0f4611d603c9981eec40b455bbb8",
   "package-lock.json": "bd4ab115014ffdcf5a0a7098f98bc166e77cf11d2f1823fc8e210c9fd2ac19a3",
   "tsconfig.json": "4f97d62e2d60d39d4319018c5a13b91ad8e45934410535202d092d06b9ebdff9",
-  "README.md": "7681de3a51a34f1902ce28cf6d3d867e21a35418159cff46486c9780a439933b",
+  "README.md": "56dc9984460e85ea99f6450ff0ff7b320ef81af2fc2fc1012f96aa180dcc31bb",
   "LICENSE": "48e18f418cc48df371dbd00492f8ba4ea8768418782599196227c34e888668f8",
   ".gitignore": "e03e6d2b24665625566dc2bfaa2be83aa1e87dcb4ac5dcad36d743ef19110bcf"
 }
