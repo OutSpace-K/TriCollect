@@ -49,6 +49,17 @@ const music = new Music(() => {
   return player;
 });
 const scene = new Scene(ctx, game, 390, 844);
+try {
+  const background = new Image();
+  background.onload = () =>
+    scene.setBackground(background as unknown as CanvasImageSource);
+  background.onerror = () => {
+    /* Keep the cream fallback if loading fails. */
+  };
+  background.src = "assets/background.png";
+} catch {
+  /* Image capability failure must not stop play. */
+}
 function resize() {
   const w = Math.min(innerWidth, 500),
     h = Math.max(innerHeight, 660),

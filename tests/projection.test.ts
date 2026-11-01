@@ -54,3 +54,12 @@ test("bundle rotates rigidly about its geometric center with no horizontal scale
     }
   }
 });
+test("five fixed ball slots touch without crossing tube walls at mobile sizes", () => {
+  for (const side of [6, 8])
+    for (const width of [320, 390, 500]) {
+      const p = projection(side, width, 147, 487, 0);
+      assert.equal(p.step, 2 * p.ballRadius);
+      assert.ok(p.ballRadius < p.radius);
+      assert.ok(p.step * 4 + 2 * p.ballRadius + 6 <= p.height);
+    }
+});

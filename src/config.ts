@@ -1,4 +1,4 @@
-export const VERSION = "0.1.7";
+export const VERSION = "0.1.8";
 export const RULE = "tricollect-4-fixedslots-front";
 export const CONFIG = Object.freeze({
   baseMs: 300_000,

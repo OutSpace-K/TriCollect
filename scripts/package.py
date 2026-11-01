@@ -12,7 +12,7 @@ for name in allowed:
         if not f.is_file() or f.is_symlink():
             continue
         rel = f.relative_to(root)
-        if f.name == 'platform.local.json' or f.suffix in ['.png', '.log'] or 'node_modules' in rel.parts or '__pycache__' in rel.parts:
+        if f.name == 'platform.local.json' or (f.suffix == '.log' or (f.suffix == '.png' and 'evidence' in rel.parts)) or 'node_modules' in rel.parts or '__pycache__' in rel.parts:
             continue
         files.append(f)
 manifest = {str(f.relative_to(root)): hashlib.sha256(f.read_bytes()).hexdigest() for f in files}

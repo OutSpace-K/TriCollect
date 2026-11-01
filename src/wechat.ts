@@ -73,6 +73,17 @@ async function boot() {
   const logicalHeight = Math.max(height - top - bottom, 660),
     factor = Math.min(1, (height - top - bottom) / logicalHeight);
   const scene = new Scene(ctx, game, width / factor, logicalHeight);
+  try {
+    const background = wx.createImage();
+    background.onload = () =>
+      scene.setBackground(background as unknown as CanvasImageSource);
+    background.onerror = () => {
+      /* Keep the cream fallback if loading fails. */
+    };
+    background.src = "assets/background.png";
+  } catch {
+    /* Image capability failure must not stop play. */
+  }
   let pointer: { x: number; y: number } | null = null;
   wx.onTouchStart((e) => {
     const t = e.touches[0];

@@ -104,7 +104,7 @@
   }
 
   // src/config.ts
-  var VERSION = "0.1.7";
+  var VERSION = "0.1.8";
   var RULE = "tricollect-4-fixedslots-front";
   var CONFIG = Object.freeze({
     baseMs: 3e5,
@@ -391,7 +391,7 @@
         return false;
       if (!Number.isFinite(s.remaining) || s.remaining < 0 || s.remaining > CONFIG.baseMs + CONFIG.extraMs * CONFIG.maxExtensions || !Number.isInteger(s.extensions) || s.extensions < 0 || s.extensions > CONFIG.maxExtensions || s.added !== s.extensions * CONFIG.extraMs)
         return false;
-      if (!Number.isInteger(s.hintsUsed) || s.hintsUsed < 0 || !Number.isInteger(s.undosUsed) || s.undosUsed < 0)
+      if (!Number.isInteger(s.hintsUsed) || s.hintsUsed < 0 || s.undoAvailable !== void 0 && typeof s.undoAvailable !== "boolean" || !Number.isInteger(s.undosUsed) || s.undosUsed < 0)
         return false;
       if (!Number.isInteger(s.sequence) || s.sequence < 0 || !Number.isInteger(s.view) || s.view < 0 || s.view > 2 || typeof s.sound !== "boolean" || !["ready", "paused", "blocked", "expired", "result"].includes(s.phase))
         return false;
@@ -501,6 +501,7 @@
         preset,
         board: level.board,
         history: [],
+        undoAvailable: false,
         remaining: CONFIG.baseMs,
         added: 0,
         extensions: 0,
@@ -536,6 +537,9 @@
     }
     get canTurn() {
       return this.phase === "active" || this.phase === "rotating";
+    }
+    get canUndo() {
+      return this.state.history.length > 0 && this.state.undoAvailable !== false;
     }
     get locked() {
       return this.phase !== "active";
@@ -636,6 +640,7 @@
         return;
       }
       this.state.history.push(clone(before));
+      this.state.undoAvailable = true;
       this.state.board = after;
       this.hint = null;
       this.message = after.cleared.length > before.cleared.length ? "\u4E09\u540C\u6536\u96C6\u6210\u529F +100" : "\u5DF2\u653E\u5165\u6682\u5B58\u69FD";
@@ -704,10 +709,10 @@
     }
     undo() {
       this.tick();
-      if (!["active", "blocked"].includes(this.phase) || !this.state.history.length)
-        return;
+      if (!["active", "blocked"].includes(this.phase) || !this.canUndo) return;
       this.state.undosUsed++;
       this.state.board = this.state.history.pop();
+      this.state.undoAvailable = false;
       this.phase = "active";
       this.last = this.now();
       this.hint = null;
@@ -831,12 +836,12 @@
     const lane = (width2 - 32) / (2 * edge / Math.sqrt(3) + 1), radius = lane / 2;
     const depthSpace = Math.min(108, edge * 18, (bottom - top) * 0.24);
     const zScale = depthSpace / (edge * Math.sqrt(3) / 2), extent = depthSpace * 2 / 3;
-    const height2 = Math.min(220, bottom - top - 75 - extent * 2);
+    const maxHeight = Math.min(220, bottom - top - 75 - extent * 2);
+    const ballRadius = Math.min(radius * 0.78, (maxHeight - 20) / 10), step = ballRadius * 2, height2 = step * 5 + 20;
     const axis = {
       x: width2 / 2,
       y: top + 55 + height2 + extent + Math.max(0, (bottom - top - 75 - height2 - extent * 2) / 2)
     };
-    const step = (height2 - 30) / 5, ballRadius = Math.min(radius * 0.64, step * 0.43);
     const point = (t) => {
       const p = rotateWorld(worldPosition(t, side), angle);
       return { x: axis.x + p.x * lane, y: axis.y - p.z * zScale, depth: p.z };
@@ -852,6 +857,8 @@
       this.width = width2;
       this.height = height2;
       __publicField(this, "buttons", []);
+      __publicField(this, "backgroundLoaded", false);
+      __publicField(this, "background", null);
       __publicField(this, "renderedIds", []);
       __publicField(this, "ghostPositions", []);
       __publicField(this, "ballPositions", []);
@@ -865,6 +872,10 @@
       __publicField(this, "renderedFace", 0);
       __publicField(this, "targets", []);
       __publicField(this, "bodies", []);
+    }
+    setBackground(image) {
+      this.background = image;
+      this.backgroundLoaded = true;
     }
     text(t, x, y, size = 14, color = "#44352e", align = "left") {
       const c = this.ctx;
@@ -910,7 +921,15 @@
         c.globalAlpha = alpha;
         c.fillStyle = "#73503530";
         c.beginPath();
-        c.ellipse(x, y + r * 0.85, r * 0.9, r * 0.24, 0, 0, Math.PI * 2);
+        c.ellipse(
+          x + r * 0.22,
+          y + r * 0.86,
+          r * 0.88,
+          r * 0.23,
+          0,
+          0,
+          Math.PI * 2
+        );
         c.fill();
         const shade = (mix) => {
           const rgb = PALETTE[type].slice(1).match(/../g).map((n) => parseInt(n, 16));
@@ -958,6 +977,40 @@
         c.restore();
       }
     }
+    shadowBall(x, y, r) {
+      const c = this.ctx;
+      c.fillStyle = "#63574a22";
+      c.beginPath();
+      c.ellipse(
+        x + r * 0.22,
+        y + r * 0.86,
+        r * 0.88,
+        r * 0.23,
+        0,
+        0,
+        Math.PI * 2
+      );
+      c.fill();
+      const shade = c.createRadialGradient(
+        x - r * 0.35,
+        y - r * 0.4,
+        r * 0.06,
+        x,
+        y,
+        r
+      );
+      shade.addColorStop(0, "#e8dfd1");
+      shade.addColorStop(0.28, "#c3b7a6");
+      shade.addColorStop(0.72, "#9a8d7b");
+      shade.addColorStop(1, "#746756");
+      c.fillStyle = shade;
+      c.strokeStyle = "#897a65";
+      c.lineWidth = 1.1;
+      c.beginPath();
+      c.arc(x, y, r, 0, Math.PI * 2);
+      c.fill();
+      c.stroke();
+    }
     render() {
       const c = this.ctx, g = this.game, w = this.width, h = this.height;
       this.renderedIds = [];
@@ -977,6 +1030,16 @@
       bg.addColorStop(1, "#f4e4cf");
       c.fillStyle = bg;
       c.fillRect(0, 0, w, h);
+      if (this.background) {
+        const scale = Math.max(w / 600, h / 1040);
+        c.drawImage(
+          this.background,
+          (w - 600 * scale) / 2,
+          (h - 1040 * scale) / 2,
+          600 * scale,
+          1040 * scale
+        );
+      }
       this.button(
         "sound-toggle",
         g.state.sound ? "\u58F0\u97F3\uFF1A\u5F00" : "\u58F0\u97F3\uFF1A\u5173",
@@ -1085,7 +1148,7 @@
         bw,
         44,
         () => g.undo(),
-        g.locked || !g.state.history.length
+        g.locked || !g.canUndo
       );
       this.button(
         "hint",
@@ -1192,15 +1255,53 @@
         9,
         Math.max(4, radius * layout.zScale / layout.lane)
       );
+      c.fillStyle = "#7a60551c";
+      for (const item of ordered) {
+        c.beginPath();
+        c.ellipse(
+          item.x + radius * 0.6,
+          item.y + 7,
+          radius * 1.3,
+          opening * 0.9,
+          0.18,
+          0,
+          Math.PI * 2
+        );
+        c.fill();
+      }
       for (const item of ordered) {
         const { t, x, y } = item, ty = y - height2, front = visible.has(t.id);
         const glass = c.createLinearGradient(x - radius, 0, x + radius, 0);
-        glass.addColorStop(0, front ? "#eadfcf" : "#ddd0bc");
+        glass.addColorStop(0, face.shell);
         glass.addColorStop(0.22, front ? "#fffdf6" : "#f6eddd");
         glass.addColorStop(0.7, front ? "#fff9ed" : "#eee1ce");
-        glass.addColorStop(1, "#e7d9c4");
+        glass.addColorStop(0.87, face.shell);
+        glass.addColorStop(1, "#bba993");
         c.fillStyle = glass;
         c.fillRect(x - radius, ty, radius * 2, height2);
+        c.fillStyle = "#ffffffaa";
+        c.fillRect(
+          x - radius + radius * 0.14,
+          ty + 10,
+          Math.max(1, radius * 0.09),
+          height2 - 15
+        );
+        c.fillStyle = face.color + "55";
+        c.fillRect(
+          x + radius - radius * 0.14,
+          ty + 10,
+          Math.max(1, radius * 0.08),
+          height2 - 15
+        );
+        c.strokeStyle = face.color + "50";
+        c.lineWidth = 1;
+        for (let stripe = 0; stripe < 3; stripe++) {
+          const sy = ty + 26 + stripe * (height2 - 40) / 3;
+          c.beginPath();
+          c.moveTo(x - radius + 2, sy);
+          c.lineTo(x - radius + radius * 0.16, sy + 5);
+          c.stroke();
+        }
         c.strokeStyle = "#bba990";
         c.lineWidth = 1;
         c.beginPath();
@@ -1227,7 +1328,16 @@
         c.ellipse(x, ty + 3, radius, opening, 0, 0, Math.PI * 2);
         c.fill();
         c.stroke();
-        c.fillStyle = "#c9b79d";
+        const well = c.createLinearGradient(
+          x - radius,
+          ty - opening,
+          x + radius,
+          ty + opening
+        );
+        well.addColorStop(0, "#fff4db");
+        well.addColorStop(0.55, face.shell);
+        well.addColorStop(1, "#96836b");
+        c.fillStyle = well;
         c.beginPath();
         c.ellipse(x, ty + 2, radius * 0.74, opening * 0.66, 0, 0, Math.PI * 2);
         c.fill();
@@ -1252,11 +1362,7 @@
             this.ball(t.balls[i].type, x, by - drop, ballRadius);
           } else {
             this.ghostPositions.push(position);
-            c.strokeStyle = front ? "#bba88d" : "#cbbba3";
-            c.lineWidth = 1.1;
-            c.beginPath();
-            c.arc(x, by, ballRadius, 0, Math.PI * 2);
-            c.stroke();
+            this.shadowBall(x, by, ballRadius);
           }
         }
         if (!front) continue;
@@ -1437,12 +1543,7 @@
       };
       if (g.phase === "paused") add("continue", "\u7EE7\u7EED\u6E38\u620F", () => g.begin());
       if (g.phase === "blocked")
-        add(
-          "undo-blocked",
-          "\u514D\u8D39\u64A4\u9500\u4E00\u6B65",
-          () => g.undo(),
-          !g.state.history.length
-        );
+        add("undo-blocked", "\u514D\u8D39\u64A4\u9500\u4E00\u6B65", () => g.undo(), !g.canUndo);
       if (g.phase === "expired") {
         add(
           "extend",
@@ -1566,6 +1667,14 @@
     const top = Math.max((_b = (_a = info.safeArea) == null ? void 0 : _a.top) != null ? _b : 0, 24), bottom = Math.max(0, height - ((_d = (_c = info.safeArea) == null ? void 0 : _c.bottom) != null ? _d : height));
     const logicalHeight = Math.max(height - top - bottom, 660), factor = Math.min(1, (height - top - bottom) / logicalHeight);
     const scene = new Scene(ctx, game, width / factor, logicalHeight);
+    try {
+      const background = wx.createImage();
+      background.onload = () => scene.setBackground(background);
+      background.onerror = () => {
+      };
+      background.src = "assets/background.png";
+    } catch (e) {
+    }
     let pointer = null;
     wx.onTouchStart((e) => {
       const t = e.touches[0];

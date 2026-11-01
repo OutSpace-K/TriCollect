@@ -27,7 +27,10 @@ export function projection(
   const depthSpace = Math.min(108, edge * 18, (bottom - top) * 0.24);
   const zScale = depthSpace / ((edge * Math.sqrt(3)) / 2),
     extent = (depthSpace * 2) / 3;
-  const height = Math.min(220, bottom - top - 75 - extent * 2);
+  const maxHeight = Math.min(220, bottom - top - 75 - extent * 2);
+  const ballRadius = Math.min(radius * 0.78, (maxHeight - 20) / 10),
+    step = ballRadius * 2,
+    height = step * 5 + 20;
   const axis = {
     x: width / 2,
     y:
@@ -37,8 +40,6 @@ export function projection(
       extent +
       Math.max(0, (bottom - top - 75 - height - extent * 2) / 2),
   };
-  const step = (height - 30) / 5,
-    ballRadius = Math.min(radius * 0.64, step * 0.43);
   const point = (t: Pick<Tube, "q" | "r">) => {
     const p = rotateWorld(worldPosition(t, side), angle);
     return { x: axis.x + p.x * lane, y: axis.y - p.z * zScale, depth: p.z };

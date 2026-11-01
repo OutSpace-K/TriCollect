@@ -56,6 +56,7 @@ export class Controller {
       preset,
       board: level.board,
       history: [],
+      undoAvailable: false,
       remaining: CONFIG.baseMs,
       added: 0,
       extensions: 0,
@@ -97,6 +98,9 @@ export class Controller {
   }
   get canTurn() {
     return this.phase === "active" || this.phase === "rotating";
+  }
+  get canUndo() {
+    return this.state.history.length > 0 && this.state.undoAvailable !== false;
   }
   get locked() {
     return this.phase !== "active";
@@ -209,6 +213,7 @@ export class Controller {
       return;
     }
     this.state.history.push(clone(before));
+    this.state.undoAvailable = true;
     this.state.board = after;
     this.hint = null;
     this.message =
@@ -290,13 +295,10 @@ export class Controller {
   }
   undo() {
     this.tick();
-    if (
-      !["active", "blocked"].includes(this.phase) ||
-      !this.state.history.length
-    )
-      return;
+    if (!["active", "blocked"].includes(this.phase) || !this.canUndo) return;
     this.state.undosUsed++;
     this.state.board = this.state.history.pop()!;
+    this.state.undoAvailable = false;
     this.phase = "active";
     this.last = this.now();
     this.hint = null;

@@ -13,6 +13,12 @@ export type Button = {
 };
 export class Scene {
   buttons: Button[] = [];
+  backgroundLoaded = false;
+  private background: CanvasImageSource | null = null;
+  setBackground(image: CanvasImageSource) {
+    this.background = image;
+    this.backgroundLoaded = true;
+  }
   renderedIds: string[] = [];
   ghostPositions: {
     id: string;
@@ -123,7 +129,15 @@ export class Scene {
       c.globalAlpha = alpha;
       c.fillStyle = "#73503530";
       c.beginPath();
-      c.ellipse(x, y + r * 0.85, r * 0.9, r * 0.24, 0, 0, Math.PI * 2);
+      c.ellipse(
+        x + r * 0.22,
+        y + r * 0.86,
+        r * 0.88,
+        r * 0.23,
+        0,
+        0,
+        Math.PI * 2,
+      );
       c.fill();
       const shade = (mix: number) => {
         const rgb = PALETTE[type]
@@ -181,6 +195,40 @@ export class Scene {
       c.restore();
     }
   }
+  private shadowBall(x: number, y: number, r: number) {
+    const c = this.ctx;
+    c.fillStyle = "#63574a22";
+    c.beginPath();
+    c.ellipse(
+      x + r * 0.22,
+      y + r * 0.86,
+      r * 0.88,
+      r * 0.23,
+      0,
+      0,
+      Math.PI * 2,
+    );
+    c.fill();
+    const shade = c.createRadialGradient(
+      x - r * 0.35,
+      y - r * 0.4,
+      r * 0.06,
+      x,
+      y,
+      r,
+    );
+    shade.addColorStop(0, "#e8dfd1");
+    shade.addColorStop(0.28, "#c3b7a6");
+    shade.addColorStop(0.72, "#9a8d7b");
+    shade.addColorStop(1, "#746756");
+    c.fillStyle = shade;
+    c.strokeStyle = "#897a65";
+    c.lineWidth = 1.1;
+    c.beginPath();
+    c.arc(x, y, r, 0, Math.PI * 2);
+    c.fill();
+    c.stroke();
+  }
   render() {
     const c = this.ctx,
       g = this.game,
@@ -203,6 +251,16 @@ export class Scene {
     bg.addColorStop(1, "#f4e4cf");
     c.fillStyle = bg;
     c.fillRect(0, 0, w, h);
+    if (this.background) {
+      const scale = Math.max(w / 600, h / 1040);
+      c.drawImage(
+        this.background,
+        (w - 600 * scale) / 2,
+        (h - 1040 * scale) / 2,
+        600 * scale,
+        1040 * scale,
+      );
+    }
     this.button(
       "sound-toggle",
       g.state.sound ? "声音：开" : "声音：关",
@@ -312,7 +370,7 @@ export class Scene {
       bw,
       44,
       () => g.undo(),
-      g.locked || !g.state.history.length,
+      g.locked || !g.canUndo,
     );
     this.button(
       "hint",
@@ -434,18 +492,57 @@ export class Scene {
       9,
       Math.max(4, (radius * layout.zScale) / layout.lane),
     );
+    c.fillStyle = "#7a60551c";
+    for (const item of ordered) {
+      c.beginPath();
+      c.ellipse(
+        item.x + radius * 0.6,
+        item.y + 7,
+        radius * 1.3,
+        opening * 0.9,
+        0.18,
+        0,
+        Math.PI * 2,
+      );
+      c.fill();
+    }
     for (const item of ordered) {
       const { t, x, y } = item,
         ty = y - height,
         front = visible.has(t.id);
       // Opaque cream compositing prevents back-row colors leaking through light glass outlines.
       const glass = c.createLinearGradient(x - radius, 0, x + radius, 0);
-      glass.addColorStop(0, front ? "#eadfcf" : "#ddd0bc");
+      glass.addColorStop(0, face.shell);
       glass.addColorStop(0.22, front ? "#fffdf6" : "#f6eddd");
       glass.addColorStop(0.7, front ? "#fff9ed" : "#eee1ce");
-      glass.addColorStop(1, "#e7d9c4");
+      glass.addColorStop(0.87, face.shell);
+      glass.addColorStop(1, "#bba993");
       c.fillStyle = glass;
       c.fillRect(x - radius, ty, radius * 2, height);
+      // Left-front light creates a bright edge and a darker far-right wall.
+      c.fillStyle = "#ffffffaa";
+      c.fillRect(
+        x - radius + radius * 0.14,
+        ty + 10,
+        Math.max(1, radius * 0.09),
+        height - 15,
+      );
+      c.fillStyle = face.color + "55";
+      c.fillRect(
+        x + radius - radius * 0.14,
+        ty + 10,
+        Math.max(1, radius * 0.08),
+        height - 15,
+      );
+      c.strokeStyle = face.color + "50";
+      c.lineWidth = 1;
+      for (let stripe = 0; stripe < 3; stripe++) {
+        const sy = ty + 26 + (stripe * (height - 40)) / 3;
+        c.beginPath();
+        c.moveTo(x - radius + 2, sy);
+        c.lineTo(x - radius + radius * 0.16, sy + 5);
+        c.stroke();
+      }
       c.strokeStyle = "#bba990";
       c.lineWidth = 1;
       c.beginPath();
@@ -472,7 +569,16 @@ export class Scene {
       c.ellipse(x, ty + 3, radius, opening, 0, 0, Math.PI * 2);
       c.fill();
       c.stroke();
-      c.fillStyle = "#c9b79d";
+      const well = c.createLinearGradient(
+        x - radius,
+        ty - opening,
+        x + radius,
+        ty + opening,
+      );
+      well.addColorStop(0, "#fff4db");
+      well.addColorStop(0.55, face.shell);
+      well.addColorStop(1, "#96836b");
+      c.fillStyle = well;
       c.beginPath();
       c.ellipse(x, ty + 2, radius * 0.74, opening * 0.66, 0, 0, Math.PI * 2);
       c.fill();
@@ -506,11 +612,7 @@ export class Scene {
           this.ball(t.balls[i].type, x, by - drop, ballRadius);
         } else {
           this.ghostPositions.push(position);
-          c.strokeStyle = front ? "#bba88d" : "#cbbba3";
-          c.lineWidth = 1.1;
-          c.beginPath();
-          c.arc(x, by, ballRadius, 0, Math.PI * 2);
-          c.stroke();
+          this.shadowBall(x, by, ballRadius);
         }
       }
       if (!front) continue;
@@ -712,12 +814,7 @@ export class Scene {
     };
     if (g.phase === "paused") add("continue", "继续游戏", () => g.begin());
     if (g.phase === "blocked")
-      add(
-        "undo-blocked",
-        "免费撤销一步",
-        () => g.undo(),
-        !g.state.history.length,
-      );
+      add("undo-blocked", "免费撤销一步", () => g.undo(), !g.canUndo);
     if (g.phase === "expired") {
       add(
         "extend",

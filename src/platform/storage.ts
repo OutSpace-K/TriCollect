@@ -19,6 +19,8 @@ export type Saved = {
   preset: number;
   board: Board;
   history: Board[];
+  /** Absent in older saves: one latest undo is available if history exists. */
+  undoAvailable?: boolean;
   remaining: number;
   added: number;
   extensions: number;
@@ -71,6 +73,7 @@ export function valid(s: Saved): boolean {
     if (
       !Number.isInteger(s.hintsUsed) ||
       s.hintsUsed < 0 ||
+      (s.undoAvailable !== undefined && typeof s.undoAvailable !== "boolean") ||
       !Number.isInteger(s.undosUsed) ||
       s.undosUsed < 0
     )

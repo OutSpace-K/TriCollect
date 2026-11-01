@@ -1,11 +1,10 @@
 {
   "project": "TriCollect",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "ruleVersion": "tricollect-4-fixedslots-front",
-  "dateUTC": "2026-11-01",
-  "baseCommit": "b099e98887a226c136077ac4be0525c4ad86868b",
+  "baseCommit": "680297527f915119717b20725fdad8e2042d2992",
   "unitAndMockTests": {
-    "passed": 61,
+    "passed": 65,
     "failed": 0,
     "fullFinalRun": true
   },
@@ -16,15 +15,22 @@
     "presetsWonWithoutAds": 3,
     "errors": []
   },
-  "visual": "Three faces, 320px, fixed slots/neutral silhouettes, actual arrow pointer directions, centered rigid rotation, inner reveal passed",
-  "audio": "32s PCM signal/real HTMLAudio lifecycle passed; no human listening",
+  "singleUndo": "Matching and removed-pipe restoration, consumed availability across pause/rotation/reload, next valid pick rearming, legacy-save fallback and rejected malformed flag passed",
+  "visual": "Three faces and 320px; touching fixed slots, neutral shaded balls, actual PNG load, correct arrow motion, centered rigid rotation and inner reveal passed",
+  "background": {
+    "file": "assets/background.png",
+    "bytes": 122412,
+    "sha256": "2845ad4e5bab0c0899063ce02b7f1797eb96799e234da80b714395edb58192b2",
+    "nativeLoadAndFailureMock": "passed"
+  },
+  "audio": "Unchanged original 32s music; real HTMLAudio lifecycle passed; no human listening",
   "typecheck": "passed",
-  "cleanBuild": "npm ci/build/typecheck; bundle and audio byte-identical",
-  "scope": "Node, simulated wx and Chromium only; not WeChat Developer Tools or real devices",
-  "publication": "Version 0.1.7 source, prebuilt WeChat game and validation records are committed to OutSpace-K/TriCollect main. No deployment.",
+  "cleanBuild": "npm ci/build/typecheck; bundles/background/audio byte-identical",
+  "scope": "Node, simulated wx and Chromium only; not actual WeChat Developer Tools or devices",
+  "publication": "Version 0.1.8 source, prebuilt game and validation records. No deployment.",
   "remaining": [
     "Actual WeChat import/device/performance",
-    "Real ad IDs and completion callbacks",
+    "Real ad completion/cancellation/error callbacks",
     "Human musical taste/listening",
     "Human 300s balance"
   ]

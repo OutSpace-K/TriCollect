@@ -14,9 +14,11 @@ http
         "Content-Type",
         file.endsWith(".js")
           ? "text/javascript"
-          : file.endsWith(".wav")
-            ? "audio/wav"
-            : "text/html; charset=utf-8",
+          : file.endsWith(".png")
+            ? "image/png"
+            : file.endsWith(".wav")
+              ? "audio/wav"
+              : "text/html; charset=utf-8",
       );
       res.end(await readFile(file));
     } catch {

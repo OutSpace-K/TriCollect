@@ -118,6 +118,7 @@ async function visibility() {
     ),
     false,
   );
+  assert.equal(await page.evaluate(() => tri.scene.backgroundLoaded), true);
   const slots = await page.evaluate(() => ({
     colored: tri.scene.ballPositions,
     ghosts: tri.scene.ghostPositions,
@@ -128,6 +129,16 @@ async function visibility() {
     slots.all.sort(),
   );
   assert.ok(slots.ghosts.every((b) => !("type" in b)));
+  for (const ball of [...slots.colored, ...slots.ghosts]) {
+    const neighbor = [...slots.colored, ...slots.ghosts].find(
+      (b) => b.tube === ball.tube && b.slot === ball.slot + 1,
+    );
+    if (neighbor)
+      assert.ok(
+        Math.abs(Math.abs(ball.y - neighbor.y) - ball.r - neighbor.r) < 1e-8,
+        "fixed adjacent balls must touch",
+      );
+  }
   for (const ghost of slots.ghosts.filter((b) =>
     report.targets.includes(b.tube),
   )) {
@@ -143,8 +154,17 @@ async function visibility() {
   return report;
 }
 try {
+  const backgroundResponse = page.waitForResponse((r) =>
+    r.url().endsWith("/assets/background.png"),
+  );
   await page.goto("http://127.0.0.1:4174");
-  await page.waitForFunction(() => window.tri);
+  const loaded = await backgroundResponse;
+  assert.equal(loaded.status(), 200);
+  assert.equal(loaded.headers()["content-type"], "image/png");
+  results.push({
+    background: { loaded: true, bytes: (await loaded.body()).length },
+  });
+  await page.waitForFunction(() => window.tri && tri.scene.backgroundLoaded);
   await page.evaluate(() => {
     tri.game.start(0, 104730);
     tri.game.skipIntro();
@@ -162,12 +182,12 @@ try {
   );
   for (let face = 0; face < 3; face++) {
     results.push(await visibility());
-    await page.screenshot({ path: `evidence/v017-face-${face + 1}.png` });
+    await page.screenshot({ path: `evidence/v018-face-${face + 1}.png` });
     await click("rotate-right");
     await stable();
   }
   const fixedReports = [];
-  await page.screenshot({ path: "evidence/v017-slots-before.png" });
+  await page.screenshot({ path: "evidence/v018-slots-before.png" });
   for (const id of ["1,0", "2,0"]) {
     for (let i = 0; i < 5; i++) {
       const before = await page.evaluate(() => tri.scene.ballPositions);
@@ -209,7 +229,7 @@ try {
       await visibility();
       if (id === "1,0" && i < 2)
         await page.screenshot({
-          path: `evidence/v017-slots-after-${i + 1}.png`,
+          path: `evidence/v018-slots-after-${i + 1}.png`,
         });
     }
     if (id === "1,0")
@@ -221,9 +241,15 @@ try {
   const revealed = await visibility();
   assert.ok(revealed.drawn.includes("1,1"));
   results.push({ fixedSlots: fixedReports, innerReveal: revealed });
-  await page.screenshot({ path: "evidence/v017-inner.png" });
+  await page.screenshot({ path: "evidence/v018-inner.png" });
   await click("undo");
   await stable();
+  assert.equal(
+    await page.evaluate(
+      () => tri.scene.buttons.find((b) => b.id === "undo").disabled,
+    ),
+    true,
+  );
   const restored = await page.evaluate(() => tri.scene.ballPositions);
   const last = fixedReports.at(-1).removed;
   assert.deepEqual(
@@ -233,7 +259,7 @@ try {
   );
   await click("pause");
   await page.reload();
-  await page.waitForFunction(() => window.tri);
+  await page.waitForFunction(() => window.tri && tri.scene.backgroundLoaded);
   await click("resume");
   await click("continue");
   await stable();
@@ -293,7 +319,7 @@ try {
     if (elapsed < 250) assert.equal(frame.targets, 0);
     rotation.push({ elapsed, ...frame });
     if (elapsed === 125)
-      await page.screenshot({ path: "evidence/v017-center-rotation.png" });
+      await page.screenshot({ path: "evidence/v018-center-rotation.png" });
   }
   const directions = [];
   for (const view of [0, 1, 2])
@@ -382,10 +408,10 @@ try {
   const targets = await page.evaluate(() => tri.scene.targets);
   assert.equal(targets.length, 8);
   for (const t of targets) assert.ok(t.x - t.r >= 0 && t.x + t.r <= 320);
-  await page.screenshot({ path: "evidence/v017-narrow.png" });
+  await page.screenshot({ path: "evidence/v018-narrow.png" });
   results.push("320x660: 36 tubes, 8 visible front targets within viewport");
   await writeFile(
-    "evidence/v0.1.7-visual-qa.json",
+    "evidence/v0.1.8-visual-qa.json",
     JSON.stringify(
       { passed: true, platform: "Chromium, not WeChat DevTools", results },
       null,

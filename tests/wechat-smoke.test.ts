@@ -10,7 +10,10 @@ async function boot(
   brokenAudio = false,
   live = false,
   initiallyFrozen = false,
+  brokenImage = false,
 ) {
+  const images: string[] = [];
+  let backgroundDraws = 0;
   let failRender: boolean | string = false;
   let saveDepth = 0;
   let frozenRaw: number | undefined = initiallyFrozen ? 0 : undefined;
@@ -27,6 +30,9 @@ async function boot(
   const noop = () => {};
   const ctx = new Proxy(
     {
+      drawImage: () => {
+        backgroundDraws++;
+      },
       save: () => {
         saveDepth++;
       },
@@ -84,6 +90,19 @@ async function boot(
     onError: (f: () => void) => void;
   }[] = [];
   const wx = {
+    createImage: () => {
+      const image = {
+        onload: () => {},
+        onerror: () => {},
+        set src(value: string) {
+          images.push(value);
+          queueMicrotask(() =>
+            brokenImage ? image.onerror() : image.onload(),
+          );
+        },
+      };
+      return image;
+    },
     createCanvas: () => ({ getContext: () => ctx }),
     getWindowInfo: () => ({
       windowWidth: 390,
@@ -181,6 +200,8 @@ async function boot(
   };
   return {
     storage,
+    images,
+    backgroundDraws: () => backgroundDraws,
     rings,
     tapTube: (index: number) => {
       const label = labels.find((l) => l.s === String(index));
@@ -428,7 +449,7 @@ for (const units of [1, 1000])
       secondPickAccepted: true,
     });
     writeFileSync(
-      "evidence/v0.1.7-animation-wallclock.json",
+      "evidence/v0.1.8-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -472,7 +493,7 @@ for (const units of [1, 1000])
       });
     }
     writeFileSync(
-      "evidence/v0.1.7-animation-wallclock.json",
+      "evidence/v0.1.8-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -515,7 +536,7 @@ for (const units of [1, 1000])
       frozenRotationPauseMs: interrupted,
     });
     writeFileSync(
-      "evidence/v0.1.7-animation-wallclock.json",
+      "evidence/v0.1.8-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -562,4 +583,16 @@ test("native music starts on touch, pauses on hide and reuses one loop across ro
     r.audioPlayers.filter((p) => p.src.endsWith("ambience.wav")).length,
     1,
   );
+});
+
+test("native image asset loads and image failure leaves gameplay available", async () => {
+  for (const fail of [false, true]) {
+    const r = await boot(new Map(), 1, false, false, false, fail);
+    beginRuntime(r);
+    assert.deepEqual(r.images, ["assets/background.png"]);
+    assert.equal(r.backgroundDraws() > 0, !fail);
+    r.tapTube(1);
+    r.advance(250000);
+    assert.equal(decode(r.storage.get(SAVE_KEY)!)!.history.length, 1);
+  }
 });

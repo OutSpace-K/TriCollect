@@ -1,0 +1,5 @@
+
+> tricollect@0.1.8 build
+> node scripts/build.mjs
+
+Built native WeChat game + optional browser development preview. Real device verification pending.

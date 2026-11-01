@@ -441,3 +441,113 @@ test("sound preference survives new rounds, home and runtime restart", () => {
   next.start();
   assert.equal(next.state.sound, true);
 });
+
+test("single undo survives matching, rotation, pause and reload; only a new pick rearms it", () => {
+  const x = setup();
+  start(x.g);
+  const level = createLevel(0);
+  let before = clone(x.g.board),
+    lastId = "";
+  for (
+    let step = 0;
+    step < level.witness.length && x.g.board.cleared.length === 0;
+    step++
+  ) {
+    while (x.g.state.view !== level.views[step]) {
+      x.g.rotate(1);
+      x.advance(250);
+      x.g.tick();
+    }
+    before = clone(x.g.board);
+    lastId = level.witness[step];
+    x.advance(10);
+    x.g.pick(lastId);
+    const during = clone(x.g.board);
+    x.g.undo();
+    assert.deepEqual(
+      x.g.board,
+      during,
+      "animation cannot be undone mid-flight",
+    );
+    x.advance(240);
+    x.g.tick();
+  }
+  assert.ok(x.g.board.cleared.length > 0);
+  assert.ok(x.g.state.history.length > 1);
+  const time = x.g.state.remaining,
+    rewards = JSON.stringify(x.g.state.rewards);
+  x.g.undo();
+  assert.deepEqual(x.g.board, before);
+  assert.equal(x.g.canUndo, false);
+  assert.equal(x.g.state.remaining, time);
+  assert.equal(JSON.stringify(x.g.state.rewards), rewards);
+  x.g.undo();
+  assert.deepEqual(x.g.board, before);
+  x.g.pick("not-a-tube");
+  assert.equal(x.g.canUndo, false, "invalid input must not rearm undo");
+  x.g.rotate(1);
+  x.advance(250);
+  x.g.tick();
+  x.g.pause();
+  x.g.begin();
+  x.g.undo();
+  assert.deepEqual(x.g.board, before);
+  x.g.hide();
+  const reloaded = new Controller(() => 50000, x.store, {
+    available: false,
+    label: "none",
+    request: async () => "failed",
+  });
+  reloaded.continueSaved();
+  reloaded.begin();
+  assert.equal(reloaded.canUndo, false);
+  reloaded.undo();
+  assert.deepEqual(reloaded.board, before);
+  x.g.begin();
+  while (!x.g.visible.has(lastId)) {
+    x.g.rotate(1);
+    x.advance(250);
+    x.g.tick();
+  }
+  x.g.pick(lastId);
+  x.advance(240);
+  x.g.tick();
+  assert.equal(x.g.canUndo, true);
+  x.g.undo();
+  assert.deepEqual(x.g.board, before);
+  assert.equal(x.g.canUndo, false);
+});
+test("single undo restores a removed pipe and legacy saves offer only their most recent step", () => {
+  const x = setup();
+  x.g.start(0, 104730);
+  x.g.skipIntro();
+  x.g.begin();
+  for (let i = 0; i < 4; i++) {
+    x.g.pick("1,0");
+    x.advance(240);
+    x.g.tick();
+  }
+  const before = clone(x.g.board);
+  x.g.pick("1,0");
+  x.advance(240);
+  x.g.tick();
+  assert.equal(x.g.board.tubes.find((t) => t.id === "1,0")!.balls.length, 0);
+  x.g.undo();
+  assert.deepEqual(x.g.board, before);
+  x.g.undo();
+  assert.deepEqual(x.g.board, before);
+  // v0.1.7 saves have no availability flag. They get one latest-step undo, not unlimited history.
+  delete x.g.state.undoAvailable;
+  save(x.store, x.g.state);
+  const old = decode(x.data.get(SAVE_KEY)!)!;
+  assert.ok(old.history.length > 1);
+  x.g.state = old;
+  assert.equal(x.g.canUndo, true);
+  x.g.undo();
+  assert.equal(x.g.canUndo, false);
+  const restored = clone(x.g.board);
+  x.g.undo();
+  assert.deepEqual(x.g.board, restored);
+  const bad = { ...x.g.state, undoAvailable: "yes" };
+  assert.equal(decode(encode(bad as unknown as typeof old)), null);
+});
