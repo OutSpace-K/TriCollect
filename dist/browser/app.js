@@ -4,8 +4,21 @@
   var __defNormalProp = (obj, key2, value) => key2 in obj ? __defProp(obj, key2, { enumerable: true, configurable: true, writable: true, value }) : obj[key2] = value;
   var __publicField = (obj, key2, value) => __defNormalProp(obj, typeof key2 !== "symbol" ? key2 + "" : key2, value);
 
+  // src/platform/frame.ts
+  function startFrames(schedule, work, onError) {
+    const frame = () => {
+      schedule(frame);
+      try {
+        work();
+      } catch (error) {
+        onError(error);
+      }
+    };
+    frame();
+  }
+
   // src/config.ts
-  var VERSION = "0.1.1";
+  var VERSION = "0.1.2";
   var RULE = "tricollect-1";
   var CONFIG = Object.freeze({
     baseMs: 3e5,
@@ -17,7 +30,6 @@
     extraMs: 3e4,
     maxExtensions: 2,
     animationMs: 240,
-    rotateMs: 360,
     searchNodes: 12e3,
     searchMs: 40
   });
@@ -320,8 +332,6 @@
       __publicField(this, "resume", null);
       __publicField(this, "introProgress", 0);
       __publicField(this, "rotation", 0);
-      __publicField(this, "fromRotation", 0);
-      __publicField(this, "toRotation", 0);
       __publicField(this, "last", 0);
       __publicField(this, "until", 0);
       __publicField(this, "animationStart", 0);
@@ -401,6 +411,7 @@
       this.checkpoint();
     }
     tick() {
+      if (!["active", "resolving", "intro"].includes(this.phase)) return;
       const now = this.now();
       if (this.phase === "active") {
         this.state.remaining = Math.max(
@@ -418,11 +429,7 @@
         this.introProgress = Math.min(1, (now - this.animationStart) / 950);
         if (now >= this.until) this.skipIntro();
       }
-      if (this.phase === "rotating") {
-        const p = Math.min(1, (now - this.animationStart) / CONFIG.rotateMs);
-        this.rotation = this.fromRotation + (this.toRotation - this.fromRotation) * (1 - (1 - p) ** 3);
-      }
-      if ((this.phase === "resolving" || this.phase === "rotating") && now >= this.until) {
+      if (this.phase === "resolving" && now >= this.until) {
         this.phase = this.after;
         this.last = now;
         this.rotation = this.state.view * Math.PI * 2 / 3;
@@ -445,30 +452,43 @@
       this.state.history.push(clone(before));
       this.state.board = after;
       this.hint = null;
-      if (this.state.sound) this.playSound();
       this.message = after.cleared.length > before.cleared.length ? "\u4E09\u540C\u6536\u96C6\u6210\u529F +100" : "\u5DF2\u653E\u5165\u6682\u5B58\u69FD";
       this.after = after.status === "won" ? "result" : after.status === "blocked" ? "blocked" : "active";
       this.phase = "resolving";
       this.animationStart = this.now();
       this.until = this.animationStart + CONFIG.animationMs;
       this.checkpoint();
+      if (this.state.sound) {
+        try {
+          this.playSound();
+        } catch (error) {
+          console.warn("TriCollect audio unavailable", error);
+        }
+      }
     }
     rotate(direction) {
       this.tick();
       if (this.phase !== "active") return;
-      this.fromRotation = this.rotation;
-      this.toRotation = this.rotation + direction * Math.PI * 2 / 3;
       this.state.view = (this.state.view + direction + 3) % 3;
-      this.animationStart = this.now();
-      this.until = this.animationStart + CONFIG.rotateMs;
-      this.after = "active";
-      this.phase = "rotating";
+      this.rotation = this.state.view * Math.PI * 2 / 3;
       this.hint = null;
       this.checkpoint();
     }
+    interrupt(error) {
+      console.error("TriCollect frame interrupted", error);
+      if (this.phase !== "home" && this.phase !== "result" && this.phase !== "ad") {
+        this.phase = this.board.status === "won" ? "result" : "paused";
+        this.state.phase = this.board.status === "won" ? "result" : "paused";
+        try {
+          save(this.store, this.state);
+        } catch {
+        }
+      }
+      this.message = "\u8FD0\u884C\u6682\u65F6\u4E2D\u65AD\uFF0C\u5DF2\u6682\u505C\uFF1B\u53EF\u7EE7\u7EED\u6216\u8FD4\u56DE\u9996\u9875";
+    }
     pause() {
       this.tick();
-      if (["active", "resolving", "rotating"].includes(this.phase)) {
+      if (["active", "resolving"].includes(this.phase)) {
         this.phase = this.board.status === "won" ? "result" : "paused";
         this.rotation = this.state.view * Math.PI * 2 / 3;
         this.checkpoint();
@@ -582,6 +602,8 @@
       this.height = height;
       __publicField(this, "buttons", []);
       __publicField(this, "page", 0);
+      __publicField(this, "drawer", false);
+      __publicField(this, "targets", []);
       __publicField(this, "bodies", []);
     }
     text(t, x, y, size = 14, color = "#d9ece7", align = "left") {
@@ -624,29 +646,33 @@
     ball(type, x, y, r, alpha = 1) {
       const c = this.ctx;
       c.save();
-      c.globalAlpha = alpha;
-      const g = c.createRadialGradient(x - r * 0.35, y - r * 0.4, 1, x, y, r);
-      g.addColorStop(0, "#fff6dc");
-      g.addColorStop(0.35, PALETTE[type]);
-      g.addColorStop(1, PALETTE[type]);
-      c.fillStyle = g;
-      c.beginPath();
-      c.arc(x, y, r, 0, Math.PI * 2);
-      c.fill();
-      this.text(
-        SYMBOLS[type],
-        x,
-        y + 4,
-        Math.max(10, r * 0.85),
-        "#24414a",
-        "center"
-      );
-      c.restore();
+      try {
+        c.globalAlpha = alpha;
+        const g = c.createRadialGradient(x - r * 0.35, y - r * 0.4, 1, x, y, r);
+        g.addColorStop(0, "#fff6dc");
+        g.addColorStop(0.35, PALETTE[type]);
+        g.addColorStop(1, PALETTE[type]);
+        c.fillStyle = g;
+        c.beginPath();
+        c.arc(x, y, r, 0, Math.PI * 2);
+        c.fill();
+        this.text(
+          SYMBOLS[type],
+          x,
+          y + 4,
+          Math.max(10, r * 0.85),
+          "#24414a",
+          "center"
+        );
+      } finally {
+        c.restore();
+      }
     }
     render() {
       const c = this.ctx, g = this.game, w = this.width, h = this.height;
       this.buttons = [];
       this.bodies = [];
+      this.targets = [];
       c.clearRect(0, 0, w, h);
       const bg = c.createLinearGradient(0, 0, w, h);
       bg.addColorStop(0, "#102e36");
@@ -689,143 +715,113 @@
         this.overlay();
         return;
       }
-      const trayY = h - 202, selectorY = trayY - 125, boardBottom = selectorY - 14;
-      this.drawBoard(116, boardBottom);
-      const tiles = g.board.tubes;
-      const pages = Math.ceil(tiles.length / 10);
-      this.page = Math.min(this.page, pages - 1);
-      this.text(
-        `\u9876\u90E8\u9009\u62E9\u533A  ${this.page + 1}/${pages}`,
-        22,
-        selectorY,
-        12,
-        "#a9c6bd"
+      const trayY = h - 143, boardBottom = trayY - 30;
+      this.drawBoard(147, boardBottom);
+      this.button(
+        "pause",
+        "\u6682\u505C",
+        w - 77,
+        88,
+        55,
+        34,
+        () => {
+          this.drawer = false;
+          g.pause();
+        },
+        g.locked
       );
-      if (pages > 1)
-        this.button(
-          "page",
-          "\u6362\u9875",
-          w - 80,
-          selectorY - 20,
-          58,
-          28,
-          () => {
-            this.page = (this.page + 1) % pages;
-          },
-          g.locked
-        );
-      const e = exposed(g.board), gap = 7, tileW = (w - 44 - gap * 4) / 5;
-      for (let i = 0; i < 10; i++) {
-        const t = tiles[this.page * 10 + i];
-        if (!t) continue;
-        const idx = tiles.indexOf(t), x = 22 + i % 5 * (tileW + gap), y = selectorY + 12 + Math.floor(i / 5) * 48;
-        const enabled = e.has(t.id), top = t.balls[t.balls.length - 1];
-        this.button(
-          "tube-" + t.id,
-          "",
-          x,
-          y,
-          tileW,
-          42,
-          () => g.pick(t.id),
-          g.locked || !enabled
-        );
-        if (g.hint === t.id) {
-          c.strokeStyle = "#f4d27e";
-          c.lineWidth = 3;
-          c.strokeRect(x - 1, y - 1, tileW + 2, 44);
-        }
-        if (top) {
-          this.ball(top.type, x + tileW * 0.65, y + 21, 12, enabled ? 1 : 0.25);
-          this.text(
-            String(idx + 1),
-            x + 9,
-            y + 25,
-            12,
-            enabled ? "#ecf1db" : "#819393"
-          );
-          if (!enabled)
-            this.text("\u9501", x + tileW * 0.65, y + 25, 12, "#e4ebe7", "center");
-        } else
-          this.text(
-            `${idx + 1} \u2713`,
-            x + tileW / 2,
-            y + 25,
-            12,
-            "#759e91",
-            "center"
-          );
-      }
-      this.text("\u6682\u5B58\u69FD \xB7 \u4E09\u540C\u81EA\u52A8\u6D88\u9664", 22, trayY - 7, 12, "#a9c6bd");
+      this.button(
+        "select",
+        "\u9009\u7403",
+        22,
+        100,
+        55,
+        34,
+        () => {
+          this.drawer = !this.drawer;
+        },
+        g.locked
+      );
+      this.text(
+        "\u70B9\u51FB\u4EAE\u5708\u9876\u90E8\u7403 \xB7 \u6A2A\u6ED1\u5207\u9762",
+        w / 2,
+        boardBottom + 10,
+        12,
+        "#a9c6bd",
+        "center"
+      );
+      this.text("\u4E09\u540C\u6D88\u9664", 22, trayY - 7, 12, "#a9c6bd");
       const cell = (w - 44) / 7;
       for (let i = 0; i < 7; i++) {
         this.rect(22 + i * cell, trayY, cell - 4, 43, "#0e2d34", 9);
-        const b = g.board.tray[i];
-        if (b) this.ball(b.type, 22 + i * cell + (cell - 4) / 2, trayY + 21, 15);
+        const ball = g.board.tray[i];
+        if (ball)
+          this.ball(ball.type, 22 + i * cell + (cell - 4) / 2, trayY + 21, 15);
       }
+      const bw = (w - 65) / 4;
       this.button(
         "rotate-left",
-        "\u21B6 \u8F6C\u5DE6",
+        "\u21B6",
         22,
-        trayY + 57,
-        (w - 51) / 2,
-        42,
-        () => g.rotate(-1),
+        trayY + 55,
+        bw,
+        44,
+        () => {
+          this.drawer = false;
+          g.rotate(-1);
+        },
         g.locked
       );
       this.button(
         "rotate-right",
-        "\u8F6C\u53F3 \u21B7",
-        29 + (w - 51) / 2,
-        trayY + 57,
-        (w - 51) / 2,
-        42,
-        () => g.rotate(1),
+        "\u21B7",
+        29 + bw,
+        trayY + 55,
+        bw,
+        44,
+        () => {
+          this.drawer = false;
+          g.rotate(1);
+        },
         g.locked
       );
-      const bw = (w - 58) / 3;
       this.button(
         "undo",
         "\u64A4\u9500",
-        22,
-        trayY + 108,
+        36 + bw * 2,
+        trayY + 55,
         bw,
-        42,
+        44,
         () => g.undo(),
         g.locked || !g.state.history.length
       );
       this.button(
         "hint",
         "\u63D0\u793A",
-        29 + bw,
-        trayY + 108,
+        43 + bw * 3,
+        trayY + 55,
         bw,
-        42,
+        44,
         () => {
           g.hintNow();
-          if (g.hint)
-            this.page = Math.floor(tiles.findIndex((t) => t.id === g.hint) / 10);
+          if (g.hint && !this.targets.some((t) => t.id === g.hint)) {
+            this.drawer = true;
+            this.page = Math.floor(
+              g.board.tubes.findIndex((t) => t.id === g.hint) / 10
+            );
+          }
         },
-        g.locked
-      );
-      this.button(
-        "pause",
-        "\u6682\u505C",
-        36 + bw * 2,
-        trayY + 108,
-        bw,
-        42,
-        () => g.pause(),
         g.locked
       );
       this.text(
         this.fit(g.message, Math.floor((w - 40) / 11)),
         w / 2,
-        h - 22,
+        h - 20,
         11,
         "#c5d5c7",
         "center"
       );
+      if (this.drawer && g.phase === "active") this.drawSelector(160);
       if (g.phase === "intro" || g.phase === "ready") {
         this.rect(
           18,
@@ -856,12 +852,60 @@
         );
       }
     }
+    drawSelector(y) {
+      const g = this.game, w = this.width, c = this.ctx, tiles = g.board.tubes, pages = Math.ceil(tiles.length / 10);
+      this.page = Math.min(this.page, pages - 1);
+      this.rect(14, y, w - 28, 188, "#123139", 16);
+      this.text("\u906E\u6321\u65F6\u8F85\u52A9\u9009\u7403", 26, y + 27, 14, "#d9ece7");
+      this.button("close-select", "\u6536\u8D77", w - 80, y + 10, 52, 32, () => {
+        this.drawer = false;
+      });
+      const e = exposed(g.board), gap = 7, tw = (w - 52 - gap * 4) / 5;
+      for (let i = 0; i < 10; i++) {
+        const t = tiles[this.page * 10 + i];
+        if (!t) continue;
+        const x = 26 + i % 5 * (tw + gap), ty = y + 54 + Math.floor(i / 5) * 48, top = t.balls[t.balls.length - 1], allowed = e.has(t.id);
+        this.button(
+          "tube-" + t.id,
+          "",
+          x,
+          ty,
+          tw,
+          42,
+          () => {
+            this.drawer = false;
+            g.pick(t.id);
+          },
+          !allowed
+        );
+        if (top) {
+          this.ball(top.type, x + tw * 0.65, ty + 21, 11, allowed ? 1 : 0.25);
+          this.text(String(tiles.indexOf(t) + 1), x + 7, ty + 25, 11);
+        } else this.text("\u2713", x + tw / 2, ty + 25, 12, "#759e91", "center");
+        if (g.hint === t.id) {
+          c.strokeStyle = "#f4d27e";
+          c.strokeRect(x - 1, ty - 1, tw + 2, 44);
+        }
+      }
+      this.button(
+        "page",
+        `\u6362\u9875 ${this.page + 1}/${pages}`,
+        w / 2 - 55,
+        y + 151,
+        110,
+        28,
+        () => {
+          this.page = (this.page + 1) % pages;
+        },
+        pages === 1
+      );
+    }
     fit(t, n) {
       return t.length > n ? t.slice(0, n - 1) + "\u2026" : t;
     }
     drawBoard(top, bottom) {
       const c = this.ctx, g = this.game, w = this.width, n = g.board.side;
-      const available = Math.max(120, bottom - top), scale = Math.min((w - 55) / (n * 46), available / 255, 1.1), angle = g.rotation;
+      const available = Math.max(120, bottom - top), scale = Math.min((w - 55) / (n * 46), available / 255, 1.65), angle = g.rotation;
       const projected = g.board.tubes.map((t, index) => {
         const x = (t.q + t.r / 2 - (n - 1) / 2) * 46, z = (t.r * Math.sqrt(3) / 2 - (n - 1) * Math.sqrt(3) / 6) * 46;
         const rx = x * Math.cos(angle) - z * Math.sin(angle), depth = x * Math.sin(angle) + z * Math.cos(angle);
@@ -904,7 +948,7 @@
         c.rect(p.x - r, ty, r * 2, ht);
         c.fill();
         c.stroke();
-        for (let i = 0; i < t.balls.length && g.phase !== "rotating"; i++) {
+        for (let i = 0; i < t.balls.length; i++) {
           const intro = g.phase === "intro" ? (1 - g.introProgress) * Math.max(0, 180 - i * 35) : 0;
           this.ball(
             t.balls[i].type,
@@ -934,6 +978,17 @@
           topY: by - 17 * scale - (t.balls.length - 1) * 31 * scale
         });
       }
+      for (const body of this.bodies) {
+        const x = body.x + body.w / 2, y = body.topY;
+        const foreground = [...this.bodies].reverse().find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
+        if (foreground?.id !== body.id || !e.has(body.id)) continue;
+        this.targets.push({ id: body.id, x, y, r: body.w * 0.45 });
+        c.strokeStyle = g.hint === body.id ? "#f4d27e" : "#d4e7b6";
+        c.lineWidth = g.hint === body.id ? 3 : 1.5;
+        c.beginPath();
+        c.arc(x, y, body.w * 0.45, 0, Math.PI * 2);
+        c.stroke();
+      }
       this.text(
         "\u4E09\u9762\u89C2\u5BDF  " + (g.state.view + 1) + "/3",
         w / 2,
@@ -942,15 +997,6 @@
         "#7fa9a4",
         "center"
       );
-      if (g.phase === "rotating")
-        this.text(
-          "\u65CB\u8F6C\u4E2D\u2026",
-          w / 2,
-          top + available - 10,
-          14,
-          "#d4e7b6",
-          "center"
-        );
       if (g.phase === "resolving") {
         const prev = g.state.history[g.state.history.length - 1];
         const t = prev?.tubes.find(
@@ -963,7 +1009,7 @@
           this.ball(
             ball.type,
             p.x + (w / 2 - p.x) * a,
-            p.y - 30 + (this.height - 181 - p.y + 30) * a,
+            p.y - 30 + (this.height - 122 - p.y + 30) * a,
             14 * scale
           );
         }
@@ -1151,11 +1197,11 @@
         if (!button.disabled) button.act();
         return;
       }
-      if (this.game.locked) return;
+      if (this.game.locked || this.drawer) return;
       const body = [...this.bodies].reverse().find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
       if (body) {
         if (Math.abs(y - body.topY) <= body.w * 0.45) this.game.pick(body.id);
-        else this.game.message = "\u53EA\u80FD\u53D6\u9876\u90E8\u7403\uFF0C\u4E5F\u53EF\u70B9\u4E0B\u65B9\u540C\u7F16\u53F7\u6807\u8BB0";
+        else this.game.message = "\u53EA\u80FD\u53D6\u4EAE\u5708\u9876\u90E8\u7403\uFF1B\u906E\u6321\u65F6\u53EF\u70B9\u5DE6\u4E0A\u9009\u7403";
       }
     }
   };
@@ -1232,11 +1278,13 @@
       game.rotate(dx > 0 ? 1 : -1);
     else if (Math.hypot(dx, dy) < 15) scene.tap(e.offsetX, e.offsetY);
   });
-  function frame() {
-    game.tick();
-    scene.render();
-    requestAnimationFrame(frame);
-  }
-  frame();
+  startFrames(
+    requestAnimationFrame,
+    () => {
+      game.tick();
+      scene.render();
+    },
+    (error) => game.interrupt(error)
+  );
   Object.assign(window, { tri: { game, scene, createLevel } });
 })();

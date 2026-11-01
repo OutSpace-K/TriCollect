@@ -1,5 +1,5 @@
 
-> tricollect@0.1.1 format:check
+> tricollect@0.1.2 format:check
 > prettier --check src tests scripts config *.json README.md docs
 
 Checking formatting...

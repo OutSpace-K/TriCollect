@@ -1,14 +1,19 @@
 {
   "passed": true,
-  "platform": "Chromium browser only",
+  "platform": "Chromium only; not WeChat device",
+  "directPicks": 136,
+  "fallbackPicks": 2,
   "results": [
-    "unclaimed home pagehide/reload preserves main and backup across 3 restarts",
-    "pause, reload, resume preserve state",
-    "preset 0: 30 actual pointer selections, no ads, won",
-    "preset 1: 45 actual pointer selections, no ads, won",
-    "preset 2: 63 actual pointer selections, no ads, won",
-    "320×660 controls within viewport",
-    "manually ended non-winning round stays final through 3 home restarts"
+    {
+      "check": "browser real 10-second clock",
+      "elapsedMs": 10007.799999999814,
+      "chargedMs": 10015.900000000373
+    },
+    "12 consecutive pointer rotations immediately active, no interpolation lock",
+    "one-frame exception recovered; pause/home/reload regression preserved",
+    "preset 0: 30 pointer picks won without ads",
+    "preset 1: 45 pointer picks won without ads",
+    "preset 2: 63 pointer picks won without ads"
   ],
   "errors": []
 }

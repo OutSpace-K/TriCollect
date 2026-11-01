@@ -4,8 +4,52 @@
   var __defNormalProp = (obj, key2, value) => key2 in obj ? __defProp(obj, key2, { enumerable: true, configurable: true, writable: true, value }) : obj[key2] = value;
   var __publicField = (obj, key2, value) => __defNormalProp(obj, typeof key2 !== "symbol" ? key2 + "" : key2, value);
 
+  // src/platform/clock.ts
+  async function calibrateClock(raw, wall = () => Date.now(), wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))) {
+    let previous;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const w0 = wall(), r0 = raw();
+      await wait(80);
+      const elapsed = wall() - w0, delta = raw() - r0;
+      const ratio = delta / elapsed;
+      const unit = elapsed >= 40 && elapsed < 2e3 && Number.isFinite(delta) && delta > 0 ? ratio >= 0.5 && ratio <= 2 ? 1 : ratio >= 500 && ratio <= 2e3 ? 1e3 : void 0 : void 0;
+      if (unit && previous === unit) {
+        const origin = raw();
+        let last = 0, progressedAt = wall();
+        return {
+          unitsPerMs: unit,
+          now: () => {
+            const value = (raw() - origin) / unit;
+            if (!Number.isFinite(value) || value < last)
+              throw Error("Monotonic clock unavailable");
+            if (value > last) progressedAt = wall();
+            else if (wall() - progressedAt > 1500)
+              throw Error("Monotonic clock stopped");
+            last = value;
+            return value;
+          }
+        };
+      }
+      previous = unit;
+    }
+    throw Error("Clock calibration failed; no reliable progressing clock");
+  }
+
+  // src/platform/frame.ts
+  function startFrames(schedule, work, onError) {
+    const frame = () => {
+      schedule(frame);
+      try {
+        work();
+      } catch (error) {
+        onError(error);
+      }
+    };
+    frame();
+  }
+
   // src/config.ts
-  var VERSION = "0.1.1";
+  var VERSION = "0.1.2";
   var RULE = "tricollect-1";
   var CONFIG = Object.freeze({
     baseMs: 3e5,
@@ -17,7 +61,6 @@
     extraMs: 3e4,
     maxExtensions: 2,
     animationMs: 240,
-    rotateMs: 360,
     searchNodes: 12e3,
     searchMs: 40
   });
@@ -183,8 +226,8 @@
     return { board: b, witness, seed, preset: p.id, fallback: false };
   }
   function createLevel(index, seed) {
-    var _a3;
-    const p = (_a3 = PRESETS[index]) != null ? _a3 : PRESETS[0];
+    var _a;
+    const p = (_a = PRESETS[index]) != null ? _a : PRESETS[0];
     try {
       return generate(p, seed != null ? seed : p.seed);
     } catch (e) {
@@ -259,8 +302,8 @@
       ) && b.tubes.every(
         (t) => t.balls.every(
           (b2, i) => {
-            var _a3, _b3;
-            return ((_b3 = (_a3 = original.tubes.find((x) => x.id === t.id)) == null ? void 0 : _a3.balls[i]) == null ? void 0 : _b3.id) === b2.id;
+            var _a, _b;
+            return ((_b = (_a = original.tubes.find((x) => x.id === t.id)) == null ? void 0 : _a.balls[i]) == null ? void 0 : _b.id) === b2.id;
           }
         )
       );
@@ -324,8 +367,6 @@
       __publicField(this, "resume", null);
       __publicField(this, "introProgress", 0);
       __publicField(this, "rotation", 0);
-      __publicField(this, "fromRotation", 0);
-      __publicField(this, "toRotation", 0);
       __publicField(this, "last", 0);
       __publicField(this, "until", 0);
       __publicField(this, "animationStart", 0);
@@ -405,6 +446,7 @@
       this.checkpoint();
     }
     tick() {
+      if (!["active", "resolving", "intro"].includes(this.phase)) return;
       const now = this.now();
       if (this.phase === "active") {
         this.state.remaining = Math.max(
@@ -422,11 +464,7 @@
         this.introProgress = Math.min(1, (now - this.animationStart) / 950);
         if (now >= this.until) this.skipIntro();
       }
-      if (this.phase === "rotating") {
-        const p = Math.min(1, (now - this.animationStart) / CONFIG.rotateMs);
-        this.rotation = this.fromRotation + (this.toRotation - this.fromRotation) * (1 - (1 - p) ** 3);
-      }
-      if ((this.phase === "resolving" || this.phase === "rotating") && now >= this.until) {
+      if (this.phase === "resolving" && now >= this.until) {
         this.phase = this.after;
         this.last = now;
         this.rotation = this.state.view * Math.PI * 2 / 3;
@@ -449,30 +487,43 @@
       this.state.history.push(clone(before));
       this.state.board = after;
       this.hint = null;
-      if (this.state.sound) this.playSound();
       this.message = after.cleared.length > before.cleared.length ? "\u4E09\u540C\u6536\u96C6\u6210\u529F +100" : "\u5DF2\u653E\u5165\u6682\u5B58\u69FD";
       this.after = after.status === "won" ? "result" : after.status === "blocked" ? "blocked" : "active";
       this.phase = "resolving";
       this.animationStart = this.now();
       this.until = this.animationStart + CONFIG.animationMs;
       this.checkpoint();
+      if (this.state.sound) {
+        try {
+          this.playSound();
+        } catch (error) {
+          console.warn("TriCollect audio unavailable", error);
+        }
+      }
     }
     rotate(direction) {
       this.tick();
       if (this.phase !== "active") return;
-      this.fromRotation = this.rotation;
-      this.toRotation = this.rotation + direction * Math.PI * 2 / 3;
       this.state.view = (this.state.view + direction + 3) % 3;
-      this.animationStart = this.now();
-      this.until = this.animationStart + CONFIG.rotateMs;
-      this.after = "active";
-      this.phase = "rotating";
+      this.rotation = this.state.view * Math.PI * 2 / 3;
       this.hint = null;
       this.checkpoint();
     }
+    interrupt(error) {
+      console.error("TriCollect frame interrupted", error);
+      if (this.phase !== "home" && this.phase !== "result" && this.phase !== "ad") {
+        this.phase = this.board.status === "won" ? "result" : "paused";
+        this.state.phase = this.board.status === "won" ? "result" : "paused";
+        try {
+          save(this.store, this.state);
+        } catch (e) {
+        }
+      }
+      this.message = "\u8FD0\u884C\u6682\u65F6\u4E2D\u65AD\uFF0C\u5DF2\u6682\u505C\uFF1B\u53EF\u7EE7\u7EED\u6216\u8FD4\u56DE\u9996\u9875";
+    }
     pause() {
       this.tick();
-      if (["active", "resolving", "rotating"].includes(this.phase)) {
+      if (["active", "resolving"].includes(this.phase)) {
         this.phase = this.board.status === "won" ? "result" : "paused";
         this.rotation = this.state.view * Math.PI * 2 / 3;
         this.checkpoint();
@@ -579,13 +630,15 @@
 
   // src/render/scene.ts
   var Scene = class {
-    constructor(ctx2, game2, width2, height2) {
+    constructor(ctx2, game, width2, height2) {
       this.ctx = ctx2;
-      this.game = game2;
+      this.game = game;
       this.width = width2;
       this.height = height2;
       __publicField(this, "buttons", []);
       __publicField(this, "page", 0);
+      __publicField(this, "drawer", false);
+      __publicField(this, "targets", []);
       __publicField(this, "bodies", []);
     }
     text(t, x, y, size = 14, color = "#d9ece7", align = "left") {
@@ -628,29 +681,33 @@
     ball(type, x, y, r, alpha = 1) {
       const c = this.ctx;
       c.save();
-      c.globalAlpha = alpha;
-      const g = c.createRadialGradient(x - r * 0.35, y - r * 0.4, 1, x, y, r);
-      g.addColorStop(0, "#fff6dc");
-      g.addColorStop(0.35, PALETTE[type]);
-      g.addColorStop(1, PALETTE[type]);
-      c.fillStyle = g;
-      c.beginPath();
-      c.arc(x, y, r, 0, Math.PI * 2);
-      c.fill();
-      this.text(
-        SYMBOLS[type],
-        x,
-        y + 4,
-        Math.max(10, r * 0.85),
-        "#24414a",
-        "center"
-      );
-      c.restore();
+      try {
+        c.globalAlpha = alpha;
+        const g = c.createRadialGradient(x - r * 0.35, y - r * 0.4, 1, x, y, r);
+        g.addColorStop(0, "#fff6dc");
+        g.addColorStop(0.35, PALETTE[type]);
+        g.addColorStop(1, PALETTE[type]);
+        c.fillStyle = g;
+        c.beginPath();
+        c.arc(x, y, r, 0, Math.PI * 2);
+        c.fill();
+        this.text(
+          SYMBOLS[type],
+          x,
+          y + 4,
+          Math.max(10, r * 0.85),
+          "#24414a",
+          "center"
+        );
+      } finally {
+        c.restore();
+      }
     }
     render() {
       const c = this.ctx, g = this.game, w = this.width, h = this.height;
       this.buttons = [];
       this.bodies = [];
+      this.targets = [];
       c.clearRect(0, 0, w, h);
       const bg = c.createLinearGradient(0, 0, w, h);
       bg.addColorStop(0, "#102e36");
@@ -693,143 +750,113 @@
         this.overlay();
         return;
       }
-      const trayY = h - 202, selectorY = trayY - 125, boardBottom = selectorY - 14;
-      this.drawBoard(116, boardBottom);
-      const tiles = g.board.tubes;
-      const pages = Math.ceil(tiles.length / 10);
-      this.page = Math.min(this.page, pages - 1);
-      this.text(
-        `\u9876\u90E8\u9009\u62E9\u533A  ${this.page + 1}/${pages}`,
-        22,
-        selectorY,
-        12,
-        "#a9c6bd"
+      const trayY = h - 143, boardBottom = trayY - 30;
+      this.drawBoard(147, boardBottom);
+      this.button(
+        "pause",
+        "\u6682\u505C",
+        w - 77,
+        88,
+        55,
+        34,
+        () => {
+          this.drawer = false;
+          g.pause();
+        },
+        g.locked
       );
-      if (pages > 1)
-        this.button(
-          "page",
-          "\u6362\u9875",
-          w - 80,
-          selectorY - 20,
-          58,
-          28,
-          () => {
-            this.page = (this.page + 1) % pages;
-          },
-          g.locked
-        );
-      const e = exposed(g.board), gap = 7, tileW = (w - 44 - gap * 4) / 5;
-      for (let i = 0; i < 10; i++) {
-        const t = tiles[this.page * 10 + i];
-        if (!t) continue;
-        const idx = tiles.indexOf(t), x = 22 + i % 5 * (tileW + gap), y = selectorY + 12 + Math.floor(i / 5) * 48;
-        const enabled = e.has(t.id), top2 = t.balls[t.balls.length - 1];
-        this.button(
-          "tube-" + t.id,
-          "",
-          x,
-          y,
-          tileW,
-          42,
-          () => g.pick(t.id),
-          g.locked || !enabled
-        );
-        if (g.hint === t.id) {
-          c.strokeStyle = "#f4d27e";
-          c.lineWidth = 3;
-          c.strokeRect(x - 1, y - 1, tileW + 2, 44);
-        }
-        if (top2) {
-          this.ball(top2.type, x + tileW * 0.65, y + 21, 12, enabled ? 1 : 0.25);
-          this.text(
-            String(idx + 1),
-            x + 9,
-            y + 25,
-            12,
-            enabled ? "#ecf1db" : "#819393"
-          );
-          if (!enabled)
-            this.text("\u9501", x + tileW * 0.65, y + 25, 12, "#e4ebe7", "center");
-        } else
-          this.text(
-            `${idx + 1} \u2713`,
-            x + tileW / 2,
-            y + 25,
-            12,
-            "#759e91",
-            "center"
-          );
-      }
-      this.text("\u6682\u5B58\u69FD \xB7 \u4E09\u540C\u81EA\u52A8\u6D88\u9664", 22, trayY - 7, 12, "#a9c6bd");
+      this.button(
+        "select",
+        "\u9009\u7403",
+        22,
+        100,
+        55,
+        34,
+        () => {
+          this.drawer = !this.drawer;
+        },
+        g.locked
+      );
+      this.text(
+        "\u70B9\u51FB\u4EAE\u5708\u9876\u90E8\u7403 \xB7 \u6A2A\u6ED1\u5207\u9762",
+        w / 2,
+        boardBottom + 10,
+        12,
+        "#a9c6bd",
+        "center"
+      );
+      this.text("\u4E09\u540C\u6D88\u9664", 22, trayY - 7, 12, "#a9c6bd");
       const cell = (w - 44) / 7;
       for (let i = 0; i < 7; i++) {
         this.rect(22 + i * cell, trayY, cell - 4, 43, "#0e2d34", 9);
-        const b = g.board.tray[i];
-        if (b) this.ball(b.type, 22 + i * cell + (cell - 4) / 2, trayY + 21, 15);
+        const ball = g.board.tray[i];
+        if (ball)
+          this.ball(ball.type, 22 + i * cell + (cell - 4) / 2, trayY + 21, 15);
       }
+      const bw = (w - 65) / 4;
       this.button(
         "rotate-left",
-        "\u21B6 \u8F6C\u5DE6",
+        "\u21B6",
         22,
-        trayY + 57,
-        (w - 51) / 2,
-        42,
-        () => g.rotate(-1),
+        trayY + 55,
+        bw,
+        44,
+        () => {
+          this.drawer = false;
+          g.rotate(-1);
+        },
         g.locked
       );
       this.button(
         "rotate-right",
-        "\u8F6C\u53F3 \u21B7",
-        29 + (w - 51) / 2,
-        trayY + 57,
-        (w - 51) / 2,
-        42,
-        () => g.rotate(1),
+        "\u21B7",
+        29 + bw,
+        trayY + 55,
+        bw,
+        44,
+        () => {
+          this.drawer = false;
+          g.rotate(1);
+        },
         g.locked
       );
-      const bw = (w - 58) / 3;
       this.button(
         "undo",
         "\u64A4\u9500",
-        22,
-        trayY + 108,
+        36 + bw * 2,
+        trayY + 55,
         bw,
-        42,
+        44,
         () => g.undo(),
         g.locked || !g.state.history.length
       );
       this.button(
         "hint",
         "\u63D0\u793A",
-        29 + bw,
-        trayY + 108,
+        43 + bw * 3,
+        trayY + 55,
         bw,
-        42,
+        44,
         () => {
           g.hintNow();
-          if (g.hint)
-            this.page = Math.floor(tiles.findIndex((t) => t.id === g.hint) / 10);
+          if (g.hint && !this.targets.some((t) => t.id === g.hint)) {
+            this.drawer = true;
+            this.page = Math.floor(
+              g.board.tubes.findIndex((t) => t.id === g.hint) / 10
+            );
+          }
         },
-        g.locked
-      );
-      this.button(
-        "pause",
-        "\u6682\u505C",
-        36 + bw * 2,
-        trayY + 108,
-        bw,
-        42,
-        () => g.pause(),
         g.locked
       );
       this.text(
         this.fit(g.message, Math.floor((w - 40) / 11)),
         w / 2,
-        h - 22,
+        h - 20,
         11,
         "#c5d5c7",
         "center"
       );
+      if (this.drawer && g.phase === "active") this.drawSelector(160);
       if (g.phase === "intro" || g.phase === "ready") {
         this.rect(
           18,
@@ -860,13 +887,61 @@
         );
       }
     }
+    drawSelector(y) {
+      const g = this.game, w = this.width, c = this.ctx, tiles = g.board.tubes, pages = Math.ceil(tiles.length / 10);
+      this.page = Math.min(this.page, pages - 1);
+      this.rect(14, y, w - 28, 188, "#123139", 16);
+      this.text("\u906E\u6321\u65F6\u8F85\u52A9\u9009\u7403", 26, y + 27, 14, "#d9ece7");
+      this.button("close-select", "\u6536\u8D77", w - 80, y + 10, 52, 32, () => {
+        this.drawer = false;
+      });
+      const e = exposed(g.board), gap = 7, tw = (w - 52 - gap * 4) / 5;
+      for (let i = 0; i < 10; i++) {
+        const t = tiles[this.page * 10 + i];
+        if (!t) continue;
+        const x = 26 + i % 5 * (tw + gap), ty = y + 54 + Math.floor(i / 5) * 48, top = t.balls[t.balls.length - 1], allowed = e.has(t.id);
+        this.button(
+          "tube-" + t.id,
+          "",
+          x,
+          ty,
+          tw,
+          42,
+          () => {
+            this.drawer = false;
+            g.pick(t.id);
+          },
+          !allowed
+        );
+        if (top) {
+          this.ball(top.type, x + tw * 0.65, ty + 21, 11, allowed ? 1 : 0.25);
+          this.text(String(tiles.indexOf(t) + 1), x + 7, ty + 25, 11);
+        } else this.text("\u2713", x + tw / 2, ty + 25, 12, "#759e91", "center");
+        if (g.hint === t.id) {
+          c.strokeStyle = "#f4d27e";
+          c.strokeRect(x - 1, ty - 1, tw + 2, 44);
+        }
+      }
+      this.button(
+        "page",
+        `\u6362\u9875 ${this.page + 1}/${pages}`,
+        w / 2 - 55,
+        y + 151,
+        110,
+        28,
+        () => {
+          this.page = (this.page + 1) % pages;
+        },
+        pages === 1
+      );
+    }
     fit(t, n) {
       return t.length > n ? t.slice(0, n - 1) + "\u2026" : t;
     }
-    drawBoard(top2, bottom2) {
-      var _a3, _b3;
+    drawBoard(top, bottom) {
+      var _a, _b;
       const c = this.ctx, g = this.game, w = this.width, n = g.board.side;
-      const available = Math.max(120, bottom2 - top2), scale = Math.min((w - 55) / (n * 46), available / 255, 1.1), angle = g.rotation;
+      const available = Math.max(120, bottom - top), scale = Math.min((w - 55) / (n * 46), available / 255, 1.65), angle = g.rotation;
       const projected = g.board.tubes.map((t, index) => {
         const x = (t.q + t.r / 2 - (n - 1) / 2) * 46, z = (t.r * Math.sqrt(3) / 2 - (n - 1) * Math.sqrt(3) / 6) * 46;
         const rx = x * Math.cos(angle) - z * Math.sin(angle), depth = x * Math.sin(angle) + z * Math.cos(angle);
@@ -874,21 +949,21 @@
           t,
           index,
           x: w / 2 + rx * scale,
-          y: top2 + available * 0.61 + depth * 0.5 * scale,
+          y: top + available * 0.61 + depth * 0.5 * scale,
           depth
         };
       }).sort((a, b) => a.depth - b.depth);
       const low = Math.min(...projected.map((p) => p.depth * 0.5)) - 71;
       const high = Math.max(...projected.map((p) => p.depth * 0.5)) + 62;
       for (const p of projected)
-        p.y = top2 + available / 2 + (p.depth * 0.5 - (low + high) / 2) * scale;
+        p.y = top + available / 2 + (p.depth * 0.5 - (low + high) / 2) * scale;
       const e = exposed(g.board);
       for (const p of projected) {
         const t = p.t;
         if (!t.balls.length) {
-          if (g.phase === "resolving" && ((_b3 = (_a3 = g.state.history[g.state.history.length - 1]) == null ? void 0 : _a3.tubes.find(
+          if (g.phase === "resolving" && ((_b = (_a = g.state.history[g.state.history.length - 1]) == null ? void 0 : _a.tubes.find(
             (x) => x.id === t.id
-          )) == null ? void 0 : _b3.balls.length)) {
+          )) == null ? void 0 : _b.balls.length)) {
             c.globalAlpha = 1 - g.transitionProgress;
             this.rect(
               p.x - 12 * scale,
@@ -909,7 +984,7 @@
         c.rect(p.x - r, ty, r * 2, ht);
         c.fill();
         c.stroke();
-        for (let i = 0; i < t.balls.length && g.phase !== "rotating"; i++) {
+        for (let i = 0; i < t.balls.length; i++) {
           const intro = g.phase === "intro" ? (1 - g.introProgress) * Math.max(0, 180 - i * 35) : 0;
           this.ball(
             t.balls[i].type,
@@ -939,23 +1014,25 @@
           topY: by - 17 * scale - (t.balls.length - 1) * 31 * scale
         });
       }
+      for (const body of this.bodies) {
+        const x = body.x + body.w / 2, y = body.topY;
+        const foreground = [...this.bodies].reverse().find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
+        if ((foreground == null ? void 0 : foreground.id) !== body.id || !e.has(body.id)) continue;
+        this.targets.push({ id: body.id, x, y, r: body.w * 0.45 });
+        c.strokeStyle = g.hint === body.id ? "#f4d27e" : "#d4e7b6";
+        c.lineWidth = g.hint === body.id ? 3 : 1.5;
+        c.beginPath();
+        c.arc(x, y, body.w * 0.45, 0, Math.PI * 2);
+        c.stroke();
+      }
       this.text(
         "\u4E09\u9762\u89C2\u5BDF  " + (g.state.view + 1) + "/3",
         w / 2,
-        top2 - 7,
+        top - 7,
         11,
         "#7fa9a4",
         "center"
       );
-      if (g.phase === "rotating")
-        this.text(
-          "\u65CB\u8F6C\u4E2D\u2026",
-          w / 2,
-          top2 + available - 10,
-          14,
-          "#d4e7b6",
-          "center"
-        );
       if (g.phase === "resolving") {
         const prev = g.state.history[g.state.history.length - 1];
         const t = prev == null ? void 0 : prev.tubes.find(
@@ -968,7 +1045,7 @@
           this.ball(
             ball.type,
             p.x + (w / 2 - p.x) * a,
-            p.y - 30 + (this.height - 181 - p.y + 30) * a,
+            p.y - 30 + (this.height - 122 - p.y + 30) * a,
             14 * scale
           );
         }
@@ -1156,11 +1233,11 @@
         if (!button.disabled) button.act();
         return;
       }
-      if (this.game.locked) return;
+      if (this.game.locked || this.drawer) return;
       const body = [...this.bodies].reverse().find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
       if (body) {
         if (Math.abs(y - body.topY) <= body.w * 0.45) this.game.pick(body.id);
-        else this.game.message = "\u53EA\u80FD\u53D6\u9876\u90E8\u7403\uFF0C\u4E5F\u53EF\u70B9\u4E0B\u65B9\u540C\u7F16\u53F7\u6807\u8BB0";
+        else this.game.message = "\u53EA\u80FD\u53D6\u4EAE\u5708\u9876\u90E8\u7403\uFF1B\u906E\u6321\u65F6\u53EF\u70B9\u5DE6\u4E0A\u9009\u7403";
       }
     }
   };
@@ -1192,61 +1269,80 @@
   var ads = "" ? new WeChatAd(
     wx.createRewardedVideoAd({ adUnitId: "" })
   ) : new UnavailableAd();
-  var game = new Controller(
-    () => perf.now() / 1e3,
-    {
-      get: (k) => {
-        const value = wx.getStorageSync(k);
-        return typeof value === "string" ? value : null;
+  async function boot() {
+    var _a, _b, _c, _d;
+    ctx.fillStyle = "#102e36";
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = "#e9edda";
+    ctx.font = "16px sans-serif";
+    ctx.fillText("\u6B63\u5728\u51C6\u5907\u7403\u4ED3\u2026", 24, 80);
+    const clock = await calibrateClock(() => perf.now());
+    console.info("TriCollect clock units/ms", clock.unitsPerMs);
+    const game = new Controller(
+      clock.now,
+      {
+        get: (k) => {
+          const value = wx.getStorageSync(k);
+          return typeof value === "string" ? value : null;
+        },
+        set: (k, v) => wx.setStorageSync(k, v)
       },
-      set: (k, v) => wx.setStorageSync(k, v)
-    },
-    ads,
-    () => {
+      ads,
+      () => {
+        audio.stop();
+        audio.play();
+      }
+    );
+    const top = Math.max((_b = (_a = info.safeArea) == null ? void 0 : _a.top) != null ? _b : 0, 24), bottom = Math.max(0, height - ((_d = (_c = info.safeArea) == null ? void 0 : _c.bottom) != null ? _d : height));
+    const logicalHeight = Math.max(height - top - bottom, 660), factor = Math.min(1, (height - top - bottom) / logicalHeight);
+    const scene = new Scene(ctx, game, width / factor, logicalHeight);
+    let pointer = null;
+    wx.onTouchStart((e) => {
+      const t = e.touches[0];
+      if (t) pointer = { x: t.clientX / factor, y: (t.clientY - top) / factor };
+    });
+    wx.onTouchCancel(() => pointer = null);
+    wx.onTouchEnd((e) => {
+      const t = e.changedTouches[0];
+      if (!pointer || !t) return;
+      const x = t.clientX / factor, y = (t.clientY - top) / factor, dx = x - pointer.x, dy = y - pointer.y;
+      pointer = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy))
+        game.rotate(dx > 0 ? 1 : -1);
+      else if (Math.hypot(dx, dy) < 15) scene.tap(x, y);
+    });
+    wx.onHide(() => {
+      pointer = null;
+      game.hide();
       audio.stop();
-      audio.play();
-    }
-  );
-  var _a, _b;
-  var top = Math.max((_b = (_a = info.safeArea) == null ? void 0 : _a.top) != null ? _b : 0, 24);
-  var _a2, _b2;
-  var bottom = Math.max(0, height - ((_b2 = (_a2 = info.safeArea) == null ? void 0 : _a2.bottom) != null ? _b2 : height));
-  var logicalHeight = Math.max(height - top - bottom, 660);
-  var factor = Math.min(1, (height - top - bottom) / logicalHeight);
-  var scene = new Scene(ctx, game, width / factor, logicalHeight);
-  var pointer = null;
-  wx.onTouchStart((e) => {
-    const t = e.touches[0];
-    if (t) pointer = { x: t.clientX / factor, y: (t.clientY - top) / factor };
-  });
-  wx.onTouchCancel(() => pointer = null);
-  wx.onTouchEnd((e) => {
-    const t = e.changedTouches[0];
-    if (!pointer || !t) return;
-    const x = t.clientX / factor, y = (t.clientY - top) / factor, dx = x - pointer.x, dy = y - pointer.y;
-    pointer = null;
-    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy))
-      game.rotate(dx > 0 ? 1 : -1);
-    else if (Math.hypot(dx, dy) < 15) scene.tap(x, y);
-  });
-  wx.onHide(() => {
-    pointer = null;
-    game.hide();
-    audio.stop();
-  });
-  wx.onShow(() => {
-    pointer = null;
-  });
-  audio.onError(() => {
-  });
-  function frame() {
-    game.tick();
-    ctx.save();
-    ctx.translate(0, top);
-    ctx.scale(factor, factor);
-    scene.render();
-    ctx.restore();
-    requestAnimationFrame(frame);
+    });
+    wx.onShow(() => {
+      pointer = null;
+    });
+    audio.onError(() => {
+    });
+    startFrames(
+      requestAnimationFrame,
+      () => {
+        game.tick();
+        ctx.save();
+        try {
+          ctx.translate(0, top);
+          ctx.scale(factor, factor);
+          scene.render();
+        } finally {
+          ctx.restore();
+        }
+      },
+      (error) => game.interrupt(error)
+    );
   }
-  frame();
+  void boot().catch((error) => {
+    console.error("TriCollect startup failed", error);
+    ctx.fillStyle = "#102e36";
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = "#e9edda";
+    ctx.font = "16px sans-serif";
+    ctx.fillText("\u65F6\u949F\u65E0\u6CD5\u6B63\u5E38\u8FD0\u884C\uFF0C\u8BF7\u91CD\u65B0\u6253\u5F00\u6E38\u620F", 20, 100);
+  });
 })();

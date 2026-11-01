@@ -13,6 +13,8 @@ export type Button = {
 export class Scene {
   buttons: Button[] = [];
   page = 0;
+  drawer = false;
+  targets: { id: string; x: number; y: number; r: number }[] = [];
   private bodies: {
     id: string;
     x: number;
@@ -91,24 +93,27 @@ export class Scene {
   private ball(type: number, x: number, y: number, r: number, alpha = 1) {
     const c = this.ctx;
     c.save();
-    c.globalAlpha = alpha;
-    const g = c.createRadialGradient(x - r * 0.35, y - r * 0.4, 1, x, y, r);
-    g.addColorStop(0, "#fff6dc");
-    g.addColorStop(0.35, PALETTE[type]);
-    g.addColorStop(1, PALETTE[type]);
-    c.fillStyle = g;
-    c.beginPath();
-    c.arc(x, y, r, 0, Math.PI * 2);
-    c.fill();
-    this.text(
-      SYMBOLS[type],
-      x,
-      y + 4,
-      Math.max(10, r * 0.85),
-      "#24414a",
-      "center",
-    );
-    c.restore();
+    try {
+      c.globalAlpha = alpha;
+      const g = c.createRadialGradient(x - r * 0.35, y - r * 0.4, 1, x, y, r);
+      g.addColorStop(0, "#fff6dc");
+      g.addColorStop(0.35, PALETTE[type]);
+      g.addColorStop(1, PALETTE[type]);
+      c.fillStyle = g;
+      c.beginPath();
+      c.arc(x, y, r, 0, Math.PI * 2);
+      c.fill();
+      this.text(
+        SYMBOLS[type],
+        x,
+        y + 4,
+        Math.max(10, r * 0.85),
+        "#24414a",
+        "center",
+      );
+    } finally {
+      c.restore();
+    }
   }
   render() {
     const c = this.ctx,
@@ -117,6 +122,7 @@ export class Scene {
       h = this.height;
     this.buttons = [];
     this.bodies = [];
+    this.targets = [];
     c.clearRect(0, 0, w, h);
     const bg = c.createLinearGradient(0, 0, w, h);
     bg.addColorStop(0, "#102e36");
@@ -159,150 +165,114 @@ export class Scene {
       this.overlay();
       return;
     }
-    const trayY = h - 202,
-      selectorY = trayY - 125,
-      boardBottom = selectorY - 14;
-    this.drawBoard(116, boardBottom);
-    const tiles = g.board.tubes;
-    const pages = Math.ceil(tiles.length / 10);
-    this.page = Math.min(this.page, pages - 1);
-    this.text(
-      `顶部选择区  ${this.page + 1}/${pages}`,
+    const trayY = h - 143,
+      boardBottom = trayY - 30;
+    this.drawBoard(147, boardBottom);
+    this.button(
+      "pause",
+      "暂停",
+      w - 77,
+      88,
+      55,
+      34,
+      () => {
+        this.drawer = false;
+        g.pause();
+      },
+      g.locked,
+    );
+    this.button(
+      "select",
+      "选球",
       22,
-      selectorY,
+      100,
+      55,
+      34,
+      () => {
+        this.drawer = !this.drawer;
+      },
+      g.locked,
+    );
+    this.text(
+      "点击亮圈顶部球 · 横滑切面",
+      w / 2,
+      boardBottom + 10,
       12,
       "#a9c6bd",
+      "center",
     );
-    if (pages > 1)
-      this.button(
-        "page",
-        "换页",
-        w - 80,
-        selectorY - 20,
-        58,
-        28,
-        () => {
-          this.page = (this.page + 1) % pages;
-        },
-        g.locked,
-      );
-    const e = exposed(g.board),
-      gap = 7,
-      tileW = (w - 44 - gap * 4) / 5;
-    for (let i = 0; i < 10; i++) {
-      const t = tiles[this.page * 10 + i];
-      if (!t) continue;
-      const idx = tiles.indexOf(t),
-        x = 22 + (i % 5) * (tileW + gap),
-        y = selectorY + 12 + Math.floor(i / 5) * 48;
-      const enabled = e.has(t.id),
-        top = t.balls[t.balls.length - 1];
-      this.button(
-        "tube-" + t.id,
-        "",
-        x,
-        y,
-        tileW,
-        42,
-        () => g.pick(t.id),
-        g.locked || !enabled,
-      );
-      if (g.hint === t.id) {
-        c.strokeStyle = "#f4d27e";
-        c.lineWidth = 3;
-        c.strokeRect(x - 1, y - 1, tileW + 2, 44);
-      }
-      if (top) {
-        this.ball(top.type, x + tileW * 0.65, y + 21, 12, enabled ? 1 : 0.25);
-        this.text(
-          String(idx + 1),
-          x + 9,
-          y + 25,
-          12,
-          enabled ? "#ecf1db" : "#819393",
-        );
-        if (!enabled)
-          this.text("锁", x + tileW * 0.65, y + 25, 12, "#e4ebe7", "center");
-      } else
-        this.text(
-          `${idx + 1} ✓`,
-          x + tileW / 2,
-          y + 25,
-          12,
-          "#759e91",
-          "center",
-        );
-    }
-    this.text("暂存槽 · 三同自动消除", 22, trayY - 7, 12, "#a9c6bd");
+    this.text("三同消除", 22, trayY - 7, 12, "#a9c6bd");
     const cell = (w - 44) / 7;
     for (let i = 0; i < 7; i++) {
       this.rect(22 + i * cell, trayY, cell - 4, 43, "#0e2d34", 9);
-      const b = g.board.tray[i];
-      if (b) this.ball(b.type, 22 + i * cell + (cell - 4) / 2, trayY + 21, 15);
+      const ball = g.board.tray[i];
+      if (ball)
+        this.ball(ball.type, 22 + i * cell + (cell - 4) / 2, trayY + 21, 15);
     }
+    const bw = (w - 65) / 4;
     this.button(
       "rotate-left",
-      "↶ 转左",
+      "↶",
       22,
-      trayY + 57,
-      (w - 51) / 2,
-      42,
-      () => g.rotate(-1),
+      trayY + 55,
+      bw,
+      44,
+      () => {
+        this.drawer = false;
+        g.rotate(-1);
+      },
       g.locked,
     );
     this.button(
       "rotate-right",
-      "转右 ↷",
-      29 + (w - 51) / 2,
-      trayY + 57,
-      (w - 51) / 2,
-      42,
-      () => g.rotate(1),
+      "↷",
+      29 + bw,
+      trayY + 55,
+      bw,
+      44,
+      () => {
+        this.drawer = false;
+        g.rotate(1);
+      },
       g.locked,
     );
-    const bw = (w - 58) / 3;
     this.button(
       "undo",
       "撤销",
-      22,
-      trayY + 108,
+      36 + bw * 2,
+      trayY + 55,
       bw,
-      42,
+      44,
       () => g.undo(),
       g.locked || !g.state.history.length,
     );
     this.button(
       "hint",
       "提示",
-      29 + bw,
-      trayY + 108,
+      43 + bw * 3,
+      trayY + 55,
       bw,
-      42,
+      44,
       () => {
         g.hintNow();
-        if (g.hint)
-          this.page = Math.floor(tiles.findIndex((t) => t.id === g.hint) / 10);
+        if (g.hint && !this.targets.some((t) => t.id === g.hint)) {
+          this.drawer = true;
+          this.page = Math.floor(
+            g.board.tubes.findIndex((t) => t.id === g.hint) / 10,
+          );
+        }
       },
-      g.locked,
-    );
-    this.button(
-      "pause",
-      "暂停",
-      36 + bw * 2,
-      trayY + 108,
-      bw,
-      42,
-      () => g.pause(),
       g.locked,
     );
     this.text(
       this.fit(g.message, Math.floor((w - 40) / 11)),
       w / 2,
-      h - 22,
+      h - 20,
       11,
       "#c5d5c7",
       "center",
     );
+    if (this.drawer && g.phase === "active") this.drawSelector(160);
     if (g.phase === "intro" || g.phase === "ready") {
       this.rect(
         18,
@@ -333,6 +303,63 @@ export class Scene {
       );
     }
   }
+  private drawSelector(y: number) {
+    const g = this.game,
+      w = this.width,
+      c = this.ctx,
+      tiles = g.board.tubes,
+      pages = Math.ceil(tiles.length / 10);
+    this.page = Math.min(this.page, pages - 1);
+    this.rect(14, y, w - 28, 188, "#123139", 16);
+    this.text("遮挡时辅助选球", 26, y + 27, 14, "#d9ece7");
+    this.button("close-select", "收起", w - 80, y + 10, 52, 32, () => {
+      this.drawer = false;
+    });
+    const e = exposed(g.board),
+      gap = 7,
+      tw = (w - 52 - gap * 4) / 5;
+    for (let i = 0; i < 10; i++) {
+      const t = tiles[this.page * 10 + i];
+      if (!t) continue;
+      const x = 26 + (i % 5) * (tw + gap),
+        ty = y + 54 + Math.floor(i / 5) * 48,
+        top = t.balls[t.balls.length - 1],
+        allowed = e.has(t.id);
+      this.button(
+        "tube-" + t.id,
+        "",
+        x,
+        ty,
+        tw,
+        42,
+        () => {
+          this.drawer = false;
+          g.pick(t.id);
+        },
+        !allowed,
+      );
+      if (top) {
+        this.ball(top.type, x + tw * 0.65, ty + 21, 11, allowed ? 1 : 0.25);
+        this.text(String(tiles.indexOf(t) + 1), x + 7, ty + 25, 11);
+      } else this.text("✓", x + tw / 2, ty + 25, 12, "#759e91", "center");
+      if (g.hint === t.id) {
+        c.strokeStyle = "#f4d27e";
+        c.strokeRect(x - 1, ty - 1, tw + 2, 44);
+      }
+    }
+    this.button(
+      "page",
+      `换页 ${this.page + 1}/${pages}`,
+      w / 2 - 55,
+      y + 151,
+      110,
+      28,
+      () => {
+        this.page = (this.page + 1) % pages;
+      },
+      pages === 1,
+    );
+  }
   private fit(t: string, n: number) {
     return t.length > n ? t.slice(0, n - 1) + "…" : t;
   }
@@ -342,7 +369,7 @@ export class Scene {
       w = this.width,
       n = g.board.side;
     const available = Math.max(120, bottom - top),
-      scale = Math.min((w - 55) / (n * 46), available / 255, 1.1),
+      scale = Math.min((w - 55) / (n * 46), available / 255, 1.65),
       angle = g.rotation;
     const projected = g.board.tubes
       .map((t, index) => {
@@ -397,7 +424,7 @@ export class Scene {
       c.rect(p.x - r, ty, r * 2, ht);
       c.fill();
       c.stroke();
-      for (let i = 0; i < t.balls.length && g.phase !== "rotating"; i++) {
+      for (let i = 0; i < t.balls.length; i++) {
         const intro =
           g.phase === "intro"
             ? (1 - g.introProgress) * Math.max(0, 180 - i * 35)
@@ -430,6 +457,20 @@ export class Scene {
         topY: by - 17 * scale - (t.balls.length - 1) * 31 * scale,
       });
     }
+    for (const body of this.bodies) {
+      const x = body.x + body.w / 2,
+        y = body.topY;
+      const foreground = [...this.bodies]
+        .reverse()
+        .find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
+      if (foreground?.id !== body.id || !e.has(body.id)) continue;
+      this.targets.push({ id: body.id, x, y, r: body.w * 0.45 });
+      c.strokeStyle = g.hint === body.id ? "#f4d27e" : "#d4e7b6";
+      c.lineWidth = g.hint === body.id ? 3 : 1.5;
+      c.beginPath();
+      c.arc(x, y, body.w * 0.45, 0, Math.PI * 2);
+      c.stroke();
+    }
     this.text(
       "三面观察  " + (g.state.view + 1) + "/3",
       w / 2,
@@ -438,15 +479,6 @@ export class Scene {
       "#7fa9a4",
       "center",
     );
-    if (g.phase === "rotating")
-      this.text(
-        "旋转中…",
-        w / 2,
-        top + available - 10,
-        14,
-        "#d4e7b6",
-        "center",
-      );
     if (g.phase === "resolving") {
       const prev = g.state.history[g.state.history.length - 1];
       const t = prev?.tubes.find(
@@ -461,7 +493,7 @@ export class Scene {
         this.ball(
           ball.type,
           p.x + (w / 2 - p.x) * a,
-          p.y - 30 + (this.height - 181 - p.y + 30) * a,
+          p.y - 30 + (this.height - 122 - p.y + 30) * a,
           14 * scale,
         );
       }
@@ -664,14 +696,14 @@ export class Scene {
       if (!button.disabled) button.act();
       return;
     }
-    if (this.game.locked) return;
+    if (this.game.locked || this.drawer) return;
     // Frontmost body owns the hit. Never search behind a foreground occluder.
     const body = [...this.bodies]
       .reverse()
       .find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
     if (body) {
       if (Math.abs(y - body.topY) <= body.w * 0.45) this.game.pick(body.id);
-      else this.game.message = "只能取顶部球，也可点下方同编号标记";
+      else this.game.message = "只能取亮圈顶部球；遮挡时可点左上选球";
     }
   }
 }

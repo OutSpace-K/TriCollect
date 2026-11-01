@@ -1,56 +1,71 @@
 {
   "project": "TriCollect",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "ruleVersion": "tricollect-1",
   "dateUTC": "2026-11-01",
-  "workspace": "/workspace/TriCollect",
+  "workspace": "/workspace/tricollect-github",
+  "baseCommit": "def3686ab04691c6742cc5db4a7a664de630d26f",
   "node": "24.19.0",
   "npm": "11.9.0",
   "typecheck": "passed",
   "format": "passed",
   "unitAndMockTests": {
-    "passed": 34,
-    "failed": 0
+    "passed": 43,
+    "failed": 0,
+    "injectedFaultLogsExpected": true
   },
   "witnessReplay": {
     "verifiedSeeds": 300,
     "presets": 3,
     "adsUsed": 0
   },
-  "browserE2E": {
-    "presetsCompleted": 3,
-    "pointerPicks": [
-      30,
-      45,
-      63
-    ],
-    "adsUsed": 0,
-    "saveReload": "passed",
-    "narrowViewport": "320x660",
-    "homeRestartRegressions": "passed for both unfinished and manually ended rounds, 3 browser reloads each"
+  "clockDiagnosis": {
+    "userPlatform": "not confirmed",
+    "provenConditionalReproduction": "v0.1.1 bundle given millisecond wx clock charges 10ms after 10 real simulated seconds and still refuses second pick 1 second later; microsecond semantics works",
+    "fix": "calibrate progressing clock units before boot; gameplay uses normalized monotonic clock only",
+    "watchdog": "frozen or invalid clock causes visible pause, no wall-clock gameplay fallback"
   },
-  "cleanInstallBuildAndTests": "passed in /workspace/tricollect-clean-v0.1.1",
-  "wechatGameJsSha256": "74fa7993592cc5671321babddfbb1c5bc97814fa06058f0e62fbf64cbdbb46c6",
+  "clockRealTime": {
+    "scope": "Real host monotonic time, both wx unit semantics simulated; not actual WeChat device",
+    "results": [
+      {
+        "unitsPerMs": 1,
+        "elapsedMs": 10005.032099999999,
+        "chargedMs": 10007.771464999998,
+        "pausePreserved": true
+      },
+      {
+        "unitsPerMs": 1000,
+        "elapsedMs": 10003.823364999998,
+        "chargedMs": 10008.845514999994,
+        "pausePreserved": true
+      }
+    ]
+  },
+  "browserE2E": {
+    "passed": true,
+    "platform": "Chromium only; not WeChat device",
+    "directPicks": 136,
+    "fallbackPicks": 2,
+    "results": [
+      {
+        "check": "browser real 10-second clock",
+        "elapsedMs": 10007.799999999814,
+        "chargedMs": 10015.900000000373
+      },
+      "12 consecutive pointer rotations immediately active, no interpolation lock",
+      "one-frame exception recovered; pause/home/reload regression preserved",
+      "preset 0: 30 pointer picks won without ads",
+      "preset 1: 45 pointer picks won without ads",
+      "preset 2: 63 pointer picks won without ads"
+    ],
+    "errors": []
+  },
+  "cleanInstallBuildAndTests": "43 tests in isolated clean install, final canvas-restoration regression rechecked after rebuild; all four build outputs byte-identical",
+  "wechatGameJsSha256": "0a196fcfe7e95edc62cf6093e2342286c4ecdb5472d168717743818d5d785a43",
   "wechatDeveloperTools": "not available; not executed",
-  "realDevices": "not available; not executed",
+  "realDevices": "not available; user platform still unknown",
   "realAds": "no AppID/ad unit configured; not executed",
-  "humanBalance": "not evaluated",
   "publicDeployment": "none",
-  "sourceDocs": "23-page Word text read through Library; ZIP materialization failed",
-  "regression": {
-    "baselineVersion": "0.1.0",
-    "baselineBundleSha256": "2b4553d81564bb4786c91462b792c2cdac61ca6d886d989aeca22313d34a4ade",
-    "baselineNativeTests": {
-      "expectedFailures": 2,
-      "passed": 0
-    },
-    "fixedNativeTests": {
-      "passed": 2,
-      "failed": 0
-    },
-    "unfinishedSave": "290000ms and original session/main/backup preserved through 3 restarts × 5 hide/show cycles; resume then consumes 1000ms normally",
-    "manuallyEndedNonWinningSave": "remains result with no resume entry after home hide/show and 3 restarts",
-    "saveSchemaChanged": false,
-    "ruleVersionChanged": false
-  }
+  "sourceDocs": "23-page Word text read through Library; ZIP materialization failed"
 }

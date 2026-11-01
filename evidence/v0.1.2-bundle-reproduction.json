@@ -1,0 +1,17 @@
+{
+  "scope": "v0.1.1 actual bundle with two supplied clock semantics. Reproduction of a conditional failure, not evidence of user device units.",
+  "results": [
+    {
+      "suppliedUnitsPerMs": 1,
+      "after10SecondsRemainingMs": 299990,
+      "firstPickHistory": 1,
+      "historyAfterSecondPickOneSecondLater": 1
+    },
+    {
+      "suppliedUnitsPerMs": 1000,
+      "after10SecondsRemainingMs": 290000,
+      "firstPickHistory": 1,
+      "historyAfterSecondPickOneSecondLater": 2
+    }
+  ]
+}

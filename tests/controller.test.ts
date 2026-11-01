@@ -70,19 +70,19 @@ test("pause/background hide, resume remains paused, no wall time or frame depend
   x.g.tick();
   assert.equal(x.g.state.remaining, remaining - 1000);
 });
-test("rotation locks input, freezes time and changes no board state", () => {
+test("rotation is immediate and consecutive turns do not lock or modify the board", () => {
   const x = setup();
   start(x.g);
   const board = clone(x.g.board);
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 30; i++) {
     x.g.rotate(1);
-    x.g.pick("0,0");
-    x.advance(CONFIG.rotateMs);
-    x.g.tick();
+    assert.equal(x.g.phase, "active");
+    assert.equal(x.g.state.view, (i + 1) % 3);
+    assert.equal(x.g.rotation, (x.g.state.view * Math.PI * 2) / 3);
   }
   assert.deepEqual(x.g.board, board);
-  assert.equal(x.g.state.view, 0);
-  assert.equal(x.g.state.remaining, CONFIG.baseMs);
+  x.g.pick("0,0");
+  assert.equal(x.g.state.history.length, 1);
 });
 test("settlement lock rejects rapid duplicate taps", () => {
   const x = setup();

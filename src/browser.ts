@@ -1,3 +1,4 @@
+import { startFrames } from "./platform/frame";
 import { Controller } from "./controller";
 import { Scene } from "./render/scene";
 import { MockAd } from "./platform/mock-ad";
@@ -61,11 +62,13 @@ canvas.addEventListener("pointerup", (e) => {
     game.rotate(dx > 0 ? 1 : -1);
   else if (Math.hypot(dx, dy) < 15) scene.tap(e.offsetX, e.offsetY);
 });
-function frame() {
-  game.tick();
-  scene.render();
-  requestAnimationFrame(frame);
-}
-frame();
+startFrames(
+  requestAnimationFrame,
+  () => {
+    game.tick();
+    scene.render();
+  },
+  (error) => game.interrupt(error),
+);
 // Browser-only test surface; never imported by the WeChat entry.
 Object.assign(window, { tri: { game, scene, createLevel } });

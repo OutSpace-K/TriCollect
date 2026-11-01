@@ -1,4 +1,4 @@
-export const VERSION = "0.1.1";
+export const VERSION = "0.1.2";
 export const RULE = "tricollect-1";
 export const CONFIG = Object.freeze({
   baseMs: 300_000,
@@ -10,7 +10,6 @@ export const CONFIG = Object.freeze({
   extraMs: 30_000,
   maxExtensions: 2,
   animationMs: 240,
-  rotateMs: 360,
   searchNodes: 12_000,
   searchMs: 40,
 });

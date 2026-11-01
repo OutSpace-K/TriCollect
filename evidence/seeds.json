@@ -1,7 +1,7 @@
 {
   "rule": "tricollect-1",
   "verifiedSeeds": 300,
-  "totalMs": 1241.82,
+  "totalMs": 2188.1,
   "scope": "Pure reducer replay, no ads; not human timing or real device validation",
   "results": [
     {
@@ -9,7 +9,7 @@
       "seed": 104729,
       "moves": 30,
       "score": 1700,
-      "ms": 6.3,
+      "ms": 20.83,
       "passed": true
     },
     {
@@ -17,7 +17,7 @@
       "seed": 104730,
       "moves": 30,
       "score": 1700,
-      "ms": 3.45,
+      "ms": 17.86,
       "passed": true
     },
     {
@@ -25,7 +25,7 @@
       "seed": 104731,
       "moves": 30,
       "score": 1700,
-      "ms": 2.6,
+      "ms": 9.73,
       "passed": true
     },
     {
@@ -33,7 +33,7 @@
       "seed": 104732,
       "moves": 30,
       "score": 1700,
-      "ms": 2.42,
+      "ms": 15.48,
       "passed": true
     },
     {
@@ -41,7 +41,7 @@
       "seed": 104733,
       "moves": 30,
       "score": 1700,
-      "ms": 1.95,
+      "ms": 6.67,
       "passed": true
     },
     {
@@ -49,7 +49,7 @@
       "seed": 104734,
       "moves": 30,
       "score": 1700,
-      "ms": 2.12,
+      "ms": 6.62,
       "passed": true
     },
     {
@@ -57,7 +57,7 @@
       "seed": 104735,
       "moves": 30,
       "score": 1700,
-      "ms": 2.98,
+      "ms": 13.44,
       "passed": true
     },
     {
@@ -65,7 +65,7 @@
       "seed": 104736,
       "moves": 30,
       "score": 1700,
-      "ms": 2.03,
+      "ms": 3.75,
       "passed": true
     },
     {
@@ -73,7 +73,7 @@
       "seed": 104737,
       "moves": 30,
       "score": 1700,
-      "ms": 2.47,
+      "ms": 8.36,
       "passed": true
     },
     {
@@ -81,7 +81,7 @@
       "seed": 104738,
       "moves": 30,
       "score": 1700,
-      "ms": 2.93,
+      "ms": 3.86,
       "passed": true
     },
     {
@@ -89,7 +89,7 @@
       "seed": 104739,
       "moves": 30,
       "score": 1700,
-      "ms": 1.69,
+      "ms": 7.23,
       "passed": true
     },
     {
@@ -97,7 +97,7 @@
       "seed": 104740,
       "moves": 30,
       "score": 1700,
-      "ms": 1.98,
+      "ms": 23.5,
       "passed": true
     },
     {
@@ -105,7 +105,7 @@
       "seed": 104741,
       "moves": 30,
       "score": 1700,
-      "ms": 1.95,
+      "ms": 10.65,
       "passed": true
     },
     {
@@ -113,7 +113,7 @@
       "seed": 104742,
       "moves": 30,
       "score": 1700,
-      "ms": 1.84,
+      "ms": 10.43,
       "passed": true
     },
     {
@@ -121,7 +121,7 @@
       "seed": 104743,
       "moves": 30,
       "score": 1700,
-      "ms": 1.95,
+      "ms": 2.99,
       "passed": true
     },
     {
@@ -129,7 +129,7 @@
       "seed": 104744,
       "moves": 30,
       "score": 1700,
-      "ms": 1.83,
+      "ms": 11.39,
       "passed": true
     },
     {
@@ -137,7 +137,7 @@
       "seed": 104745,
       "moves": 30,
       "score": 1700,
-      "ms": 2.35,
+      "ms": 4.89,
       "passed": true
     },
     {
@@ -145,7 +145,7 @@
       "seed": 104746,
       "moves": 30,
       "score": 1700,
-      "ms": 2.24,
+      "ms": 9.39,
       "passed": true
     },
     {
@@ -153,7 +153,7 @@
       "seed": 104747,
       "moves": 30,
       "score": 1700,
-      "ms": 2.29,
+      "ms": 11.15,
       "passed": true
     },
     {
@@ -161,7 +161,7 @@
       "seed": 104748,
       "moves": 30,
       "score": 1700,
-      "ms": 1.87,
+      "ms": 2.28,
       "passed": true
     },
     {
@@ -169,7 +169,7 @@
       "seed": 104749,
       "moves": 30,
       "score": 1700,
-      "ms": 2.09,
+      "ms": 7.61,
       "passed": true
     },
     {
@@ -177,7 +177,7 @@
       "seed": 104750,
       "moves": 30,
       "score": 1700,
-      "ms": 1.77,
+      "ms": 3.27,
       "passed": true
     },
     {
@@ -185,7 +185,7 @@
       "seed": 104751,
       "moves": 30,
       "score": 1700,
-      "ms": 1.54,
+      "ms": 5.23,
       "passed": true
     },
     {
@@ -193,7 +193,7 @@
       "seed": 104752,
       "moves": 30,
       "score": 1700,
-      "ms": 1.74,
+      "ms": 5.81,
       "passed": true
     },
     {
@@ -201,7 +201,7 @@
       "seed": 104753,
       "moves": 30,
       "score": 1700,
-      "ms": 1.48,
+      "ms": 5.19,
       "passed": true
     },
     {
@@ -209,7 +209,7 @@
       "seed": 104754,
       "moves": 30,
       "score": 1700,
-      "ms": 2.42,
+      "ms": 13.27,
       "passed": true
     },
     {
@@ -217,7 +217,7 @@
       "seed": 104755,
       "moves": 30,
       "score": 1700,
-      "ms": 1.93,
+      "ms": 5.43,
       "passed": true
     },
     {
@@ -225,7 +225,7 @@
       "seed": 104756,
       "moves": 30,
       "score": 1700,
-      "ms": 2.02,
+      "ms": 7.47,
       "passed": true
     },
     {
@@ -233,7 +233,7 @@
       "seed": 104757,
       "moves": 30,
       "score": 1700,
-      "ms": 1.63,
+      "ms": 8.2,
       "passed": true
     },
     {
@@ -241,7 +241,7 @@
       "seed": 104758,
       "moves": 30,
       "score": 1700,
-      "ms": 1.89,
+      "ms": 5.22,
       "passed": true
     },
     {
@@ -249,7 +249,7 @@
       "seed": 104759,
       "moves": 30,
       "score": 1700,
-      "ms": 3.32,
+      "ms": 5.13,
       "passed": true
     },
     {
@@ -257,7 +257,7 @@
       "seed": 104760,
       "moves": 30,
       "score": 1700,
-      "ms": 2.14,
+      "ms": 5.18,
       "passed": true
     },
     {
@@ -265,7 +265,7 @@
       "seed": 104761,
       "moves": 30,
       "score": 1700,
-      "ms": 1.72,
+      "ms": 1.64,
       "passed": true
     },
     {
@@ -273,7 +273,7 @@
       "seed": 104762,
       "moves": 30,
       "score": 1700,
-      "ms": 2.45,
+      "ms": 5.42,
       "passed": true
     },
     {
@@ -281,7 +281,7 @@
       "seed": 104763,
       "moves": 30,
       "score": 1700,
-      "ms": 2.06,
+      "ms": 9.48,
       "passed": true
     },
     {
@@ -289,7 +289,7 @@
       "seed": 104764,
       "moves": 30,
       "score": 1700,
-      "ms": 3.6,
+      "ms": 3.93,
       "passed": true
     },
     {
@@ -297,7 +297,7 @@
       "seed": 104765,
       "moves": 30,
       "score": 1700,
-      "ms": 2.82,
+      "ms": 2,
       "passed": true
     },
     {
@@ -305,7 +305,7 @@
       "seed": 104766,
       "moves": 30,
       "score": 1700,
-      "ms": 2.24,
+      "ms": 6.73,
       "passed": true
     },
     {
@@ -313,7 +313,7 @@
       "seed": 104767,
       "moves": 30,
       "score": 1700,
-      "ms": 1.92,
+      "ms": 3,
       "passed": true
     },
     {
@@ -321,7 +321,7 @@
       "seed": 104768,
       "moves": 30,
       "score": 1700,
-      "ms": 1.51,
+      "ms": 2,
       "passed": true
     },
     {
@@ -329,7 +329,7 @@
       "seed": 104769,
       "moves": 30,
       "score": 1700,
-      "ms": 2.18,
+      "ms": 3.07,
       "passed": true
     },
     {
@@ -337,7 +337,7 @@
       "seed": 104770,
       "moves": 30,
       "score": 1700,
-      "ms": 1.53,
+      "ms": 3.36,
       "passed": true
     },
     {
@@ -345,7 +345,7 @@
       "seed": 104771,
       "moves": 30,
       "score": 1700,
-      "ms": 1.95,
+      "ms": 5.16,
       "passed": true
     },
     {
@@ -353,7 +353,7 @@
       "seed": 104772,
       "moves": 30,
       "score": 1700,
-      "ms": 1.86,
+      "ms": 3.32,
       "passed": true
     },
     {
@@ -361,7 +361,7 @@
       "seed": 104773,
       "moves": 30,
       "score": 1700,
-      "ms": 2,
+      "ms": 2.96,
       "passed": true
     },
     {
@@ -369,7 +369,7 @@
       "seed": 104774,
       "moves": 30,
       "score": 1700,
-      "ms": 1.71,
+      "ms": 1.53,
       "passed": true
     },
     {
@@ -377,7 +377,7 @@
       "seed": 104775,
       "moves": 30,
       "score": 1700,
-      "ms": 1.99,
+      "ms": 6.7,
       "passed": true
     },
     {
@@ -385,7 +385,7 @@
       "seed": 104776,
       "moves": 30,
       "score": 1700,
-      "ms": 1.86,
+      "ms": 1.66,
       "passed": true
     },
     {
@@ -393,7 +393,7 @@
       "seed": 104777,
       "moves": 30,
       "score": 1700,
-      "ms": 1.55,
+      "ms": 2,
       "passed": true
     },
     {
@@ -401,7 +401,7 @@
       "seed": 104778,
       "moves": 30,
       "score": 1700,
-      "ms": 2.44,
+      "ms": 4.38,
       "passed": true
     },
     {
@@ -409,7 +409,7 @@
       "seed": 104779,
       "moves": 30,
       "score": 1700,
-      "ms": 1.75,
+      "ms": 2.66,
       "passed": true
     },
     {
@@ -417,7 +417,7 @@
       "seed": 104780,
       "moves": 30,
       "score": 1700,
-      "ms": 1.51,
+      "ms": 4.62,
       "passed": true
     },
     {
@@ -425,7 +425,7 @@
       "seed": 104781,
       "moves": 30,
       "score": 1700,
-      "ms": 1.58,
+      "ms": 3.91,
       "passed": true
     },
     {
@@ -433,7 +433,7 @@
       "seed": 104782,
       "moves": 30,
       "score": 1700,
-      "ms": 1.51,
+      "ms": 4.59,
       "passed": true
     },
     {
@@ -441,7 +441,7 @@
       "seed": 104783,
       "moves": 30,
       "score": 1700,
-      "ms": 1.55,
+      "ms": 1.59,
       "passed": true
     },
     {
@@ -449,7 +449,7 @@
       "seed": 104784,
       "moves": 30,
       "score": 1700,
-      "ms": 1.77,
+      "ms": 4.43,
       "passed": true
     },
     {
@@ -457,7 +457,7 @@
       "seed": 104785,
       "moves": 30,
       "score": 1700,
-      "ms": 1.4,
+      "ms": 4.46,
       "passed": true
     },
     {
@@ -465,7 +465,7 @@
       "seed": 104786,
       "moves": 30,
       "score": 1700,
-      "ms": 1.54,
+      "ms": 1.45,
       "passed": true
     },
     {
@@ -473,7 +473,7 @@
       "seed": 104787,
       "moves": 30,
       "score": 1700,
-      "ms": 2.21,
+      "ms": 1.61,
       "passed": true
     },
     {
@@ -481,7 +481,7 @@
       "seed": 104788,
       "moves": 30,
       "score": 1700,
-      "ms": 1.85,
+      "ms": 1.87,
       "passed": true
     },
     {
@@ -489,7 +489,7 @@
       "seed": 104789,
       "moves": 30,
       "score": 1700,
-      "ms": 1.97,
+      "ms": 3.13,
       "passed": true
     },
     {
@@ -497,7 +497,7 @@
       "seed": 104790,
       "moves": 30,
       "score": 1700,
-      "ms": 1.48,
+      "ms": 4.73,
       "passed": true
     },
     {
@@ -505,7 +505,7 @@
       "seed": 104791,
       "moves": 30,
       "score": 1700,
-      "ms": 1.68,
+      "ms": 1.57,
       "passed": true
     },
     {
@@ -513,7 +513,7 @@
       "seed": 104792,
       "moves": 30,
       "score": 1700,
-      "ms": 1.55,
+      "ms": 3.65,
       "passed": true
     },
     {
@@ -521,7 +521,7 @@
       "seed": 104793,
       "moves": 30,
       "score": 1700,
-      "ms": 1.55,
+      "ms": 3.08,
       "passed": true
     },
     {
@@ -529,7 +529,7 @@
       "seed": 104794,
       "moves": 30,
       "score": 1700,
-      "ms": 1.91,
+      "ms": 3.53,
       "passed": true
     },
     {
@@ -537,7 +537,7 @@
       "seed": 104795,
       "moves": 30,
       "score": 1700,
-      "ms": 1.57,
+      "ms": 2.37,
       "passed": true
     },
     {
@@ -545,7 +545,7 @@
       "seed": 104796,
       "moves": 30,
       "score": 1700,
-      "ms": 1.77,
+      "ms": 4.36,
       "passed": true
     },
     {
@@ -553,7 +553,7 @@
       "seed": 104797,
       "moves": 30,
       "score": 1700,
-      "ms": 1.7,
+      "ms": 1.82,
       "passed": true
     },
     {
@@ -561,7 +561,7 @@
       "seed": 104798,
       "moves": 30,
       "score": 1700,
-      "ms": 2.28,
+      "ms": 3.41,
       "passed": true
     },
     {
@@ -569,7 +569,7 @@
       "seed": 104799,
       "moves": 30,
       "score": 1700,
-      "ms": 1.55,
+      "ms": 3.93,
       "passed": true
     },
     {
@@ -577,7 +577,7 @@
       "seed": 104800,
       "moves": 30,
       "score": 1700,
-      "ms": 1.53,
+      "ms": 3.19,
       "passed": true
     },
     {
@@ -585,7 +585,7 @@
       "seed": 104801,
       "moves": 30,
       "score": 1700,
-      "ms": 1.52,
+      "ms": 2.2,
       "passed": true
     },
     {
@@ -593,7 +593,7 @@
       "seed": 104802,
       "moves": 30,
       "score": 1700,
-      "ms": 1.66,
+      "ms": 4.03,
       "passed": true
     },
     {
@@ -601,7 +601,7 @@
       "seed": 104803,
       "moves": 30,
       "score": 1700,
-      "ms": 1.51,
+      "ms": 6.06,
       "passed": true
     },
     {
@@ -609,7 +609,7 @@
       "seed": 104804,
       "moves": 30,
       "score": 1700,
-      "ms": 1.45,
+      "ms": 3.21,
       "passed": true
     },
     {
@@ -617,7 +617,7 @@
       "seed": 104805,
       "moves": 30,
       "score": 1700,
-      "ms": 1.53,
+      "ms": 2.41,
       "passed": true
     },
     {
@@ -625,7 +625,7 @@
       "seed": 104806,
       "moves": 30,
       "score": 1700,
-      "ms": 1.42,
+      "ms": 4.71,
       "passed": true
     },
     {
@@ -633,7 +633,7 @@
       "seed": 104807,
       "moves": 30,
       "score": 1700,
-      "ms": 1.6,
+      "ms": 5.12,
       "passed": true
     },
     {
@@ -641,7 +641,7 @@
       "seed": 104808,
       "moves": 30,
       "score": 1700,
-      "ms": 2.02,
+      "ms": 1.74,
       "passed": true
     },
     {
@@ -649,7 +649,7 @@
       "seed": 104809,
       "moves": 30,
       "score": 1700,
-      "ms": 1.61,
+      "ms": 3.36,
       "passed": true
     },
     {
@@ -657,7 +657,7 @@
       "seed": 104810,
       "moves": 30,
       "score": 1700,
-      "ms": 1.64,
+      "ms": 5.29,
       "passed": true
     },
     {
@@ -665,7 +665,7 @@
       "seed": 104811,
       "moves": 30,
       "score": 1700,
-      "ms": 1.4,
+      "ms": 2.84,
       "passed": true
     },
     {
@@ -673,7 +673,7 @@
       "seed": 104812,
       "moves": 30,
       "score": 1700,
-      "ms": 1.61,
+      "ms": 3.19,
       "passed": true
     },
     {
@@ -681,7 +681,7 @@
       "seed": 104813,
       "moves": 30,
       "score": 1700,
-      "ms": 1.52,
+      "ms": 4.93,
       "passed": true
     },
     {
@@ -689,7 +689,7 @@
       "seed": 104814,
       "moves": 30,
       "score": 1700,
-      "ms": 2.01,
+      "ms": 3.78,
       "passed": true
     },
     {
@@ -697,7 +697,7 @@
       "seed": 104815,
       "moves": 30,
       "score": 1700,
-      "ms": 1.49,
+      "ms": 3.23,
       "passed": true
     },
     {
@@ -705,7 +705,7 @@
       "seed": 104816,
       "moves": 30,
       "score": 1700,
-      "ms": 2.14,
+      "ms": 1.85,
       "passed": true
     },
     {
@@ -713,7 +713,7 @@
       "seed": 104817,
       "moves": 30,
       "score": 1700,
-      "ms": 2.55,
+      "ms": 6.9,
       "passed": true
     },
     {
@@ -721,7 +721,7 @@
       "seed": 104818,
       "moves": 30,
       "score": 1700,
-      "ms": 1.9,
+      "ms": 1.53,
       "passed": true
     },
     {
@@ -729,7 +729,7 @@
       "seed": 104819,
       "moves": 30,
       "score": 1700,
-      "ms": 2.97,
+      "ms": 3.8,
       "passed": true
     },
     {
@@ -737,7 +737,7 @@
       "seed": 104820,
       "moves": 30,
       "score": 1700,
-      "ms": 1.75,
+      "ms": 1.62,
       "passed": true
     },
     {
@@ -745,7 +745,7 @@
       "seed": 104821,
       "moves": 30,
       "score": 1700,
-      "ms": 1.7,
+      "ms": 4.78,
       "passed": true
     },
     {
@@ -753,7 +753,7 @@
       "seed": 104822,
       "moves": 30,
       "score": 1700,
-      "ms": 2.86,
+      "ms": 1.61,
       "passed": true
     },
     {
@@ -761,7 +761,7 @@
       "seed": 104823,
       "moves": 30,
       "score": 1700,
-      "ms": 1.87,
+      "ms": 4.69,
       "passed": true
     },
     {
@@ -769,7 +769,7 @@
       "seed": 104824,
       "moves": 30,
       "score": 1700,
-      "ms": 1.92,
+      "ms": 5.13,
       "passed": true
     },
     {
@@ -777,7 +777,7 @@
       "seed": 104825,
       "moves": 30,
       "score": 1700,
-      "ms": 1.94,
+      "ms": 3.68,
       "passed": true
     },
     {
@@ -785,7 +785,7 @@
       "seed": 104826,
       "moves": 30,
       "score": 1700,
-      "ms": 1.52,
+      "ms": 1.79,
       "passed": true
     },
     {
@@ -793,7 +793,7 @@
       "seed": 104827,
       "moves": 30,
       "score": 1700,
-      "ms": 1.68,
+      "ms": 1.5,
       "passed": true
     },
     {
@@ -801,7 +801,7 @@
       "seed": 104828,
       "moves": 30,
       "score": 1700,
-      "ms": 1.53,
+      "ms": 5.51,
       "passed": true
     },
     {
@@ -809,7 +809,7 @@
       "seed": 130363,
       "moves": 45,
       "score": 2300,
-      "ms": 3.75,
+      "ms": 8.75,
       "passed": true
     },
     {
@@ -817,7 +817,7 @@
       "seed": 130364,
       "moves": 45,
       "score": 2300,
-      "ms": 3.44,
+      "ms": 8.61,
       "passed": true
     },
     {
@@ -825,7 +825,7 @@
       "seed": 130365,
       "moves": 45,
       "score": 2300,
-      "ms": 3.28,
+      "ms": 6.99,
       "passed": true
     },
     {
@@ -833,7 +833,7 @@
       "seed": 130366,
       "moves": 45,
       "score": 2300,
-      "ms": 3.59,
+      "ms": 4.08,
       "passed": true
     },
     {
@@ -841,7 +841,7 @@
       "seed": 130367,
       "moves": 45,
       "score": 2300,
-      "ms": 3.8,
+      "ms": 4.13,
       "passed": true
     },
     {
@@ -849,7 +849,7 @@
       "seed": 130368,
       "moves": 45,
       "score": 2300,
-      "ms": 4.19,
+      "ms": 6.45,
       "passed": true
     },
     {
@@ -857,7 +857,7 @@
       "seed": 130369,
       "moves": 45,
       "score": 2300,
-      "ms": 3.45,
+      "ms": 5.17,
       "passed": true
     },
     {
@@ -865,7 +865,7 @@
       "seed": 130370,
       "moves": 45,
       "score": 2300,
-      "ms": 3.87,
+      "ms": 5.98,
       "passed": true
     },
     {
@@ -873,7 +873,7 @@
       "seed": 130371,
       "moves": 45,
       "score": 2300,
-      "ms": 3.55,
+      "ms": 3.96,
       "passed": true
     },
     {
@@ -881,7 +881,7 @@
       "seed": 130372,
       "moves": 45,
       "score": 2300,
-      "ms": 3.33,
+      "ms": 4.09,
       "passed": true
     },
     {
@@ -889,7 +889,7 @@
       "seed": 130373,
       "moves": 45,
       "score": 2300,
-      "ms": 3.18,
+      "ms": 5.55,
       "passed": true
     },
     {
@@ -897,7 +897,7 @@
       "seed": 130374,
       "moves": 45,
       "score": 2300,
-      "ms": 3.02,
+      "ms": 3.77,
       "passed": true
     },
     {
@@ -905,7 +905,7 @@
       "seed": 130375,
       "moves": 45,
       "score": 2300,
-      "ms": 3.53,
+      "ms": 3.83,
       "passed": true
     },
     {
@@ -913,7 +913,7 @@
       "seed": 130376,
       "moves": 45,
       "score": 2300,
-      "ms": 3.12,
+      "ms": 4.21,
       "passed": true
     },
     {
@@ -921,7 +921,7 @@
       "seed": 130377,
       "moves": 45,
       "score": 2300,
-      "ms": 3.42,
+      "ms": 5.27,
       "passed": true
     },
     {
@@ -929,7 +929,7 @@
       "seed": 130378,
       "moves": 45,
       "score": 2300,
-      "ms": 3.38,
+      "ms": 5.29,
       "passed": true
     },
     {
@@ -937,7 +937,7 @@
       "seed": 130379,
       "moves": 45,
       "score": 2300,
-      "ms": 3.04,
+      "ms": 4,
       "passed": true
     },
     {
@@ -945,7 +945,7 @@
       "seed": 130380,
       "moves": 45,
       "score": 2300,
-      "ms": 4.91,
+      "ms": 3.51,
       "passed": true
     },
     {
@@ -953,7 +953,7 @@
       "seed": 130381,
       "moves": 45,
       "score": 2300,
-      "ms": 3.14,
+      "ms": 3.7,
       "passed": true
     },
     {
@@ -961,7 +961,7 @@
       "seed": 130382,
       "moves": 45,
       "score": 2300,
-      "ms": 3.44,
+      "ms": 3.42,
       "passed": true
     },
     {
@@ -969,7 +969,7 @@
       "seed": 130383,
       "moves": 45,
       "score": 2300,
-      "ms": 3.69,
+      "ms": 7.7,
       "passed": true
     },
     {
@@ -977,7 +977,7 @@
       "seed": 130384,
       "moves": 45,
       "score": 2300,
-      "ms": 3.74,
+      "ms": 4.17,
       "passed": true
     },
     {
@@ -985,7 +985,7 @@
       "seed": 130385,
       "moves": 45,
       "score": 2300,
-      "ms": 4.53,
+      "ms": 3.68,
       "passed": true
     },
     {
@@ -993,7 +993,7 @@
       "seed": 130386,
       "moves": 45,
       "score": 2300,
-      "ms": 3.68,
+      "ms": 3.99,
       "passed": true
     },
     {
@@ -1001,7 +1001,7 @@
       "seed": 130387,
       "moves": 45,
       "score": 2300,
-      "ms": 3.64,
+      "ms": 5.16,
       "passed": true
     },
     {
@@ -1009,7 +1009,7 @@
       "seed": 130388,
       "moves": 45,
       "score": 2300,
-      "ms": 3.47,
+      "ms": 4.04,
       "passed": true
     },
     {
@@ -1017,7 +1017,7 @@
       "seed": 130389,
       "moves": 45,
       "score": 2300,
-      "ms": 3.65,
+      "ms": 3.77,
       "passed": true
     },
     {
@@ -1025,7 +1025,7 @@
       "seed": 130390,
       "moves": 45,
       "score": 2300,
-      "ms": 3.84,
+      "ms": 5.94,
       "passed": true
     },
     {
@@ -1033,7 +1033,7 @@
       "seed": 130391,
       "moves": 45,
       "score": 2300,
-      "ms": 3.12,
+      "ms": 4.26,
       "passed": true
     },
     {
@@ -1041,7 +1041,7 @@
       "seed": 130392,
       "moves": 45,
       "score": 2300,
-      "ms": 3.32,
+      "ms": 3.88,
       "passed": true
     },
     {
@@ -1049,7 +1049,7 @@
       "seed": 130393,
       "moves": 45,
       "score": 2300,
-      "ms": 3.44,
+      "ms": 3.66,
       "passed": true
     },
     {
@@ -1057,7 +1057,7 @@
       "seed": 130394,
       "moves": 45,
       "score": 2300,
-      "ms": 3.94,
+      "ms": 5.47,
       "passed": true
     },
     {
@@ -1065,7 +1065,7 @@
       "seed": 130395,
       "moves": 45,
       "score": 2300,
-      "ms": 4.14,
+      "ms": 4.24,
       "passed": true
     },
     {
@@ -1073,7 +1073,7 @@
       "seed": 130396,
       "moves": 45,
       "score": 2300,
-      "ms": 6.22,
+      "ms": 3.35,
       "passed": true
     },
     {
@@ -1081,7 +1081,7 @@
       "seed": 130397,
       "moves": 45,
       "score": 2300,
-      "ms": 4.84,
+      "ms": 3.2,
       "passed": true
     },
     {
@@ -1089,7 +1089,7 @@
       "seed": 130398,
       "moves": 45,
       "score": 2300,
-      "ms": 5.81,
+      "ms": 4.12,
       "passed": true
     },
     {
@@ -1097,7 +1097,7 @@
       "seed": 130399,
       "moves": 45,
       "score": 2300,
-      "ms": 3.81,
+      "ms": 3.28,
       "passed": true
     },
     {
@@ -1105,7 +1105,7 @@
       "seed": 130400,
       "moves": 45,
       "score": 2300,
-      "ms": 3.09,
+      "ms": 3.43,
       "passed": true
     },
     {
@@ -1113,7 +1113,7 @@
       "seed": 130401,
       "moves": 45,
       "score": 2300,
-      "ms": 4.22,
+      "ms": 3.11,
       "passed": true
     },
     {
@@ -1121,7 +1121,7 @@
       "seed": 130402,
       "moves": 45,
       "score": 2300,
-      "ms": 3.44,
+      "ms": 3.13,
       "passed": true
     },
     {
@@ -1129,7 +1129,7 @@
       "seed": 130403,
       "moves": 45,
       "score": 2300,
-      "ms": 3.18,
+      "ms": 3.16,
       "passed": true
     },
     {
@@ -1137,7 +1137,7 @@
       "seed": 130404,
       "moves": 45,
       "score": 2300,
-      "ms": 4.15,
+      "ms": 4.88,
       "passed": true
     },
     {
@@ -1145,7 +1145,7 @@
       "seed": 130405,
       "moves": 45,
       "score": 2300,
-      "ms": 3.54,
+      "ms": 3.63,
       "passed": true
     },
     {
@@ -1153,7 +1153,7 @@
       "seed": 130406,
       "moves": 45,
       "score": 2300,
-      "ms": 3.88,
+      "ms": 3.12,
       "passed": true
     },
     {
@@ -1161,7 +1161,7 @@
       "seed": 130407,
       "moves": 45,
       "score": 2300,
-      "ms": 3.32,
+      "ms": 3.12,
       "passed": true
     },
     {
@@ -1169,7 +1169,7 @@
       "seed": 130408,
       "moves": 45,
       "score": 2300,
-      "ms": 3.04,
+      "ms": 3.38,
       "passed": true
     },
     {
@@ -1177,7 +1177,7 @@
       "seed": 130409,
       "moves": 45,
       "score": 2300,
-      "ms": 3.75,
+      "ms": 4.9,
       "passed": true
     },
     {
@@ -1185,7 +1185,7 @@
       "seed": 130410,
       "moves": 45,
       "score": 2300,
-      "ms": 4.66,
+      "ms": 5.41,
       "passed": true
     },
     {
@@ -1193,7 +1193,7 @@
       "seed": 130411,
       "moves": 45,
       "score": 2300,
-      "ms": 4,
+      "ms": 4.78,
       "passed": true
     },
     {
@@ -1201,7 +1201,7 @@
       "seed": 130412,
       "moves": 45,
       "score": 2300,
-      "ms": 3.74,
+      "ms": 3.29,
       "passed": true
     },
     {
@@ -1209,7 +1209,7 @@
       "seed": 130413,
       "moves": 45,
       "score": 2300,
-      "ms": 4.1,
+      "ms": 4.49,
       "passed": true
     },
     {
@@ -1217,7 +1217,7 @@
       "seed": 130414,
       "moves": 45,
       "score": 2300,
-      "ms": 4.54,
+      "ms": 5.81,
       "passed": true
     },
     {
@@ -1225,7 +1225,7 @@
       "seed": 130415,
       "moves": 45,
       "score": 2300,
-      "ms": 3.45,
+      "ms": 6.89,
       "passed": true
     },
     {
@@ -1233,7 +1233,7 @@
       "seed": 130416,
       "moves": 45,
       "score": 2300,
-      "ms": 4.12,
+      "ms": 6.48,
       "passed": true
     },
     {
@@ -1241,7 +1241,7 @@
       "seed": 130417,
       "moves": 45,
       "score": 2300,
-      "ms": 3.25,
+      "ms": 4.75,
       "passed": true
     },
     {
@@ -1249,7 +1249,7 @@
       "seed": 130418,
       "moves": 45,
       "score": 2300,
-      "ms": 3.09,
+      "ms": 3.78,
       "passed": true
     },
     {
@@ -1257,7 +1257,7 @@
       "seed": 130419,
       "moves": 45,
       "score": 2300,
-      "ms": 3.03,
+      "ms": 4.03,
       "passed": true
     },
     {
@@ -1265,7 +1265,7 @@
       "seed": 130420,
       "moves": 45,
       "score": 2300,
-      "ms": 4.18,
+      "ms": 4.07,
       "passed": true
     },
     {
@@ -1273,7 +1273,7 @@
       "seed": 130421,
       "moves": 45,
       "score": 2300,
-      "ms": 4.75,
+      "ms": 3.14,
       "passed": true
     },
     {
@@ -1281,7 +1281,7 @@
       "seed": 130422,
       "moves": 45,
       "score": 2300,
-      "ms": 3.07,
+      "ms": 5.19,
       "passed": true
     },
     {
@@ -1289,7 +1289,7 @@
       "seed": 130423,
       "moves": 45,
       "score": 2300,
-      "ms": 4,
+      "ms": 3.08,
       "passed": true
     },
     {
@@ -1297,7 +1297,7 @@
       "seed": 130424,
       "moves": 45,
       "score": 2300,
-      "ms": 5.29,
+      "ms": 3.27,
       "passed": true
     },
     {
@@ -1305,7 +1305,7 @@
       "seed": 130425,
       "moves": 45,
       "score": 2300,
-      "ms": 3.97,
+      "ms": 3.66,
       "passed": true
     },
     {
@@ -1313,7 +1313,7 @@
       "seed": 130426,
       "moves": 45,
       "score": 2300,
-      "ms": 4.2,
+      "ms": 3.15,
       "passed": true
     },
     {
@@ -1321,7 +1321,7 @@
       "seed": 130427,
       "moves": 45,
       "score": 2300,
-      "ms": 3.75,
+      "ms": 5.19,
       "passed": true
     },
     {
@@ -1329,7 +1329,7 @@
       "seed": 130428,
       "moves": 45,
       "score": 2300,
-      "ms": 3.19,
+      "ms": 3.35,
       "passed": true
     },
     {
@@ -1337,7 +1337,7 @@
       "seed": 130429,
       "moves": 45,
       "score": 2300,
-      "ms": 4.07,
+      "ms": 3.55,
       "passed": true
     },
     {
@@ -1345,7 +1345,7 @@
       "seed": 130430,
       "moves": 45,
       "score": 2300,
-      "ms": 3.22,
+      "ms": 6.8,
       "passed": true
     },
     {
@@ -1353,7 +1353,7 @@
       "seed": 130431,
       "moves": 45,
       "score": 2300,
-      "ms": 3.23,
+      "ms": 5.3,
       "passed": true
     },
     {
@@ -1361,7 +1361,7 @@
       "seed": 130432,
       "moves": 45,
       "score": 2300,
-      "ms": 4.04,
+      "ms": 4.98,
       "passed": true
     },
     {
@@ -1369,7 +1369,7 @@
       "seed": 130433,
       "moves": 45,
       "score": 2300,
-      "ms": 3.26,
+      "ms": 4.61,
       "passed": true
     },
     {
@@ -1377,7 +1377,7 @@
       "seed": 130434,
       "moves": 45,
       "score": 2300,
-      "ms": 3.2,
+      "ms": 4.21,
       "passed": true
     },
     {
@@ -1385,7 +1385,7 @@
       "seed": 130435,
       "moves": 45,
       "score": 2300,
-      "ms": 4.74,
+      "ms": 3.29,
       "passed": true
     },
     {
@@ -1393,7 +1393,7 @@
       "seed": 130436,
       "moves": 45,
       "score": 2300,
-      "ms": 8.67,
+      "ms": 8.18,
       "passed": true
     },
     {
@@ -1401,7 +1401,7 @@
       "seed": 130437,
       "moves": 45,
       "score": 2300,
-      "ms": 5.83,
+      "ms": 7.52,
       "passed": true
     },
     {
@@ -1409,7 +1409,7 @@
       "seed": 130438,
       "moves": 45,
       "score": 2300,
-      "ms": 3.78,
+      "ms": 8.12,
       "passed": true
     },
     {
@@ -1417,7 +1417,7 @@
       "seed": 130439,
       "moves": 45,
       "score": 2300,
-      "ms": 5.84,
+      "ms": 6.38,
       "passed": true
     },
     {
@@ -1425,7 +1425,7 @@
       "seed": 130440,
       "moves": 45,
       "score": 2300,
-      "ms": 4.8,
+      "ms": 9.26,
       "passed": true
     },
     {
@@ -1433,7 +1433,7 @@
       "seed": 130441,
       "moves": 45,
       "score": 2300,
-      "ms": 3.81,
+      "ms": 7.02,
       "passed": true
     },
     {
@@ -1441,7 +1441,7 @@
       "seed": 130442,
       "moves": 45,
       "score": 2300,
-      "ms": 3.05,
+      "ms": 7.47,
       "passed": true
     },
     {
@@ -1449,7 +1449,7 @@
       "seed": 130443,
       "moves": 45,
       "score": 2300,
-      "ms": 3.11,
+      "ms": 8.93,
       "passed": true
     },
     {
@@ -1457,7 +1457,7 @@
       "seed": 130444,
       "moves": 45,
       "score": 2300,
-      "ms": 2.91,
+      "ms": 9.22,
       "passed": true
     },
     {
@@ -1465,7 +1465,7 @@
       "seed": 130445,
       "moves": 45,
       "score": 2300,
-      "ms": 3.29,
+      "ms": 11.47,
       "passed": true
     },
     {
@@ -1473,7 +1473,7 @@
       "seed": 130446,
       "moves": 45,
       "score": 2300,
-      "ms": 3.25,
+      "ms": 9.2,
       "passed": true
     },
     {
@@ -1481,7 +1481,7 @@
       "seed": 130447,
       "moves": 45,
       "score": 2300,
-      "ms": 3.17,
+      "ms": 11.57,
       "passed": true
     },
     {
@@ -1489,7 +1489,7 @@
       "seed": 130448,
       "moves": 45,
       "score": 2300,
-      "ms": 3.41,
+      "ms": 12.71,
       "passed": true
     },
     {
@@ -1497,7 +1497,7 @@
       "seed": 130449,
       "moves": 45,
       "score": 2300,
-      "ms": 3.48,
+      "ms": 12.99,
       "passed": true
     },
     {
@@ -1505,7 +1505,7 @@
       "seed": 130450,
       "moves": 45,
       "score": 2300,
-      "ms": 3.35,
+      "ms": 7.98,
       "passed": true
     },
     {
@@ -1513,7 +1513,7 @@
       "seed": 130451,
       "moves": 45,
       "score": 2300,
-      "ms": 3.17,
+      "ms": 8.21,
       "passed": true
     },
     {
@@ -1521,7 +1521,7 @@
       "seed": 130452,
       "moves": 45,
       "score": 2300,
-      "ms": 3.2,
+      "ms": 6.82,
       "passed": true
     },
     {
@@ -1529,7 +1529,7 @@
       "seed": 130453,
       "moves": 45,
       "score": 2300,
-      "ms": 3.24,
+      "ms": 3.54,
       "passed": true
     },
     {
@@ -1537,7 +1537,7 @@
       "seed": 130454,
       "moves": 45,
       "score": 2300,
-      "ms": 3.22,
+      "ms": 13.11,
       "passed": true
     },
     {
@@ -1545,7 +1545,7 @@
       "seed": 130455,
       "moves": 45,
       "score": 2300,
-      "ms": 3.28,
+      "ms": 3.26,
       "passed": true
     },
     {
@@ -1553,7 +1553,7 @@
       "seed": 130456,
       "moves": 45,
       "score": 2300,
-      "ms": 3.35,
+      "ms": 4.28,
       "passed": true
     },
     {
@@ -1561,7 +1561,7 @@
       "seed": 130457,
       "moves": 45,
       "score": 2300,
-      "ms": 3.48,
+      "ms": 7.43,
       "passed": true
     },
     {
@@ -1569,7 +1569,7 @@
       "seed": 130458,
       "moves": 45,
       "score": 2300,
-      "ms": 4.5,
+      "ms": 4.21,
       "passed": true
     },
     {
@@ -1577,7 +1577,7 @@
       "seed": 130459,
       "moves": 45,
       "score": 2300,
-      "ms": 3.33,
+      "ms": 4.47,
       "passed": true
     },
     {
@@ -1585,7 +1585,7 @@
       "seed": 130460,
       "moves": 45,
       "score": 2300,
-      "ms": 3.43,
+      "ms": 4.09,
       "passed": true
     },
     {
@@ -1593,7 +1593,7 @@
       "seed": 130461,
       "moves": 45,
       "score": 2300,
-      "ms": 3.56,
+      "ms": 6.77,
       "passed": true
     },
     {
@@ -1601,7 +1601,7 @@
       "seed": 130462,
       "moves": 45,
       "score": 2300,
-      "ms": 3.68,
+      "ms": 3.92,
       "passed": true
     },
     {
@@ -1609,7 +1609,7 @@
       "seed": 155921,
       "moves": 63,
       "score": 3020,
-      "ms": 7.83,
+      "ms": 9.74,
       "passed": true
     },
     {
@@ -1617,7 +1617,7 @@
       "seed": 155922,
       "moves": 63,
       "score": 3020,
-      "ms": 6.83,
+      "ms": 6.73,
       "passed": true
     },
     {
@@ -1625,7 +1625,7 @@
       "seed": 155923,
       "moves": 63,
       "score": 3020,
-      "ms": 6.37,
+      "ms": 10.7,
       "passed": true
     },
     {
@@ -1633,7 +1633,7 @@
       "seed": 155924,
       "moves": 63,
       "score": 3020,
-      "ms": 7.22,
+      "ms": 11.42,
       "passed": true
     },
     {
@@ -1641,7 +1641,7 @@
       "seed": 155925,
       "moves": 63,
       "score": 3020,
-      "ms": 7.04,
+      "ms": 10.56,
       "passed": true
     },
     {
@@ -1649,7 +1649,7 @@
       "seed": 155926,
       "moves": 63,
       "score": 3020,
-      "ms": 6.32,
+      "ms": 12.56,
       "passed": true
     },
     {
@@ -1657,7 +1657,7 @@
       "seed": 155927,
       "moves": 63,
       "score": 3020,
-      "ms": 6.86,
+      "ms": 9.88,
       "passed": true
     },
     {
@@ -1665,7 +1665,7 @@
       "seed": 155928,
       "moves": 63,
       "score": 3020,
-      "ms": 7.27,
+      "ms": 11.43,
       "passed": true
     },
     {
@@ -1673,7 +1673,7 @@
       "seed": 155929,
       "moves": 63,
       "score": 3020,
-      "ms": 6.35,
+      "ms": 12.01,
       "passed": true
     },
     {
@@ -1681,7 +1681,7 @@
       "seed": 155930,
       "moves": 63,
       "score": 3020,
-      "ms": 6.27,
+      "ms": 12.69,
       "passed": true
     },
     {
@@ -1689,7 +1689,7 @@
       "seed": 155931,
       "moves": 63,
       "score": 3020,
-      "ms": 5.94,
+      "ms": 7.98,
       "passed": true
     },
     {
@@ -1697,7 +1697,7 @@
       "seed": 155932,
       "moves": 63,
       "score": 3020,
-      "ms": 6.07,
+      "ms": 11.78,
       "passed": true
     },
     {
@@ -1705,7 +1705,7 @@
       "seed": 155933,
       "moves": 63,
       "score": 3020,
-      "ms": 6.81,
+      "ms": 7.07,
       "passed": true
     },
     {
@@ -1713,7 +1713,7 @@
       "seed": 155934,
       "moves": 63,
       "score": 3020,
-      "ms": 5.94,
+      "ms": 12.86,
       "passed": true
     },
     {
@@ -1721,7 +1721,7 @@
       "seed": 155935,
       "moves": 63,
       "score": 3020,
-      "ms": 7.6,
+      "ms": 9.92,
       "passed": true
     },
     {
@@ -1729,7 +1729,7 @@
       "seed": 155936,
       "moves": 63,
       "score": 3020,
-      "ms": 11.98,
+      "ms": 10.98,
       "passed": true
     },
     {
@@ -1737,7 +1737,7 @@
       "seed": 155937,
       "moves": 63,
       "score": 3020,
-      "ms": 7.4,
+      "ms": 11.81,
       "passed": true
     },
     {
@@ -1745,7 +1745,7 @@
       "seed": 155938,
       "moves": 63,
       "score": 3020,
-      "ms": 6.36,
+      "ms": 13.16,
       "passed": true
     },
     {
@@ -1753,7 +1753,7 @@
       "seed": 155939,
       "moves": 63,
       "score": 3020,
-      "ms": 7.46,
+      "ms": 7.2,
       "passed": true
     },
     {
@@ -1761,7 +1761,7 @@
       "seed": 155940,
       "moves": 63,
       "score": 3020,
-      "ms": 6.63,
+      "ms": 9.91,
       "passed": true
     },
     {
@@ -1769,7 +1769,7 @@
       "seed": 155941,
       "moves": 63,
       "score": 3020,
-      "ms": 5.95,
+      "ms": 7.39,
       "passed": true
     },
     {
@@ -1777,7 +1777,7 @@
       "seed": 155942,
       "moves": 63,
       "score": 3020,
-      "ms": 6.5,
+      "ms": 8.86,
       "passed": true
     },
     {
@@ -1785,7 +1785,7 @@
       "seed": 155943,
       "moves": 63,
       "score": 3020,
-      "ms": 6.46,
+      "ms": 9.15,
       "passed": true
     },
     {
@@ -1793,7 +1793,7 @@
       "seed": 155944,
       "moves": 63,
       "score": 3020,
-      "ms": 6.24,
+      "ms": 11.07,
       "passed": true
     },
     {
@@ -1801,7 +1801,7 @@
       "seed": 155945,
       "moves": 63,
       "score": 3020,
-      "ms": 6.58,
+      "ms": 11.66,
       "passed": true
     },
     {
@@ -1809,7 +1809,7 @@
       "seed": 155946,
       "moves": 63,
       "score": 3020,
-      "ms": 6.23,
+      "ms": 11.11,
       "passed": true
     },
     {
@@ -1817,7 +1817,7 @@
       "seed": 155947,
       "moves": 63,
       "score": 3020,
-      "ms": 6.67,
+      "ms": 10.64,
       "passed": true
     },
     {
@@ -1825,7 +1825,7 @@
       "seed": 155948,
       "moves": 63,
       "score": 3020,
-      "ms": 6.61,
+      "ms": 10.67,
       "passed": true
     },
     {
@@ -1833,7 +1833,7 @@
       "seed": 155949,
       "moves": 63,
       "score": 3020,
-      "ms": 6.57,
+      "ms": 8.14,
       "passed": true
     },
     {
@@ -1841,7 +1841,7 @@
       "seed": 155950,
       "moves": 63,
       "score": 3020,
-      "ms": 7.35,
+      "ms": 6.96,
       "passed": true
     },
     {
@@ -1849,7 +1849,7 @@
       "seed": 155951,
       "moves": 63,
       "score": 3020,
-      "ms": 6.9,
+      "ms": 8.38,
       "passed": true
     },
     {
@@ -1857,7 +1857,7 @@
       "seed": 155952,
       "moves": 63,
       "score": 3020,
-      "ms": 6.48,
+      "ms": 8.52,
       "passed": true
     },
     {
@@ -1865,7 +1865,7 @@
       "seed": 155953,
       "moves": 63,
       "score": 3020,
-      "ms": 6.44,
+      "ms": 6.95,
       "passed": true
     },
     {
@@ -1873,7 +1873,7 @@
       "seed": 155954,
       "moves": 63,
       "score": 3020,
-      "ms": 6.17,
+      "ms": 12.28,
       "passed": true
     },
     {
@@ -1881,7 +1881,7 @@
       "seed": 155955,
       "moves": 63,
       "score": 3020,
-      "ms": 6.55,
+      "ms": 9.47,
       "passed": true
     },
     {
@@ -1889,7 +1889,7 @@
       "seed": 155956,
       "moves": 63,
       "score": 3020,
-      "ms": 6.39,
+      "ms": 13.23,
       "passed": true
     },
     {
@@ -1897,7 +1897,7 @@
       "seed": 155957,
       "moves": 63,
       "score": 3020,
-      "ms": 6.49,
+      "ms": 13.7,
       "passed": true
     },
     {
@@ -1905,7 +1905,7 @@
       "seed": 155958,
       "moves": 63,
       "score": 3020,
-      "ms": 6.56,
+      "ms": 10.32,
       "passed": true
     },
     {
@@ -1913,7 +1913,7 @@
       "seed": 155959,
       "moves": 63,
       "score": 3020,
-      "ms": 6.11,
+      "ms": 8.54,
       "passed": true
     },
     {
@@ -1921,7 +1921,7 @@
       "seed": 155960,
       "moves": 63,
       "score": 3020,
-      "ms": 5.93,
+      "ms": 7.55,
       "passed": true
     },
     {
@@ -1929,7 +1929,7 @@
       "seed": 155961,
       "moves": 63,
       "score": 3020,
-      "ms": 5.91,
+      "ms": 8.01,
       "passed": true
     },
     {
@@ -1937,7 +1937,7 @@
       "seed": 155962,
       "moves": 63,
       "score": 3020,
-      "ms": 6.12,
+      "ms": 8.39,
       "passed": true
     },
     {
@@ -1945,7 +1945,7 @@
       "seed": 155963,
       "moves": 63,
       "score": 3020,
-      "ms": 6.93,
+      "ms": 7.57,
       "passed": true
     },
     {
@@ -1953,7 +1953,7 @@
       "seed": 155964,
       "moves": 63,
       "score": 3020,
-      "ms": 6.45,
+      "ms": 13.7,
       "passed": true
     },
     {
@@ -1961,7 +1961,7 @@
       "seed": 155965,
       "moves": 63,
       "score": 3020,
-      "ms": 7.66,
+      "ms": 12.23,
       "passed": true
     },
     {
@@ -1969,7 +1969,7 @@
       "seed": 155966,
       "moves": 63,
       "score": 3020,
-      "ms": 6.5,
+      "ms": 13.84,
       "passed": true
     },
     {
@@ -1977,7 +1977,7 @@
       "seed": 155967,
       "moves": 63,
       "score": 3020,
-      "ms": 6.94,
+      "ms": 14.79,
       "passed": true
     },
     {
@@ -1985,7 +1985,7 @@
       "seed": 155968,
       "moves": 63,
       "score": 3020,
-      "ms": 5.85,
+      "ms": 9.61,
       "passed": true
     },
     {
@@ -1993,7 +1993,7 @@
       "seed": 155969,
       "moves": 63,
       "score": 3020,
-      "ms": 5.88,
+      "ms": 7.82,
       "passed": true
     },
     {
@@ -2001,7 +2001,7 @@
       "seed": 155970,
       "moves": 63,
       "score": 3020,
-      "ms": 6.02,
+      "ms": 6.8,
       "passed": true
     },
     {
@@ -2009,7 +2009,7 @@
       "seed": 155971,
       "moves": 63,
       "score": 3020,
-      "ms": 6.92,
+      "ms": 8.55,
       "passed": true
     },
     {
@@ -2017,7 +2017,7 @@
       "seed": 155972,
       "moves": 63,
       "score": 3020,
-      "ms": 7.24,
+      "ms": 8.8,
       "passed": true
     },
     {
@@ -2025,7 +2025,7 @@
       "seed": 155973,
       "moves": 63,
       "score": 3020,
-      "ms": 7.49,
+      "ms": 10.04,
       "passed": true
     },
     {
@@ -2033,7 +2033,7 @@
       "seed": 155974,
       "moves": 63,
       "score": 3020,
-      "ms": 8.27,
+      "ms": 14.18,
       "passed": true
     },
     {
@@ -2041,7 +2041,7 @@
       "seed": 155975,
       "moves": 63,
       "score": 3020,
-      "ms": 6.83,
+      "ms": 14.36,
       "passed": true
     },
     {
@@ -2049,7 +2049,7 @@
       "seed": 155976,
       "moves": 63,
       "score": 3020,
-      "ms": 6.38,
+      "ms": 13.49,
       "passed": true
     },
     {
@@ -2057,7 +2057,7 @@
       "seed": 155977,
       "moves": 63,
       "score": 3020,
-      "ms": 5.95,
+      "ms": 12.99,
       "passed": true
     },
     {
@@ -2065,7 +2065,7 @@
       "seed": 155978,
       "moves": 63,
       "score": 3020,
-      "ms": 7.1,
+      "ms": 12.22,
       "passed": true
     },
     {
@@ -2073,7 +2073,7 @@
       "seed": 155979,
       "moves": 63,
       "score": 3020,
-      "ms": 6.45,
+      "ms": 9.58,
       "passed": true
     },
     {
@@ -2081,7 +2081,7 @@
       "seed": 155980,
       "moves": 63,
       "score": 3020,
-      "ms": 6.85,
+      "ms": 8.61,
       "passed": true
     },
     {
@@ -2089,7 +2089,7 @@
       "seed": 155981,
       "moves": 63,
       "score": 3020,
-      "ms": 7.28,
+      "ms": 9.95,
       "passed": true
     },
     {
@@ -2097,7 +2097,7 @@
       "seed": 155982,
       "moves": 63,
       "score": 3020,
-      "ms": 7.36,
+      "ms": 10.66,
       "passed": true
     },
     {
@@ -2105,7 +2105,7 @@
       "seed": 155983,
       "moves": 63,
       "score": 3020,
-      "ms": 6.28,
+      "ms": 12.52,
       "passed": true
     },
     {
@@ -2113,7 +2113,7 @@
       "seed": 155984,
       "moves": 63,
       "score": 3020,
-      "ms": 5.76,
+      "ms": 13.54,
       "passed": true
     },
     {
@@ -2121,7 +2121,7 @@
       "seed": 155985,
       "moves": 63,
       "score": 3020,
-      "ms": 6.37,
+      "ms": 13.43,
       "passed": true
     },
     {
@@ -2129,7 +2129,7 @@
       "seed": 155986,
       "moves": 63,
       "score": 3020,
-      "ms": 6.3,
+      "ms": 12.9,
       "passed": true
     },
     {
@@ -2137,7 +2137,7 @@
       "seed": 155987,
       "moves": 63,
       "score": 3020,
-      "ms": 7.11,
+      "ms": 11.96,
       "passed": true
     },
     {
@@ -2145,7 +2145,7 @@
       "seed": 155988,
       "moves": 63,
       "score": 3020,
-      "ms": 6.49,
+      "ms": 11.31,
       "passed": true
     },
     {
@@ -2153,7 +2153,7 @@
       "seed": 155989,
       "moves": 63,
       "score": 3020,
-      "ms": 5.96,
+      "ms": 14.66,
       "passed": true
     },
     {
@@ -2161,7 +2161,7 @@
       "seed": 155990,
       "moves": 63,
       "score": 3020,
-      "ms": 6.35,
+      "ms": 13.97,
       "passed": true
     },
     {
@@ -2169,7 +2169,7 @@
       "seed": 155991,
       "moves": 63,
       "score": 3020,
-      "ms": 6.62,
+      "ms": 12.34,
       "passed": true
     },
     {
@@ -2177,7 +2177,7 @@
       "seed": 155992,
       "moves": 63,
       "score": 3020,
-      "ms": 5.94,
+      "ms": 17.67,
       "passed": true
     },
     {
@@ -2185,7 +2185,7 @@
       "seed": 155993,
       "moves": 63,
       "score": 3020,
-      "ms": 6.94,
+      "ms": 13.36,
       "passed": true
     },
     {
@@ -2193,7 +2193,7 @@
       "seed": 155994,
       "moves": 63,
       "score": 3020,
-      "ms": 6.7,
+      "ms": 17.21,
       "passed": true
     },
     {
@@ -2201,7 +2201,7 @@
       "seed": 155995,
       "moves": 63,
       "score": 3020,
-      "ms": 6.24,
+      "ms": 13.2,
       "passed": true
     },
     {
@@ -2209,7 +2209,7 @@
       "seed": 155996,
       "moves": 63,
       "score": 3020,
-      "ms": 7.22,
+      "ms": 11.49,
       "passed": true
     },
     {
@@ -2217,7 +2217,7 @@
       "seed": 155997,
       "moves": 63,
       "score": 3020,
-      "ms": 6.74,
+      "ms": 12.88,
       "passed": true
     },
     {
@@ -2225,7 +2225,7 @@
       "seed": 155998,
       "moves": 63,
       "score": 3020,
-      "ms": 5.93,
+      "ms": 14.91,
       "passed": true
     },
     {
@@ -2233,7 +2233,7 @@
       "seed": 155999,
       "moves": 63,
       "score": 3020,
-      "ms": 6.65,
+      "ms": 16.66,
       "passed": true
     },
     {
@@ -2241,7 +2241,7 @@
       "seed": 156000,
       "moves": 63,
       "score": 3020,
-      "ms": 6.18,
+      "ms": 14.45,
       "passed": true
     },
     {
@@ -2249,7 +2249,7 @@
       "seed": 156001,
       "moves": 63,
       "score": 3020,
-      "ms": 5.92,
+      "ms": 9.88,
       "passed": true
     },
     {
@@ -2257,7 +2257,7 @@
       "seed": 156002,
       "moves": 63,
       "score": 3020,
-      "ms": 6.38,
+      "ms": 14.59,
       "passed": true
     },
     {
@@ -2265,7 +2265,7 @@
       "seed": 156003,
       "moves": 63,
       "score": 3020,
-      "ms": 7.87,
+      "ms": 11.17,
       "passed": true
     },
     {
@@ -2273,7 +2273,7 @@
       "seed": 156004,
       "moves": 63,
       "score": 3020,
-      "ms": 6.32,
+      "ms": 13.65,
       "passed": true
     },
     {
@@ -2281,7 +2281,7 @@
       "seed": 156005,
       "moves": 63,
       "score": 3020,
-      "ms": 6.39,
+      "ms": 12.74,
       "passed": true
     },
     {
@@ -2289,7 +2289,7 @@
       "seed": 156006,
       "moves": 63,
       "score": 3020,
-      "ms": 6.25,
+      "ms": 10.44,
       "passed": true
     },
     {
@@ -2297,7 +2297,7 @@
       "seed": 156007,
       "moves": 63,
       "score": 3020,
-      "ms": 5.95,
+      "ms": 16.93,
       "passed": true
     },
     {
@@ -2305,7 +2305,7 @@
       "seed": 156008,
       "moves": 63,
       "score": 3020,
-      "ms": 6.07,
+      "ms": 17.45,
       "passed": true
     },
     {
@@ -2313,7 +2313,7 @@
       "seed": 156009,
       "moves": 63,
       "score": 3020,
-      "ms": 6.69,
+      "ms": 11.29,
       "passed": true
     },
     {
@@ -2321,7 +2321,7 @@
       "seed": 156010,
       "moves": 63,
       "score": 3020,
-      "ms": 6.34,
+      "ms": 10.68,
       "passed": true
     },
     {
@@ -2329,7 +2329,7 @@
       "seed": 156011,
       "moves": 63,
       "score": 3020,
-      "ms": 8.16,
+      "ms": 9.66,
       "passed": true
     },
     {
@@ -2337,7 +2337,7 @@
       "seed": 156012,
       "moves": 63,
       "score": 3020,
-      "ms": 7.68,
+      "ms": 10.69,
       "passed": true
     },
     {
@@ -2345,7 +2345,7 @@
       "seed": 156013,
       "moves": 63,
       "score": 3020,
-      "ms": 6.77,
+      "ms": 10.81,
       "passed": true
     },
     {
@@ -2353,7 +2353,7 @@
       "seed": 156014,
       "moves": 63,
       "score": 3020,
-      "ms": 6.31,
+      "ms": 16.98,
       "passed": true
     },
     {
@@ -2361,7 +2361,7 @@
       "seed": 156015,
       "moves": 63,
       "score": 3020,
-      "ms": 5.96,
+      "ms": 12.51,
       "passed": true
     },
     {
@@ -2369,7 +2369,7 @@
       "seed": 156016,
       "moves": 63,
       "score": 3020,
-      "ms": 5.62,
+      "ms": 11.88,
       "passed": true
     },
     {
@@ -2377,7 +2377,7 @@
       "seed": 156017,
       "moves": 63,
       "score": 3020,
-      "ms": 5.67,
+      "ms": 11.34,
       "passed": true
     },
     {
@@ -2385,7 +2385,7 @@
       "seed": 156018,
       "moves": 63,
       "score": 3020,
-      "ms": 6.12,
+      "ms": 9.11,
       "passed": true
     },
     {
@@ -2393,7 +2393,7 @@
       "seed": 156019,
       "moves": 63,
       "score": 3020,
-      "ms": 7.59,
+      "ms": 9.22,
       "passed": true
     },
     {
@@ -2401,7 +2401,7 @@
       "seed": 156020,
       "moves": 63,
       "score": 3020,
-      "ms": 6.1,
+      "ms": 11.05,
       "passed": true
     }
   ]

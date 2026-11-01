@@ -1,5 +1,5 @@
 
-> tricollect@0.1.1 typecheck
+> tricollect@0.1.2 typecheck
 > tsc --noEmit
 
 npm notice

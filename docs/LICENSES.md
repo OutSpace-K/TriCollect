@@ -12,3 +12,5 @@
 来源：https://github.com/wechat-miniprogram/minigame-api-typings
 
 原设计依据：TriCollect-Project-Design-v0.1.0.docx，Library ID `libfile_9934269fa68c8191bf0861ddc97e7208`，23 页全文读取。原始文档仍保留原 Library 身份，未修改。
+
+补充：官方类型声明仅证明文档规定微秒，不证明所有运行环境实测一致。v0.1.2 使用运行时单位校准。浏览器性能时钟规范：https://w3c.github.io/hr-time/#dom-performance-now 。

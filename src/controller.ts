@@ -10,7 +10,6 @@ export type Phase =
   | "ready"
   | "active"
   | "resolving"
-  | "rotating"
   | "paused"
   | "ad"
   | "blocked"
@@ -24,8 +23,6 @@ export class Controller {
   resume: Saved | null = null;
   introProgress = 0;
   rotation = 0;
-  fromRotation = 0;
-  toRotation = 0;
   private last = 0;
   private until = 0;
   private animationStart = 0;
@@ -124,6 +121,7 @@ export class Controller {
     this.checkpoint();
   }
   tick() {
+    if (!["active", "resolving", "intro"].includes(this.phase)) return;
     const now = this.now();
     if (this.phase === "active") {
       this.state.remaining = Math.max(
@@ -141,16 +139,7 @@ export class Controller {
       this.introProgress = Math.min(1, (now - this.animationStart) / 950);
       if (now >= this.until) this.skipIntro();
     }
-    if (this.phase === "rotating") {
-      const p = Math.min(1, (now - this.animationStart) / CONFIG.rotateMs);
-      this.rotation =
-        this.fromRotation +
-        (this.toRotation - this.fromRotation) * (1 - (1 - p) ** 3);
-    }
-    if (
-      (this.phase === "resolving" || this.phase === "rotating") &&
-      now >= this.until
-    ) {
+    if (this.phase === "resolving" && now >= this.until) {
       this.phase = this.after;
       this.last = now;
       this.rotation = (this.state.view * Math.PI * 2) / 3;
@@ -173,7 +162,6 @@ export class Controller {
     this.state.history.push(clone(before));
     this.state.board = after;
     this.hint = null;
-    if (this.state.sound) this.playSound();
     this.message =
       after.cleared.length > before.cleared.length
         ? "三同收集成功 +100"
@@ -188,23 +176,41 @@ export class Controller {
     this.animationStart = this.now();
     this.until = this.animationStart + CONFIG.animationMs;
     this.checkpoint();
+    if (this.state.sound) {
+      try {
+        this.playSound();
+      } catch (error) {
+        console.warn("TriCollect audio unavailable", error);
+      }
+    }
   }
   rotate(direction: number) {
     this.tick();
     if (this.phase !== "active") return;
-    this.fromRotation = this.rotation;
-    this.toRotation = this.rotation + (direction * Math.PI * 2) / 3;
     this.state.view = (this.state.view + direction + 3) % 3;
-    this.animationStart = this.now();
-    this.until = this.animationStart + CONFIG.rotateMs;
-    this.after = "active";
-    this.phase = "rotating";
+    this.rotation = (this.state.view * Math.PI * 2) / 3;
     this.hint = null;
     this.checkpoint();
   }
+  interrupt(error: unknown) {
+    // Do not read a possibly faulty clock or re-enter the renderer here.
+    console.error("TriCollect frame interrupted", error);
+    if (
+      this.phase !== "home" &&
+      this.phase !== "result" &&
+      this.phase !== "ad"
+    ) {
+      this.phase = this.board.status === "won" ? "result" : "paused";
+      this.state.phase = this.board.status === "won" ? "result" : "paused";
+      try {
+        save(this.store, this.state);
+      } catch {}
+    }
+    this.message = "运行暂时中断，已暂停；可继续或返回首页";
+  }
   pause() {
     this.tick();
-    if (["active", "resolving", "rotating"].includes(this.phase)) {
+    if (["active", "resolving"].includes(this.phase)) {
       this.phase = this.board.status === "won" ? "result" : "paused";
       this.rotation = (this.state.view * Math.PI * 2) / 3;
       this.checkpoint();
