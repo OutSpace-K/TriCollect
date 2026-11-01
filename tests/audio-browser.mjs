@@ -94,7 +94,7 @@ try {
   await click("extend");
   assert.ok(await page.evaluate(() => players[0].paused));
   await writeFile(
-    "evidence/v0.1.8-audio-browser.json",
+    "evidence/v0.1.9-audio-browser.json",
     JSON.stringify(
       {
         passed: true,

@@ -1,4 +1,5 @@
-export const VERSION = "0.1.8";
+export const VERSION = "0.1.9";
+export const DISPLAY_NAME = "转个“球”";
 export const RULE = "tricollect-4-fixedslots-front";
 export const CONFIG = Object.freeze({
   baseMs: 300_000,
@@ -11,6 +12,7 @@ export const CONFIG = Object.freeze({
   maxExtensions: 2,
   animationMs: 240,
   rotateMs: 250,
+  misclickMs: 280,
   searchNodes: 12_000,
   searchMs: 40,
 });
@@ -41,12 +43,12 @@ export const FACES = [
   { name: "星蓝面", color: "#6552bc", shell: "#e4dcf0" },
 ];
 export const PALETTE = [
-  "#fb826f",
-  "#6dcbb7",
-  "#f3c667",
-  "#9b9ee9",
-  "#72bce5",
-  "#e7a2cf",
-  "#b8cf78",
+  "#f34462",
+  "#00bc98",
+  "#ffbf26",
+  "#7d60f0",
+  "#16a9ef",
+  "#e64fc2",
+  "#8bc72d",
 ];
 export const SYMBOLS = ["●", "◆", "▲", "✚", "■", "★", "♥"];

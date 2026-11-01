@@ -67,7 +67,7 @@ await writeFile(
 );
 await writeFile(
   "dist/browser/index.html",
-  '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><title>TriCollect · 开发预览</title><style>*{box-sizing:border-box}body{margin:0;background:#fff9ed;display:flex;justify-content:center}canvas{display:block;touch-action:none}</style><canvas aria-label="三面球仓游戏"></canvas><script src="app.js"></script></html>',
+  '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><title>转个“球” · 开发预览</title><style>*{box-sizing:border-box}body{margin:0;background:#fff9ed;display:flex;justify-content:center}canvas{display:block;touch-action:none}</style><canvas aria-label="转个“球”游戏"></canvas><script src="app.js"></script></html>',
 );
 console.log(
   "Built native WeChat game + optional browser development preview. Real device verification pending.",

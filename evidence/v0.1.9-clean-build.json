@@ -1,0 +1,16 @@
+{
+  "npmCi": true,
+  "build": true,
+  "typecheck": true,
+  "byteIdentical": {
+    "dist/wechat/game.js": "5fdd32592fd12c754ef58147e21a6fed346c1cfc556dcb5ca9a042febd1eab68",
+    "dist/browser/app.js": "eb2196960b455f9273de310f142a7adac8f7cfee2d33ccf83667c6dd5f302b97",
+    "dist/browser/index.html": "495ec184a99f50a33ae8494e6520b8835cb81d75b54795c4d8b155ae9dab9391",
+    "assets/ambience.wav": "2d4377e6cd099a471e3733440959eb3ff2594ae1f693545503686cf7c234a85b",
+    "dist/wechat/assets/ambience.wav": "2d4377e6cd099a471e3733440959eb3ff2594ae1f693545503686cf7c234a85b",
+    "dist/browser/assets/ambience.wav": "2d4377e6cd099a471e3733440959eb3ff2594ae1f693545503686cf7c234a85b",
+    "assets/background.png": "049248ad9b4eee6be155e4c06ae6f527edfd3e5499a62f82c6e47b492d94c85b",
+    "dist/wechat/assets/background.png": "049248ad9b4eee6be155e4c06ae6f527edfd3e5499a62f82c6e47b492d94c85b",
+    "dist/browser/assets/background.png": "049248ad9b4eee6be155e4c06ae6f527edfd3e5499a62f82c6e47b492d94c85b"
+  }
+}

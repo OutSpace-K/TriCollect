@@ -1,5 +1,13 @@
 import { projection } from "./projection";
-import { PALETTE, SYMBOLS, PRESETS, CONFIG, VERSION, FACES } from "../config";
+import {
+  PALETTE,
+  SYMBOLS,
+  PRESETS,
+  CONFIG,
+  VERSION,
+  DISPLAY_NAME,
+  FACES,
+} from "../config";
 import { faceVisible, faceCoordinates } from "../core/rules";
 import { Controller } from "../controller";
 export type Button = {
@@ -13,6 +21,13 @@ export type Button = {
 };
 export class Scene {
   buttons: Button[] = [];
+  misclickFeedback: {
+    x: number;
+    y: number;
+    started: number;
+    session: string;
+    view: number;
+  } | null = null;
   backgroundLoaded = false;
   private background: CanvasImageSource | null = null;
   setBackground(image: CanvasImageSource) {
@@ -163,21 +178,45 @@ export class Scene {
         y,
         r,
       );
-      gradient.addColorStop(0, "#fffdf4");
-      gradient.addColorStop(0.18, shade(0.48));
-      gradient.addColorStop(0.58, PALETTE[type]);
-      gradient.addColorStop(1, shade(-0.38));
+      gradient.addColorStop(0, shade(0.72));
+      gradient.addColorStop(0.25, shade(0.26));
+      gradient.addColorStop(0.5, PALETTE[type]);
+      gradient.addColorStop(0.78, shade(-0.12));
+      gradient.addColorStop(1, shade(-0.46));
       c.fillStyle = gradient;
       c.beginPath();
       c.arc(x, y, r, 0, Math.PI * 2);
       c.fill();
-      c.fillStyle = "#ffffffb8";
+      const glint = c.createRadialGradient(
+        x - r * 0.31,
+        y - r * 0.4,
+        0,
+        x - r * 0.31,
+        y - r * 0.4,
+        r * 0.48,
+      );
+      glint.addColorStop(0, "#ffffffdc");
+      glint.addColorStop(0.38, "#ffffff84");
+      glint.addColorStop(1, "#ffffff00");
+      c.fillStyle = glint;
+      c.beginPath();
+      c.ellipse(
+        x - r * 0.31,
+        y - r * 0.4,
+        r * 0.48,
+        r * 0.4,
+        -0.5,
+        0,
+        Math.PI * 2,
+      );
+      c.fill();
+      c.fillStyle = "#fffffff2";
       c.beginPath();
       c.ellipse(
         x - r * 0.3,
         y - r * 0.38,
-        r * 0.24,
-        r * 0.13,
+        r * 0.19,
+        r * 0.085,
         -0.55,
         0,
         Math.PI * 2,
@@ -187,8 +226,8 @@ export class Scene {
         SYMBOLS[type],
         x,
         y + r * 0.34,
-        Math.max(8, r * 0.57),
-        "#44322c",
+        Math.max(7, r * 0.51),
+        "#302447a8",
         "center",
       );
     } finally {
@@ -229,11 +268,87 @@ export class Scene {
     c.fill();
     c.stroke();
   }
+  private chamberPath(x: number, top: number, y: number, r: number) {
+    const c = this.ctx,
+      bevel = Math.min(9, r * 0.3);
+    c.beginPath();
+    c.moveTo(x - r + bevel, top);
+    c.lineTo(x + r - bevel, top);
+    c.quadraticCurveTo(x + r, top, x + r, top + bevel);
+    c.lineTo(x + r, y - bevel);
+    c.lineTo(x + r - bevel, y);
+    c.lineTo(x - r + bevel, y);
+    c.lineTo(x - r, y - bevel);
+    c.lineTo(x - r, top + bevel);
+    c.quadraticCurveTo(x - r, top, x - r + bevel, top);
+    c.closePath();
+  }
+  private transmittedBackdrop(x: number, y: number, w: number, h: number) {
+    const c = this.ctx;
+    c.fillStyle = "#f8f2e4";
+    c.fillRect(x, y, w, h);
+    if (this.background) {
+      const scale = Math.max(this.width / 600, this.height / 1040),
+        left = (this.width - 600 * scale) / 2,
+        top = (this.height - 1040 * scale) / 2;
+      c.drawImage(
+        this.background,
+        (x - left) / scale,
+        (y - top) / scale,
+        w / scale,
+        h / scale,
+        x,
+        y,
+        w,
+        h,
+      );
+    }
+  }
+  private drawMisclick() {
+    const f = this.misclickFeedback;
+    if (!f) return;
+    const p = (this.game.now() - f.started) / CONFIG.misclickMs;
+    if (p >= 1 || p < 0) {
+      this.misclickFeedback = null;
+      return;
+    }
+    const c = this.ctx,
+      r = 12 + 20 * p;
+    c.save();
+    try {
+      c.globalAlpha = Math.sin(Math.PI * p) * 0.55;
+      const glow = c.createRadialGradient(f.x, f.y, 0, f.x, f.y, r);
+      glow.addColorStop(0, "#ffffff");
+      glow.addColorStop(0.22, "#b1fff0");
+      glow.addColorStop(1, "#68dfdf00");
+      c.fillStyle = glow;
+      c.beginPath();
+      c.arc(f.x, f.y, r, 0, Math.PI * 2);
+      c.fill();
+      c.strokeStyle = "#d7fff8";
+      c.lineWidth = 1.2;
+      c.beginPath();
+      c.moveTo(f.x - 7, f.y);
+      c.lineTo(f.x + 7, f.y);
+      c.moveTo(f.x, f.y - 7);
+      c.lineTo(f.x, f.y + 7);
+      c.stroke();
+    } finally {
+      c.restore();
+    }
+  }
   render() {
     const c = this.ctx,
       g = this.game,
       w = this.width,
       h = this.height;
+    if (
+      this.misclickFeedback &&
+      (g.phase !== "active" ||
+        this.misclickFeedback.session !== g.state.session ||
+        this.misclickFeedback.view !== g.state.view)
+    )
+      this.misclickFeedback = null;
     this.renderedIds = [];
     this.ghostPositions = [];
     this.ballPositions = [];
@@ -274,8 +389,8 @@ export class Scene {
       this.home();
       return;
     }
-    this.text("TRICOLLECT", 22, 35, 13, "#786254");
-    this.text("三面球仓", 22, 66, 26, "#3c302a");
+    this.text("旋转 · 收集 · 消除", 22, 35, 12, "#786254");
+    this.text(DISPLAY_NAME, 22, 66, 26, "#3c302a");
     this.text(
       PRESETS[g.state.preset].name + " · " + g.state.seed,
       22,
@@ -309,6 +424,7 @@ export class Scene {
     const trayY = h - 143,
       boardBottom = trayY - 30;
     this.drawBoard(147, boardBottom);
+    this.drawMisclick();
     this.button(
       "pause",
       "暂停",
@@ -322,7 +438,7 @@ export class Scene {
       !["active", "resolving", "rotating"].includes(g.phase),
     );
     this.text(
-      "点击亮圈顶部球 · 横滑切面",
+      "轻触正面顶球 · 横滑转动球仓",
       w / 2,
       boardBottom + 10,
       12,
@@ -510,63 +626,64 @@ export class Scene {
       const { t, x, y } = item,
         ty = y - height,
         front = visible.has(t.id);
-      // Opaque cream compositing prevents back-row colors leaking through light glass outlines.
-      const glass = c.createLinearGradient(x - radius, 0, x + radius, 0);
-      glass.addColorStop(0, face.shell);
-      glass.addColorStop(0.22, front ? "#fffdf6" : "#f6eddd");
-      glass.addColorStop(0.7, front ? "#fff9ed" : "#eee1ce");
-      glass.addColorStop(0.87, face.shell);
-      glass.addColorStop(1, "#bba993");
-      c.fillStyle = glass;
-      c.fillRect(x - radius, ty, radius * 2, height);
-      // Left-front light creates a bright edge and a darker far-right wall.
-      c.fillStyle = "#ffffffaa";
-      c.fillRect(
-        x - radius + radius * 0.14,
-        ty + 10,
-        Math.max(1, radius * 0.09),
-        height - 15,
-      );
-      c.fillStyle = face.color + "55";
-      c.fillRect(
-        x + radius - radius * 0.14,
-        ty + 10,
-        Math.max(1, radius * 0.08),
-        height - 15,
-      );
-      c.strokeStyle = face.color + "50";
-      c.lineWidth = 1;
-      for (let stripe = 0; stripe < 3; stripe++) {
-        const sy = ty + 26 + (stripe * (height - 40)) / 3;
+      // Optical backdrop transmission is composited independently of hidden game contents.
+      c.save();
+      try {
+        this.chamberPath(x, ty, y, radius);
+        c.clip();
+        this.transmittedBackdrop(x - radius, ty, radius * 2, height);
+        const glass = c.createLinearGradient(x - radius, 0, x + radius, 0);
+        glass.addColorStop(0, face.color + "66");
+        glass.addColorStop(0.09, "#efffffda");
+        glass.addColorStop(0.19, "#d6f5ff38");
+        glass.addColorStop(0.65, "#ffffff08");
+        glass.addColorStop(0.85, face.color + "22");
+        glass.addColorStop(1, "#647b8a88");
+        c.fillStyle = glass;
+        c.fillRect(x - radius, ty, radius * 2, height);
+        c.strokeStyle = "#ffffffd9";
+        c.lineWidth = 1.3;
         c.beginPath();
-        c.moveTo(x - radius + 2, sy);
-        c.lineTo(x - radius + radius * 0.16, sy + 5);
+        c.moveTo(x - radius * 0.78, ty + 12);
+        c.quadraticCurveTo(
+          x - radius * 0.92,
+          ty + height * 0.48,
+          x - radius * 0.76,
+          y - 12,
+        );
         c.stroke();
+        c.strokeStyle = face.color + "66";
+        c.lineWidth = 1;
+        c.beginPath();
+        c.moveTo(x + radius * 0.83, ty + 10);
+        c.lineTo(x + radius * 0.83, y - 12);
+        c.stroke();
+      } finally {
+        c.restore();
       }
-      c.strokeStyle = "#bba990";
+      c.strokeStyle = "#8aa1a3aa";
       c.lineWidth = 1;
+      this.chamberPath(x, ty, y, radius);
+      c.stroke();
+      // Beveled jewel socket, metallic far edge and inset opening.
+      const metal = c.createLinearGradient(
+        x - radius,
+        ty - opening,
+        x + radius,
+        ty + opening,
+      );
+      metal.addColorStop(0, "#fff8d8");
+      metal.addColorStop(0.45, "#d5dfea");
+      metal.addColorStop(1, "#8b939f");
+      c.fillStyle = metal;
       c.beginPath();
       c.moveTo(x - radius, ty + 2);
-      c.lineTo(x - radius, y - 3);
-      c.moveTo(x + radius, ty + 2);
-      c.lineTo(x + radius, y - 3);
-      c.stroke();
-      c.fillStyle = "#d8c7af";
-      c.beginPath();
-      c.ellipse(x, y - 2, radius, opening, 0, 0, Math.PI * 2);
-      c.fill();
-      c.stroke();
-      if (!front)
-        this.rearOpenings.push({
-          id: t.id,
-          x,
-          y: ty + 3,
-          rx: radius,
-          ry: opening,
-        });
-      c.fillStyle = "#fff9ed";
-      c.beginPath();
-      c.ellipse(x, ty + 3, radius, opening, 0, 0, Math.PI * 2);
+      c.lineTo(x - radius * 0.63, ty - opening * 0.65);
+      c.lineTo(x + radius * 0.52, ty - opening * 0.65);
+      c.lineTo(x + radius, ty + 2);
+      c.lineTo(x + radius * 0.68, ty + opening);
+      c.lineTo(x - radius * 0.68, ty + opening);
+      c.closePath();
       c.fill();
       c.stroke();
       const well = c.createLinearGradient(
@@ -575,13 +692,31 @@ export class Scene {
         x + radius,
         ty + opening,
       );
-      well.addColorStop(0, "#fff4db");
-      well.addColorStop(0.55, face.shell);
-      well.addColorStop(1, "#96836b");
+      well.addColorStop(0, "#768b9e");
+      well.addColorStop(0.4, face.shell);
+      well.addColorStop(1, "#f4ffff");
       c.fillStyle = well;
       c.beginPath();
-      c.ellipse(x, ty + 2, radius * 0.74, opening * 0.66, 0, 0, Math.PI * 2);
+      c.ellipse(x, ty + 2, radius * 0.72, opening * 0.58, 0, 0, Math.PI * 2);
       c.fill();
+      c.strokeStyle = "#ffffffdd";
+      c.beginPath();
+      c.moveTo(x - radius * 0.55, ty + opening * 0.8);
+      c.lineTo(x + radius * 0.55, ty + opening * 0.8);
+      c.stroke();
+      c.fillStyle = metal;
+      this.chamberPath(x, y - 7, y + 3, radius);
+      c.fill();
+      c.fillStyle = face.color + "66";
+      c.fillRect(x - radius * 0.6, y - 1, radius * 1.2, 1.5);
+      if (!front)
+        this.rearOpenings.push({
+          id: t.id,
+          x,
+          y: ty + 3,
+          rx: radius,
+          ry: opening,
+        });
       const previous =
         g.phase === "resolving"
           ? g.state.history.at(-1)?.tubes.find((old) => old.id === t.id)
@@ -615,14 +750,55 @@ export class Scene {
           this.shadowBall(x, by, ballRadius);
         }
       }
-      if (!front) continue;
-      const topY = y - ballRadius - 6 - (t.balls.length - 1) * step,
-        hitRadius = Math.min(radius * 0.77, step * 0.48);
-      c.strokeStyle = g.hint === t.id ? "#7636dc" : "#d64a2a";
-      c.lineWidth = 2;
+      c.save();
+      try {
+        this.chamberPath(x, ty, y, radius);
+        c.clip();
+        c.fillStyle = "#ffffff14";
+        c.beginPath();
+        c.moveTo(x - radius, ty + height * 0.16);
+        c.lineTo(x + radius, ty + height * 0.34);
+        c.lineTo(x + radius, ty + height * 0.4);
+        c.lineTo(x - radius, ty + height * 0.22);
+        c.closePath();
+        c.fill();
+      } finally {
+        c.restore();
+      }
+      // The curved reflections sit on the front wall, above the balls, without covering their centers.
+      c.strokeStyle = "#ffffff8c";
+      c.lineWidth = Math.max(1, radius * 0.075);
       c.beginPath();
-      c.arc(x, topY, hitRadius, 0, Math.PI * 2);
+      c.moveTo(x - radius * 0.7, ty + 16);
+      c.bezierCurveTo(
+        x - radius * 0.83,
+        ty + height * 0.3,
+        x - radius * 0.78,
+        ty + height * 0.55,
+        x - radius * 0.66,
+        y - 12,
+      );
       c.stroke();
+      const topY = y - ballRadius - 6 - (t.balls.length - 1) * step;
+      this.bodies.push({
+        id: t.id,
+        x: x - radius,
+        y: ty - opening,
+        w: radius * 2,
+        h: height + opening,
+        topY,
+      });
+      if (!front) continue;
+      const hitRadius = Math.min(radius * 0.77, step * 0.48);
+      if (g.hint === t.id)
+        this.text(
+          "✦",
+          x + ballRadius * 0.65,
+          topY - ballRadius * 0.65,
+          13,
+          "#3849b2",
+          "center",
+        );
       this.text(
         String(g.board.tubes.indexOf(t) + 1),
         x,
@@ -632,14 +808,6 @@ export class Scene {
         "center",
       );
       this.targets.push({ id: t.id, x, y: topY, r: hitRadius });
-      this.bodies.push({
-        id: t.id,
-        x: x - radius,
-        y: ty,
-        w: radius * 2,
-        h: height,
-        topY,
-      });
     }
     if (g.phase === "resolving") {
       const prev = g.state.history.at(-1),
@@ -663,18 +831,84 @@ export class Scene {
       }
     }
   }
+  private homeTitle() {
+    const c = this.ctx,
+      scale = Math.min(1, (this.width - 48) / 230),
+      left = this.width / 2 - 98 * scale;
+    const parts = [
+      { text: "转个", x: 0, size: 42, y: 130 },
+      { text: "“", x: 84, size: 28, y: 125 },
+      { text: "球", x: 108, size: 64, y: 140 },
+      { text: "”", x: 172, size: 28, y: 125 },
+    ];
+    c.save();
+    try {
+      c.textAlign = "left";
+      c.lineJoin = "round";
+      for (const part of parts) {
+        const x = left + part.x * scale,
+          y = part.y,
+          size = part.size * scale;
+        c.font = `900 ${size}px sans-serif`;
+        c.fillStyle = "#8f6e8050";
+        c.fillText(part.text, x + 2, y + 7);
+        for (let depth = 4; depth >= 1; depth--) {
+          c.fillStyle = part.text === "球" ? "#9b456f" : "#77628e";
+          c.fillText(part.text, x + depth * 0.35, y + depth);
+        }
+        c.lineWidth = 3 * scale;
+        c.strokeStyle = "#fffcf0";
+        c.strokeText(part.text, x, y);
+        const shine = c.createLinearGradient(0, y - size, 0, y);
+        if (part.text === "球") {
+          shine.addColorStop(0, "#fff0b9");
+          shine.addColorStop(0.25, "#ffb53d");
+          shine.addColorStop(0.53, "#fa6575");
+          shine.addColorStop(1, "#c847a1");
+        } else {
+          shine.addColorStop(0, "#ffffff");
+          shine.addColorStop(0.35, "#d4bef8");
+          shine.addColorStop(1, "#7560b7");
+        }
+        c.fillStyle = shine;
+        c.fillText(part.text, x, y);
+      }
+    } finally {
+      c.restore();
+    }
+  }
   private home() {
     const w = this.width,
       h = this.height;
-    this.text("T R I C O L L E C T", w / 2, 76, 13, "#786254", "center");
-    this.text("三面球仓", w / 2, 122, 38, "#3c302a", "center");
-    this.text("转一个角度，发现下一组。", w / 2, 155, 14, "#786254", "center");
-    for (let i = 0; i < 5; i++) {
-      const x = w / 2 + (i - 2) * 43,
-        y = 230 + Math.abs(i - 2) * 14;
-      this.rect(x - 17, y - 28, 34, 80, "#e7d5bf");
-      this.ball(i, x, y, 14);
-      this.ball((i + 2) % 5, x, y + 32, 14);
+    this.text("转一转 · 凑三颗", w / 2, 43, 13, "#786254", "center");
+    this.homeTitle();
+    this.text("转一个角度，发现下一组。", w / 2, 174, 14, "#786254", "center");
+    const c = this.ctx;
+    for (let i = 0; i < 3; i++) {
+      const x = w / 2 + (i - 1) * 61,
+        top = 202 + Math.abs(i - 1) * 12,
+        bottom = top + 112;
+      this.chamberPath(x, top, bottom, 23);
+      const glass = c.createLinearGradient(x - 23, top, x + 23, bottom);
+      glass.addColorStop(0, "#fffefecc");
+      glass.addColorStop(0.22, "#c9f4f54d");
+      glass.addColorStop(0.76, "#ffffff18");
+      glass.addColorStop(1, "#9ba9c078");
+      c.fillStyle = glass;
+      c.fill();
+      c.strokeStyle = "#a8aaaab0";
+      c.lineWidth = 1;
+      c.stroke();
+      for (let j = 0; j < 3; j++)
+        this.ball((i * 2 + j) % 7, x, top + 22 + j * 32, 16);
+      c.fillStyle = "#bec9d5";
+      this.chamberPath(x, bottom - 5, bottom + 3, 23);
+      c.fill();
+      c.strokeStyle = "#ffffffe0";
+      c.beginPath();
+      c.moveTo(x - 19, top + 8);
+      c.lineTo(x - 19, bottom - 8);
+      c.stroke();
     }
     this.text(
       "取顶部球放入七格槽，凑齐三颗同类。",
@@ -692,7 +926,7 @@ export class Scene {
       "#786254",
       "center",
     );
-    const y = Math.min(h - 260, 405);
+    const y = Math.min(h - 280, 405);
     PRESETS.forEach((p, i) =>
       this.button(
         "start-" + i,
@@ -856,6 +1090,7 @@ export class Scene {
       .reverse()
       .find((t) => Math.hypot(x - t.x, y - t.y) <= t.r);
     if (target) {
+      this.misclickFeedback = null;
       this.game.pick(target.id);
       return;
     }
@@ -864,7 +1099,14 @@ export class Scene {
       .reverse()
       .find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
     if (body) {
-      this.game.message = "只能点击正面亮圈里的最上球";
+      this.misclickFeedback = {
+        x,
+        y,
+        started: this.game.now(),
+        session: this.game.state.session,
+        view: this.game.state.view,
+      };
+      this.game.message = "只能取正面舱内最上方的球";
     }
   }
 }

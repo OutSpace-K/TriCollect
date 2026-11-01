@@ -1,0 +1,25 @@
+{
+  "baselineVersion": "0.1.8",
+  "candidateVersion": "0.1.9",
+  "displayName": "转个“球”",
+  "platform": "Actual Chromium previews, not WeChat Developer Tools",
+  "widths": [
+    390,
+    320
+  ],
+  "agentPixelInspection": [
+    "Opened both version previews and inspected their screenshots",
+    "Home effect lettering emphasizes 球 with rounded stroke joins, layered depth and warm highlights; narrow title not cropped",
+    "Permanent red selection rings absent on all three faces",
+    "Local misclick glow observed at pulse midpoint, then disappears",
+    "More saturated glossy balls, neutral hidden spheres, beveled sockets and thin reflective glass walls",
+    "Background includes soft architectural arch, display surface and sparse light particles",
+    "Rotation and inner reveal retain hidden-type masking"
+  ],
+  "screenshotsIncludedInDeliverable": false,
+  "limitations": [
+    "Canvas 2.5D material illusion, no physical refraction or full 3D scene",
+    "Visual preference awaits playtest acceptance",
+    "No actual WeChat device visual/performance check"
+  ]
+}

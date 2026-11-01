@@ -1,10 +1,11 @@
 {
   "project": "TriCollect",
-  "version": "0.1.8",
+  "displayName": "转个“球”",
+  "version": "0.1.9",
   "ruleVersion": "tricollect-4-fixedslots-front",
-  "baseCommit": "680297527f915119717b20725fdad8e2042d2992",
+  "baseCommit": "6c7949ed8cbf24b0bccfcdd515aa412f96cf36f3",
   "unitAndMockTests": {
-    "passed": 65,
+    "passed": 68,
     "failed": 0,
     "fullFinalRun": true
   },
@@ -15,21 +16,22 @@
     "presetsWonWithoutAds": 3,
     "errors": []
   },
-  "singleUndo": "Matching and removed-pipe restoration, consumed availability across pause/rotation/reload, next valid pick rearming, legacy-save fallback and rejected malformed flag passed",
-  "visual": "Three faces and 320px; touching fixed slots, neutral shaded balls, actual PNG load, correct arrow motion, centered rigid rotation and inner reveal passed",
+  "misclick": "Single neutral 280ms local pulse for invalid chamber taps; no pick or time penalty; background/UI excluded; phase/view/session/valid-pick cancellation passed",
+  "display": "Exact Chinese curved double quotes; home effect lettering and 320px button bounds passed",
+  "visual": "Actual v0.1.8/v0.1.9 browser pixel comparison, three faces, turning, 320px, glossy spheres, faceted glass, original background and pulse inspected; not aesthetic acceptance",
   "background": {
     "file": "assets/background.png",
-    "bytes": 122412,
-    "sha256": "2845ad4e5bab0c0899063ce02b7f1797eb96799e234da80b714395edb58192b2",
-    "nativeLoadAndFailureMock": "passed"
+    "bytes": 289789,
+    "sha256": "049248ad9b4eee6be155e4c06ae6f527edfd3e5499a62f82c6e47b492d94c85b"
   },
   "audio": "Unchanged original 32s music; real HTMLAudio lifecycle passed; no human listening",
   "typecheck": "passed",
-  "cleanBuild": "npm ci/build/typecheck; bundles/background/audio byte-identical",
+  "cleanBuild": "npm ci/build/typecheck; bundles/title/background/audio byte-identical",
   "scope": "Node, simulated wx and Chromium only; not actual WeChat Developer Tools or devices",
-  "publication": "Version 0.1.8 source, prebuilt game and validation records. No deployment.",
+  "publication": "Version 0.1.9 source, prebuilt game and validation records. No deployment.",
   "remaining": [
     "Actual WeChat import/device/performance",
+    "Visual preference and playtest acceptance",
     "Real ad completion/cancellation/error callbacks",
     "Human musical taste/listening",
     "Human 300s balance"

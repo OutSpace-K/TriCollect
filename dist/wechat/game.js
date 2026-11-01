@@ -104,7 +104,8 @@
   }
 
   // src/config.ts
-  var VERSION = "0.1.8";
+  var VERSION = "0.1.9";
+  var DISPLAY_NAME = "\u8F6C\u4E2A\u201C\u7403\u201D";
   var RULE = "tricollect-4-fixedslots-front";
   var CONFIG = Object.freeze({
     baseMs: 3e5,
@@ -117,6 +118,7 @@
     maxExtensions: 2,
     animationMs: 240,
     rotateMs: 250,
+    misclickMs: 280,
     searchNodes: 12e3,
     searchMs: 40
   });
@@ -131,13 +133,13 @@
     { name: "\u661F\u84DD\u9762", color: "#6552bc", shell: "#e4dcf0" }
   ];
   var PALETTE = [
-    "#fb826f",
-    "#6dcbb7",
-    "#f3c667",
-    "#9b9ee9",
-    "#72bce5",
-    "#e7a2cf",
-    "#b8cf78"
+    "#f34462",
+    "#00bc98",
+    "#ffbf26",
+    "#7d60f0",
+    "#16a9ef",
+    "#e64fc2",
+    "#8bc72d"
   ];
   var SYMBOLS = ["\u25CF", "\u25C6", "\u25B2", "\u271A", "\u25A0", "\u2605", "\u2665"];
 
@@ -857,6 +859,7 @@
       this.width = width2;
       this.height = height2;
       __publicField(this, "buttons", []);
+      __publicField(this, "misclickFeedback", null);
       __publicField(this, "backgroundLoaded", false);
       __publicField(this, "background", null);
       __publicField(this, "renderedIds", []);
@@ -945,21 +948,45 @@
           y,
           r
         );
-        gradient.addColorStop(0, "#fffdf4");
-        gradient.addColorStop(0.18, shade(0.48));
-        gradient.addColorStop(0.58, PALETTE[type]);
-        gradient.addColorStop(1, shade(-0.38));
+        gradient.addColorStop(0, shade(0.72));
+        gradient.addColorStop(0.25, shade(0.26));
+        gradient.addColorStop(0.5, PALETTE[type]);
+        gradient.addColorStop(0.78, shade(-0.12));
+        gradient.addColorStop(1, shade(-0.46));
         c.fillStyle = gradient;
         c.beginPath();
         c.arc(x, y, r, 0, Math.PI * 2);
         c.fill();
-        c.fillStyle = "#ffffffb8";
+        const glint = c.createRadialGradient(
+          x - r * 0.31,
+          y - r * 0.4,
+          0,
+          x - r * 0.31,
+          y - r * 0.4,
+          r * 0.48
+        );
+        glint.addColorStop(0, "#ffffffdc");
+        glint.addColorStop(0.38, "#ffffff84");
+        glint.addColorStop(1, "#ffffff00");
+        c.fillStyle = glint;
+        c.beginPath();
+        c.ellipse(
+          x - r * 0.31,
+          y - r * 0.4,
+          r * 0.48,
+          r * 0.4,
+          -0.5,
+          0,
+          Math.PI * 2
+        );
+        c.fill();
+        c.fillStyle = "#fffffff2";
         c.beginPath();
         c.ellipse(
           x - r * 0.3,
           y - r * 0.38,
-          r * 0.24,
-          r * 0.13,
+          r * 0.19,
+          r * 0.085,
           -0.55,
           0,
           Math.PI * 2
@@ -969,8 +996,8 @@
           SYMBOLS[type],
           x,
           y + r * 0.34,
-          Math.max(8, r * 0.57),
-          "#44322c",
+          Math.max(7, r * 0.51),
+          "#302447a8",
           "center"
         );
       } finally {
@@ -1011,8 +1038,75 @@
       c.fill();
       c.stroke();
     }
+    chamberPath(x, top, y, r) {
+      const c = this.ctx, bevel = Math.min(9, r * 0.3);
+      c.beginPath();
+      c.moveTo(x - r + bevel, top);
+      c.lineTo(x + r - bevel, top);
+      c.quadraticCurveTo(x + r, top, x + r, top + bevel);
+      c.lineTo(x + r, y - bevel);
+      c.lineTo(x + r - bevel, y);
+      c.lineTo(x - r + bevel, y);
+      c.lineTo(x - r, y - bevel);
+      c.lineTo(x - r, top + bevel);
+      c.quadraticCurveTo(x - r, top, x - r + bevel, top);
+      c.closePath();
+    }
+    transmittedBackdrop(x, y, w, h) {
+      const c = this.ctx;
+      c.fillStyle = "#f8f2e4";
+      c.fillRect(x, y, w, h);
+      if (this.background) {
+        const scale = Math.max(this.width / 600, this.height / 1040), left = (this.width - 600 * scale) / 2, top = (this.height - 1040 * scale) / 2;
+        c.drawImage(
+          this.background,
+          (x - left) / scale,
+          (y - top) / scale,
+          w / scale,
+          h / scale,
+          x,
+          y,
+          w,
+          h
+        );
+      }
+    }
+    drawMisclick() {
+      const f = this.misclickFeedback;
+      if (!f) return;
+      const p = (this.game.now() - f.started) / CONFIG.misclickMs;
+      if (p >= 1 || p < 0) {
+        this.misclickFeedback = null;
+        return;
+      }
+      const c = this.ctx, r = 12 + 20 * p;
+      c.save();
+      try {
+        c.globalAlpha = Math.sin(Math.PI * p) * 0.55;
+        const glow = c.createRadialGradient(f.x, f.y, 0, f.x, f.y, r);
+        glow.addColorStop(0, "#ffffff");
+        glow.addColorStop(0.22, "#b1fff0");
+        glow.addColorStop(1, "#68dfdf00");
+        c.fillStyle = glow;
+        c.beginPath();
+        c.arc(f.x, f.y, r, 0, Math.PI * 2);
+        c.fill();
+        c.strokeStyle = "#d7fff8";
+        c.lineWidth = 1.2;
+        c.beginPath();
+        c.moveTo(f.x - 7, f.y);
+        c.lineTo(f.x + 7, f.y);
+        c.moveTo(f.x, f.y - 7);
+        c.lineTo(f.x, f.y + 7);
+        c.stroke();
+      } finally {
+        c.restore();
+      }
+    }
     render() {
       const c = this.ctx, g = this.game, w = this.width, h = this.height;
+      if (this.misclickFeedback && (g.phase !== "active" || this.misclickFeedback.session !== g.state.session || this.misclickFeedback.view !== g.state.view))
+        this.misclickFeedback = null;
       this.renderedIds = [];
       this.ghostPositions = [];
       this.ballPositions = [];
@@ -1053,8 +1147,8 @@
         this.home();
         return;
       }
-      this.text("TRICOLLECT", 22, 35, 13, "#786254");
-      this.text("\u4E09\u9762\u7403\u4ED3", 22, 66, 26, "#3c302a");
+      this.text("\u65CB\u8F6C \xB7 \u6536\u96C6 \xB7 \u6D88\u9664", 22, 35, 12, "#786254");
+      this.text(DISPLAY_NAME, 22, 66, 26, "#3c302a");
       this.text(
         PRESETS[g.state.preset].name + " \xB7 " + g.state.seed,
         22,
@@ -1087,6 +1181,7 @@
       }
       const trayY = h - 143, boardBottom = trayY - 30;
       this.drawBoard(147, boardBottom);
+      this.drawMisclick();
       this.button(
         "pause",
         "\u6682\u505C",
@@ -1100,7 +1195,7 @@
         !["active", "resolving", "rotating"].includes(g.phase)
       );
       this.text(
-        "\u70B9\u51FB\u4EAE\u5708\u9876\u90E8\u7403 \xB7 \u6A2A\u6ED1\u5207\u9762",
+        "\u8F7B\u89E6\u6B63\u9762\u9876\u7403 \xB7 \u6A2A\u6ED1\u8F6C\u52A8\u7403\u4ED3",
         w / 2,
         boardBottom + 10,
         12,
@@ -1271,61 +1366,62 @@
       }
       for (const item of ordered) {
         const { t, x, y } = item, ty = y - height2, front = visible.has(t.id);
-        const glass = c.createLinearGradient(x - radius, 0, x + radius, 0);
-        glass.addColorStop(0, face.shell);
-        glass.addColorStop(0.22, front ? "#fffdf6" : "#f6eddd");
-        glass.addColorStop(0.7, front ? "#fff9ed" : "#eee1ce");
-        glass.addColorStop(0.87, face.shell);
-        glass.addColorStop(1, "#bba993");
-        c.fillStyle = glass;
-        c.fillRect(x - radius, ty, radius * 2, height2);
-        c.fillStyle = "#ffffffaa";
-        c.fillRect(
-          x - radius + radius * 0.14,
-          ty + 10,
-          Math.max(1, radius * 0.09),
-          height2 - 15
-        );
-        c.fillStyle = face.color + "55";
-        c.fillRect(
-          x + radius - radius * 0.14,
-          ty + 10,
-          Math.max(1, radius * 0.08),
-          height2 - 15
-        );
-        c.strokeStyle = face.color + "50";
-        c.lineWidth = 1;
-        for (let stripe = 0; stripe < 3; stripe++) {
-          const sy = ty + 26 + stripe * (height2 - 40) / 3;
+        c.save();
+        try {
+          this.chamberPath(x, ty, y, radius);
+          c.clip();
+          this.transmittedBackdrop(x - radius, ty, radius * 2, height2);
+          const glass = c.createLinearGradient(x - radius, 0, x + radius, 0);
+          glass.addColorStop(0, face.color + "66");
+          glass.addColorStop(0.09, "#efffffda");
+          glass.addColorStop(0.19, "#d6f5ff38");
+          glass.addColorStop(0.65, "#ffffff08");
+          glass.addColorStop(0.85, face.color + "22");
+          glass.addColorStop(1, "#647b8a88");
+          c.fillStyle = glass;
+          c.fillRect(x - radius, ty, radius * 2, height2);
+          c.strokeStyle = "#ffffffd9";
+          c.lineWidth = 1.3;
           c.beginPath();
-          c.moveTo(x - radius + 2, sy);
-          c.lineTo(x - radius + radius * 0.16, sy + 5);
+          c.moveTo(x - radius * 0.78, ty + 12);
+          c.quadraticCurveTo(
+            x - radius * 0.92,
+            ty + height2 * 0.48,
+            x - radius * 0.76,
+            y - 12
+          );
           c.stroke();
+          c.strokeStyle = face.color + "66";
+          c.lineWidth = 1;
+          c.beginPath();
+          c.moveTo(x + radius * 0.83, ty + 10);
+          c.lineTo(x + radius * 0.83, y - 12);
+          c.stroke();
+        } finally {
+          c.restore();
         }
-        c.strokeStyle = "#bba990";
+        c.strokeStyle = "#8aa1a3aa";
         c.lineWidth = 1;
+        this.chamberPath(x, ty, y, radius);
+        c.stroke();
+        const metal = c.createLinearGradient(
+          x - radius,
+          ty - opening,
+          x + radius,
+          ty + opening
+        );
+        metal.addColorStop(0, "#fff8d8");
+        metal.addColorStop(0.45, "#d5dfea");
+        metal.addColorStop(1, "#8b939f");
+        c.fillStyle = metal;
         c.beginPath();
         c.moveTo(x - radius, ty + 2);
-        c.lineTo(x - radius, y - 3);
-        c.moveTo(x + radius, ty + 2);
-        c.lineTo(x + radius, y - 3);
-        c.stroke();
-        c.fillStyle = "#d8c7af";
-        c.beginPath();
-        c.ellipse(x, y - 2, radius, opening, 0, 0, Math.PI * 2);
-        c.fill();
-        c.stroke();
-        if (!front)
-          this.rearOpenings.push({
-            id: t.id,
-            x,
-            y: ty + 3,
-            rx: radius,
-            ry: opening
-          });
-        c.fillStyle = "#fff9ed";
-        c.beginPath();
-        c.ellipse(x, ty + 3, radius, opening, 0, 0, Math.PI * 2);
+        c.lineTo(x - radius * 0.63, ty - opening * 0.65);
+        c.lineTo(x + radius * 0.52, ty - opening * 0.65);
+        c.lineTo(x + radius, ty + 2);
+        c.lineTo(x + radius * 0.68, ty + opening);
+        c.lineTo(x - radius * 0.68, ty + opening);
+        c.closePath();
         c.fill();
         c.stroke();
         const well = c.createLinearGradient(
@@ -1334,13 +1430,31 @@
           x + radius,
           ty + opening
         );
-        well.addColorStop(0, "#fff4db");
-        well.addColorStop(0.55, face.shell);
-        well.addColorStop(1, "#96836b");
+        well.addColorStop(0, "#768b9e");
+        well.addColorStop(0.4, face.shell);
+        well.addColorStop(1, "#f4ffff");
         c.fillStyle = well;
         c.beginPath();
-        c.ellipse(x, ty + 2, radius * 0.74, opening * 0.66, 0, 0, Math.PI * 2);
+        c.ellipse(x, ty + 2, radius * 0.72, opening * 0.58, 0, 0, Math.PI * 2);
         c.fill();
+        c.strokeStyle = "#ffffffdd";
+        c.beginPath();
+        c.moveTo(x - radius * 0.55, ty + opening * 0.8);
+        c.lineTo(x + radius * 0.55, ty + opening * 0.8);
+        c.stroke();
+        c.fillStyle = metal;
+        this.chamberPath(x, y - 7, y + 3, radius);
+        c.fill();
+        c.fillStyle = face.color + "66";
+        c.fillRect(x - radius * 0.6, y - 1, radius * 1.2, 1.5);
+        if (!front)
+          this.rearOpenings.push({
+            id: t.id,
+            x,
+            y: ty + 3,
+            rx: radius,
+            ry: opening
+          });
         const previous = g.phase === "resolving" ? (_a = g.state.history.at(-1)) == null ? void 0 : _a.tubes.find((old) => old.id === t.id) : void 0;
         const visibleCountBase = previous && previous.balls.length > t.balls.length ? previous.balls.length : t.balls.length;
         const first = Math.max(0, visibleCountBase - 3), shown = t.balls.slice(first);
@@ -1365,13 +1479,54 @@
             this.shadowBall(x, by, ballRadius);
           }
         }
-        if (!front) continue;
-        const topY = y - ballRadius - 6 - (t.balls.length - 1) * step, hitRadius = Math.min(radius * 0.77, step * 0.48);
-        c.strokeStyle = g.hint === t.id ? "#7636dc" : "#d64a2a";
-        c.lineWidth = 2;
+        c.save();
+        try {
+          this.chamberPath(x, ty, y, radius);
+          c.clip();
+          c.fillStyle = "#ffffff14";
+          c.beginPath();
+          c.moveTo(x - radius, ty + height2 * 0.16);
+          c.lineTo(x + radius, ty + height2 * 0.34);
+          c.lineTo(x + radius, ty + height2 * 0.4);
+          c.lineTo(x - radius, ty + height2 * 0.22);
+          c.closePath();
+          c.fill();
+        } finally {
+          c.restore();
+        }
+        c.strokeStyle = "#ffffff8c";
+        c.lineWidth = Math.max(1, radius * 0.075);
         c.beginPath();
-        c.arc(x, topY, hitRadius, 0, Math.PI * 2);
+        c.moveTo(x - radius * 0.7, ty + 16);
+        c.bezierCurveTo(
+          x - radius * 0.83,
+          ty + height2 * 0.3,
+          x - radius * 0.78,
+          ty + height2 * 0.55,
+          x - radius * 0.66,
+          y - 12
+        );
         c.stroke();
+        const topY = y - ballRadius - 6 - (t.balls.length - 1) * step;
+        this.bodies.push({
+          id: t.id,
+          x: x - radius,
+          y: ty - opening,
+          w: radius * 2,
+          h: height2 + opening,
+          topY
+        });
+        if (!front) continue;
+        const hitRadius = Math.min(radius * 0.77, step * 0.48);
+        if (g.hint === t.id)
+          this.text(
+            "\u2726",
+            x + ballRadius * 0.65,
+            topY - ballRadius * 0.65,
+            13,
+            "#3849b2",
+            "center"
+          );
         this.text(
           String(g.board.tubes.indexOf(t) + 1),
           x,
@@ -1381,14 +1536,6 @@
           "center"
         );
         this.targets.push({ id: t.id, x, y: topY, r: hitRadius });
-        this.bodies.push({
-          id: t.id,
-          x: x - radius,
-          y: ty,
-          w: radius * 2,
-          h: height2,
-          topY
-        });
       }
       if (g.phase === "resolving") {
         const prev = g.state.history.at(-1), t = prev == null ? void 0 : prev.tubes.find(
@@ -1407,16 +1554,77 @@
         }
       }
     }
+    homeTitle() {
+      const c = this.ctx, scale = Math.min(1, (this.width - 48) / 230), left = this.width / 2 - 98 * scale;
+      const parts = [
+        { text: "\u8F6C\u4E2A", x: 0, size: 42, y: 130 },
+        { text: "\u201C", x: 84, size: 28, y: 125 },
+        { text: "\u7403", x: 108, size: 64, y: 140 },
+        { text: "\u201D", x: 172, size: 28, y: 125 }
+      ];
+      c.save();
+      try {
+        c.textAlign = "left";
+        c.lineJoin = "round";
+        for (const part of parts) {
+          const x = left + part.x * scale, y = part.y, size = part.size * scale;
+          c.font = `900 ${size}px sans-serif`;
+          c.fillStyle = "#8f6e8050";
+          c.fillText(part.text, x + 2, y + 7);
+          for (let depth = 4; depth >= 1; depth--) {
+            c.fillStyle = part.text === "\u7403" ? "#9b456f" : "#77628e";
+            c.fillText(part.text, x + depth * 0.35, y + depth);
+          }
+          c.lineWidth = 3 * scale;
+          c.strokeStyle = "#fffcf0";
+          c.strokeText(part.text, x, y);
+          const shine = c.createLinearGradient(0, y - size, 0, y);
+          if (part.text === "\u7403") {
+            shine.addColorStop(0, "#fff0b9");
+            shine.addColorStop(0.25, "#ffb53d");
+            shine.addColorStop(0.53, "#fa6575");
+            shine.addColorStop(1, "#c847a1");
+          } else {
+            shine.addColorStop(0, "#ffffff");
+            shine.addColorStop(0.35, "#d4bef8");
+            shine.addColorStop(1, "#7560b7");
+          }
+          c.fillStyle = shine;
+          c.fillText(part.text, x, y);
+        }
+      } finally {
+        c.restore();
+      }
+    }
     home() {
       const w = this.width, h = this.height;
-      this.text("T R I C O L L E C T", w / 2, 76, 13, "#786254", "center");
-      this.text("\u4E09\u9762\u7403\u4ED3", w / 2, 122, 38, "#3c302a", "center");
-      this.text("\u8F6C\u4E00\u4E2A\u89D2\u5EA6\uFF0C\u53D1\u73B0\u4E0B\u4E00\u7EC4\u3002", w / 2, 155, 14, "#786254", "center");
-      for (let i = 0; i < 5; i++) {
-        const x = w / 2 + (i - 2) * 43, y2 = 230 + Math.abs(i - 2) * 14;
-        this.rect(x - 17, y2 - 28, 34, 80, "#e7d5bf");
-        this.ball(i, x, y2, 14);
-        this.ball((i + 2) % 5, x, y2 + 32, 14);
+      this.text("\u8F6C\u4E00\u8F6C \xB7 \u51D1\u4E09\u9897", w / 2, 43, 13, "#786254", "center");
+      this.homeTitle();
+      this.text("\u8F6C\u4E00\u4E2A\u89D2\u5EA6\uFF0C\u53D1\u73B0\u4E0B\u4E00\u7EC4\u3002", w / 2, 174, 14, "#786254", "center");
+      const c = this.ctx;
+      for (let i = 0; i < 3; i++) {
+        const x = w / 2 + (i - 1) * 61, top = 202 + Math.abs(i - 1) * 12, bottom = top + 112;
+        this.chamberPath(x, top, bottom, 23);
+        const glass = c.createLinearGradient(x - 23, top, x + 23, bottom);
+        glass.addColorStop(0, "#fffefecc");
+        glass.addColorStop(0.22, "#c9f4f54d");
+        glass.addColorStop(0.76, "#ffffff18");
+        glass.addColorStop(1, "#9ba9c078");
+        c.fillStyle = glass;
+        c.fill();
+        c.strokeStyle = "#a8aaaab0";
+        c.lineWidth = 1;
+        c.stroke();
+        for (let j = 0; j < 3; j++)
+          this.ball((i * 2 + j) % 7, x, top + 22 + j * 32, 16);
+        c.fillStyle = "#bec9d5";
+        this.chamberPath(x, bottom - 5, bottom + 3, 23);
+        c.fill();
+        c.strokeStyle = "#ffffffe0";
+        c.beginPath();
+        c.moveTo(x - 19, top + 8);
+        c.lineTo(x - 19, bottom - 8);
+        c.stroke();
       }
       this.text(
         "\u53D6\u9876\u90E8\u7403\u653E\u5165\u4E03\u683C\u69FD\uFF0C\u51D1\u9F50\u4E09\u9897\u540C\u7C7B\u3002",
@@ -1434,7 +1642,7 @@
         "#786254",
         "center"
       );
-      const y = Math.min(h - 260, 405);
+      const y = Math.min(h - 280, 405);
       PRESETS.forEach(
         (p, i) => this.button(
           "start-" + i,
@@ -1580,12 +1788,20 @@
       if (this.game.locked) return;
       const target = [...this.targets].reverse().find((t) => Math.hypot(x - t.x, y - t.y) <= t.r);
       if (target) {
+        this.misclickFeedback = null;
         this.game.pick(target.id);
         return;
       }
       const body = [...this.bodies].reverse().find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
       if (body) {
-        this.game.message = "\u53EA\u80FD\u70B9\u51FB\u6B63\u9762\u4EAE\u5708\u91CC\u7684\u6700\u4E0A\u7403";
+        this.misclickFeedback = {
+          x,
+          y,
+          started: this.game.now(),
+          session: this.game.state.session,
+          view: this.game.state.view
+        };
+        this.game.message = "\u53EA\u80FD\u53D6\u6B63\u9762\u8231\u5185\u6700\u4E0A\u65B9\u7684\u7403";
       }
     }
   };

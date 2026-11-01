@@ -21,6 +21,8 @@ async function boot(
   const rawMs = () =>
     live ? performance.now() - liveStart : microseconds / 1000;
   const circles: { x: number; y: number; r: number }[] = [];
+  const topBalls = new Map<string, { x: number; y: number; r: number }>();
+  const latestBall = new Map<number, { x: number; y: number; r: number }>();
   const rings: { x: number; y: number; r: number }[] = [];
   let lastArc: { x: number; y: number; r: number } | undefined;
   let microseconds = 0;
@@ -58,6 +60,14 @@ async function boot(
           failRender = false;
           throw Error("injected one-frame rendering fault");
         }
+        if (["●", "◆", "▲", "✚", "■", "★", "♥"].includes(s)) {
+          const ball = [...circles]
+            .reverse()
+            .find((b) => Math.abs(b.x - x) < 0.01 && y > b.y && y - b.y < b.r);
+          if (ball) latestBall.set(x, ball);
+        }
+        if (/^\d+$/.test(s) && latestBall.has(x))
+          topBalls.set(s, latestBall.get(x)!);
         labels.push({
           s,
           x,
@@ -186,6 +196,8 @@ async function boot(
     labels.length = 0;
     circles.length = 0;
     rings.length = 0;
+    topBalls.clear();
+    latestBall.clear();
     frame();
   };
   const tap = (text: string, exact = false) => {
@@ -203,13 +215,13 @@ async function boot(
     images,
     backgroundDraws: () => backgroundDraws,
     rings,
+    topBalls,
     tapTube: (index: number) => {
       const label = labels.find((l) => l.s === String(index));
       assert.ok(label, `front tube label ${index}`);
-      const ring = rings.find(
-        (r) => Math.abs(r.x - label.x) < 0.01 && r.y > label.y,
-      );
-      assert.ok(ring, `top ball ring ${index}`);
+      const ring = topBalls.get(String(index));
+      assert.ok(ring, `painted top ball ${index}`);
+      assert.equal(rings.length, 0, "no permanent selection ring");
       const t = { clientX: ring.x, clientY: ring.y + 24 };
       handlers.start({ touches: [t] });
       handlers.end({ changedTouches: [t] });
@@ -449,7 +461,7 @@ for (const units of [1, 1000])
       secondPickAccepted: true,
     });
     writeFileSync(
-      "evidence/v0.1.8-animation-wallclock.json",
+      "evidence/v0.1.9-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -493,7 +505,7 @@ for (const units of [1, 1000])
       });
     }
     writeFileSync(
-      "evidence/v0.1.8-animation-wallclock.json",
+      "evidence/v0.1.9-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -513,7 +525,7 @@ for (const units of [1, 1000])
     r.tap("跳过开场");
     r.tap("开始 ·");
     r.tap("→", true);
-    const ms = await driveUntil(r, () => r.rings.length > 0, 800);
+    const ms = await driveUntil(r, () => r.topBalls.size > 0, 800);
     assert.ok(ms >= 180 && ms < 500);
     assert.equal(decode(r.storage.get(SAVE_KEY)!)!.view, 2);
     r.tap("←", true);
@@ -536,7 +548,7 @@ for (const units of [1, 1000])
       frozenRotationPauseMs: interrupted,
     });
     writeFileSync(
-      "evidence/v0.1.8-animation-wallclock.json",
+      "evidence/v0.1.9-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
