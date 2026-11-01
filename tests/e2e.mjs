@@ -183,9 +183,12 @@ try {
       await page.evaluate(() => window.tri.game.state.extensions),
       0,
     );
-    results.push(
-      `preset ${preset}: ${witness.length} pointer picks won without ads`,
-    );
+    results.push({
+      preset,
+      picks: witness.length,
+      wonWithoutAds: true,
+      remainingMs: await page.evaluate(() => window.tri.game.state.remaining),
+    });
   }
   await page.screenshot({ path: "evidence/result.png" });
   await page.setViewportSize({ width: 320, height: 660 });

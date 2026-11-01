@@ -51,19 +51,32 @@ export function faceCoordinates(t: Tube, side: number, view: number) {
   const axes = [t.q, t.r, side - 1 - t.q - t.r];
   return { lane: axes[view], depth: axes[(view + 1) % 3] };
 }
-export function faceVisible(b: Board, view: number): Set<string> {
-  if (!Number.isInteger(view) || view < 0 || view > 2) return new Set();
-  const first = new Map<number, { id: string; depth: number }>();
-  for (const t of b.tubes) {
-    if (!t.balls.length) continue;
-    const { lane, depth } = faceCoordinates(t, b.side, view);
-    if (!first.has(lane) || depth < first.get(lane)!.depth)
-      first.set(lane, { id: t.id, depth });
+/** Front projection is centered: horizontal center = 2*lane + depth.
+ * Each opaque tube covers two half-width segments. Only uncovered segments grant access. */
+export function faceWindows(b: Board, view: number): Map<string, number[]> {
+  const result = new Map<string, number[]>();
+  if (!Number.isInteger(view) || view < 0 || view > 2) return result;
+  const outside = exposed(b),
+    covered = new Set<number>();
+  const ordered = b.tubes
+    .filter((t) => t.balls.length)
+    .sort(
+      (a, c) =>
+        faceCoordinates(a, b.side, view).depth -
+        faceCoordinates(c, b.side, view).depth,
+    );
+  for (const t of ordered) {
+    const { lane, depth } = faceCoordinates(t, b.side, view),
+      center = 2 * lane + depth;
+    const segments = [center - 1, center],
+      windows = segments.filter((i) => !covered.has(i));
+    if (windows.length && outside.has(t.id)) result.set(t.id, windows);
+    for (const segment of segments) covered.add(segment);
   }
-  const external = exposed(b);
-  return new Set(
-    [...first.values()].filter((t) => external.has(t.id)).map((t) => t.id),
-  );
+  return result;
+}
+export function faceVisible(b: Board, view: number): Set<string> {
+  return new Set(faceWindows(b, view).keys());
 }
 export function available(b: Board): Set<string> {
   return new Set([0, 1, 2].flatMap((v) => [...faceVisible(b, v)]));

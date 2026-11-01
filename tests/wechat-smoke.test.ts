@@ -402,7 +402,7 @@ for (const units of [1, 1000])
       secondPickAccepted: true,
     });
     writeFileSync(
-      "evidence/v0.1.4-animation-wallclock.json",
+      "evidence/v0.1.5-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -447,7 +447,7 @@ for (const units of [1, 1000])
       });
     }
     writeFileSync(
-      "evidence/v0.1.4-animation-wallclock.json",
+      "evidence/v0.1.5-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -494,7 +494,7 @@ for (const units of [1, 1000])
       frozenRotationPauseMs: interrupted,
     });
     writeFileSync(
-      "evidence/v0.1.4-animation-wallclock.json",
+      "evidence/v0.1.5-animation-wallclock.json",
       JSON.stringify(
         {
           scope:

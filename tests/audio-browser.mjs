@@ -48,10 +48,10 @@ try {
     volume: players[0].volume,
     loop: players[0].loop,
   }));
-  assert.equal(metadata.duration, 16);
+  assert.equal(metadata.duration, 32);
   assert.equal(metadata.loop, true);
   await page.evaluate(() => {
-    players[0].currentTime = 15.8;
+    players[0].currentTime = 31.8;
   });
   await page.waitForTimeout(650);
   assert.ok(
@@ -94,7 +94,7 @@ try {
   await click("extend");
   assert.ok(await page.evaluate(() => players[0].paused));
   await writeFile(
-    "evidence/v0.1.4-audio-browser.json",
+    "evidence/v0.1.5-audio-browser.json",
     JSON.stringify(
       {
         passed: true,
@@ -103,7 +103,7 @@ try {
         metadata,
         checks: [
           "no autoplay before gesture",
-          "16s loop wraps",
+          "32s loop wraps",
           "pause and resume",
           "mute preference after reload",
           "single reusable player over repeated rounds",

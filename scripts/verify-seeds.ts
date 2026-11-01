@@ -1,4 +1,4 @@
-import { PRESETS, RULE } from "../src/config";
+import { PRESETS, RULE, CONFIG } from "../src/config";
 import { generate } from "../src/core/generation";
 import { take, invariant, faceVisible } from "../src/core/rules";
 import { writeFileSync } from "node:fs";
@@ -9,6 +9,14 @@ for (const p of PRESETS)
     const seed = p.seed + i,
       t = performance.now(),
       l = generate(p, seed);
+    if (l.board.tubes.some((t) => t.balls.length !== 5) || l.witness.length % 3)
+      throw Error("five-ball preset invalid");
+    let turns = 0,
+      view = 0;
+    for (const v of l.views) {
+      if (v !== view) turns++;
+      view = v;
+    }
     let b = l.board;
     for (let step = 0; step < l.witness.length; step++) {
       if (!faceVisible(b, l.views[step]).has(l.witness[step]))
@@ -21,6 +29,10 @@ for (const p of PRESETS)
       preset: p.id,
       seed,
       moves: l.witness.length,
+      turns,
+      activeBudgetMsPerPick: +(CONFIG.baseMs / l.witness.length).toFixed(2),
+      animationOnlyWallMs:
+        l.witness.length * CONFIG.animationMs + turns * CONFIG.rotateMs,
       score: b.score,
       ms: +(performance.now() - t).toFixed(2),
       passed: true,

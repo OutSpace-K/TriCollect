@@ -34,12 +34,23 @@ async function visibility() {
   const report = await page.evaluate(() => {
     const { game: g, scene: s } = tri,
       expected = new Map();
-    for (const t of g.board.tubes.filter((t) => t.balls.length)) {
-      const axes = [t.q, t.r, g.board.side - 1 - t.q - t.r],
-        lane = axes[g.state.view],
-        depth = axes[(g.state.view + 1) % 3];
-      if (!expected.has(lane) || depth < expected.get(lane).depth)
-        expected.set(lane, { id: t.id, depth });
+    const covered = new Set();
+    const ordered = g.board.tubes
+      .filter((t) => t.balls.length)
+      .map((t) => {
+        const axes = [t.q, t.r, g.board.side - 1 - t.q - t.r];
+        return {
+          id: t.id,
+          lane: axes[g.state.view],
+          depth: axes[(g.state.view + 1) % 3],
+        };
+      })
+      .sort((a, b) => a.depth - b.depth);
+    for (const t of ordered) {
+      const h = 2 * t.lane + t.depth,
+        segments = [h - 1, h];
+      if (segments.some((x) => !covered.has(x))) expected.set(t.id, t);
+      segments.forEach((x) => covered.add(x));
     }
     return {
       expected: [...expected.values()].map((t) => t.id).sort(),
@@ -49,10 +60,35 @@ async function visibility() {
       face: s.renderedFace,
       silhouettes: s.silhouetteIds,
       openings: s.rearOpenings,
+      balls: s.visibleBalls,
+      actual: g.board.tubes.map((t) => ({
+        id: t.id,
+        top: t.balls.slice(-3).map((b) => b.id),
+      })),
+      layout: s.tubeLayout,
       remaining: g.board.tubes.filter((t) => t.balls.length).map((t) => t.id),
     };
   });
   assert.deepEqual(report.drawn, report.expected);
+  for (const tube of report.balls) {
+    assert.ok(tube.ids.length <= 3);
+    assert.deepEqual(
+      tube.ids,
+      report.actual.find((t) => t.id === tube.tube).top,
+    );
+  }
+  if (report.remaining.length === 21) {
+    for (let depth = 0; depth < 6; depth++) {
+      const row = report.layout
+        .filter((t) => t.depth === depth)
+        .sort((a, b) => a.x - b.x);
+      assert.ok(Math.abs((row[0].x + row.at(-1).x) / 2 - 195) < 0.01);
+      for (let i = 1; i < row.length; i++)
+        assert.ok(
+          Math.abs(row[i].x - row[i - 1].x - row[i].r - row[i - 1].r) < 0.01,
+        );
+    }
+  }
   assert.deepEqual(
     [...report.drawn, ...report.silhouettes].sort(),
     report.remaining.sort(),
@@ -94,24 +130,32 @@ try {
     tri.game.begin();
   });
   await stable();
+  const first = await page.evaluate(() => tri.scene.targets[0]);
+  await page.mouse.click(first.x, first.y + 49);
+  assert.equal(
+    await page.evaluate(() => tri.game.state.history.length),
+    0,
+    "second visible ball is not selectable",
+  );
   for (let face = 0; face < 3; face++) {
     results.push(await visibility());
-    await page.screenshot({ path: `evidence/v014-face-${face + 1}.png` });
+    await page.screenshot({ path: `evidence/v015-face-${face + 1}.png` });
     await click("rotate-right");
     await stable();
   }
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 5; i++) {
     const t = await page.evaluate(() =>
       tri.scene.targets.find((t) => t.id === "1,0"),
     );
     await page.mouse.click(t.x, t.y);
     await stable();
+    await visibility();
   }
   const revealed = await visibility();
   assert.ok(revealed.drawn.includes("1,1"));
   assert.ok(!revealed.drawn.includes("1,0"));
   results.push({ innerReveal: revealed });
-  await page.screenshot({ path: "evidence/v014-inner.png" });
+  await page.screenshot({ path: "evidence/v015-inner.png" });
   await page.evaluate(() => {
     tri.game.start();
     tri.game.skipIntro();
@@ -143,10 +187,10 @@ try {
   const targets = await page.evaluate(() => tri.scene.targets);
   assert.equal(targets.length, 8);
   for (const t of targets) assert.ok(t.x - t.r >= 0 && t.x + t.r <= 320);
-  await page.screenshot({ path: "evidence/v014-narrow.png" });
+  await page.screenshot({ path: "evidence/v015-narrow.png" });
   results.push("320x660: 36 tubes, 8 visible front targets within viewport");
   await writeFile(
-    "evidence/v0.1.4-visual-qa.json",
+    "evidence/v0.1.5-visual-qa.json",
     JSON.stringify(
       { passed: true, platform: "Chromium, not WeChat DevTools", results },
       null,

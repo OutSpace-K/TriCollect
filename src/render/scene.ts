@@ -1,5 +1,5 @@
 import { PALETTE, SYMBOLS, PRESETS, CONFIG, VERSION, FACES } from "../config";
-import { faceVisible, faceCoordinates } from "../core/rules";
+import { faceVisible, faceCoordinates, faceWindows } from "../core/rules";
 import { Controller } from "../controller";
 export type Button = {
   id: string;
@@ -13,6 +13,9 @@ export type Button = {
 export class Scene {
   buttons: Button[] = [];
   renderedIds: string[] = [];
+  visibleBalls: { tube: string; ids: string[] }[] = [];
+  tubeLayout: { id: string; x: number; y: number; r: number; depth: number }[] =
+    [];
   silhouetteIds: string[] = [];
   rearOpenings: { id: string; x: number; y: number; rx: number; ry: number }[] =
     [];
@@ -126,6 +129,8 @@ export class Scene {
       w = this.width,
       h = this.height;
     this.renderedIds = [];
+    this.visibleBalls = [];
+    this.tubeLayout = [];
     this.silhouetteIds = [];
     this.rearOpenings = [];
     this.buttons = [];
@@ -387,11 +392,12 @@ export class Scene {
       n = g.board.side;
     const view = g.presentationView,
       face = FACES[view];
-    const visible = faceVisible(g.board, view);
+    const windows = faceWindows(g.board, view);
+    const visible = new Set(windows.keys());
     this.renderedFace = view;
     this.renderedIds = [...visible];
     const lane = (w - 32) / n,
-      radius = Math.min(22, lane * 0.38);
+      radius = lane / 2;
     const depthSpace = Math.min(126, (n - 1) * 21);
     const height = Math.min(208, bottom - top - 65 - depthSpace),
       by =
@@ -444,10 +450,18 @@ export class Scene {
       const position = (t: (typeof g.board.tubes)[number]) => {
         const { lane: column, depth } = faceCoordinates(t, n, view);
         return {
-          x: 16 + lane * (column + 0.5) + (depth / (n - 1)) * lane * 0.16,
-          y: by - depth * depthStep - column * 2.5,
+          x: 16 + lane * (column + 0.5 + depth / 2),
+          y: by - depth * depthStep,
         };
       };
+      this.tubeLayout = g.board.tubes
+        .filter((t) => t.balls.length)
+        .map((t) => ({
+          ...position(t),
+          id: t.id,
+          r: radius,
+          depth: faceCoordinates(t, n, view).depth,
+        }));
       const rear = g.board.tubes
         .filter((t) => t.balls.length && !visible.has(t.id))
         .sort(
@@ -479,7 +493,13 @@ export class Scene {
         c.ellipse(x, ty + 3, radius * 0.74, 5, 0, 0, Math.PI * 2);
         c.fill();
       }
-      for (const t of g.board.tubes.filter((t) => visible.has(t.id))) {
+      for (const t of g.board.tubes
+        .filter((t) => visible.has(t.id))
+        .sort(
+          (a, b) =>
+            faceCoordinates(b, n, view).depth -
+            faceCoordinates(a, n, view).depth,
+        )) {
         const { x, y } = position(t),
           ty = y - height;
         this.rect(x - radius, ty, radius * 2, height, face.shell, 12);
@@ -513,17 +533,14 @@ export class Scene {
           c.lineTo(x + radius - 1, ty + 26 + j * 36);
           c.stroke();
         }
-        for (let i = 0; i < t.balls.length; i++) {
+        const shown = t.balls.slice(-3);
+        this.visibleBalls.push({ tube: t.id, ids: shown.map((b) => b.id) });
+        for (let i = 0; i < shown.length; i++) {
           const drop =
             g.phase === "intro" ? (1 - g.introProgress) * (145 - i * 30) : 0;
-          this.ball(
-            t.balls[i].type,
-            x,
-            y - 20 - i * step - drop,
-            radius * 0.72,
-          );
+          this.ball(shown[i].type, x, y - 20 - i * step - drop, radius * 0.72);
         }
-        const topY = y - 20 - (t.balls.length - 1) * step;
+        const topY = y - 20 - (Math.min(3, t.balls.length) - 1) * step;
         c.strokeStyle = g.hint === t.id ? "#ffdc7f" : face.color;
         c.lineWidth = 2;
         c.beginPath();
@@ -546,7 +563,18 @@ export class Scene {
             h: height + 8,
             topY,
           });
-          this.targets.push({ id: t.id, x, y: topY, r: radius * 0.84 });
+          const center =
+            2 * faceCoordinates(t, n, view).lane +
+            faceCoordinates(t, n, view).depth;
+          const halves = windows.get(t.id)!;
+          const offset =
+            halves.length === 2 ? 0 : halves[0] === center - 1 ? -0.36 : 0.36;
+          this.targets.push({
+            id: t.id,
+            x: x + radius * offset,
+            y: topY,
+            r: radius * (halves.length === 2 ? 0.84 : 0.3),
+          });
         }
       }
       if (g.phase === "resolving") {
@@ -557,8 +585,7 @@ export class Scene {
             g.board.tubes.find((n) => n.id === t.id)!.balls.length,
         );
         if (t && prev && faceVisible(prev, view).has(t.id)) {
-          const x =
-              16 + lane * (faceCoordinates(t, g.board.side, view).lane + 0.5),
+          const x = position(t).x,
             a = g.transitionProgress;
           this.ball(
             t.balls.at(-1)!.type,
@@ -767,13 +794,19 @@ export class Scene {
       return;
     }
     if (this.game.locked || this.drawer) return;
-    // Frontmost body owns the hit. Never search behind a foreground occluder.
+    const target = [...this.targets]
+      .reverse()
+      .find((t) => Math.hypot(x - t.x, y - t.y) <= t.r);
+    if (target) {
+      this.game.pick(target.id);
+      return;
+    }
+    // Non-top parts of a tube are never ball inputs.
     const body = [...this.bodies]
       .reverse()
       .find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
     if (body) {
-      if (Math.abs(y - body.topY) <= body.w * 0.45) this.game.pick(body.id);
-      else this.game.message = "只能取亮圈顶部球；遮挡时可点左上选球";
+      this.game.message = "只能取露出的亮圈顶部球；也可点左上选球";
     }
   }
 }

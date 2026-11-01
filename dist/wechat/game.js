@@ -104,8 +104,8 @@
   }
 
   // src/config.ts
-  var VERSION = "0.1.4";
-  var RULE = "tricollect-2-frontfaces";
+  var VERSION = "0.1.5";
+  var RULE = "tricollect-3-fiveballs";
   var CONFIG = Object.freeze({
     baseMs: 3e5,
     capacity: 7,
@@ -121,9 +121,9 @@
     searchMs: 40
   });
   var PRESETS = [
-    { id: "learn", name: "\u521D\u89C1", side: 6, height: 3, types: 5, seed: 104729 },
-    { id: "normal", name: "\u63A2\u7D22", side: 7, height: 3, types: 6, seed: 130363 },
-    { id: "deep", name: "\u6DF1\u5165", side: 8, height: 3, types: 7, seed: 155921 }
+    { id: "learn", name: "\u521D\u89C1", side: 6, height: 5, types: 5, seed: 104729 },
+    { id: "normal", name: "\u63A2\u7D22", side: 6, height: 5, types: 6, seed: 130363 },
+    { id: "deep", name: "\u6DF1\u5165", side: 8, height: 5, types: 7, seed: 155921 }
   ];
   var FACES = [
     { name: "\u73CA\u745A\u9762", color: "#f1a48a", shell: "#773e37" },
@@ -176,19 +176,23 @@
     const axes = [t.q, t.r, side - 1 - t.q - t.r];
     return { lane: axes[view], depth: axes[(view + 1) % 3] };
   }
-  function faceVisible(b, view) {
-    if (!Number.isInteger(view) || view < 0 || view > 2) return /* @__PURE__ */ new Set();
-    const first = /* @__PURE__ */ new Map();
-    for (const t of b.tubes) {
-      if (!t.balls.length) continue;
-      const { lane, depth } = faceCoordinates(t, b.side, view);
-      if (!first.has(lane) || depth < first.get(lane).depth)
-        first.set(lane, { id: t.id, depth });
-    }
-    const external = exposed(b);
-    return new Set(
-      [...first.values()].filter((t) => external.has(t.id)).map((t) => t.id)
+  function faceWindows(b, view) {
+    const result = /* @__PURE__ */ new Map();
+    if (!Number.isInteger(view) || view < 0 || view > 2) return result;
+    const outside = exposed(b), covered = /* @__PURE__ */ new Set();
+    const ordered = b.tubes.filter((t) => t.balls.length).sort(
+      (a, c) => faceCoordinates(a, b.side, view).depth - faceCoordinates(c, b.side, view).depth
     );
+    for (const t of ordered) {
+      const { lane, depth } = faceCoordinates(t, b.side, view), center = 2 * lane + depth;
+      const segments = [center - 1, center], windows = segments.filter((i) => !covered.has(i));
+      if (windows.length && outside.has(t.id)) result.set(t.id, windows);
+      for (const segment of segments) covered.add(segment);
+    }
+    return result;
+  }
+  function faceVisible(b, view) {
+    return new Set(faceWindows(b, view).keys());
   }
   function available(b) {
     return new Set([0, 1, 2].flatMap((v) => [...faceVisible(b, v)]));
@@ -816,6 +820,8 @@
       this.height = height2;
       __publicField(this, "buttons", []);
       __publicField(this, "renderedIds", []);
+      __publicField(this, "visibleBalls", []);
+      __publicField(this, "tubeLayout", []);
       __publicField(this, "silhouetteIds", []);
       __publicField(this, "rearOpenings", []);
       __publicField(this, "renderedFace", 0);
@@ -889,6 +895,8 @@
     render() {
       const c = this.ctx, g = this.game, w = this.width, h = this.height;
       this.renderedIds = [];
+      this.visibleBalls = [];
+      this.tubeLayout = [];
       this.silhouetteIds = [];
       this.rearOpenings = [];
       this.buttons = [];
@@ -1136,10 +1144,11 @@
     drawBoard(top, bottom) {
       const c = this.ctx, g = this.game, w = this.width, n = g.board.side;
       const view = g.presentationView, face = FACES[view];
-      const visible = faceVisible(g.board, view);
+      const windows = faceWindows(g.board, view);
+      const visible = new Set(windows.keys());
       this.renderedFace = view;
       this.renderedIds = [...visible];
-      const lane = (w - 32) / n, radius = Math.min(22, lane * 0.38);
+      const lane = (w - 32) / n, radius = lane / 2;
       const depthSpace = Math.min(126, (n - 1) * 21);
       const height2 = Math.min(208, bottom - top - 65 - depthSpace), by = top + 55 + depthSpace + height2 + Math.max(0, (bottom - top - 65 - depthSpace - height2) / 2);
       const step = Math.min(49, (height2 - 35) / 3);
@@ -1174,10 +1183,16 @@
         const position = (t) => {
           const { lane: column, depth } = faceCoordinates(t, n, view);
           return {
-            x: 16 + lane * (column + 0.5) + depth / (n - 1) * lane * 0.16,
-            y: by - depth * depthStep - column * 2.5
+            x: 16 + lane * (column + 0.5 + depth / 2),
+            y: by - depth * depthStep
           };
         };
+        this.tubeLayout = g.board.tubes.filter((t) => t.balls.length).map((t) => ({
+          ...position(t),
+          id: t.id,
+          r: radius,
+          depth: faceCoordinates(t, n, view).depth
+        }));
         const rear = g.board.tubes.filter((t) => t.balls.length && !visible.has(t.id)).sort(
           (a, b) => faceCoordinates(b, n, view).depth - faceCoordinates(a, n, view).depth
         );
@@ -1204,7 +1219,9 @@
           c.ellipse(x, ty + 3, radius * 0.74, 5, 0, 0, Math.PI * 2);
           c.fill();
         }
-        for (const t of g.board.tubes.filter((t2) => visible.has(t2.id))) {
+        for (const t of g.board.tubes.filter((t2) => visible.has(t2.id)).sort(
+          (a, b) => faceCoordinates(b, n, view).depth - faceCoordinates(a, n, view).depth
+        )) {
           const { x, y } = position(t), ty = y - height2;
           this.rect(x - radius, ty, radius * 2, height2, face.shell, 12);
           this.rect(
@@ -1236,16 +1253,13 @@
             c.lineTo(x + radius - 1, ty + 26 + j * 36);
             c.stroke();
           }
-          for (let i = 0; i < t.balls.length; i++) {
+          const shown = t.balls.slice(-3);
+          this.visibleBalls.push({ tube: t.id, ids: shown.map((b) => b.id) });
+          for (let i = 0; i < shown.length; i++) {
             const drop = g.phase === "intro" ? (1 - g.introProgress) * (145 - i * 30) : 0;
-            this.ball(
-              t.balls[i].type,
-              x,
-              y - 20 - i * step - drop,
-              radius * 0.72
-            );
+            this.ball(shown[i].type, x, y - 20 - i * step - drop, radius * 0.72);
           }
-          const topY = y - 20 - (t.balls.length - 1) * step;
+          const topY = y - 20 - (Math.min(3, t.balls.length) - 1) * step;
           c.strokeStyle = g.hint === t.id ? "#ffdc7f" : face.color;
           c.lineWidth = 2;
           c.beginPath();
@@ -1268,7 +1282,15 @@
               h: height2 + 8,
               topY
             });
-            this.targets.push({ id: t.id, x, y: topY, r: radius * 0.84 });
+            const center = 2 * faceCoordinates(t, n, view).lane + faceCoordinates(t, n, view).depth;
+            const halves = windows.get(t.id);
+            const offset = halves.length === 2 ? 0 : halves[0] === center - 1 ? -0.36 : 0.36;
+            this.targets.push({
+              id: t.id,
+              x: x + radius * offset,
+              y: topY,
+              r: radius * (halves.length === 2 ? 0.84 : 0.3)
+            });
           }
         }
         if (g.phase === "resolving") {
@@ -1277,7 +1299,7 @@
             (t2) => t2.balls.length > g.board.tubes.find((n2) => n2.id === t2.id).balls.length
           );
           if (t && prev && faceVisible(prev, view).has(t.id)) {
-            const x = 16 + lane * (faceCoordinates(t, g.board.side, view).lane + 0.5), a = g.transitionProgress;
+            const x = position(t).x, a = g.transitionProgress;
             this.ball(
               t.balls.at(-1).type,
               x + (w / 2 - x) * a,
@@ -1467,10 +1489,14 @@
         return;
       }
       if (this.game.locked || this.drawer) return;
+      const target = [...this.targets].reverse().find((t) => Math.hypot(x - t.x, y - t.y) <= t.r);
+      if (target) {
+        this.game.pick(target.id);
+        return;
+      }
       const body = [...this.bodies].reverse().find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
       if (body) {
-        if (Math.abs(y - body.topY) <= body.w * 0.45) this.game.pick(body.id);
-        else this.game.message = "\u53EA\u80FD\u53D6\u4EAE\u5708\u9876\u90E8\u7403\uFF1B\u906E\u6321\u65F6\u53EF\u70B9\u5DE6\u4E0A\u9009\u7403";
+        this.game.message = "\u53EA\u80FD\u53D6\u9732\u51FA\u7684\u4EAE\u5708\u9876\u90E8\u7403\uFF1B\u4E5F\u53EF\u70B9\u5DE6\u4E0A\u9009\u7403";
       }
     }
   };

@@ -1,5 +1,5 @@
-export const VERSION = "0.1.4";
-export const RULE = "tricollect-2-frontfaces";
+export const VERSION = "0.1.5";
+export const RULE = "tricollect-3-fiveballs";
 export const CONFIG = Object.freeze({
   baseMs: 300_000,
   capacity: 7,
@@ -15,9 +15,9 @@ export const CONFIG = Object.freeze({
   searchMs: 40,
 });
 export const PRESETS = [
-  { id: "learn", name: "初见", side: 6, height: 3, types: 5, seed: 104729 },
-  { id: "normal", name: "探索", side: 7, height: 3, types: 6, seed: 130363 },
-  { id: "deep", name: "深入", side: 8, height: 3, types: 7, seed: 155921 },
+  { id: "learn", name: "初见", side: 6, height: 5, types: 5, seed: 104729 },
+  { id: "normal", name: "探索", side: 6, height: 5, types: 6, seed: 130363 },
+  { id: "deep", name: "深入", side: 8, height: 5, types: 7, seed: 155921 },
 ] as const;
 export type Preset = {
   id: string;
