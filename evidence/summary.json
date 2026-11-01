@@ -1,0 +1,56 @@
+{
+  "project": "TriCollect",
+  "version": "0.1.1",
+  "ruleVersion": "tricollect-1",
+  "dateUTC": "2026-11-01",
+  "workspace": "/workspace/TriCollect",
+  "node": "24.19.0",
+  "npm": "11.9.0",
+  "typecheck": "passed",
+  "format": "passed",
+  "unitAndMockTests": {
+    "passed": 34,
+    "failed": 0
+  },
+  "witnessReplay": {
+    "verifiedSeeds": 300,
+    "presets": 3,
+    "adsUsed": 0
+  },
+  "browserE2E": {
+    "presetsCompleted": 3,
+    "pointerPicks": [
+      30,
+      45,
+      63
+    ],
+    "adsUsed": 0,
+    "saveReload": "passed",
+    "narrowViewport": "320x660",
+    "homeRestartRegressions": "passed for both unfinished and manually ended rounds, 3 browser reloads each"
+  },
+  "cleanInstallBuildAndTests": "passed in /workspace/tricollect-clean-v0.1.1",
+  "wechatGameJsSha256": "74fa7993592cc5671321babddfbb1c5bc97814fa06058f0e62fbf64cbdbb46c6",
+  "wechatDeveloperTools": "not available; not executed",
+  "realDevices": "not available; not executed",
+  "realAds": "no AppID/ad unit configured; not executed",
+  "humanBalance": "not evaluated",
+  "publicDeployment": "none",
+  "sourceDocs": "23-page Word text read through Library; ZIP materialization failed",
+  "regression": {
+    "baselineVersion": "0.1.0",
+    "baselineBundleSha256": "2b4553d81564bb4786c91462b792c2cdac61ca6d886d989aeca22313d34a4ade",
+    "baselineNativeTests": {
+      "expectedFailures": 2,
+      "passed": 0
+    },
+    "fixedNativeTests": {
+      "passed": 2,
+      "failed": 0
+    },
+    "unfinishedSave": "290000ms and original session/main/backup preserved through 3 restarts × 5 hide/show cycles; resume then consumes 1000ms normally",
+    "manuallyEndedNonWinningSave": "remains result with no resume entry after home hide/show and 3 restarts",
+    "saveSchemaChanged": false,
+    "ruleVersionChanged": false
+  }
+}

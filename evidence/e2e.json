@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "platform": "Chromium browser only",
+  "results": [
+    "unclaimed home pagehide/reload preserves main and backup across 3 restarts",
+    "pause, reload, resume preserve state",
+    "preset 0: 30 actual pointer selections, no ads, won",
+    "preset 1: 45 actual pointer selections, no ads, won",
+    "preset 2: 63 actual pointer selections, no ads, won",
+    "320×660 controls within viewport",
+    "manually ended non-winning round stays final through 3 home restarts"
+  ],
+  "errors": []
+}

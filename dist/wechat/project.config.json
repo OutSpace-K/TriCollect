@@ -1,0 +1,12 @@
+{
+  "description": "TriCollect native WeChat Mini Game",
+  "compileType": "game",
+  "appid": "touristappid",
+  "projectname": "TriCollect",
+  "setting": {
+    "es6": false,
+    "minified": false,
+    "urlCheck": true
+  },
+  "libVersion": "3.7.1"
+}

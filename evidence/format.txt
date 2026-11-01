@@ -1,0 +1,37 @@
+
+> tricollect@0.1.1 format
+> prettier --write src tests scripts config *.json README.md docs
+
+src/browser.ts 103ms (unchanged)
+src/config.ts 19ms (unchanged)
+src/controller.ts 79ms (unchanged)
+src/core/generation.ts 29ms (unchanged)
+src/core/rules.ts 43ms (unchanged)
+src/core/solver.ts 10ms (unchanged)
+src/platform/ads.ts 11ms (unchanged)
+src/platform/mock-ad.ts 3ms (unchanged)
+src/platform/storage.ts 26ms (unchanged)
+src/render/scene.ts 87ms (unchanged)
+src/wechat.ts 15ms (unchanged)
+tests/controller.test.ts 50ms
+tests/core.test.ts 34ms (unchanged)
+tests/e2e.mjs 58ms
+tests/wechat-smoke.test.ts 22ms
+scripts/build.mjs 10ms (unchanged)
+scripts/serve.mjs 7ms (unchanged)
+scripts/verify-seeds.ts 6ms (unchanged)
+config/platform.example.json 2ms (unchanged)
+package-lock.json 7ms (unchanged)
+package.json 1ms (unchanged)
+tsconfig.json 1ms (unchanged)
+README.md 67ms (unchanged)
+docs/DEVICE-CHECKLIST.md 12ms (unchanged)
+docs/LICENSES.md 9ms (unchanged)
+docs/STATUS.md 31ms (unchanged)
+docs/third-party/dependencies.json 4ms (unchanged)
+docs/third-party/esbuild-LICENSE.md 6ms (unchanged)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

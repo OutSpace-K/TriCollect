@@ -1,0 +1,14 @@
+node_modules/
+config/platform.local.json
+.env
+.env.*
+!.env.example
+*.log
+*.zip
+*.pem
+*.key
+.cache/
+.npm/
+__pycache__/
+evidence/*.png
+.DS_Store

@@ -1,0 +1,68 @@
+[
+  {
+    "package": "playwright-core",
+    "version": "1.56.1",
+    "license": "Apache-2.0",
+    "licenseFiles": ["LICENSE", "NOTICE"]
+  },
+  {
+    "package": "tsx",
+    "version": "4.20.6",
+    "license": "MIT",
+    "licenseFiles": ["LICENSE"]
+  },
+  {
+    "package": "get-tsconfig",
+    "version": "4.14.3",
+    "license": "MIT",
+    "licenseFiles": ["LICENSE"]
+  },
+  {
+    "package": "typescript",
+    "version": "5.9.3",
+    "license": "Apache-2.0",
+    "licenseFiles": ["LICENSE.txt"]
+  },
+  {
+    "package": "minigame-api-typings",
+    "version": "3.8.21",
+    "license": "MIT",
+    "licenseFiles": ["LICENSE"]
+  },
+  {
+    "package": "undici-types",
+    "version": "7.16.0",
+    "license": "MIT",
+    "licenseFiles": ["LICENSE"]
+  },
+  {
+    "package": "prettier",
+    "version": "3.6.2",
+    "license": "MIT",
+    "licenseFiles": ["LICENSE"]
+  },
+  {
+    "package": "resolve-pkg-maps",
+    "version": "1.0.0",
+    "license": "MIT",
+    "licenseFiles": ["LICENSE"]
+  },
+  {
+    "package": "esbuild",
+    "version": "0.25.12",
+    "license": "MIT",
+    "licenseFiles": ["LICENSE.md"]
+  },
+  {
+    "package": "@esbuild/linux-x64",
+    "version": "0.25.12",
+    "license": "MIT",
+    "licenseFiles": []
+  },
+  {
+    "package": "@types/node",
+    "version": "24.10.0",
+    "license": "MIT",
+    "licenseFiles": ["LICENSE"]
+  }
+]

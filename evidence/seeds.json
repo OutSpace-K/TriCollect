@@ -1,0 +1,2408 @@
+{
+  "rule": "tricollect-1",
+  "verifiedSeeds": 300,
+  "totalMs": 1241.82,
+  "scope": "Pure reducer replay, no ads; not human timing or real device validation",
+  "results": [
+    {
+      "preset": "learn",
+      "seed": 104729,
+      "moves": 30,
+      "score": 1700,
+      "ms": 6.3,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104730,
+      "moves": 30,
+      "score": 1700,
+      "ms": 3.45,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104731,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.6,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104732,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.42,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104733,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.95,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104734,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.12,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104735,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.98,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104736,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.03,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104737,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.47,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104738,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.93,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104739,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.69,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104740,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.98,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104741,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.95,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104742,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.84,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104743,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.95,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104744,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.83,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104745,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.35,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104746,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.24,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104747,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.29,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104748,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.87,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104749,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.09,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104750,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.77,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104751,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.54,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104752,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.74,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104753,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.48,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104754,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.42,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104755,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.93,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104756,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.02,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104757,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.63,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104758,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.89,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104759,
+      "moves": 30,
+      "score": 1700,
+      "ms": 3.32,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104760,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.14,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104761,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.72,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104762,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.45,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104763,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.06,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104764,
+      "moves": 30,
+      "score": 1700,
+      "ms": 3.6,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104765,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.82,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104766,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.24,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104767,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.92,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104768,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.51,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104769,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.18,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104770,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.53,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104771,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.95,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104772,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.86,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104773,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104774,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.71,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104775,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.99,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104776,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.86,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104777,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.55,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104778,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.44,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104779,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.75,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104780,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.51,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104781,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.58,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104782,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.51,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104783,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.55,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104784,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.77,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104785,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.4,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104786,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.54,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104787,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.21,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104788,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.85,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104789,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.97,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104790,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.48,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104791,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.68,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104792,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.55,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104793,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.55,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104794,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.91,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104795,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.57,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104796,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.77,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104797,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.7,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104798,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.28,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104799,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.55,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104800,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.53,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104801,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.52,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104802,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.66,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104803,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.51,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104804,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.45,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104805,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.53,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104806,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.42,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104807,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.6,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104808,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.02,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104809,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.61,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104810,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.64,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104811,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.4,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104812,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.61,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104813,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.52,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104814,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.01,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104815,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.49,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104816,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.14,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104817,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.55,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104818,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.9,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104819,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.97,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104820,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.75,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104821,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.7,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104822,
+      "moves": 30,
+      "score": 1700,
+      "ms": 2.86,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104823,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.87,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104824,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.92,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104825,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.94,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104826,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.52,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104827,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.68,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104828,
+      "moves": 30,
+      "score": 1700,
+      "ms": 1.53,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130363,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.75,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130364,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.44,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130365,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.28,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130366,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.59,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130367,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.8,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130368,
+      "moves": 45,
+      "score": 2300,
+      "ms": 4.19,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130369,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.45,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130370,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.87,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130371,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.55,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130372,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.33,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130373,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.18,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130374,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.02,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130375,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.53,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130376,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.12,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130377,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.42,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130378,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.38,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130379,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.04,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130380,
+      "moves": 45,
+      "score": 2300,
+      "ms": 4.91,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130381,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.14,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130382,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.44,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130383,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.69,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130384,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.74,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130385,
+      "moves": 45,
+      "score": 2300,
+      "ms": 4.53,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130386,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.68,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130387,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.64,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130388,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.47,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130389,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.65,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130390,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.84,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130391,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.12,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130392,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.32,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130393,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.44,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130394,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.94,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130395,
+      "moves": 45,
+      "score": 2300,
+      "ms": 4.14,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130396,
+      "moves": 45,
+      "score": 2300,
+      "ms": 6.22,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130397,
+      "moves": 45,
+      "score": 2300,
+      "ms": 4.84,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130398,
+      "moves": 45,
+      "score": 2300,
+      "ms": 5.81,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130399,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.81,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130400,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.09,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130401,
+      "moves": 45,
+      "score": 2300,
+      "ms": 4.22,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130402,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.44,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130403,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.18,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130404,
+      "moves": 45,
+      "score": 2300,
+      "ms": 4.15,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130405,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.54,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130406,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.88,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130407,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.32,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130408,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.04,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130409,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.75,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130410,
+      "moves": 45,
+      "score": 2300,
+      "ms": 4.66,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130411,
+      "moves": 45,
+      "score": 2300,
+      "ms": 4,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130412,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.74,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130413,
+      "moves": 45,
+      "score": 2300,
+      "ms": 4.1,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130414,
+      "moves": 45,
+      "score": 2300,
+      "ms": 4.54,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130415,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.45,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130416,
+      "moves": 45,
+      "score": 2300,
+      "ms": 4.12,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130417,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.25,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130418,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.09,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130419,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.03,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130420,
+      "moves": 45,
+      "score": 2300,
+      "ms": 4.18,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130421,
+      "moves": 45,
+      "score": 2300,
+      "ms": 4.75,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130422,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.07,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130423,
+      "moves": 45,
+      "score": 2300,
+      "ms": 4,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130424,
+      "moves": 45,
+      "score": 2300,
+      "ms": 5.29,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130425,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.97,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130426,
+      "moves": 45,
+      "score": 2300,
+      "ms": 4.2,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130427,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.75,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130428,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.19,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130429,
+      "moves": 45,
+      "score": 2300,
+      "ms": 4.07,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130430,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.22,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130431,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.23,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130432,
+      "moves": 45,
+      "score": 2300,
+      "ms": 4.04,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130433,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.26,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130434,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.2,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130435,
+      "moves": 45,
+      "score": 2300,
+      "ms": 4.74,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130436,
+      "moves": 45,
+      "score": 2300,
+      "ms": 8.67,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130437,
+      "moves": 45,
+      "score": 2300,
+      "ms": 5.83,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130438,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.78,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130439,
+      "moves": 45,
+      "score": 2300,
+      "ms": 5.84,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130440,
+      "moves": 45,
+      "score": 2300,
+      "ms": 4.8,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130441,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.81,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130442,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.05,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130443,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.11,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130444,
+      "moves": 45,
+      "score": 2300,
+      "ms": 2.91,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130445,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.29,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130446,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.25,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130447,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.17,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130448,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.41,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130449,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.48,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130450,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.35,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130451,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.17,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130452,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.2,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130453,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.24,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130454,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.22,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130455,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.28,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130456,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.35,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130457,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.48,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130458,
+      "moves": 45,
+      "score": 2300,
+      "ms": 4.5,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130459,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.33,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130460,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.43,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130461,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.56,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130462,
+      "moves": 45,
+      "score": 2300,
+      "ms": 3.68,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155921,
+      "moves": 63,
+      "score": 3020,
+      "ms": 7.83,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155922,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.83,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155923,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.37,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155924,
+      "moves": 63,
+      "score": 3020,
+      "ms": 7.22,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155925,
+      "moves": 63,
+      "score": 3020,
+      "ms": 7.04,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155926,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.32,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155927,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.86,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155928,
+      "moves": 63,
+      "score": 3020,
+      "ms": 7.27,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155929,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.35,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155930,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.27,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155931,
+      "moves": 63,
+      "score": 3020,
+      "ms": 5.94,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155932,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.07,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155933,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.81,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155934,
+      "moves": 63,
+      "score": 3020,
+      "ms": 5.94,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155935,
+      "moves": 63,
+      "score": 3020,
+      "ms": 7.6,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155936,
+      "moves": 63,
+      "score": 3020,
+      "ms": 11.98,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155937,
+      "moves": 63,
+      "score": 3020,
+      "ms": 7.4,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155938,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.36,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155939,
+      "moves": 63,
+      "score": 3020,
+      "ms": 7.46,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155940,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.63,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155941,
+      "moves": 63,
+      "score": 3020,
+      "ms": 5.95,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155942,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.5,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155943,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.46,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155944,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.24,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155945,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.58,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155946,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.23,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155947,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.67,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155948,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.61,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155949,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.57,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155950,
+      "moves": 63,
+      "score": 3020,
+      "ms": 7.35,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155951,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.9,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155952,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.48,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155953,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.44,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155954,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.17,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155955,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.55,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155956,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.39,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155957,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.49,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155958,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.56,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155959,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.11,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155960,
+      "moves": 63,
+      "score": 3020,
+      "ms": 5.93,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155961,
+      "moves": 63,
+      "score": 3020,
+      "ms": 5.91,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155962,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.12,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155963,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.93,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155964,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.45,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155965,
+      "moves": 63,
+      "score": 3020,
+      "ms": 7.66,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155966,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.5,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155967,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.94,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155968,
+      "moves": 63,
+      "score": 3020,
+      "ms": 5.85,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155969,
+      "moves": 63,
+      "score": 3020,
+      "ms": 5.88,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155970,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.02,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155971,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.92,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155972,
+      "moves": 63,
+      "score": 3020,
+      "ms": 7.24,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155973,
+      "moves": 63,
+      "score": 3020,
+      "ms": 7.49,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155974,
+      "moves": 63,
+      "score": 3020,
+      "ms": 8.27,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155975,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.83,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155976,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.38,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155977,
+      "moves": 63,
+      "score": 3020,
+      "ms": 5.95,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155978,
+      "moves": 63,
+      "score": 3020,
+      "ms": 7.1,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155979,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.45,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155980,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.85,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155981,
+      "moves": 63,
+      "score": 3020,
+      "ms": 7.28,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155982,
+      "moves": 63,
+      "score": 3020,
+      "ms": 7.36,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155983,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.28,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155984,
+      "moves": 63,
+      "score": 3020,
+      "ms": 5.76,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155985,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.37,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155986,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.3,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155987,
+      "moves": 63,
+      "score": 3020,
+      "ms": 7.11,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155988,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.49,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155989,
+      "moves": 63,
+      "score": 3020,
+      "ms": 5.96,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155990,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.35,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155991,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.62,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155992,
+      "moves": 63,
+      "score": 3020,
+      "ms": 5.94,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155993,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.94,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155994,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.7,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155995,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.24,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155996,
+      "moves": 63,
+      "score": 3020,
+      "ms": 7.22,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155997,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.74,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155998,
+      "moves": 63,
+      "score": 3020,
+      "ms": 5.93,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155999,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.65,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156000,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.18,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156001,
+      "moves": 63,
+      "score": 3020,
+      "ms": 5.92,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156002,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.38,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156003,
+      "moves": 63,
+      "score": 3020,
+      "ms": 7.87,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156004,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.32,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156005,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.39,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156006,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.25,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156007,
+      "moves": 63,
+      "score": 3020,
+      "ms": 5.95,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156008,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.07,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156009,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.69,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156010,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.34,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156011,
+      "moves": 63,
+      "score": 3020,
+      "ms": 8.16,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156012,
+      "moves": 63,
+      "score": 3020,
+      "ms": 7.68,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156013,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.77,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156014,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.31,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156015,
+      "moves": 63,
+      "score": 3020,
+      "ms": 5.96,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156016,
+      "moves": 63,
+      "score": 3020,
+      "ms": 5.62,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156017,
+      "moves": 63,
+      "score": 3020,
+      "ms": 5.67,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156018,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.12,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156019,
+      "moves": 63,
+      "score": 3020,
+      "ms": 7.59,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156020,
+      "moves": 63,
+      "score": 3020,
+      "ms": 6.1,
+      "passed": true
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+✔ unclaimed home lifecycle never replaces unfinished main or backup across restarts (45.175673ms)
+✔ empty home and repeated home navigation do not create or replace a save (18.004125ms)
+✔ explicit new game replaces a pending resume, then lifecycle saves that chosen session (39.978518ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 366.964202

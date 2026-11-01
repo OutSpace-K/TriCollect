@@ -1,0 +1,14 @@
+# 资源与第三方依赖
+
+- 项目源代码：本包 `LICENSE`（MIT）。
+- 画面：程序绘制管体、渐变、球与背景，无下载的图片和外部美术资源。
+- 字体：系统 sans-serif，不分发字体文件。图形使用 Unicode 符号与数字；需真机检查字体覆盖。
+- `assets/tap.wav`：项目内数学正弦波与衰减合成，生成逻辑见 `scripts/make-audio.py`，无采样外部音乐，按 MIT 随工程提供。
+- 构建/测试依赖：TypeScript（Apache-2.0）、esbuild（MIT）、tsx（MIT）、Prettier（MIT）、playwright-core（Apache-2.0）、@types/node（MIT）、minigame-api-typings（MIT）。具体版本与传递依赖以 `package-lock.json` 为准；第三方 license 原文打包到 `docs/third-party`。
+- 不分发 Chromium 浏览器；交互测试调用用户本机安装版本。
+
+官方接口核验：2026-11-01，读取官方 `wechat-miniprogram/minigame-api-typings` 仓库与 npm 包 3.8.21 的 `types/wx/lib.wx.api.d.ts`。该文件由微信 API 文档生成。核对 createCanvas、getPerformance/Performance.now（微秒）、getWindowInfo、激励视频单例和完成回调，以及生命周期与存储声明。官方指南网页本次抓取失败。
+
+来源：https://github.com/wechat-miniprogram/minigame-api-typings
+
+原设计依据：TriCollect-Project-Design-v0.1.0.docx，Library ID `libfile_9934269fa68c8191bf0861ddc97e7208`，23 页全文读取。原始文档仍保留原 Library 身份，未修改。
