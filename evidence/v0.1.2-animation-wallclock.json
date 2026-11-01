@@ -1,0 +1,45 @@
+{
+  "scope": "Actual WeChat bundle with real host timers; not installed DevTools",
+  "results": [
+    {
+      "unitsPerMs": 1,
+      "introMs": 945,
+      "transferMs": 252,
+      "skipMs": 0,
+      "remainingBallsStable": true,
+      "secondPickAccepted": true
+    },
+    {
+      "unitsPerMs": 1000,
+      "introMs": 960,
+      "transferMs": 244,
+      "skipMs": 0,
+      "remainingBallsStable": true,
+      "secondPickAccepted": true
+    },
+    {
+      "unitsPerMs": 1,
+      "frozenStage": "intro",
+      "visiblePauseMs": 1557,
+      "returnHomeWorks": true
+    },
+    {
+      "unitsPerMs": 1,
+      "frozenStage": "transfer",
+      "visiblePauseMs": 1551,
+      "returnHomeWorks": true
+    },
+    {
+      "unitsPerMs": 1000,
+      "frozenStage": "intro",
+      "visiblePauseMs": 1559,
+      "returnHomeWorks": true
+    },
+    {
+      "unitsPerMs": 1000,
+      "frozenStage": "transfer",
+      "visiblePauseMs": 1544,
+      "returnHomeWorks": true
+    }
+  ]
+}

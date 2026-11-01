@@ -2,20 +2,26 @@ import { createLevel } from "../src/core/generation";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import vm from "node:vm";
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { decode, SAVE_KEY } from "../src/platform/storage";
 async function boot(
   storage = new Map<string, string>(),
   unitsPerMs = 1000,
   brokenAudio = false,
+  live = false,
+  initiallyFrozen = false,
 ) {
   let failRender: boolean | string = false;
   let saveDepth = 0;
-  let frozenRaw: number | undefined;
+  let frozenRaw: number | undefined = initiallyFrozen ? 0 : undefined;
+  const liveStart = performance.now();
+  const rawMs = () =>
+    live ? performance.now() - liveStart : microseconds / 1000;
+  const circles: { x: number; y: number; r: number }[] = [];
   let microseconds = 0;
   let frame: () => void = () => {};
   const handlers: Record<string, Function> = {},
-    labels: { s: string; x: number; y: number }[] = [];
+    labels: { s: string; x: number; y: number; color: unknown }[] = [];
   const noop = () => {};
   const ctx = new Proxy(
     {
@@ -25,12 +31,18 @@ async function boot(
       restore: () => {
         saveDepth--;
       },
+      arc: (x: number, y: number, r: number) => circles.push({ x, y, r }),
       fillText: (s: string, x: number, y: number) => {
         if (failRender === true || failRender === s) {
           failRender = false;
           throw Error("injected one-frame rendering fault");
         }
-        labels.push({ s, x, y });
+        labels.push({
+          s,
+          x,
+          y,
+          color: (ctx as unknown as { fillStyle: unknown }).fillStyle,
+        });
       },
       createLinearGradient: () => ({ addColorStop: noop }),
       createRadialGradient: () => ({ addColorStop: noop }),
@@ -53,7 +65,7 @@ async function boot(
       safeArea: { top: 24, bottom: 820 },
     }),
     getPerformance: () => ({
-      now: () => frozenRaw ?? (microseconds * unitsPerMs) / 1000,
+      now: () => frozenRaw ?? rawMs() * unitsPerMs,
     }),
     createInnerAudioContext: () => ({
       play: () => {
@@ -83,10 +95,11 @@ async function boot(
     console,
     Date: class extends Date {
       static now() {
-        return microseconds / 1000;
+        return live ? Date.now() : microseconds / 1000;
       }
     },
     setTimeout: (fn: () => void, ms: number) => {
+      if (live) return setTimeout(fn, ms);
       queueMicrotask(() => {
         microseconds += ms * 1000;
         fn();
@@ -96,8 +109,18 @@ async function boot(
     clearTimeout,
   });
   await new Promise((resolve) => setImmediate(resolve));
+  if (live) {
+    const deadline = Date.now() + 2000;
+    while (
+      !handlers.start &&
+      !labels.some((l) => l.s.includes("时钟无法")) &&
+      Date.now() < deadline
+    )
+      await new Promise((r) => setTimeout(r, 5));
+  }
   const render = () => {
     labels.length = 0;
+    circles.length = 0;
     frame();
   };
   const tap = (text: string, exact = false) => {
@@ -117,9 +140,10 @@ async function boot(
       failRender = text ?? true;
     },
     freezeClock: () => {
-      frozenRaw = (microseconds * unitsPerMs) / 1000;
+      frozenRaw = rawMs() * unitsPerMs;
     },
     labels,
+    circles,
     tap,
     render,
     advance: (us: number) => {
@@ -272,3 +296,136 @@ test("native frozen clock pauses instead of trapping input and can return home",
   r.tap("返回首页");
   assert.ok(r.labels.some((l) => l.s.includes("初见")));
 });
+
+const animationReports: unknown[] = [];
+async function driveUntil(
+  r: Awaited<ReturnType<typeof boot>>,
+  condition: () => boolean,
+  budgetMs: number,
+) {
+  const start = Date.now();
+  while (!condition() && Date.now() - start < budgetMs) {
+    await new Promise((resolve) => setTimeout(resolve, 16));
+    r.render();
+  }
+  assert.ok(
+    condition(),
+    `animation/lifecycle deadline exceeded: ${budgetMs}ms`,
+  );
+  return Date.now() - start;
+}
+for (const units of [1, 1000])
+  test(`native animation wall-clock deadlines at ${units} units/ms`, async () => {
+    const r = await boot(new Map(), units, false, true);
+    r.tap("初见");
+    const introMs = await driveUntil(
+      r,
+      () => r.labels.some((l) => l.s.includes("开始 ·")),
+      1600,
+    );
+    assert.ok(introMs >= 800 && introMs <= 1400);
+    r.tap("开始 ·");
+    r.tap("选球", true);
+    r.tap("1", true);
+    const movingCircles = r.circles.length;
+    const transferMs = await driveUntil(
+      r,
+      () => r.labels.some((l) => l.s === "撤销" && l.color === "#eef7ed"),
+      800,
+    );
+    assert.ok(transferMs <= 500);
+    assert.equal(
+      r.circles.length,
+      movingCircles - 1,
+      "flying sprite removed after transfer",
+    );
+    const settled = JSON.stringify(r.circles);
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    r.render();
+    assert.equal(
+      JSON.stringify(r.circles),
+      settled,
+      "remaining tube/tray balls no longer move",
+    );
+    r.tap("选球", true);
+    r.tap("1", true);
+    await driveUntil(
+      r,
+      () => r.labels.some((l) => l.s === "撤销" && l.color === "#eef7ed"),
+      800,
+    );
+    assert.equal(decode(r.storage.get(SAVE_KEY)!)!.history.length, 2);
+    r.tap("暂停", true);
+    r.tap("结束并保留");
+    r.tap("再来一局");
+    const start = Date.now();
+    r.tap("跳过开场");
+    const skipMs = Date.now() - start;
+    assert.ok(skipMs < 200);
+    assert.ok(r.labels.some((l) => l.s.includes("开始 ·")));
+    animationReports.push({
+      unitsPerMs: units,
+      introMs,
+      transferMs,
+      skipMs,
+      remainingBallsStable: true,
+      secondPickAccepted: true,
+    });
+    writeFileSync(
+      "evidence/v0.1.2-animation-wallclock.json",
+      JSON.stringify(
+        {
+          scope:
+            "Actual WeChat bundle, host real timers and independent Date.now deadlines; wx API/units simulated, not installed DevTools",
+          results: animationReports,
+        },
+        null,
+        2,
+      ),
+    );
+  });
+for (const units of [1, 1000])
+  test(`native frozen-clock intro/transfer fail safely at ${units} units/ms`, async () => {
+    const invalid = await boot(new Map(), units, false, true, true);
+    assert.ok(invalid.labels.some((l) => l.s.includes("时钟无法")));
+    assert.ok(!invalid.labels.some((l) => l.s.includes("初见")));
+    for (const stage of ["intro", "transfer"]) {
+      const r = await boot(new Map(), units, false, true);
+      r.tap("初见");
+      if (stage === "transfer") {
+        r.tap("跳过开场");
+        r.tap("开始 ·");
+        r.tap("选球", true);
+        r.tap("1", true);
+      }
+      r.freezeClock();
+      const pauseMs = await driveUntil(
+        r,
+        () => r.labels.some((l) => l.s === "已暂停"),
+        2200,
+      );
+      assert.ok(pauseMs < 2000);
+      if (stage === "transfer")
+        assert.equal(decode(r.storage.get(SAVE_KEY)!)!.history.length, 1);
+      r.tap("返回首页");
+      assert.ok(r.labels.some((l) => l.s.includes("初见")));
+      animationReports.push({
+        unitsPerMs: units,
+        frozenStage: stage,
+        visiblePauseMs: pauseMs,
+        returnHomeWorks: true,
+      });
+    }
+    writeFileSync(
+      "evidence/v0.1.2-animation-wallclock.json",
+      JSON.stringify(
+        {
+          scope:
+            "Actual WeChat bundle with real host timers; not installed DevTools",
+          results: animationReports,
+        },
+        null,
+        2,
+      ),
+    );
+  });

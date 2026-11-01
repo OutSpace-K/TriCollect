@@ -10,7 +10,7 @@
   "typecheck": "passed",
   "format": "passed",
   "unitAndMockTests": {
-    "passed": 43,
+    "passed": 47,
     "failed": 0,
     "injectedFaultLogsExpected": true
   },
@@ -20,7 +20,7 @@
     "adsUsed": 0
   },
   "clockDiagnosis": {
-    "userPlatform": "not confirmed",
+    "userPlatform": "WeChat Developer Tools (user confirmed); tool version and observed raw clock units not measured",
     "provenConditionalReproduction": "v0.1.1 bundle given millisecond wx clock charges 10ms after 10 real simulated seconds and still refuses second pick 1 second later; microsecond semantics works",
     "fix": "calibrate progressing clock units before boot; gameplay uses normalized monotonic clock only",
     "watchdog": "frozen or invalid clock causes visible pause, no wall-clock gameplay fallback"
@@ -30,14 +30,14 @@
     "results": [
       {
         "unitsPerMs": 1,
-        "elapsedMs": 10005.032099999999,
-        "chargedMs": 10007.771464999998,
+        "elapsedMs": 10007.904949,
+        "chargedMs": 10012.334230999986,
         "pausePreserved": true
       },
       {
         "unitsPerMs": 1000,
-        "elapsedMs": 10003.823364999998,
-        "chargedMs": 10008.845514999994,
+        "elapsedMs": 10004.823084000001,
+        "chargedMs": 10006.557526000019,
         "pausePreserved": true
       }
     ]
@@ -63,9 +63,54 @@
   },
   "cleanInstallBuildAndTests": "43 tests in isolated clean install, final canvas-restoration regression rechecked after rebuild; all four build outputs byte-identical",
   "wechatGameJsSha256": "0a196fcfe7e95edc62cf6093e2342286c4ecdb5472d168717743818d5d785a43",
-  "wechatDeveloperTools": "not available; not executed",
+  "wechatDeveloperTools": "User reports failure in Developer Tools; environment has no installed tool, actual tool retest not executed",
   "realDevices": "not available; user platform still unknown",
   "realAds": "no AppID/ad unit configured; not executed",
   "publicDeployment": "none",
-  "sourceDocs": "23-page Word text read through Library; ZIP materialization failed"
+  "sourceDocs": "23-page Word text read through Library; ZIP materialization failed",
+  "animationWallClock": {
+    "scope": "Actual WeChat bundle with real host timers; not installed DevTools",
+    "results": [
+      {
+        "unitsPerMs": 1,
+        "introMs": 945,
+        "transferMs": 252,
+        "skipMs": 0,
+        "remainingBallsStable": true,
+        "secondPickAccepted": true
+      },
+      {
+        "unitsPerMs": 1000,
+        "introMs": 960,
+        "transferMs": 244,
+        "skipMs": 0,
+        "remainingBallsStable": true,
+        "secondPickAccepted": true
+      },
+      {
+        "unitsPerMs": 1,
+        "frozenStage": "intro",
+        "visiblePauseMs": 1557,
+        "returnHomeWorks": true
+      },
+      {
+        "unitsPerMs": 1,
+        "frozenStage": "transfer",
+        "visiblePauseMs": 1551,
+        "returnHomeWorks": true
+      },
+      {
+        "unitsPerMs": 1000,
+        "frozenStage": "intro",
+        "visiblePauseMs": 1559,
+        "returnHomeWorks": true
+      },
+      {
+        "unitsPerMs": 1000,
+        "frozenStage": "transfer",
+        "visiblePauseMs": 1544,
+        "returnHomeWorks": true
+      }
+    ]
+  }
 }

@@ -1,0 +1,66 @@
+TriCollect clock units/ms 1
+✔ native animation wall-clock deadlines at 1 units/ms (1823.740245ms)
+TriCollect clock units/ms 1000
+✔ native animation wall-clock deadlines at 1000 units/ms (1788.908698ms)
+TriCollect startup failed Error: Clock calibration failed; no reliable progressing clock
+    at calibrateClock (evalmachine.<anonymous>:35:11)
+    at async boot (evalmachine.<anonymous>:1279:19)
+TriCollect clock units/ms 1
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:27:21)
+    at Controller.tick (evalmachine.<anonymous>:450:24)
+    at evalmachine.<anonymous>:1327:14
+    at frame (evalmachine.<anonymous>:43:9)
+    at Object.render (/workspace/tricollect-github/tests/wechat-smoke.test.ts:124:5)
+    at driveUntil (/workspace/tricollect-github/tests/wechat-smoke.test.ts:309:7)
+    at async TestContext.<anonymous> (/workspace/tricollect-github/tests/wechat-smoke.test.ts:402:23)
+    at async Test.run (node:internal/test_runner/test:1389:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+TriCollect clock units/ms 1
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:27:21)
+    at Controller.tick (evalmachine.<anonymous>:450:24)
+    at evalmachine.<anonymous>:1327:14
+    at frame (evalmachine.<anonymous>:43:9)
+    at Object.render (/workspace/tricollect-github/tests/wechat-smoke.test.ts:124:5)
+    at driveUntil (/workspace/tricollect-github/tests/wechat-smoke.test.ts:309:7)
+    at async TestContext.<anonymous> (/workspace/tricollect-github/tests/wechat-smoke.test.ts:402:23)
+    at async Test.run (node:internal/test_runner/test:1389:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+✔ native frozen-clock intro/transfer fail safely at 1 units/ms (3878.921323ms)
+TriCollect startup failed Error: Clock calibration failed; no reliable progressing clock
+    at calibrateClock (evalmachine.<anonymous>:35:11)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at process.processTimers (node:internal/timers:568:9)
+    at async boot (evalmachine.<anonymous>:1279:19)
+TriCollect clock units/ms 1000
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:27:21)
+    at Controller.tick (evalmachine.<anonymous>:450:24)
+    at evalmachine.<anonymous>:1327:14
+    at frame (evalmachine.<anonymous>:43:9)
+    at Object.render (/workspace/tricollect-github/tests/wechat-smoke.test.ts:124:5)
+    at driveUntil (/workspace/tricollect-github/tests/wechat-smoke.test.ts:309:7)
+    at async TestContext.<anonymous> (/workspace/tricollect-github/tests/wechat-smoke.test.ts:402:23)
+    at async Test.run (node:internal/test_runner/test:1389:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+TriCollect clock units/ms 1000
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:27:21)
+    at Controller.tick (evalmachine.<anonymous>:450:24)
+    at evalmachine.<anonymous>:1327:14
+    at frame (evalmachine.<anonymous>:43:9)
+    at Object.render (/workspace/tricollect-github/tests/wechat-smoke.test.ts:124:5)
+    at driveUntil (/workspace/tricollect-github/tests/wechat-smoke.test.ts:309:7)
+    at async TestContext.<anonymous> (/workspace/tricollect-github/tests/wechat-smoke.test.ts:402:23)
+    at async Test.run (node:internal/test_runner/test:1389:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+✔ native frozen-clock intro/transfer fail safely at 1000 units/ms (3875.849138ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11856.521676

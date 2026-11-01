@@ -3,14 +3,14 @@
   "results": [
     {
       "unitsPerMs": 1,
-      "elapsedMs": 10005.032099999999,
-      "chargedMs": 10007.771464999998,
+      "elapsedMs": 10007.904949,
+      "chargedMs": 10012.334230999986,
       "pausePreserved": true
     },
     {
       "unitsPerMs": 1000,
-      "elapsedMs": 10003.823364999998,
-      "chargedMs": 10008.845514999994,
+      "elapsedMs": 10004.823084000001,
+      "chargedMs": 10006.557526000019,
       "pausePreserved": true
     }
   ]
