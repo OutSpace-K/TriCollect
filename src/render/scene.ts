@@ -1,6 +1,6 @@
 import { projection } from "./projection";
 import { PALETTE, SYMBOLS, PRESETS, CONFIG, VERSION, FACES } from "../config";
-import { faceVisible, faceCoordinates, faceWindows } from "../core/rules";
+import { faceVisible, faceCoordinates } from "../core/rules";
 import { Controller } from "../controller";
 export type Button = {
   id: string;
@@ -14,6 +14,14 @@ export type Button = {
 export class Scene {
   buttons: Button[] = [];
   renderedIds: string[] = [];
+  ghostPositions: {
+    id: string;
+    tube: string;
+    slot: number;
+    x: number;
+    y: number;
+    r: number;
+  }[] = [];
   ballPositions: {
     id: string;
     tube: string;
@@ -32,8 +40,6 @@ export class Scene {
   rearOpenings: { id: string; x: number; y: number; rx: number; ry: number }[] =
     [];
   renderedFace = 0;
-  page = 0;
-  drawer = false;
   targets: { id: string; x: number; y: number; r: number }[] = [];
   private bodies: {
     id: string;
@@ -54,7 +60,7 @@ export class Scene {
     x: number,
     y: number,
     size = 14,
-    color = "#d9ece7",
+    color = "#44352e",
     align: CanvasTextAlign = "left",
   ) {
     const c = this.ctx;
@@ -98,14 +104,14 @@ export class Scene {
       y,
       w,
       h,
-      disabled ? "#233e42" : accent ? "#d4e7b6" : "#284c50",
+      disabled ? "#e7ddd0" : accent || id === "hint" ? "#c94322" : "#6534ce",
     );
     this.text(
       label,
       x + w / 2,
       y + h / 2 + 5,
       14,
-      disabled ? "#718b8b" : accent ? "#183b37" : "#eef7ed",
+      disabled ? "#88796a" : "#ffffff",
       "center",
     );
     this.buttons.push({ id, x, y, w, h, act, disabled });
@@ -115,20 +121,60 @@ export class Scene {
     c.save();
     try {
       c.globalAlpha = alpha;
-      const g = c.createRadialGradient(x - r * 0.35, y - r * 0.4, 1, x, y, r);
-      g.addColorStop(0, "#fff6dc");
-      g.addColorStop(0.35, PALETTE[type]);
-      g.addColorStop(1, PALETTE[type]);
-      c.fillStyle = g;
+      c.fillStyle = "#73503530";
+      c.beginPath();
+      c.ellipse(x, y + r * 0.85, r * 0.9, r * 0.24, 0, 0, Math.PI * 2);
+      c.fill();
+      const shade = (mix: number) => {
+        const rgb = PALETTE[type]
+          .slice(1)
+          .match(/../g)!
+          .map((n) => parseInt(n, 16));
+        return (
+          "#" +
+          rgb
+            .map((v) =>
+              Math.round(mix > 0 ? v + (255 - v) * mix : v * (1 + mix))
+                .toString(16)
+                .padStart(2, "0"),
+            )
+            .join("")
+        );
+      };
+      const gradient = c.createRadialGradient(
+        x - r * 0.32,
+        y - r * 0.38,
+        r * 0.05,
+        x,
+        y,
+        r,
+      );
+      gradient.addColorStop(0, "#fffdf4");
+      gradient.addColorStop(0.18, shade(0.48));
+      gradient.addColorStop(0.58, PALETTE[type]);
+      gradient.addColorStop(1, shade(-0.38));
+      c.fillStyle = gradient;
       c.beginPath();
       c.arc(x, y, r, 0, Math.PI * 2);
+      c.fill();
+      c.fillStyle = "#ffffffb8";
+      c.beginPath();
+      c.ellipse(
+        x - r * 0.3,
+        y - r * 0.38,
+        r * 0.24,
+        r * 0.13,
+        -0.55,
+        0,
+        Math.PI * 2,
+      );
       c.fill();
       this.text(
         SYMBOLS[type],
         x,
-        y + 4,
-        Math.max(10, r * 0.85),
-        "#24414a",
+        y + r * 0.34,
+        Math.max(8, r * 0.57),
+        "#44322c",
         "center",
       );
     } finally {
@@ -141,6 +187,7 @@ export class Scene {
       w = this.width,
       h = this.height;
     this.renderedIds = [];
+    this.ghostPositions = [];
     this.ballPositions = [];
     this.flightOrigin = null;
     this.visibleBalls = [];
@@ -152,8 +199,8 @@ export class Scene {
     this.targets = [];
     c.clearRect(0, 0, w, h);
     const bg = c.createLinearGradient(0, 0, w, h);
-    bg.addColorStop(0, "#102e36");
-    bg.addColorStop(1, "#18444a");
+    bg.addColorStop(0, "#fff9ed");
+    bg.addColorStop(1, "#f4e4cf");
     c.fillStyle = bg;
     c.fillRect(0, 0, w, h);
     this.button(
@@ -169,21 +216,21 @@ export class Scene {
       this.home();
       return;
     }
-    this.text("TRICOLLECT", 22, 35, 13, "#a9c6bd");
-    this.text("三面球仓", 22, 66, 26, "#f1f1df");
+    this.text("TRICOLLECT", 22, 35, 13, "#786254");
+    this.text("三面球仓", 22, 66, 26, "#3c302a");
     this.text(
       PRESETS[g.state.preset].name + " · " + g.state.seed,
       22,
       88,
       11,
-      "#9bbab7",
+      "#786254",
     );
     this.text(
       `${Math.ceil(g.state.remaining / 1000 / 60) - (Math.ceil(g.state.remaining / 1000) % 60 === 0 ? 0 : 1)}:${String(Math.ceil(g.state.remaining / 1000) % 60).padStart(2, "0")}`,
       w - 24,
       46,
       28,
-      g.state.remaining < 30_000 ? "#fb826f" : "#f1f1df",
+      g.state.remaining < 30_000 ? "#fb826f" : "#3c302a",
       "right",
     );
     this.text(
@@ -191,7 +238,7 @@ export class Scene {
       w - 24,
       71,
       12,
-      "#a9c6bd",
+      "#786254",
       "right",
     );
     const hidden = ["paused", "ad", "expired", "blocked", "result"].includes(
@@ -212,35 +259,22 @@ export class Scene {
       55,
       34,
       () => {
-        this.drawer = false;
         g.pause();
       },
       !["active", "resolving", "rotating"].includes(g.phase),
-    );
-    this.button(
-      "select",
-      "选球",
-      22,
-      100,
-      55,
-      34,
-      () => {
-        this.drawer = !this.drawer;
-      },
-      g.locked,
     );
     this.text(
       "点击亮圈顶部球 · 横滑切面",
       w / 2,
       boardBottom + 10,
       12,
-      "#a9c6bd",
+      "#786254",
       "center",
     );
-    this.text("三同消除", 22, trayY - 7, 12, "#a9c6bd");
+    this.text("三同消除", 22, trayY - 7, 12, "#786254");
     const cell = (w - 44) / 7;
     for (let i = 0; i < 7; i++) {
-      this.rect(22 + i * cell, trayY, cell - 4, 43, "#0e2d34", 9);
+      this.rect(22 + i * cell, trayY, cell - 4, 43, "#eadbc8", 9);
       const ball = g.board.tray[i];
       if (ball)
         this.ball(ball.type, 22 + i * cell + (cell - 4) / 2, trayY + 21, 15);
@@ -248,26 +282,24 @@ export class Scene {
     const bw = (w - 65) / 4;
     this.button(
       "rotate-left",
-      "↶",
+      "←",
       22,
       trayY + 55,
       bw,
       44,
       () => {
-        this.drawer = false;
         g.rotate(-1);
       },
       !g.canTurn,
     );
     this.button(
       "rotate-right",
-      "↷",
+      "→",
       29 + bw,
       trayY + 55,
       bw,
       44,
       () => {
-        this.drawer = false;
         g.rotate(1);
       },
       !g.canTurn,
@@ -289,15 +321,7 @@ export class Scene {
       trayY + 55,
       bw,
       44,
-      () => {
-        g.hintNow();
-        if (g.hint && !this.targets.some((t) => t.id === g.hint)) {
-          this.drawer = true;
-          this.page = Math.floor(
-            g.board.tubes.findIndex((t) => t.id === g.hint) / 10,
-          );
-        }
-      },
+      () => g.hintNow(),
       g.locked,
     );
     this.text(
@@ -305,17 +329,16 @@ export class Scene {
       w / 2,
       h - 20,
       11,
-      "#c5d5c7",
+      "#6f5a4d",
       "center",
     );
-    if (this.drawer && g.phase === "active") this.drawSelector(160);
     if (g.phase === "intro" || g.phase === "ready") {
       this.rect(
         18,
         Math.max(100, boardBottom - 103),
         w - 36,
         92,
-        "#173b40",
+        "#fff9ed",
         18,
       );
       this.text(
@@ -323,7 +346,7 @@ export class Scene {
         w / 2,
         boardBottom - 73,
         13,
-        "#e9edda",
+        "#44352e",
         "center",
       );
       this.button(
@@ -338,63 +361,6 @@ export class Scene {
         true,
       );
     }
-  }
-  private drawSelector(y: number) {
-    const g = this.game,
-      w = this.width,
-      c = this.ctx,
-      tiles = g.board.tubes.filter((t) => g.visible.has(t.id)),
-      pages = Math.ceil(tiles.length / 10);
-    this.page = Math.min(this.page, pages - 1);
-    this.rect(14, y, w - 28, 188, "#123139", 16);
-    this.text("当前正面 · 顶部球", 26, y + 27, 14, "#d9ece7");
-    this.button("close-select", "收起", w - 80, y + 10, 52, 32, () => {
-      this.drawer = false;
-    });
-    const e = g.visible,
-      gap = 7,
-      tw = (w - 52 - gap * 4) / 5;
-    for (let i = 0; i < 10; i++) {
-      const t = tiles[this.page * 10 + i];
-      if (!t) continue;
-      const x = 26 + (i % 5) * (tw + gap),
-        ty = y + 54 + Math.floor(i / 5) * 48,
-        top = t.balls[t.balls.length - 1],
-        allowed = e.has(t.id);
-      this.button(
-        "tube-" + t.id,
-        "",
-        x,
-        ty,
-        tw,
-        42,
-        () => {
-          this.drawer = false;
-          g.pick(t.id);
-        },
-        !allowed,
-      );
-      if (top) {
-        this.ball(top.type, x + tw * 0.65, ty + 21, 11, allowed ? 1 : 0.25);
-        this.text(String(g.board.tubes.indexOf(t) + 1), x + 7, ty + 25, 11);
-      } else this.text("✓", x + tw / 2, ty + 25, 12, "#759e91", "center");
-      if (g.hint === t.id) {
-        c.strokeStyle = "#f4d27e";
-        c.strokeRect(x - 1, ty - 1, tw + 2, 44);
-      }
-    }
-    this.button(
-      "page",
-      `换页 ${this.page + 1}/${pages}`,
-      w / 2 - 55,
-      y + 151,
-      110,
-      28,
-      () => {
-        this.page = (this.page + 1) % pages;
-      },
-      pages === 1,
-    );
   }
   private fit(t: string, n: number) {
     return t.length > n ? t.slice(0, n - 1) + "…" : t;
@@ -434,7 +400,7 @@ export class Scene {
       w / 2,
       top + 34,
       11,
-      "#a9c6bd",
+      "#786254",
       "center",
     );
     const ordered = g.board.tubes
@@ -472,15 +438,15 @@ export class Scene {
       const { t, x, y } = item,
         ty = y - height,
         front = visible.has(t.id);
-      this.rect(
-        x - radius,
-        ty,
-        radius * 2,
-        height,
-        front ? face.shell : "#1b343b",
-        Math.min(10, radius * 0.4),
-      );
-      c.strokeStyle = front ? face.color : "#54706e";
+      // Opaque cream compositing prevents back-row colors leaking through light glass outlines.
+      const glass = c.createLinearGradient(x - radius, 0, x + radius, 0);
+      glass.addColorStop(0, front ? "#eadfcf" : "#ddd0bc");
+      glass.addColorStop(0.22, front ? "#fffdf6" : "#f6eddd");
+      glass.addColorStop(0.7, front ? "#fff9ed" : "#eee1ce");
+      glass.addColorStop(1, "#e7d9c4");
+      c.fillStyle = glass;
+      c.fillRect(x - radius, ty, radius * 2, height);
+      c.strokeStyle = "#bba990";
       c.lineWidth = 1;
       c.beginPath();
       c.moveTo(x - radius, ty + 2);
@@ -488,25 +454,12 @@ export class Scene {
       c.moveTo(x + radius, ty + 2);
       c.lineTo(x + radius, y - 3);
       c.stroke();
-      if (front) {
-        this.rect(
-          x - radius + 5,
-          ty + 18,
-          radius * 2 - 10,
-          height - 27,
-          "#112e35",
-          5,
-        );
-        for (let j = 0; j < 5; j++) {
-          const yy = y - ballRadius - 6 - j * step;
-          c.beginPath();
-          c.moveTo(x - radius + 1, yy);
-          c.lineTo(x - radius + 4, yy + 5);
-          c.moveTo(x + radius - 4, yy + 5);
-          c.lineTo(x + radius - 1, yy);
-          c.stroke();
-        }
-      } else
+      c.fillStyle = "#d8c7af";
+      c.beginPath();
+      c.ellipse(x, y - 2, radius, opening, 0, 0, Math.PI * 2);
+      c.fill();
+      c.stroke();
+      if (!front)
         this.rearOpenings.push({
           id: t.id,
           x,
@@ -514,16 +467,15 @@ export class Scene {
           rx: radius,
           ry: opening,
         });
-      c.fillStyle = front ? face.shell : "#36514f";
+      c.fillStyle = "#fff9ed";
       c.beginPath();
       c.ellipse(x, ty + 3, radius, opening, 0, 0, Math.PI * 2);
       c.fill();
       c.stroke();
-      c.fillStyle = "#071c23";
+      c.fillStyle = "#c9b79d";
       c.beginPath();
       c.ellipse(x, ty + 2, radius * 0.74, opening * 0.66, 0, 0, Math.PI * 2);
       c.fill();
-      if (!front) continue;
       const previous =
         g.phase === "resolving"
           ? g.state.history.at(-1)?.tubes.find((old) => old.id === t.id)
@@ -535,41 +487,36 @@ export class Scene {
       // Keep the next hidden slot covered until the departing ball has left the pipe.
       const first = Math.max(0, visibleCountBase - 3),
         shown = t.balls.slice(first);
-      if (first > 0) {
-        const coverY = y - ballRadius - 6 - (first - 0.5) * step;
-        this.rect(
-          x - radius + 5,
-          coverY,
-          radius * 2 - 10,
-          Math.max(0, y - 9 - coverY),
-          face.shell,
-          3,
-        );
-        c.strokeStyle = face.color;
-        c.beginPath();
-        c.moveTo(x - radius + 5, coverY);
-        c.lineTo(x + radius - 5, coverY);
-        c.stroke();
-      }
-      this.visibleBalls.push({ tube: t.id, ids: shown.map((b) => b.id) });
-      for (let i = first; i < t.balls.length; i++) {
-        // Arrays are validated original prefixes: i is the immutable opening slot, never a visible rank.
+      if (front)
+        this.visibleBalls.push({ tube: t.id, ids: shown.map((b) => b.id) });
+      for (let i = 0; i < t.balls.length; i++) {
         const by = y - ballRadius - 6 - i * step;
-        this.ballPositions.push({
+        const position = {
           id: t.balls[i].id,
           tube: t.id,
           slot: i,
           x,
           y: by,
           r: ballRadius,
-        });
-        const drop =
-          g.phase === "intro" ? (1 - g.introProgress) * (145 - i * 20) : 0;
-        this.ball(t.balls[i].type, x, by - drop, ballRadius);
+        };
+        if (front && i >= first) {
+          this.ballPositions.push(position);
+          const drop =
+            g.phase === "intro" ? (1 - g.introProgress) * (145 - i * 20) : 0;
+          this.ball(t.balls[i].type, x, by - drop, ballRadius);
+        } else {
+          this.ghostPositions.push(position);
+          c.strokeStyle = front ? "#bba88d" : "#cbbba3";
+          c.lineWidth = 1.1;
+          c.beginPath();
+          c.arc(x, by, ballRadius, 0, Math.PI * 2);
+          c.stroke();
+        }
       }
+      if (!front) continue;
       const topY = y - ballRadius - 6 - (t.balls.length - 1) * step,
         hitRadius = Math.min(radius * 0.77, step * 0.48);
-      c.strokeStyle = g.hint === t.id ? "#ffdc7f" : face.color;
+      c.strokeStyle = g.hint === t.id ? "#7636dc" : "#d64a2a";
       c.lineWidth = 2;
       c.beginPath();
       c.arc(x, topY, hitRadius, 0, Math.PI * 2);
@@ -617,13 +564,13 @@ export class Scene {
   private home() {
     const w = this.width,
       h = this.height;
-    this.text("T R I C O L L E C T", w / 2, 76, 13, "#b1cbc0", "center");
-    this.text("三面球仓", w / 2, 122, 38, "#f2f0db", "center");
-    this.text("转一个角度，发现下一组。", w / 2, 155, 14, "#adc8bd", "center");
+    this.text("T R I C O L L E C T", w / 2, 76, 13, "#786254", "center");
+    this.text("三面球仓", w / 2, 122, 38, "#3c302a", "center");
+    this.text("转一个角度，发现下一组。", w / 2, 155, 14, "#786254", "center");
     for (let i = 0; i < 5; i++) {
       const x = w / 2 + (i - 2) * 43,
         y = 230 + Math.abs(i - 2) * 14;
-      this.rect(x - 17, y - 28, 34, 80, "#8ad1c31a");
+      this.rect(x - 17, y - 28, 34, 80, "#e7d5bf");
       this.ball(i, x, y, 14);
       this.ball((i + 2) % 5, x, y + 32, 14);
     }
@@ -632,7 +579,7 @@ export class Scene {
       w / 2,
       343,
       13,
-      "#e2e8d6",
+      "#594739",
       "center",
     );
     this.text(
@@ -640,7 +587,7 @@ export class Scene {
       w / 2,
       367,
       13,
-      "#adc8bd",
+      "#786254",
       "center",
     );
     const y = Math.min(h - 260, 405);
@@ -653,7 +600,6 @@ export class Scene {
         w - 56,
         44,
         () => {
-          this.page = 0;
           this.game.start(i);
         },
         false,
@@ -678,7 +624,7 @@ export class Scene {
       w / 2,
       h - 55,
       12,
-      "#b7cdbb",
+      "#786254",
       "center",
     );
     this.text(
@@ -686,7 +632,7 @@ export class Scene {
       w / 2,
       h - 32,
       11,
-      "#739e98",
+      "#786254",
       "center",
     );
   }
@@ -707,14 +653,14 @@ export class Scene {
             : g.phase === "ad"
               ? "正在请求广告"
               : "已暂停";
-    this.rect(20, y - 30, w - 40, Math.min(460, h - y - 30), "#123139", 22);
-    this.text(title, w / 2, y + 20, 30, "#f2f0db", "center");
+    this.rect(20, y - 30, w - 40, Math.min(460, h - y - 30), "#fffaf1", 22);
+    this.text(title, w / 2, y + 20, 30, "#3c302a", "center");
     this.text(
       `${g.board.score} 分 · 已消除 ${g.board.cleared.length} 颗`,
       w / 2,
       y + 55,
       15,
-      "#bdd3bf",
+      "#594739",
       "center",
     );
     this.text(
@@ -722,7 +668,7 @@ export class Scene {
       w / 2,
       y + 80,
       13,
-      "#9dbab3",
+      "#786254",
       "center",
     );
     if (g.phase === "ad") {
@@ -731,7 +677,7 @@ export class Scene {
         w / 2,
         y + 145,
         14,
-        "#d4e7b6",
+        "#c94322",
         "center",
       );
       return;
@@ -741,7 +687,7 @@ export class Scene {
       w / 2,
       y + 102,
       11,
-      "#9dbab3",
+      "#786254",
       "center",
     );
     let by = y + 125;
@@ -781,7 +727,7 @@ export class Scene {
         () => void g.extend(),
         !g.ads.available || g.state.extensions >= CONFIG.maxExtensions,
       );
-      this.text(g.ads.label, w / 2, by - 2, 11, "#94b2ac", "center");
+      this.text(g.ads.label, w / 2, by - 2, 11, "#786254", "center");
       by += 8;
     }
     if (g.phase !== "result") add("end", "结束并保留本局成绩", () => g.end());
@@ -796,7 +742,7 @@ export class Scene {
       w / 2,
       Math.min(h - 25, by + 15),
       12,
-      "#bdd3bf",
+      "#594739",
       "center",
     );
   }
@@ -808,7 +754,7 @@ export class Scene {
       if (!button.disabled) button.act();
       return;
     }
-    if (this.game.locked || this.drawer) return;
+    if (this.game.locked) return;
     const target = [...this.targets]
       .reverse()
       .find((t) => Math.hypot(x - t.x, y - t.y) <= t.r);
@@ -821,7 +767,7 @@ export class Scene {
       .reverse()
       .find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
     if (body) {
-      this.game.message = "只能取露出的亮圈顶部球；也可点左上选球";
+      this.game.message = "只能点击正面亮圈里的最上球";
     }
   }
 }

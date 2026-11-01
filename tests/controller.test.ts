@@ -77,7 +77,7 @@ test("rotation queues net turns, completes in bounded time and preserves board",
   for (let i = 0; i < 30; i++) {
     x.g.rotate(1);
     assert.equal(x.g.phase, "rotating");
-    assert.equal(x.g.state.view, (i + 1) % 3);
+    assert.equal(x.g.state.view, (3 - ((i + 1) % 3)) % 3);
   }
   for (let i = 0; i < 3; i++) {
     x.advance(250);
@@ -389,8 +389,8 @@ test("rotation hides input, pause keeps requested face and restart cancels queue
   assert.equal(x.g.state.history.length, 0);
   x.g.rotate(1);
   x.g.pause();
-  assert.equal(x.g.state.view, 2);
-  assert.equal(x.g.presentationView, 2);
+  assert.equal(x.g.state.view, 1);
+  assert.equal(x.g.presentationView, 1);
   x.g.begin();
   x.g.rotate(-1);
   x.g.start();

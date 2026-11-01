@@ -1,4 +1,4 @@
-export const VERSION = "0.1.6";
+export const VERSION = "0.1.7";
 export const RULE = "tricollect-4-fixedslots-front";
 export const CONFIG = Object.freeze({
   baseMs: 300_000,
@@ -36,9 +36,9 @@ export const MECHANICAL: Preset = {
   seed: 104729,
 };
 export const FACES = [
-  { name: "珊瑚面", color: "#f1a48a", shell: "#773e37" },
-  { name: "翡翠面", color: "#91d9bd", shell: "#285c50" },
-  { name: "星蓝面", color: "#a4bdf4", shell: "#344e77" },
+  { name: "珊瑚面", color: "#c44c30", shell: "#f4d4bf" },
+  { name: "翡翠面", color: "#237e68", shell: "#d8e6cb" },
+  { name: "星蓝面", color: "#6552bc", shell: "#e4dcf0" },
 ];
 export const PALETTE = [
   "#fb826f",

@@ -1,116 +1,32 @@
 {
   "project": "TriCollect",
-  "version": "0.1.2",
-  "ruleVersion": "tricollect-1",
+  "version": "0.1.7",
+  "ruleVersion": "tricollect-4-fixedslots-front",
   "dateUTC": "2026-11-01",
-  "workspace": "/workspace/tricollect-github",
-  "baseCommit": "def3686ab04691c6742cc5db4a7a664de630d26f",
-  "node": "24.19.0",
-  "npm": "11.9.0",
-  "typecheck": "passed",
-  "format": "passed",
+  "baseCommit": "b099e98887a226c136077ac4be0525c4ad86868b",
   "unitAndMockTests": {
-    "passed": 47,
+    "passed": 61,
     "failed": 0,
-    "injectedFaultLogsExpected": true
+    "fullFinalRun": true
   },
-  "witnessReplay": {
-    "verifiedSeeds": 300,
-    "presets": 3,
-    "adsUsed": 0
-  },
-  "clockDiagnosis": {
-    "userPlatform": "WeChat Developer Tools (user confirmed); tool version and observed raw clock units not measured",
-    "provenConditionalReproduction": "v0.1.1 bundle given millisecond wx clock charges 10ms after 10 real simulated seconds and still refuses second pick 1 second later; microsecond semantics works",
-    "fix": "calibrate progressing clock units before boot; gameplay uses normalized monotonic clock only",
-    "watchdog": "frozen or invalid clock causes visible pause, no wall-clock gameplay fallback"
-  },
-  "clockRealTime": {
-    "scope": "Real host monotonic time, both wx unit semantics simulated; not actual WeChat device",
-    "results": [
-      {
-        "unitsPerMs": 1,
-        "elapsedMs": 10007.904949,
-        "chargedMs": 10012.334230999986,
-        "pausePreserved": true
-      },
-      {
-        "unitsPerMs": 1000,
-        "elapsedMs": 10004.823084000001,
-        "chargedMs": 10006.557526000019,
-        "pausePreserved": true
-      }
-    ]
-  },
-  "browserE2E": {
-    "passed": true,
-    "platform": "Chromium only; not WeChat device",
-    "directPicks": 136,
-    "fallbackPicks": 2,
-    "results": [
-      {
-        "check": "browser real 10-second clock",
-        "elapsedMs": 10007.799999999814,
-        "chargedMs": 10015.900000000373
-      },
-      "12 consecutive pointer rotations immediately active, no interpolation lock",
-      "one-frame exception recovered; pause/home/reload regression preserved",
-      "preset 0: 30 pointer picks won without ads",
-      "preset 1: 45 pointer picks won without ads",
-      "preset 2: 63 pointer picks won without ads"
-    ],
+  "seeds": 300,
+  "browser": {
+    "directPicks": 390,
+    "fallbackPicks": 0,
+    "presetsWonWithoutAds": 3,
     "errors": []
   },
-  "cleanInstallBuildAndTests": "43 tests in isolated clean install, final canvas-restoration regression rechecked after rebuild; all four build outputs byte-identical",
-  "wechatGameJsSha256": "0a196fcfe7e95edc62cf6093e2342286c4ecdb5472d168717743818d5d785a43",
-  "wechatDeveloperTools": "User reports failure in Developer Tools; environment has no installed tool, actual tool retest not executed",
-  "realDevices": "not available; user platform still unknown",
-  "realAds": "no AppID/ad unit configured; not executed",
-  "publicDeployment": "none",
-  "sourceDocs": "23-page Word text read through Library; ZIP materialization failed",
-  "animationWallClock": {
-    "scope": "Actual WeChat bundle with real host timers; not installed DevTools",
-    "results": [
-      {
-        "unitsPerMs": 1,
-        "introMs": 945,
-        "transferMs": 252,
-        "skipMs": 0,
-        "remainingBallsStable": true,
-        "secondPickAccepted": true
-      },
-      {
-        "unitsPerMs": 1000,
-        "introMs": 960,
-        "transferMs": 244,
-        "skipMs": 0,
-        "remainingBallsStable": true,
-        "secondPickAccepted": true
-      },
-      {
-        "unitsPerMs": 1,
-        "frozenStage": "intro",
-        "visiblePauseMs": 1557,
-        "returnHomeWorks": true
-      },
-      {
-        "unitsPerMs": 1,
-        "frozenStage": "transfer",
-        "visiblePauseMs": 1551,
-        "returnHomeWorks": true
-      },
-      {
-        "unitsPerMs": 1000,
-        "frozenStage": "intro",
-        "visiblePauseMs": 1559,
-        "returnHomeWorks": true
-      },
-      {
-        "unitsPerMs": 1000,
-        "frozenStage": "transfer",
-        "visiblePauseMs": 1544,
-        "returnHomeWorks": true
-      }
-    ]
-  }
+  "visual": "Three faces, 320px, fixed slots/neutral silhouettes, actual arrow pointer directions, centered rigid rotation, inner reveal passed",
+  "audio": "32s PCM signal/real HTMLAudio lifecycle passed; no human listening",
+  "typecheck": "passed",
+  "cleanBuild": "npm ci/build/typecheck; bundle and audio byte-identical",
+  "scope": "Node, simulated wx and Chromium only; not WeChat Developer Tools or real devices",
+  "publication": "No v0.1.7 remote push; paused awaiting user confirmation of public repository visibility",
+  "remaining": [
+    "Actual WeChat import/device/performance",
+    "Real ad IDs and completion callbacks",
+    "Human musical taste/listening",
+    "Human 300s balance",
+    "Public repository confirmation before push"
+  ]
 }

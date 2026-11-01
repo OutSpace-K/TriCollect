@@ -1,0 +1,36 @@
+✔ ready/intro never consume fixed 300s, all presets share base (223.3101ms)
+✔ pause/background hide, resume remains paused, no wall time or frame dependence (32.225174ms)
+✔ rotation queues net turns, completes in bounded time and preserves board (38.363745ms)
+✔ settlement lock rejects rapid duplicate taps (34.870998ms)
+✔ undo restores score and balls without refunding time or copying ad ledger (33.624553ms)
+✔ deadline processed before input; no post-zero move (29.904113ms)
+✔ last legal pick wins before subsequent clock expiration (1718.310896ms)
+✔ ad completion exactly once, persists ledger, survives undo and reload (57.394204ms)
+✔ cancelled/failed ad preserves board and time; old session never rewarded (91.020289ms)
+✔ pending ad restore never grants reward (55.19544ms)
+✔ corrupt/unknown/inconsistent saves rejected and last good backup recovered (35.25463ms)
+✔ failed storage write never crashes gameplay (53.24011ms)
+✔ WeChat adapter only isEnded true grants, load/show do not (8.429968ms)
+✔ WeChat rejection fails without rewards and listeners removed (0.435376ms)
+✔ two-extension limit enforced and no final result revival (39.330339ms)
+✔ unclaimed home lifecycle never replaces unfinished main or backup across restarts (93.465147ms)
+✔ empty home and repeated home navigation do not create or replace a save (35.506281ms)
+✔ explicit new game replaces a pending resume, then lifecycle saves that chosen session (63.787438ms)
+✔ manually ended non-winning round remains final through home hide and restart (75.012889ms)
+✔ rotation hides input, pause keeps requested face and restart cancels queued turns (51.622319ms)
+✔ hints never reveal another face and incompatible old rules do not resume (108.514641ms)
+✔ corrupted temporary readback cannot replace the committed save (31.351305ms)
+✔ sound preference survives new rounds, home and runtime restart (81.296612ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3562.754427
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

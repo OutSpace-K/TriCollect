@@ -110,15 +110,36 @@ async function visibility() {
     before,
     "rear opening clicks must never pick balls",
   );
-  await click("select");
-  const ids = await page.evaluate(() =>
-    tri.scene.buttons
-      .filter((b) => b.id.startsWith("tube-"))
-      .map((b) => b.id.slice(5))
-      .sort(),
+  assert.equal(
+    await page.evaluate(() =>
+      tri.scene.buttons.some(
+        (b) => b.id === "select" || b.id.startsWith("tube-"),
+      ),
+    ),
+    false,
   );
-  assert.deepEqual(ids, report.expected);
-  await click("close-select");
+  const slots = await page.evaluate(() => ({
+    colored: tri.scene.ballPositions,
+    ghosts: tri.scene.ghostPositions,
+    all: tri.game.board.tubes.flatMap((t) => t.balls.map((b) => b.id)),
+  }));
+  assert.deepEqual(
+    [...slots.colored, ...slots.ghosts].map((b) => b.id).sort(),
+    slots.all.sort(),
+  );
+  assert.ok(slots.ghosts.every((b) => !("type" in b)));
+  for (const ghost of slots.ghosts.filter((b) =>
+    report.targets.includes(b.tube),
+  )) {
+    const real = slots.colored.find((b) => b.tube === ghost.tube);
+    assert.equal(ghost.x, real.x);
+    await page.mouse.click(ghost.x, ghost.y);
+  }
+  assert.equal(
+    await page.evaluate(() => tri.game.state.history.length),
+    before,
+    "neutral silhouettes cannot select balls",
+  );
   return report;
 }
 try {
@@ -141,12 +162,12 @@ try {
   );
   for (let face = 0; face < 3; face++) {
     results.push(await visibility());
-    await page.screenshot({ path: `evidence/v016-face-${face + 1}.png` });
+    await page.screenshot({ path: `evidence/v017-face-${face + 1}.png` });
     await click("rotate-right");
     await stable();
   }
   const fixedReports = [];
-  await page.screenshot({ path: "evidence/v016-slots-before.png" });
+  await page.screenshot({ path: "evidence/v017-slots-before.png" });
   for (const id of ["1,0", "2,0"]) {
     for (let i = 0; i < 5; i++) {
       const before = await page.evaluate(() => tri.scene.ballPositions);
@@ -188,7 +209,7 @@ try {
       await visibility();
       if (id === "1,0" && i < 2)
         await page.screenshot({
-          path: `evidence/v016-slots-after-${i + 1}.png`,
+          path: `evidence/v017-slots-after-${i + 1}.png`,
         });
     }
     if (id === "1,0")
@@ -200,7 +221,7 @@ try {
   const revealed = await visibility();
   assert.ok(revealed.drawn.includes("1,1"));
   results.push({ fixedSlots: fixedReports, innerReveal: revealed });
-  await page.screenshot({ path: "evidence/v016-inner.png" });
+  await page.screenshot({ path: "evidence/v017-inner.png" });
   await click("undo");
   await stable();
   const restored = await page.evaluate(() => tri.scene.ballPositions);
@@ -272,8 +293,55 @@ try {
     if (elapsed < 250) assert.equal(frame.targets, 0);
     rotation.push({ elapsed, ...frame });
     if (elapsed === 125)
-      await page.screenshot({ path: "evidence/v016-center-rotation.png" });
+      await page.screenshot({ path: "evidence/v017-center-rotation.png" });
   }
+  const directions = [];
+  for (const view of [0, 1, 2])
+    for (const input of [-1, 1]) {
+      await page.evaluate((view) => {
+        tri.game.start();
+        tri.game.skipIntro();
+        tri.game.begin();
+        tri.game.state.view = view;
+        tri.scene.render();
+        const ids = tri.scene.targets.map((t) => t.id);
+        window.directionBefore = tri.scene.tubeLayout.filter((t) =>
+          ids.includes(t.id),
+        );
+      }, view);
+      await click(input === 1 ? "rotate-right" : "rotate-left");
+      const result = await page.evaluate(
+        ({ view, input }) => {
+          const before = window.directionBefore;
+          window.rotationTime += 62.5;
+          tri.game.tick();
+          tri.scene.render();
+          const displacement =
+            before.reduce(
+              (sum, t) =>
+                sum + tri.scene.tubeLayout.find((p) => p.id === t.id).x - t.x,
+              0,
+            ) / before.length;
+          const targetsDuring = tri.scene.targets.length;
+          window.rotationTime += 187.5;
+          tri.game.tick();
+          tri.scene.render();
+          return {
+            view,
+            input,
+            displacement,
+            targetsDuring,
+            finalView: tri.game.state.view,
+          };
+        },
+        { view, input },
+      );
+      assert.ok(result.displacement * input > 0, JSON.stringify(result));
+      assert.equal(result.targetsDuring, 0);
+      assert.equal(result.finalView, (view - input + 3) % 3);
+      directions.push(result);
+    }
+  results.push({ directions });
   results.push({ centeredRigidRotation: rotation });
   await page.evaluate(() => {
     tri.game.now = window.originalNow;
@@ -285,8 +353,13 @@ try {
   });
   await stable();
   for (let i = 0; i < 7; i++) await click("rotate-right");
-  assert.equal(await page.evaluate(() => tri.game.state.view), 1);
-  assert.equal(await page.evaluate(() => tri.scene.targets.length), 0);
+  assert.equal(await page.evaluate(() => tri.game.state.view), 2);
+  assert.equal(
+    await page.evaluate(() =>
+      tri.game.phase === "rotating" ? tri.scene.targets.length : 0,
+    ),
+    0,
+  );
   await stable();
   await visibility();
   results.push(
@@ -309,10 +382,10 @@ try {
   const targets = await page.evaluate(() => tri.scene.targets);
   assert.equal(targets.length, 8);
   for (const t of targets) assert.ok(t.x - t.r >= 0 && t.x + t.r <= 320);
-  await page.screenshot({ path: "evidence/v016-narrow.png" });
+  await page.screenshot({ path: "evidence/v017-narrow.png" });
   results.push("320x660: 36 tubes, 8 visible front targets within viewport");
   await writeFile(
-    "evidence/v0.1.6-visual-qa.json",
+    "evidence/v0.1.7-visual-qa.json",
     JSON.stringify(
       { passed: true, platform: "Chromium, not WeChat DevTools", results },
       null,

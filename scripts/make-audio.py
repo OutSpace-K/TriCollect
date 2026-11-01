@@ -8,7 +8,7 @@ with wave.open('assets/tap.wav', 'w') as output:
     output.setframerate(22050)
     output.writeframes(b''.join(struct.pack('<h', int(3500 * math.sin(2 * math.pi * 650 * i / 22050) * math.exp(-i / 550))) for i in range(3308)))
 
-# Original 32-second puzzle-game cue: 135 BPM, 16 bars, melody/bass/percussion.
+# Original 32-second puzzle-game cue: 135 BPM, 18 bars, melody/bass/percussion.
 # All voices are synthesized; no imported samples or melodies.
 import random
 import json
@@ -18,7 +18,7 @@ beat=60/135
 bars=18
 count = rate * seconds
 layers = {name: [0.0]*count for name in ['lead','bass','chords','drums']}
-rng = random.Random(1616)
+rng = random.Random(1717)
 def note(layer, start, midi, duration, amplitude, tone):
     freq=440*2**((midi-69)/12)
     for j in range(int(duration*rate)):
@@ -37,7 +37,9 @@ for bar in range(bars):
         note('lead',bar*4*beat+k*beat,pitch,beat*.9,.19 if k%2==0 else .15,'lead')
         if bar%2==1 and k==1:note('lead',bar*4*beat+beat*1.5,pitch+2,beat*.42,.10,'lead')
         if bar%4==3 and k==3:note('lead',bar*4*beat+beat*3.5,pitch-2,.23,.11,'lead')
-        note('bass',bar*4*beat+k*beat,root+(7 if k==2 else 0),beat*.72,.18,'bass')
+        note('bass',bar*4*beat+k*beat,root+(7 if k==2 else 0),beat*.48,.075,'bass')
+    for k in [1,3,5,7]:
+        note('lead',bar*4*beat+k*beat/2,phrase[k]+12,beat*.3,.045,'lead')
     for degree in [0,4 if root!=45 else 3,7]:
         note('chords',bar*4*beat+beat*.5,root+12+degree,beat*.6,.035,'bass')
         note('chords',bar*4*beat+beat*2.5,root+12+degree,beat*.6,.035,'bass')
@@ -46,13 +48,13 @@ for bar in range(bars):
         for j in range(int(rate*.09)):
             t=j/rate
             # Short soft filtered/noise-like shaker, with pitched wood tick on backbeats.
-            value=(rng.random()*2-1)*math.exp(-t*65)*.027
-            if k in [2,6]:value+=math.sin(2*math.pi*900*t)*math.exp(-t*55)*.075
+            value=(rng.random()*2-1)*math.exp(-t*65)*.018
+            if k in [2,6]:value+=math.sin(2*math.pi*900*t)*math.exp(-t*55)*.038
             layers['drums'][(round(start*rate)+j)%count]+=value*min(1,t/.003)
-        if k in [0,2,4,6]:
+        if k in [0,4]:
             for j in range(int(rate*.18)):
                 t=j/rate
-                layers['drums'][(round(start*rate)+j)%count]+=.19*math.sin(2*math.pi*(65*t+3*(1-math.exp(-t*20))))*math.exp(-t*22)*min(1,t/.003)
+                layers['drums'][(round(start*rate)+j)%count]+=.075*math.sin(2*math.pi*(65*t+3*(1-math.exp(-t*20))))*math.exp(-t*22)*min(1,t/.003)
 samples=[sum(layer[i] for layer in layers.values()) for i in range(count)]
 peak=max(abs(x) for x in samples)
 scale=min(1,.72/peak)
@@ -61,5 +63,5 @@ with wave.open('assets/ambience.wav','w') as output:
     output.writeframes(b''.join(struct.pack('<h',round(x*scale*32767)) for x in samples))
 report={'durationSeconds':seconds,'bpm':135,'bars':bars,'sampleRate':rate,'peak':peak*scale,'rms':math.sqrt(sum(x*x for x in samples)/count)*scale,'boundaryStep':abs(samples[0]-samples[-1])*scale,'clippedSamples':sum(abs(x*scale)>=1 for x in samples),'layers':{name:{'rms':math.sqrt(sum(x*x for x in data)/count)*scale,'peak':max(abs(x) for x in data)*scale} for name,data in layers.items()},'humanListeningPerformed':False}
 from pathlib import Path
-Path('evidence/v0.1.6-audio-signal.json').write_text(json.dumps(report,indent=2))
+Path('evidence/v0.1.7-audio-signal.json').write_text(json.dumps(report,indent=2))
 print(json.dumps(report,indent=2))

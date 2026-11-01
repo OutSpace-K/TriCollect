@@ -55,23 +55,7 @@ async function pick(id) {
     await click("rotate-right");
     await phase("active");
   }
-  await click("select");
-  const index = await page.evaluate(
-    (id) => window.tri.game.board.tubes.findIndex((t) => t.id === id),
-    id,
-  );
-  for (let i = 0; i < 3; i++) {
-    if (
-      await page.evaluate(
-        (id) => window.tri.scene.buttons.some((b) => b.id === "tube-" + id),
-        id,
-      )
-    )
-      break;
-    await click("page");
-  }
-  await click("tube-" + id);
-  fallbackPicks++;
+  assert.fail(`No direct top-ball target for ${id} on any face`);
 }
 try {
   await page.goto("http://127.0.0.1:4173");
@@ -89,7 +73,7 @@ try {
       ),
       false,
     );
-    assert.equal(await page.evaluate(() => window.tri.scene.buttons.length), 7);
+    assert.equal(await page.evaluate(() => window.tri.scene.buttons.length), 6);
     if (preset === 0) {
       const before = await page.evaluate(() => ({
         time: performance.now(),
@@ -113,7 +97,7 @@ try {
         await phase("active");
         assert.equal(
           await page.evaluate(() => window.tri.game.state.view),
-          (i + 1) % 3,
+          (3 - ((i + 1) % 3)) % 3,
         );
       }
       results.push(
@@ -200,9 +184,7 @@ try {
   for (const b of await page.evaluate(() => window.tri.scene.buttons))
     assert.ok(b.x >= 0 && b.y >= 0 && b.x + b.w <= 320 && b.y + b.h <= 660);
   await page.screenshot({ path: "evidence/narrow.png" });
-  await click("select");
-  await page.screenshot({ path: "evidence/optional-selector.png" });
-  await click("close-select");
+
   await click("pause");
   await click("end");
   await click("home");

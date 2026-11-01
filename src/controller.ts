@@ -236,6 +236,8 @@ export class Controller {
   rotate(direction: number) {
     this.tick();
     if (!this.canTurn || (direction !== 1 && direction !== -1)) return;
+    // Public +1 means move the front row to screen-right; world angle decreases.
+    direction = -direction;
     const from = this.state.view;
     this.state.view = (from + direction + 3) % 3;
     if (this.phase === "rotating")

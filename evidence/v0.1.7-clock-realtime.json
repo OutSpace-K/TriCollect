@@ -1,0 +1,17 @@
+{
+  "scope": "Real host monotonic time, both wx unit semantics simulated; not actual WeChat device",
+  "results": [
+    {
+      "unitsPerMs": 1,
+      "elapsedMs": 10004.127234,
+      "chargedMs": 10004.032986000006,
+      "pausePreserved": true
+    },
+    {
+      "unitsPerMs": 1000,
+      "elapsedMs": 10000.4518,
+      "chargedMs": 10000.282538000029,
+      "pausePreserved": true
+    }
+  ]
+}

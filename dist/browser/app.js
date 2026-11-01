@@ -71,7 +71,7 @@
   }
 
   // src/config.ts
-  var VERSION = "0.1.6";
+  var VERSION = "0.1.7";
   var RULE = "tricollect-4-fixedslots-front";
   var CONFIG = Object.freeze({
     baseMs: 3e5,
@@ -93,9 +93,9 @@
     { id: "deep", name: "\u6DF1\u5165", side: 8, height: 5, types: 7, seed: 155921 }
   ];
   var FACES = [
-    { name: "\u73CA\u745A\u9762", color: "#f1a48a", shell: "#773e37" },
-    { name: "\u7FE1\u7FE0\u9762", color: "#91d9bd", shell: "#285c50" },
-    { name: "\u661F\u84DD\u9762", color: "#a4bdf4", shell: "#344e77" }
+    { name: "\u73CA\u745A\u9762", color: "#c44c30", shell: "#f4d4bf" },
+    { name: "\u7FE1\u7FE0\u9762", color: "#237e68", shell: "#d8e6cb" },
+    { name: "\u661F\u84DD\u9762", color: "#6552bc", shell: "#e4dcf0" }
   ];
   var PALETTE = [
     "#fb826f",
@@ -618,6 +618,7 @@
     rotate(direction) {
       this.tick();
       if (!this.canTurn || direction !== 1 && direction !== -1) return;
+      direction = -direction;
       const from = this.state.view;
       this.state.view = (from + direction + 3) % 3;
       if (this.phase === "rotating")
@@ -815,6 +816,7 @@
       this.height = height;
       __publicField(this, "buttons", []);
       __publicField(this, "renderedIds", []);
+      __publicField(this, "ghostPositions", []);
       __publicField(this, "ballPositions", []);
       __publicField(this, "flightOrigin", null);
       __publicField(this, "rotationAxis", { x: 0, y: 0 });
@@ -824,12 +826,10 @@
       __publicField(this, "silhouetteIds", []);
       __publicField(this, "rearOpenings", []);
       __publicField(this, "renderedFace", 0);
-      __publicField(this, "page", 0);
-      __publicField(this, "drawer", false);
       __publicField(this, "targets", []);
       __publicField(this, "bodies", []);
     }
-    text(t, x, y, size = 14, color = "#d9ece7", align = "left") {
+    text(t, x, y, size = 14, color = "#44352e", align = "left") {
       const c = this.ctx;
       c.font = `${size >= 24 ? "600" : "400"} ${size}px sans-serif`;
       c.fillStyle = color;
@@ -854,14 +854,14 @@
         y,
         w,
         h,
-        disabled ? "#233e42" : accent ? "#d4e7b6" : "#284c50"
+        disabled ? "#e7ddd0" : accent || id === "hint" ? "#c94322" : "#6534ce"
       );
       this.text(
         label,
         x + w / 2,
         y + h / 2 + 5,
         14,
-        disabled ? "#718b8b" : accent ? "#183b37" : "#eef7ed",
+        disabled ? "#88796a" : "#ffffff",
         "center"
       );
       this.buttons.push({ id, x, y, w, h, act, disabled });
@@ -871,20 +871,50 @@
       c.save();
       try {
         c.globalAlpha = alpha;
-        const g = c.createRadialGradient(x - r * 0.35, y - r * 0.4, 1, x, y, r);
-        g.addColorStop(0, "#fff6dc");
-        g.addColorStop(0.35, PALETTE[type]);
-        g.addColorStop(1, PALETTE[type]);
-        c.fillStyle = g;
+        c.fillStyle = "#73503530";
+        c.beginPath();
+        c.ellipse(x, y + r * 0.85, r * 0.9, r * 0.24, 0, 0, Math.PI * 2);
+        c.fill();
+        const shade = (mix) => {
+          const rgb = PALETTE[type].slice(1).match(/../g).map((n) => parseInt(n, 16));
+          return "#" + rgb.map(
+            (v) => Math.round(mix > 0 ? v + (255 - v) * mix : v * (1 + mix)).toString(16).padStart(2, "0")
+          ).join("");
+        };
+        const gradient = c.createRadialGradient(
+          x - r * 0.32,
+          y - r * 0.38,
+          r * 0.05,
+          x,
+          y,
+          r
+        );
+        gradient.addColorStop(0, "#fffdf4");
+        gradient.addColorStop(0.18, shade(0.48));
+        gradient.addColorStop(0.58, PALETTE[type]);
+        gradient.addColorStop(1, shade(-0.38));
+        c.fillStyle = gradient;
         c.beginPath();
         c.arc(x, y, r, 0, Math.PI * 2);
+        c.fill();
+        c.fillStyle = "#ffffffb8";
+        c.beginPath();
+        c.ellipse(
+          x - r * 0.3,
+          y - r * 0.38,
+          r * 0.24,
+          r * 0.13,
+          -0.55,
+          0,
+          Math.PI * 2
+        );
         c.fill();
         this.text(
           SYMBOLS[type],
           x,
-          y + 4,
-          Math.max(10, r * 0.85),
-          "#24414a",
+          y + r * 0.34,
+          Math.max(8, r * 0.57),
+          "#44322c",
           "center"
         );
       } finally {
@@ -894,6 +924,7 @@
     render() {
       const c = this.ctx, g = this.game, w = this.width, h = this.height;
       this.renderedIds = [];
+      this.ghostPositions = [];
       this.ballPositions = [];
       this.flightOrigin = null;
       this.visibleBalls = [];
@@ -905,8 +936,8 @@
       this.targets = [];
       c.clearRect(0, 0, w, h);
       const bg = c.createLinearGradient(0, 0, w, h);
-      bg.addColorStop(0, "#102e36");
-      bg.addColorStop(1, "#18444a");
+      bg.addColorStop(0, "#fff9ed");
+      bg.addColorStop(1, "#f4e4cf");
       c.fillStyle = bg;
       c.fillRect(0, 0, w, h);
       this.button(
@@ -922,21 +953,21 @@
         this.home();
         return;
       }
-      this.text("TRICOLLECT", 22, 35, 13, "#a9c6bd");
-      this.text("\u4E09\u9762\u7403\u4ED3", 22, 66, 26, "#f1f1df");
+      this.text("TRICOLLECT", 22, 35, 13, "#786254");
+      this.text("\u4E09\u9762\u7403\u4ED3", 22, 66, 26, "#3c302a");
       this.text(
         PRESETS[g.state.preset].name + " \xB7 " + g.state.seed,
         22,
         88,
         11,
-        "#9bbab7"
+        "#786254"
       );
       this.text(
         `${Math.ceil(g.state.remaining / 1e3 / 60) - (Math.ceil(g.state.remaining / 1e3) % 60 === 0 ? 0 : 1)}:${String(Math.ceil(g.state.remaining / 1e3) % 60).padStart(2, "0")}`,
         w - 24,
         46,
         28,
-        g.state.remaining < 3e4 ? "#fb826f" : "#f1f1df",
+        g.state.remaining < 3e4 ? "#fb826f" : "#3c302a",
         "right"
       );
       this.text(
@@ -944,7 +975,7 @@
         w - 24,
         71,
         12,
-        "#a9c6bd",
+        "#786254",
         "right"
       );
       const hidden = ["paused", "ad", "expired", "blocked", "result"].includes(
@@ -964,35 +995,22 @@
         55,
         34,
         () => {
-          this.drawer = false;
           g.pause();
         },
         !["active", "resolving", "rotating"].includes(g.phase)
-      );
-      this.button(
-        "select",
-        "\u9009\u7403",
-        22,
-        100,
-        55,
-        34,
-        () => {
-          this.drawer = !this.drawer;
-        },
-        g.locked
       );
       this.text(
         "\u70B9\u51FB\u4EAE\u5708\u9876\u90E8\u7403 \xB7 \u6A2A\u6ED1\u5207\u9762",
         w / 2,
         boardBottom + 10,
         12,
-        "#a9c6bd",
+        "#786254",
         "center"
       );
-      this.text("\u4E09\u540C\u6D88\u9664", 22, trayY - 7, 12, "#a9c6bd");
+      this.text("\u4E09\u540C\u6D88\u9664", 22, trayY - 7, 12, "#786254");
       const cell = (w - 44) / 7;
       for (let i = 0; i < 7; i++) {
-        this.rect(22 + i * cell, trayY, cell - 4, 43, "#0e2d34", 9);
+        this.rect(22 + i * cell, trayY, cell - 4, 43, "#eadbc8", 9);
         const ball = g.board.tray[i];
         if (ball)
           this.ball(ball.type, 22 + i * cell + (cell - 4) / 2, trayY + 21, 15);
@@ -1000,26 +1018,24 @@
       const bw = (w - 65) / 4;
       this.button(
         "rotate-left",
-        "\u21B6",
+        "\u2190",
         22,
         trayY + 55,
         bw,
         44,
         () => {
-          this.drawer = false;
           g.rotate(-1);
         },
         !g.canTurn
       );
       this.button(
         "rotate-right",
-        "\u21B7",
+        "\u2192",
         29 + bw,
         trayY + 55,
         bw,
         44,
         () => {
-          this.drawer = false;
           g.rotate(1);
         },
         !g.canTurn
@@ -1041,15 +1057,7 @@
         trayY + 55,
         bw,
         44,
-        () => {
-          g.hintNow();
-          if (g.hint && !this.targets.some((t) => t.id === g.hint)) {
-            this.drawer = true;
-            this.page = Math.floor(
-              g.board.tubes.findIndex((t) => t.id === g.hint) / 10
-            );
-          }
-        },
+        () => g.hintNow(),
         g.locked
       );
       this.text(
@@ -1057,17 +1065,16 @@
         w / 2,
         h - 20,
         11,
-        "#c5d5c7",
+        "#6f5a4d",
         "center"
       );
-      if (this.drawer && g.phase === "active") this.drawSelector(160);
       if (g.phase === "intro" || g.phase === "ready") {
         this.rect(
           18,
           Math.max(100, boardBottom - 103),
           w - 36,
           92,
-          "#173b40",
+          "#fff9ed",
           18
         );
         this.text(
@@ -1075,7 +1082,7 @@
           w / 2,
           boardBottom - 73,
           13,
-          "#e9edda",
+          "#44352e",
           "center"
         );
         this.button(
@@ -1090,54 +1097,6 @@
           true
         );
       }
-    }
-    drawSelector(y) {
-      const g = this.game, w = this.width, c = this.ctx, tiles = g.board.tubes.filter((t) => g.visible.has(t.id)), pages = Math.ceil(tiles.length / 10);
-      this.page = Math.min(this.page, pages - 1);
-      this.rect(14, y, w - 28, 188, "#123139", 16);
-      this.text("\u5F53\u524D\u6B63\u9762 \xB7 \u9876\u90E8\u7403", 26, y + 27, 14, "#d9ece7");
-      this.button("close-select", "\u6536\u8D77", w - 80, y + 10, 52, 32, () => {
-        this.drawer = false;
-      });
-      const e = g.visible, gap = 7, tw = (w - 52 - gap * 4) / 5;
-      for (let i = 0; i < 10; i++) {
-        const t = tiles[this.page * 10 + i];
-        if (!t) continue;
-        const x = 26 + i % 5 * (tw + gap), ty = y + 54 + Math.floor(i / 5) * 48, top = t.balls[t.balls.length - 1], allowed = e.has(t.id);
-        this.button(
-          "tube-" + t.id,
-          "",
-          x,
-          ty,
-          tw,
-          42,
-          () => {
-            this.drawer = false;
-            g.pick(t.id);
-          },
-          !allowed
-        );
-        if (top) {
-          this.ball(top.type, x + tw * 0.65, ty + 21, 11, allowed ? 1 : 0.25);
-          this.text(String(g.board.tubes.indexOf(t) + 1), x + 7, ty + 25, 11);
-        } else this.text("\u2713", x + tw / 2, ty + 25, 12, "#759e91", "center");
-        if (g.hint === t.id) {
-          c.strokeStyle = "#f4d27e";
-          c.strokeRect(x - 1, ty - 1, tw + 2, 44);
-        }
-      }
-      this.button(
-        "page",
-        `\u6362\u9875 ${this.page + 1}/${pages}`,
-        w / 2 - 55,
-        y + 151,
-        110,
-        28,
-        () => {
-          this.page = (this.page + 1) % pages;
-        },
-        pages === 1
-      );
     }
     fit(t, n) {
       return t.length > n ? t.slice(0, n - 1) + "\u2026" : t;
@@ -1167,7 +1126,7 @@
         w / 2,
         top + 34,
         11,
-        "#a9c6bd",
+        "#786254",
         "center"
       );
       const ordered = g.board.tubes.filter((t) => t.balls.length).map((t) => ({ t, ...point(t) })).sort((a, b) => b.depth - a.depth);
@@ -1197,15 +1156,14 @@
       );
       for (const item of ordered) {
         const { t, x, y } = item, ty = y - height, front = visible.has(t.id);
-        this.rect(
-          x - radius,
-          ty,
-          radius * 2,
-          height,
-          front ? face.shell : "#1b343b",
-          Math.min(10, radius * 0.4)
-        );
-        c.strokeStyle = front ? face.color : "#54706e";
+        const glass = c.createLinearGradient(x - radius, 0, x + radius, 0);
+        glass.addColorStop(0, front ? "#eadfcf" : "#ddd0bc");
+        glass.addColorStop(0.22, front ? "#fffdf6" : "#f6eddd");
+        glass.addColorStop(0.7, front ? "#fff9ed" : "#eee1ce");
+        glass.addColorStop(1, "#e7d9c4");
+        c.fillStyle = glass;
+        c.fillRect(x - radius, ty, radius * 2, height);
+        c.strokeStyle = "#bba990";
         c.lineWidth = 1;
         c.beginPath();
         c.moveTo(x - radius, ty + 2);
@@ -1213,25 +1171,12 @@
         c.moveTo(x + radius, ty + 2);
         c.lineTo(x + radius, y - 3);
         c.stroke();
-        if (front) {
-          this.rect(
-            x - radius + 5,
-            ty + 18,
-            radius * 2 - 10,
-            height - 27,
-            "#112e35",
-            5
-          );
-          for (let j = 0; j < 5; j++) {
-            const yy = y - ballRadius - 6 - j * step;
-            c.beginPath();
-            c.moveTo(x - radius + 1, yy);
-            c.lineTo(x - radius + 4, yy + 5);
-            c.moveTo(x + radius - 4, yy + 5);
-            c.lineTo(x + radius - 1, yy);
-            c.stroke();
-          }
-        } else
+        c.fillStyle = "#d8c7af";
+        c.beginPath();
+        c.ellipse(x, y - 2, radius, opening, 0, 0, Math.PI * 2);
+        c.fill();
+        c.stroke();
+        if (!front)
           this.rearOpenings.push({
             id: t.id,
             x,
@@ -1239,51 +1184,46 @@
             rx: radius,
             ry: opening
           });
-        c.fillStyle = front ? face.shell : "#36514f";
+        c.fillStyle = "#fff9ed";
         c.beginPath();
         c.ellipse(x, ty + 3, radius, opening, 0, 0, Math.PI * 2);
         c.fill();
         c.stroke();
-        c.fillStyle = "#071c23";
+        c.fillStyle = "#c9b79d";
         c.beginPath();
         c.ellipse(x, ty + 2, radius * 0.74, opening * 0.66, 0, 0, Math.PI * 2);
         c.fill();
-        if (!front) continue;
         const previous = g.phase === "resolving" ? g.state.history.at(-1)?.tubes.find((old) => old.id === t.id) : void 0;
         const visibleCountBase = previous && previous.balls.length > t.balls.length ? previous.balls.length : t.balls.length;
         const first = Math.max(0, visibleCountBase - 3), shown = t.balls.slice(first);
-        if (first > 0) {
-          const coverY = y - ballRadius - 6 - (first - 0.5) * step;
-          this.rect(
-            x - radius + 5,
-            coverY,
-            radius * 2 - 10,
-            Math.max(0, y - 9 - coverY),
-            face.shell,
-            3
-          );
-          c.strokeStyle = face.color;
-          c.beginPath();
-          c.moveTo(x - radius + 5, coverY);
-          c.lineTo(x + radius - 5, coverY);
-          c.stroke();
-        }
-        this.visibleBalls.push({ tube: t.id, ids: shown.map((b) => b.id) });
-        for (let i = first; i < t.balls.length; i++) {
+        if (front)
+          this.visibleBalls.push({ tube: t.id, ids: shown.map((b) => b.id) });
+        for (let i = 0; i < t.balls.length; i++) {
           const by = y - ballRadius - 6 - i * step;
-          this.ballPositions.push({
+          const position = {
             id: t.balls[i].id,
             tube: t.id,
             slot: i,
             x,
             y: by,
             r: ballRadius
-          });
-          const drop = g.phase === "intro" ? (1 - g.introProgress) * (145 - i * 20) : 0;
-          this.ball(t.balls[i].type, x, by - drop, ballRadius);
+          };
+          if (front && i >= first) {
+            this.ballPositions.push(position);
+            const drop = g.phase === "intro" ? (1 - g.introProgress) * (145 - i * 20) : 0;
+            this.ball(t.balls[i].type, x, by - drop, ballRadius);
+          } else {
+            this.ghostPositions.push(position);
+            c.strokeStyle = front ? "#bba88d" : "#cbbba3";
+            c.lineWidth = 1.1;
+            c.beginPath();
+            c.arc(x, by, ballRadius, 0, Math.PI * 2);
+            c.stroke();
+          }
         }
+        if (!front) continue;
         const topY = y - ballRadius - 6 - (t.balls.length - 1) * step, hitRadius = Math.min(radius * 0.77, step * 0.48);
-        c.strokeStyle = g.hint === t.id ? "#ffdc7f" : face.color;
+        c.strokeStyle = g.hint === t.id ? "#7636dc" : "#d64a2a";
         c.lineWidth = 2;
         c.beginPath();
         c.arc(x, topY, hitRadius, 0, Math.PI * 2);
@@ -1325,12 +1265,12 @@
     }
     home() {
       const w = this.width, h = this.height;
-      this.text("T R I C O L L E C T", w / 2, 76, 13, "#b1cbc0", "center");
-      this.text("\u4E09\u9762\u7403\u4ED3", w / 2, 122, 38, "#f2f0db", "center");
-      this.text("\u8F6C\u4E00\u4E2A\u89D2\u5EA6\uFF0C\u53D1\u73B0\u4E0B\u4E00\u7EC4\u3002", w / 2, 155, 14, "#adc8bd", "center");
+      this.text("T R I C O L L E C T", w / 2, 76, 13, "#786254", "center");
+      this.text("\u4E09\u9762\u7403\u4ED3", w / 2, 122, 38, "#3c302a", "center");
+      this.text("\u8F6C\u4E00\u4E2A\u89D2\u5EA6\uFF0C\u53D1\u73B0\u4E0B\u4E00\u7EC4\u3002", w / 2, 155, 14, "#786254", "center");
       for (let i = 0; i < 5; i++) {
         const x = w / 2 + (i - 2) * 43, y2 = 230 + Math.abs(i - 2) * 14;
-        this.rect(x - 17, y2 - 28, 34, 80, "#8ad1c31a");
+        this.rect(x - 17, y2 - 28, 34, 80, "#e7d5bf");
         this.ball(i, x, y2, 14);
         this.ball((i + 2) % 5, x, y2 + 32, 14);
       }
@@ -1339,7 +1279,7 @@
         w / 2,
         343,
         13,
-        "#e2e8d6",
+        "#594739",
         "center"
       );
       this.text(
@@ -1347,7 +1287,7 @@
         w / 2,
         367,
         13,
-        "#adc8bd",
+        "#786254",
         "center"
       );
       const y = Math.min(h - 260, 405);
@@ -1360,7 +1300,6 @@
           w - 56,
           44,
           () => {
-            this.page = 0;
             this.game.start(i);
           },
           false,
@@ -1391,7 +1330,7 @@
         w / 2,
         h - 55,
         12,
-        "#b7cdbb",
+        "#786254",
         "center"
       );
       this.text(
@@ -1399,21 +1338,21 @@
         w / 2,
         h - 32,
         11,
-        "#739e98",
+        "#786254",
         "center"
       );
     }
     overlay() {
       const g = this.game, w = this.width, h = this.height, y = Math.max(138, h * 0.25);
       const title = g.phase === "result" ? g.board.status === "won" ? "\u7403\u4ED3\u6E05\u7A7A" : "\u672C\u5C40\u7ED3\u675F" : g.phase === "blocked" ? "\u6682\u5B58\u69FD\u5DF2\u6EE1" : g.phase === "expired" ? "\u65F6\u95F4\u7528\u5C3D" : g.phase === "ad" ? "\u6B63\u5728\u8BF7\u6C42\u5E7F\u544A" : "\u5DF2\u6682\u505C";
-      this.rect(20, y - 30, w - 40, Math.min(460, h - y - 30), "#123139", 22);
-      this.text(title, w / 2, y + 20, 30, "#f2f0db", "center");
+      this.rect(20, y - 30, w - 40, Math.min(460, h - y - 30), "#fffaf1", 22);
+      this.text(title, w / 2, y + 20, 30, "#3c302a", "center");
       this.text(
         `${g.board.score} \u5206 \xB7 \u5DF2\u6D88\u9664 ${g.board.cleared.length} \u9897`,
         w / 2,
         y + 55,
         15,
-        "#bdd3bf",
+        "#594739",
         "center"
       );
       this.text(
@@ -1421,7 +1360,7 @@
         w / 2,
         y + 80,
         13,
-        "#9dbab3",
+        "#786254",
         "center"
       );
       if (g.phase === "ad") {
@@ -1430,7 +1369,7 @@
           w / 2,
           y + 145,
           14,
-          "#d4e7b6",
+          "#c94322",
           "center"
         );
         return;
@@ -1440,7 +1379,7 @@
         w / 2,
         y + 102,
         11,
-        "#9dbab3",
+        "#786254",
         "center"
       );
       let by = y + 125;
@@ -1473,7 +1412,7 @@
           () => void g.extend(),
           !g.ads.available || g.state.extensions >= CONFIG.maxExtensions
         );
-        this.text(g.ads.label, w / 2, by - 2, 11, "#94b2ac", "center");
+        this.text(g.ads.label, w / 2, by - 2, 11, "#786254", "center");
         by += 8;
       }
       if (g.phase !== "result") add("end", "\u7ED3\u675F\u5E76\u4FDD\u7559\u672C\u5C40\u6210\u7EE9", () => g.end());
@@ -1489,7 +1428,7 @@
         w / 2,
         Math.min(h - 25, by + 15),
         12,
-        "#bdd3bf",
+        "#594739",
         "center"
       );
     }
@@ -1499,7 +1438,7 @@
         if (!button.disabled) button.act();
         return;
       }
-      if (this.game.locked || this.drawer) return;
+      if (this.game.locked) return;
       const target = [...this.targets].reverse().find((t) => Math.hypot(x - t.x, y - t.y) <= t.r);
       if (target) {
         this.game.pick(target.id);
@@ -1507,7 +1446,7 @@
       }
       const body = [...this.bodies].reverse().find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
       if (body) {
-        this.game.message = "\u53EA\u80FD\u53D6\u9732\u51FA\u7684\u4EAE\u5708\u9876\u90E8\u7403\uFF1B\u4E5F\u53EF\u70B9\u5DE6\u4E0A\u9009\u7403";
+        this.game.message = "\u53EA\u80FD\u70B9\u51FB\u6B63\u9762\u4EAE\u5708\u91CC\u7684\u6700\u4E0A\u7403";
       }
     }
   };

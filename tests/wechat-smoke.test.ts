@@ -18,6 +18,8 @@ async function boot(
   const rawMs = () =>
     live ? performance.now() - liveStart : microseconds / 1000;
   const circles: { x: number; y: number; r: number }[] = [];
+  const rings: { x: number; y: number; r: number }[] = [];
+  let lastArc: { x: number; y: number; r: number } | undefined;
   let microseconds = 0;
   let frame: () => void = () => {};
   const handlers: Record<string, Function> = {},
@@ -31,7 +33,20 @@ async function boot(
       restore: () => {
         saveDepth--;
       },
-      arc: (x: number, y: number, r: number) => circles.push({ x, y, r }),
+      beginPath: () => {
+        lastArc = undefined;
+      },
+      arc: (x: number, y: number, r: number) => {
+        lastArc = { x, y, r };
+        circles.push(lastArc);
+      },
+      stroke: () => {
+        if (
+          lastArc &&
+          (ctx as unknown as { lineWidth: number }).lineWidth === 2
+        )
+          rings.push(lastArc);
+      },
       fillText: (s: string, x: number, y: number) => {
         if (failRender === true || failRender === s) {
           failRender = false;
@@ -151,6 +166,7 @@ async function boot(
   const render = () => {
     labels.length = 0;
     circles.length = 0;
+    rings.length = 0;
     frame();
   };
   const tap = (text: string, exact = false) => {
@@ -165,6 +181,19 @@ async function boot(
   };
   return {
     storage,
+    rings,
+    tapTube: (index: number) => {
+      const label = labels.find((l) => l.s === String(index));
+      assert.ok(label, `front tube label ${index}`);
+      const ring = rings.find(
+        (r) => Math.abs(r.x - label.x) < 0.01 && r.y > label.y,
+      );
+      assert.ok(ring, `top ball ring ${index}`);
+      const t = { clientX: ring.x, clientY: ring.y + 24 };
+      handlers.start({ touches: [t] });
+      handlers.end({ changedTouches: [t] });
+      render();
+    },
     audioPlayers,
     canvasDepth: () => saveDepth,
     failNextRender: (text?: string) => {
@@ -270,11 +299,11 @@ for (const units of [1, 1000])
       assert.equal(decode(r.storage.get(SAVE_KEY)!)!.remaining, 290000);
       r.tap("继续游戏");
       for (let rotation = 0; rotation < 6; rotation++) {
-        r.tap("↷", true);
+        r.tap("→", true);
         r.advance(250_000);
         assert.equal(
           decode(r.storage.get(SAVE_KEY)!)!.view,
-          (rotation + 1) % 3,
+          (3 - ((rotation + 1) % 3)) % 3,
         );
       }
       const level = createLevel(preset);
@@ -283,11 +312,10 @@ for (const units of [1, 1000])
           (t) => t.id === level.witness[step],
         );
         while (decode(r.storage.get(SAVE_KEY)!)!.view !== level.views[step]) {
-          r.tap("↷", true);
+          r.tap("→", true);
           r.advance(250_000);
         }
-        r.tap("选球", true);
-        r.tap(String(index + 1), true);
+        r.tapTube(index + 1);
         r.advance(250_000);
         assert.equal(
           decode(r.storage.get(SAVE_KEY)!)!.history.length,
@@ -306,12 +334,10 @@ test("native RAF survives one rendering exception and audio exception never abor
   assert.ok(r.labels.some((l) => l.s === "已暂停"));
   assert.equal(r.canvasDepth(), 0);
   r.tap("继续游戏");
-  r.tap("选球", true);
-  r.tap("1", true);
+  r.tapTube(1);
   r.advance(250_000);
   assert.equal(decode(r.storage.get(SAVE_KEY)!)!.history.length, 1);
-  r.tap("选球", true);
-  r.tap("1", true);
+  r.tapTube(1);
   r.advance(250_000);
   assert.equal(decode(r.storage.get(SAVE_KEY)!)!.history.length, 2);
 });
@@ -355,12 +381,11 @@ for (const units of [1, 1000])
     );
     assert.ok(introMs >= 800 && introMs <= 1400);
     r.tap("开始 ·");
-    r.tap("选球", true);
-    r.tap("1", true);
+    r.tapTube(1);
     const movingCircles = r.circles.map((c) => ({ ...c }));
     const transferMs = await driveUntil(
       r,
-      () => r.labels.some((l) => l.s === "撤销" && l.color === "#eef7ed"),
+      () => r.labels.some((l) => l.s === "撤销" && l.color === "#ffffff"),
       800,
     );
     assert.ok(transferMs <= 500);
@@ -379,11 +404,10 @@ for (const units of [1, 1000])
       settled,
       "remaining tube/tray balls no longer move",
     );
-    r.tap("选球", true);
-    r.tap("1", true);
+    r.tapTube(1);
     await driveUntil(
       r,
-      () => r.labels.some((l) => l.s === "撤销" && l.color === "#eef7ed"),
+      () => r.labels.some((l) => l.s === "撤销" && l.color === "#ffffff"),
       800,
     );
     assert.equal(decode(r.storage.get(SAVE_KEY)!)!.history.length, 2);
@@ -404,7 +428,7 @@ for (const units of [1, 1000])
       secondPickAccepted: true,
     });
     writeFileSync(
-      "evidence/v0.1.6-animation-wallclock.json",
+      "evidence/v0.1.7-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -427,8 +451,7 @@ for (const units of [1, 1000])
       if (stage === "transfer") {
         r.tap("跳过开场");
         r.tap("开始 ·");
-        r.tap("选球", true);
-        r.tap("1", true);
+        r.tapTube(1);
       }
       r.freezeClock();
       const pauseMs = await driveUntil(
@@ -449,7 +472,7 @@ for (const units of [1, 1000])
       });
     }
     writeFileSync(
-      "evidence/v0.1.6-animation-wallclock.json",
+      "evidence/v0.1.7-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -468,20 +491,16 @@ for (const units of [1, 1000])
     r.tap("初见");
     r.tap("跳过开场");
     r.tap("开始 ·");
-    r.tap("↷", true);
-    const ms = await driveUntil(
-      r,
-      () => r.labels.some((l) => l.s === "选球" && l.color === "#eef7ed"),
-      800,
-    );
+    r.tap("→", true);
+    const ms = await driveUntil(r, () => r.rings.length > 0, 800);
     assert.ok(ms >= 180 && ms < 500);
-    assert.equal(decode(r.storage.get(SAVE_KEY)!)!.view, 1);
-    r.tap("↶", true);
-    r.tap("↶", true);
-    r.tap("暂停", true);
     assert.equal(decode(r.storage.get(SAVE_KEY)!)!.view, 2);
+    r.tap("←", true);
+    r.tap("←", true);
+    r.tap("暂停", true);
+    assert.equal(decode(r.storage.get(SAVE_KEY)!)!.view, 1);
     r.tap("继续游戏");
-    r.tap("↷", true);
+    r.tap("→", true);
     r.freezeClock();
     const interrupted = await driveUntil(
       r,
@@ -496,7 +515,7 @@ for (const units of [1, 1000])
       frozenRotationPauseMs: interrupted,
     });
     writeFileSync(
-      "evidence/v0.1.6-animation-wallclock.json",
+      "evidence/v0.1.7-animation-wallclock.json",
       JSON.stringify(
         {
           scope:

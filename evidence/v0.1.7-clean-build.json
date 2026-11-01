@@ -1,0 +1,12 @@
+{
+  "npmCi": true,
+  "build": true,
+  "typecheck": true,
+  "byteIdentical": {
+    "dist/wechat/game.js": "c436a277760a0cb4971bd76a56d2721d9f6a9b64757f6a683564dc039698048a",
+    "dist/browser/app.js": "11d7e5fc9d2ef8874629ce0df5a8cce86eb9dcfddad00b5585776b1c35f3fec5",
+    "assets/ambience.wav": "2d4377e6cd099a471e3733440959eb3ff2594ae1f693545503686cf7c234a85b",
+    "dist/wechat/assets/ambience.wav": "2d4377e6cd099a471e3733440959eb3ff2594ae1f693545503686cf7c234a85b",
+    "dist/browser/assets/ambience.wav": "2d4377e6cd099a471e3733440959eb3ff2594ae1f693545503686cf7c234a85b"
+  }
+}
