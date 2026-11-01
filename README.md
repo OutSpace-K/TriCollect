@@ -148,4 +148,4 @@ CHROMIUM_PATH=/usr/bin/chromium npm run test:e2e
 - 人类试玩校准：球量、图形可读性、300 秒节奏、提示搜索命中率。求解超预算返回未知，不冒充无解或必胜。
 - S1 的真机链路与 S6 均未通过；本包是继续验收的完整代码候选，不能将 S1–S7 全部标为完成。
 
-项目指定仓库为 [OutSpace-K/TriCollect](https://github.com/OutSpace-K/TriCollect)，v0.1.7 为本地完整候选，暂缓推送，等待用户确认仓库公开可见性。此提交不涉及部署或公开发布。原始设计全文通过 Library 阅读；本机文档 ZIP 下载失败，因此本包不冒充包含已下载的原 Word/PDF。资源与依赖许可见 `docs/LICENSES.md`。
+项目指定仓库为 [OutSpace-K/TriCollect](https://github.com/OutSpace-K/TriCollect)，用户已确认公开可见性，v0.1.7 按既有授权提交。此提交不涉及部署或公开发布。原始设计全文通过 Library 阅读；本机文档 ZIP 下载失败，因此本包不冒充包含已下载的原 Word/PDF。资源与依赖许可见 `docs/LICENSES.md`。

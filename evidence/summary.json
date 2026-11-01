@@ -21,12 +21,11 @@
   "typecheck": "passed",
   "cleanBuild": "npm ci/build/typecheck; bundle and audio byte-identical",
   "scope": "Node, simulated wx and Chromium only; not WeChat Developer Tools or real devices",
-  "publication": "No v0.1.7 remote push; paused awaiting user confirmation of public repository visibility",
+  "publication": "User confirmed public repository for Gitee synchronization; authorized push to OutSpace-K/TriCollect main resumed. No visibility changes, credentials or deployment.",
   "remaining": [
     "Actual WeChat import/device/performance",
     "Real ad IDs and completion callbacks",
     "Human musical taste/listening",
-    "Human 300s balance",
-    "Public repository confirmation before push"
+    "Human 300s balance"
   ]
 }
