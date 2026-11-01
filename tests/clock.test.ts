@@ -90,7 +90,7 @@ test("independent real-time 10-second measurement in both clock unit modes", asy
     }),
   );
   writeFileSync(
-    "evidence/v0.1.2-clock-realtime.json",
+    "evidence/v0.1.3-clock-realtime.json",
     JSON.stringify(
       {
         scope:

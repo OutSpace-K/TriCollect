@@ -2,7 +2,8 @@ import { PRESETS, type Preset } from "../config";
 import {
   type Board,
   type Tube,
-  exposed,
+  available,
+  faceVisible,
   key,
   replay,
   invariant,
@@ -20,6 +21,7 @@ export function random(seed: number) {
 export type Level = {
   board: Board;
   witness: string[];
+  views: number[];
   seed: number;
   preset: string;
   fallback: boolean;
@@ -49,12 +51,16 @@ export function generate(p: Preset, seed: number): Level {
   };
   // Find a legal geometry order before assigning types. Fixed O(ball count * tube count).
   const scratch = JSON.parse(JSON.stringify(b)) as Board,
-    order: { tube: string; index: number }[] = [];
+    order: { tube: string; index: number; view: number }[] = [];
   while (scratch.tubes.some((t) => t.balls.length)) {
-    const e = [...exposed(scratch)],
+    const e = [...available(scratch)],
       selected = e[Math.floor(rnd() * e.length)];
     const t = scratch.tubes.find((t) => t.id === selected)!;
-    order.push({ tube: t.id, index: t.balls.length - 1 });
+    order.push({
+      tube: t.id,
+      index: t.balls.length - 1,
+      view: [0, 1, 2].find((v) => faceVisible(scratch, v).has(t.id))!,
+    });
     t.balls.pop();
   }
   // Two interleaved triples per window: at most four balls wait in the tray.
@@ -78,7 +84,14 @@ export function generate(p: Preset, seed: number): Level {
     end = replay(b, witness);
   if (end.status !== "won" || !invariant(end, order.length))
     throw Error("Witness validation failed");
-  return { board: b, witness, seed, preset: p.id, fallback: false };
+  return {
+    board: b,
+    witness,
+    views: order.map((o) => o.view),
+    seed,
+    preset: p.id,
+    fallback: false,
+  };
 }
 export function createLevel(index: number, seed?: number): Level {
   const p = PRESETS[index] ?? PRESETS[0];

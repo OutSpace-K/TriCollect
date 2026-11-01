@@ -3,15 +3,17 @@ import assert from "node:assert/strict";
 import { createLevel, generate } from "../src/core/generation";
 import {
   exposed,
+  faceVisible,
+  available,
   take,
   replay,
   invariant,
   clone,
   type Board,
 } from "../src/core/rules";
-import { PRESETS, CONFIG } from "../src/config";
+import { PRESETS, CONFIG, MECHANICAL } from "../src/config";
 import { solve } from "../src/core/solver";
-const initial = () => createLevel(0).board;
+const initial = () => generate(MECHANICAL, MECHANICAL.seed).board;
 test("10 tube mechanical layout has nine exposed boundaries and one locked center", () => {
   const b = initial();
   assert.equal(b.tubes.length, 10);
@@ -74,7 +76,7 @@ test("solver budget returns unknown rather than no-solution", () =>
   assert.equal(solve(initial(), () => 0, 0, 40).status, "unknown"));
 test("solver safe path independently replays from current partial state", () => {
   const l = createLevel(0);
-  const b = replay(l.board, l.witness.slice(0, 24));
+  const b = replay(l.board, l.witness.slice(0, -6));
   const s = solve(b, () => 0, 10000, 40);
   assert.equal(s.status, "safe");
   if (s.status === "safe") assert.equal(replay(b, s.path).status, "won");
@@ -110,6 +112,34 @@ test("60 adversarial deterministic walks maintain identity and tray invariants",
       const ids = [...exposed(b)];
       b = take(b, ids[(seed * 7 + i * 13) % ids.length], `walk-${i}`);
       assert.ok(invariant(b, count));
+    }
+  }
+});
+
+test("front faces hide deeper tubes and peeling reveals the same shared lattice", () => {
+  const b = createLevel(0).board;
+  for (let view = 0; view < 3; view++) {
+    const before = faceVisible(b, view);
+    assert.equal(before.size, 6);
+    assert.ok(!before.has("1,1"));
+  }
+  const a = clone(b);
+  a.tubes.find((t) => t.id === "1,0")!.balls = [];
+  assert.ok(faceVisible(a, 0).has("1,1"));
+  assert.ok(!faceVisible(a, 0).has("1,0"));
+  assert.ok(!faceVisible(b, 0).has("0,1"));
+  assert.ok(available(b).has("0,1"));
+});
+test("clearing the full outer boundary exposes inner pipes in all three views", () => {
+  const b = createLevel(0).board;
+  for (const t of b.tubes)
+    if (t.q === 0 || t.r === 0 || t.q + t.r === b.side - 1) t.balls = [];
+  for (let v = 0; v < 3; v++) {
+    const visible = faceVisible(b, v);
+    assert.equal(visible.size, 3);
+    for (const id of visible) {
+      const t = b.tubes.find((t) => t.id === id)!;
+      assert.ok(t.q > 0 && t.r > 0 && t.q + t.r < b.side - 1);
     }
   }
 });

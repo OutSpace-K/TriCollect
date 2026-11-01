@@ -53,7 +53,7 @@ async function pick(id) {
       return;
     }
     await click("rotate-right");
-    assert.equal(await page.evaluate(() => window.tri.game.phase), "active");
+    await phase("active");
   }
   await click("select");
   const index = await page.evaluate(
@@ -110,17 +110,14 @@ try {
       });
       for (let i = 0; i < 12; i++) {
         await click("rotate-right");
-        assert.equal(
-          await page.evaluate(() => window.tri.game.phase),
-          "active",
-        );
+        await phase("active");
         assert.equal(
           await page.evaluate(() => window.tri.game.state.view),
           (i + 1) % 3,
         );
       }
       results.push(
-        "12 consecutive pointer rotations immediately active, no interpolation lock",
+        "12 consecutive 250ms pointer rotations completed without lock",
       );
       await page.screenshot({ path: "evidence/board.png" });
       await click("pause");

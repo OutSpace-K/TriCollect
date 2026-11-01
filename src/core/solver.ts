@@ -1,5 +1,5 @@
 import { CONFIG } from "../config";
-import { type Board, exposed, take, replay } from "./rules";
+import { type Board, available, take, replay } from "./rules";
 export type Solution =
   | { status: "safe"; path: string[]; nodes: number }
   | { status: "unknown" | "dead"; nodes: number };
@@ -8,12 +8,13 @@ export function solve(
   now: () => number,
   maxNodes: number = CONFIG.searchNodes,
   maxMs: number = CONFIG.searchMs,
+  firstVisible?: Set<string>,
 ): Solution {
   const start = now();
   let nodes = 0,
     exhausted = false;
   const seen = new Set<string>();
-  function dfs(b: Board): string[] | null {
+  function dfs(b: Board, first = false): string[] | null {
     if (b.status === "won") return [];
     if (b.status === "blocked") return null;
     if (++nodes > maxNodes || now() - start >= maxMs) {
@@ -29,15 +30,17 @@ export function solve(
         .join(",");
     if (seen.has(k)) return null;
     seen.add(k);
-    const ids = [...exposed(b)].sort((a, c) => {
-      const count = (id: string) =>
-        b.tray.filter(
-          (x) =>
-            x.type ===
-            b.tubes.find((t) => t.id === id)!.balls.slice(-1)[0].type,
-        ).length;
-      return count(c) - count(a);
-    });
+    const ids = [...available(b)]
+      .filter((id) => !first || !firstVisible || firstVisible.has(id))
+      .sort((a, c) => {
+        const count = (id: string) =>
+          b.tray.filter(
+            (x) =>
+              x.type ===
+              b.tubes.find((t) => t.id === id)!.balls.slice(-1)[0].type,
+          ).length;
+        return count(c) - count(a);
+      });
     for (const id of ids) {
       const path = dfs(take(b, id, `solver-${nodes}-${id}`));
       if (path) return [id, ...path];
@@ -45,7 +48,7 @@ export function solve(
     }
     return null;
   }
-  const path = dfs(initial);
+  const path = dfs(initial, true);
   if (path && replay(initial, path).status === "won")
     return { status: "safe", path, nodes };
   return { status: exhausted ? "unknown" : "dead", nodes };

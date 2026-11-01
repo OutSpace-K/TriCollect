@@ -46,11 +46,33 @@ export function exposed(b: Board): Set<string> {
       .map((t) => t.id),
   );
 }
+/** Cyclic barycentric view of the SAME triangular lattice; each ray peels inward. */
+export function faceCoordinates(t: Tube, side: number, view: number) {
+  const axes = [t.q, t.r, side - 1 - t.q - t.r];
+  return { lane: axes[view], depth: axes[(view + 1) % 3] };
+}
+export function faceVisible(b: Board, view: number): Set<string> {
+  if (!Number.isInteger(view) || view < 0 || view > 2) return new Set();
+  const first = new Map<number, { id: string; depth: number }>();
+  for (const t of b.tubes) {
+    if (!t.balls.length) continue;
+    const { lane, depth } = faceCoordinates(t, b.side, view);
+    if (!first.has(lane) || depth < first.get(lane)!.depth)
+      first.set(lane, { id: t.id, depth });
+  }
+  const external = exposed(b);
+  return new Set(
+    [...first.values()].filter((t) => external.has(t.id)).map((t) => t.id),
+  );
+}
+export function available(b: Board): Set<string> {
+  return new Set([0, 1, 2].flatMap((v) => [...faceVisible(b, v)]));
+}
 export function take(b: Board, tubeId: string, actionId: string): Board {
   if (
     b.status !== "playing" ||
     b.applied.includes(actionId) ||
-    !exposed(b).has(tubeId)
+    !available(b).has(tubeId)
   )
     return b;
   const n = clone(b),
@@ -76,7 +98,7 @@ export function invariant(b: Board, expected: number): boolean {
     !b ||
     !Number.isInteger(b.side) ||
     b.side < 4 ||
-    b.side > 6 ||
+    b.side > 8 ||
     !Array.isArray(b.tubes) ||
     !Array.isArray(b.tray) ||
     !Array.isArray(b.cleared) ||

@@ -1,6 +1,6 @@
 import { CONFIG, RULE, PRESETS } from "./config";
 import { createLevel } from "./core/generation";
-import { type Board, take, clone } from "./core/rules";
+import { type Board, take, clone, faceVisible } from "./core/rules";
 import { solve } from "./core/solver";
 import { save, restore, type Saved, type Store } from "./platform/storage";
 import type { AdService } from "./platform/ads";
@@ -10,6 +10,7 @@ export type Phase =
   | "ready"
   | "active"
   | "resolving"
+  | "rotating"
   | "paused"
   | "ad"
   | "blocked"
@@ -23,6 +24,11 @@ export class Controller {
   resume: Saved | null = null;
   introProgress = 0;
   rotation = 0;
+  turnFrom = 0;
+  turnTo = 0;
+  turnDirection = 1;
+  private pendingTurns = 0;
+  private turnStart = 0;
   private last = 0;
   private until = 0;
   private animationStart = 0;
@@ -71,12 +77,34 @@ export class Controller {
       Math.max(0, (this.now() - this.animationStart) / CONFIG.animationMs),
     );
   }
+  get turnProgress() {
+    return this.phase === "rotating"
+      ? Math.min(
+          1,
+          Math.max(0, (this.now() - this.turnStart) / CONFIG.rotateMs),
+        )
+      : 1;
+  }
+  get presentationView() {
+    return this.phase === "rotating"
+      ? this.turnProgress < 0.5
+        ? this.turnFrom
+        : this.turnTo
+      : this.state.view;
+  }
+  get visible() {
+    return faceVisible(this.board, this.state.view);
+  }
+  get canTurn() {
+    return this.phase === "active" || this.phase === "rotating";
+  }
   get locked() {
     return this.phase !== "active";
   }
   start(preset = 0, seed?: number) {
     this.state = this.fresh(preset, seed ?? PRESETS[preset].seed);
     this.resume = null;
+    this.pendingTurns = 0;
     this.phase = "intro";
     this.animationStart = this.now();
     this.until = this.animationStart + 950;
@@ -121,7 +149,8 @@ export class Controller {
     this.checkpoint();
   }
   tick() {
-    if (!["active", "resolving", "intro"].includes(this.phase)) return;
+    if (!["active", "resolving", "rotating", "intro"].includes(this.phase))
+      return;
     const now = this.now();
     if (this.phase === "active") {
       this.state.remaining = Math.max(
@@ -139,6 +168,21 @@ export class Controller {
       this.introProgress = Math.min(1, (now - this.animationStart) / 950);
       if (now >= this.until) this.skipIntro();
     }
+    if (this.phase === "rotating" && now - this.turnStart >= CONFIG.rotateMs) {
+      if (this.pendingTurns) {
+        const direction = Math.sign(this.pendingTurns);
+        this.pendingTurns -= direction;
+        this.turnFrom = this.turnTo;
+        this.turnTo = (this.turnTo + direction + 3) % 3;
+        this.turnDirection = direction;
+        this.turnStart = now;
+      } else {
+        this.phase = "active";
+        this.rotation = (this.state.view * Math.PI * 2) / 3;
+        this.last = now;
+        this.checkpoint();
+      }
+    }
     if (this.phase === "resolving" && now >= this.until) {
       this.phase = this.after;
       this.last = now;
@@ -149,6 +193,10 @@ export class Controller {
   pick(id: string) {
     this.tick();
     if (this.phase !== "active") return;
+    if (!this.visible.has(id)) {
+      this.message = "该管不在当前正面，请旋转后再取球";
+      return;
+    }
     const before = this.board;
     const after = take(
       before,
@@ -186,20 +234,33 @@ export class Controller {
   }
   rotate(direction: number) {
     this.tick();
-    if (this.phase !== "active") return;
-    this.state.view = (this.state.view + direction + 3) % 3;
-    this.rotation = (this.state.view * Math.PI * 2) / 3;
+    if (!this.canTurn || (direction !== 1 && direction !== -1)) return;
+    const from = this.state.view;
+    this.state.view = (from + direction + 3) % 3;
+    if (this.phase === "rotating")
+      this.pendingTurns = (this.pendingTurns + direction) % 3;
+    else {
+      this.turnFrom = from;
+      this.turnTo = this.state.view;
+      this.turnDirection = direction;
+      this.pendingTurns = 0;
+      this.turnStart = this.now();
+      this.phase = "rotating";
+    }
     this.hint = null;
     this.checkpoint();
   }
   interrupt(error: unknown) {
     // Do not read a possibly faulty clock or re-enter the renderer here.
     console.error("TriCollect frame interrupted", error);
+    this.pendingTurns = 0;
+    this.rotation = (this.state.view * Math.PI * 2) / 3;
     if (
       this.phase !== "home" &&
       this.phase !== "result" &&
       this.phase !== "ad"
     ) {
+      this.pendingTurns = 0;
       this.phase = this.board.status === "won" ? "result" : "paused";
       this.state.phase = this.board.status === "won" ? "result" : "paused";
       try {
@@ -210,7 +271,8 @@ export class Controller {
   }
   pause() {
     this.tick();
-    if (["active", "resolving"].includes(this.phase)) {
+    if (["active", "resolving", "rotating"].includes(this.phase)) {
+      this.pendingTurns = 0;
       this.phase = this.board.status === "won" ? "result" : "paused";
       this.rotation = (this.state.view * Math.PI * 2) / 3;
       this.checkpoint();
@@ -241,17 +303,23 @@ export class Controller {
   hintNow() {
     this.tick();
     if (this.phase !== "active") return;
-    const result = solve(this.board, this.now);
+    const result = solve(
+      this.board,
+      this.now,
+      CONFIG.searchNodes,
+      CONFIG.searchMs,
+      this.visible,
+    );
     this.tick();
     if (this.phase !== "active") return;
     if (result.status === "safe") this.state.hintsUsed++;
     this.hint = result.status === "safe" ? result.path[0] : null;
     this.message =
       result.status === "safe"
-        ? "亮框管位有已验证的后续解（不保证剩余时间）"
+        ? "当前面亮框管位有已验证的后续解"
         : result.status === "unknown"
           ? "预算内尚未确定，可尝试撤销或继续观察"
-          : "当前局面已无完成路线，可撤销或结束";
+          : "当前面暂无可靠路线，可旋转后再提示";
   }
   end() {
     if (this.phase === "ad") return;

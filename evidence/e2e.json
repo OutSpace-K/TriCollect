@@ -1,19 +1,19 @@
 {
   "passed": true,
   "platform": "Chromium only; not WeChat device",
-  "directPicks": 136,
-  "fallbackPicks": 2,
+  "directPicks": 255,
+  "fallbackPicks": 0,
   "results": [
     {
       "check": "browser real 10-second clock",
-      "elapsedMs": 10007.799999999814,
-      "chargedMs": 10015.900000000373
+      "elapsedMs": 10003.599999999627,
+      "chargedMs": 10000.099999999627
     },
-    "12 consecutive pointer rotations immediately active, no interpolation lock",
+    "12 consecutive 250ms pointer rotations completed without lock",
     "one-frame exception recovered; pause/home/reload regression preserved",
-    "preset 0: 30 pointer picks won without ads",
-    "preset 1: 45 pointer picks won without ads",
-    "preset 2: 63 pointer picks won without ads"
+    "preset 0: 63 pointer picks won without ads",
+    "preset 1: 84 pointer picks won without ads",
+    "preset 2: 108 pointer picks won without ads"
   ],
   "errors": []
 }

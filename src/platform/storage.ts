@@ -37,6 +37,16 @@ export function hash(text: string): string {
     h = Math.imul(h ^ text.charCodeAt(i), 16777619);
   return (h >>> 0).toString(16);
 }
+const originals = new Map<string, Board>();
+function originalFor(preset: number, seed: number) {
+  const key = `${preset}:${seed}`;
+  if (!originals.has(key)) {
+    if (originals.size >= 32) originals.delete(originals.keys().next().value!);
+    originals.set(key, createLevel(preset, seed).board);
+  }
+  return originals.get(key)!;
+}
+const lastStored = new WeakMap<Store, string>();
 export function valid(s: Saved): boolean {
   try {
     if (
@@ -92,7 +102,7 @@ export function valid(s: Saved): boolean {
       return false;
     if (s.rewards.filter((r) => r.redeemed).length !== s.extensions)
       return false;
-    const original = createLevel(s.preset, s.seed).board,
+    const original = originalFor(s.preset, s.seed),
       all = original.tubes.flatMap((t) => t.balls),
       identities = new Map(all.map((b) => [b.id, b.type]));
     const check = (b: Board) =>
@@ -135,13 +145,15 @@ export function decode(raw: string | null): Saved | null {
 }
 export function save(store: Store, s: Saved) {
   const encoded = encode(s);
-  if (!decode(encoded)) throw Error("Refusing invalid save");
+  if (!valid(s)) throw Error("Refusing invalid save");
   store.set(SAVE_KEY + ".tmp", encoded);
-  if (!decode(store.get(SAVE_KEY + ".tmp")))
+  if (store.get(SAVE_KEY + ".tmp") !== encoded)
     throw Error("Storage readback failed");
   const previous = store.get(SAVE_KEY);
-  if (decode(previous)) store.set(SAVE_KEY + ".backup", previous!);
+  if (previous && (previous === lastStored.get(store) || decode(previous)))
+    store.set(SAVE_KEY + ".backup", previous);
   store.set(SAVE_KEY, encoded);
+  lastStored.set(store, encoded);
 }
 export function restore(store: Store): { save: Saved | null; message: string } {
   try {

@@ -70,16 +70,20 @@ test("pause/background hide, resume remains paused, no wall time or frame depend
   x.g.tick();
   assert.equal(x.g.state.remaining, remaining - 1000);
 });
-test("rotation is immediate and consecutive turns do not lock or modify the board", () => {
+test("rotation queues net turns, completes in bounded time and preserves board", () => {
   const x = setup();
   start(x.g);
   const board = clone(x.g.board);
   for (let i = 0; i < 30; i++) {
     x.g.rotate(1);
-    assert.equal(x.g.phase, "active");
+    assert.equal(x.g.phase, "rotating");
     assert.equal(x.g.state.view, (i + 1) % 3);
-    assert.equal(x.g.rotation, (x.g.state.view * Math.PI * 2) / 3);
   }
+  for (let i = 0; i < 3; i++) {
+    x.advance(250);
+    x.g.tick();
+  }
+  assert.equal(x.g.phase, "active");
   assert.deepEqual(x.g.board, board);
   x.g.pick("0,0");
   assert.equal(x.g.state.history.length, 1);
@@ -119,7 +123,12 @@ test("last legal pick wins before subsequent clock expiration", () => {
   const x = setup();
   start(x.g);
   const l = createLevel(0);
-  for (const id of l.witness) {
+  for (const [step, id] of l.witness.entries()) {
+    while (x.g.state.view !== l.views[step]) {
+      x.g.rotate(1);
+      x.advance(250);
+      x.g.tick();
+    }
     x.g.pick(id);
     x.advance(240);
     x.g.tick();
@@ -365,4 +374,55 @@ test("manually ended non-winning round remains final through home hide and resta
     assert.equal(reloaded.resume, null);
     assert.deepEqual(x.data, expected);
   }
+});
+
+test("rotation hides input, pause keeps requested face and restart cancels queued turns", () => {
+  const x = setup();
+  start(x.g);
+  x.g.pick("0,1");
+  assert.equal(x.g.state.history.length, 0);
+  x.g.rotate(1);
+  x.advance(100);
+  x.g.tick();
+  assert.equal(x.g.presentationView, 0);
+  x.g.pick("0,0");
+  assert.equal(x.g.state.history.length, 0);
+  x.g.rotate(1);
+  x.g.pause();
+  assert.equal(x.g.state.view, 2);
+  assert.equal(x.g.presentationView, 2);
+  x.g.begin();
+  x.g.rotate(-1);
+  x.g.start();
+  x.g.skipIntro();
+  x.g.begin();
+  x.advance(1000);
+  x.g.tick();
+  assert.equal(x.g.state.view, 0);
+  assert.equal(x.g.phase, "active");
+});
+test("hints never reveal another face and incompatible old rules do not resume", () => {
+  const x = setup();
+  start(x.g);
+  for (let view = 0; view < 3; view++) {
+    x.g.hintNow();
+    if (x.g.hint) assert.ok(x.g.visible.has(x.g.hint));
+    x.g.rotate(1);
+    x.advance(250);
+    x.g.tick();
+  }
+  const old = clone(x.g.state);
+  old.rule = "tricollect-1";
+  assert.equal(decode(encode(old)), null);
+});
+test("corrupted temporary readback cannot replace the committed save", () => {
+  const x = setup();
+  start(x.g);
+  const committed = x.data.get(SAVE_KEY);
+  const broken = {
+    get: (key: string) => (key.endsWith(".tmp") ? "corrupt" : x.store.get(key)),
+    set: x.store.set,
+  };
+  assert.throws(() => save(broken, x.g.state), /readback/);
+  assert.equal(x.data.get(SAVE_KEY), committed);
 });

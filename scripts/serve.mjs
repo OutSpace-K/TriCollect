@@ -20,7 +20,7 @@ http
       res.end("Not found");
     }
   })
-  .listen(4173, "127.0.0.1", () =>
+  .listen(Number(process.env.PORT || 4173), "127.0.0.1", () =>
     console.log(
       "Browser development preview: http://127.0.0.1:4173 (not a WeChat validation)",
     ),

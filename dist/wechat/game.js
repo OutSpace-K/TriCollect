@@ -49,8 +49,8 @@
   }
 
   // src/config.ts
-  var VERSION = "0.1.2";
-  var RULE = "tricollect-1";
+  var VERSION = "0.1.3";
+  var RULE = "tricollect-2-frontfaces";
   var CONFIG = Object.freeze({
     baseMs: 3e5,
     capacity: 7,
@@ -61,13 +61,19 @@
     extraMs: 3e4,
     maxExtensions: 2,
     animationMs: 240,
+    rotateMs: 250,
     searchNodes: 12e3,
     searchMs: 40
   });
   var PRESETS = [
-    { id: "learn", name: "\u521D\u89C1", side: 4, height: 3, types: 5, seed: 104729 },
-    { id: "normal", name: "\u63A2\u7D22", side: 5, height: 3, types: 5, seed: 130363 },
-    { id: "deep", name: "\u6DF1\u5165", side: 6, height: 3, types: 7, seed: 155921 }
+    { id: "learn", name: "\u521D\u89C1", side: 6, height: 3, types: 5, seed: 104729 },
+    { id: "normal", name: "\u63A2\u7D22", side: 7, height: 3, types: 6, seed: 130363 },
+    { id: "deep", name: "\u6DF1\u5165", side: 8, height: 3, types: 7, seed: 155921 }
+  ];
+  var FACES = [
+    { name: "\u73CA\u745A\u9762", color: "#f1a48a", shell: "#773e37" },
+    { name: "\u7FE1\u7FE0\u9762", color: "#91d9bd", shell: "#285c50" },
+    { name: "\u661F\u84DD\u9762", color: "#a4bdf4", shell: "#344e77" }
   ];
   var PALETTE = [
     "#fb826f",
@@ -111,8 +117,29 @@
       ).map((t) => t.id)
     );
   }
+  function faceCoordinates(t, side, view) {
+    const axes = [t.q, t.r, side - 1 - t.q - t.r];
+    return { lane: axes[view], depth: axes[(view + 1) % 3] };
+  }
+  function faceVisible(b, view) {
+    if (!Number.isInteger(view) || view < 0 || view > 2) return /* @__PURE__ */ new Set();
+    const first = /* @__PURE__ */ new Map();
+    for (const t of b.tubes) {
+      if (!t.balls.length) continue;
+      const { lane, depth } = faceCoordinates(t, b.side, view);
+      if (!first.has(lane) || depth < first.get(lane).depth)
+        first.set(lane, { id: t.id, depth });
+    }
+    const external = exposed(b);
+    return new Set(
+      [...first.values()].filter((t) => external.has(t.id)).map((t) => t.id)
+    );
+  }
+  function available(b) {
+    return new Set([0, 1, 2].flatMap((v) => [...faceVisible(b, v)]));
+  }
   function take(b, tubeId, actionId) {
-    if (b.status !== "playing" || b.applied.includes(actionId) || !exposed(b).has(tubeId))
+    if (b.status !== "playing" || b.applied.includes(actionId) || !available(b).has(tubeId))
       return b;
     const n = clone(b), t = n.tubes.find((t2) => t2.id === tubeId);
     const ball = t.balls.pop();
@@ -132,7 +159,7 @@
     return n;
   }
   function invariant(b, expected) {
-    if (!b || !Number.isInteger(b.side) || b.side < 4 || b.side > 6 || !Array.isArray(b.tubes) || !Array.isArray(b.tray) || !Array.isArray(b.cleared) || !Array.isArray(b.applied))
+    if (!b || !Number.isInteger(b.side) || b.side < 4 || b.side > 8 || !Array.isArray(b.tubes) || !Array.isArray(b.tray) || !Array.isArray(b.cleared) || !Array.isArray(b.applied))
       return false;
     if (b.tubes.length !== b.side * (b.side + 1) / 2 || new Set(b.tubes.map((t) => t.id)).size !== b.tubes.length)
       return false;
@@ -201,9 +228,13 @@
     };
     const scratch = JSON.parse(JSON.stringify(b)), order = [];
     while (scratch.tubes.some((t) => t.balls.length)) {
-      const e = [...exposed(scratch)], selected = e[Math.floor(rnd() * e.length)];
+      const e = [...available(scratch)], selected = e[Math.floor(rnd() * e.length)];
       const t = scratch.tubes.find((t2) => t2.id === selected);
-      order.push({ tube: t.id, index: t.balls.length - 1 });
+      order.push({
+        tube: t.id,
+        index: t.balls.length - 1,
+        view: [0, 1, 2].find((v) => faceVisible(scratch, v).has(t.id))
+      });
       t.balls.pop();
     }
     const types = [];
@@ -223,7 +254,14 @@
     const witness = order.map((o) => o.tube), end = replay(b, witness);
     if (end.status !== "won" || !invariant(end, order.length))
       throw Error("Witness validation failed");
-    return { board: b, witness, seed, preset: p.id, fallback: false };
+    return {
+      board: b,
+      witness,
+      views: order.map((o) => o.view),
+      seed,
+      preset: p.id,
+      fallback: false
+    };
   }
   function createLevel(index, seed) {
     var _a;
@@ -237,11 +275,11 @@
   }
 
   // src/core/solver.ts
-  function solve(initial, now, maxNodes = CONFIG.searchNodes, maxMs = CONFIG.searchMs) {
+  function solve(initial, now, maxNodes = CONFIG.searchNodes, maxMs = CONFIG.searchMs, firstVisible) {
     const start = now();
     let nodes = 0, exhausted = false;
     const seen = /* @__PURE__ */ new Set();
-    function dfs(b) {
+    function dfs(b, first = false) {
       if (b.status === "won") return [];
       if (b.status === "blocked") return null;
       if (++nodes > maxNodes || now() - start >= maxMs) {
@@ -251,7 +289,7 @@
       const k = b.tubes.map((t) => t.balls.length).join(",") + "|" + b.tray.map((x) => x.type).sort().join(",");
       if (seen.has(k)) return null;
       seen.add(k);
-      const ids = [...exposed(b)].sort((a, c) => {
+      const ids = [...available(b)].filter((id) => !first || !firstVisible || firstVisible.has(id)).sort((a, c) => {
         const count = (id) => b.tray.filter(
           (x) => x.type === b.tubes.find((t) => t.id === id).balls.slice(-1)[0].type
         ).length;
@@ -264,7 +302,7 @@
       }
       return null;
     }
-    const path = dfs(initial);
+    const path = dfs(initial, true);
     if (path && replay(initial, path).status === "won")
       return { status: "safe", path, nodes };
     return { status: exhausted ? "unknown" : "dead", nodes };
@@ -278,6 +316,16 @@
       h = Math.imul(h ^ text.charCodeAt(i), 16777619);
     return (h >>> 0).toString(16);
   }
+  var originals = /* @__PURE__ */ new Map();
+  function originalFor(preset, seed) {
+    const key2 = `${preset}:${seed}`;
+    if (!originals.has(key2)) {
+      if (originals.size >= 32) originals.delete(originals.keys().next().value);
+      originals.set(key2, createLevel(preset, seed).board);
+    }
+    return originals.get(key2);
+  }
+  var lastStored = /* @__PURE__ */ new WeakMap();
   function valid(s) {
     try {
       if (s.schema !== 1 || s.rule !== RULE || typeof s.session !== "string" || !Number.isInteger(s.seed) || !Number.isInteger(s.preset) || !PRESETS[s.preset])
@@ -296,7 +344,7 @@
         return false;
       if (s.rewards.filter((r) => r.redeemed).length !== s.extensions)
         return false;
-      const original = createLevel(s.preset, s.seed).board, all = original.tubes.flatMap((t) => t.balls), identities = new Map(all.map((b) => [b.id, b.type]));
+      const original = originalFor(s.preset, s.seed), all = original.tubes.flatMap((t) => t.balls), identities = new Map(all.map((b) => [b.id, b.type]));
       const check = (b) => invariant(b, all.length) && b.side === original.side && [...b.tubes.flatMap((t) => t.balls), ...b.tray, ...b.cleared].every(
         (b2) => identities.get(b2.id) === b2.type
       ) && b.tubes.every(
@@ -330,13 +378,15 @@
   }
   function save(store, s) {
     const encoded = encode(s);
-    if (!decode(encoded)) throw Error("Refusing invalid save");
+    if (!valid(s)) throw Error("Refusing invalid save");
     store.set(SAVE_KEY + ".tmp", encoded);
-    if (!decode(store.get(SAVE_KEY + ".tmp")))
+    if (store.get(SAVE_KEY + ".tmp") !== encoded)
       throw Error("Storage readback failed");
     const previous = store.get(SAVE_KEY);
-    if (decode(previous)) store.set(SAVE_KEY + ".backup", previous);
+    if (previous && (previous === lastStored.get(store) || decode(previous)))
+      store.set(SAVE_KEY + ".backup", previous);
     store.set(SAVE_KEY, encoded);
+    lastStored.set(store, encoded);
   }
   function restore(store) {
     try {
@@ -367,6 +417,11 @@
       __publicField(this, "resume", null);
       __publicField(this, "introProgress", 0);
       __publicField(this, "rotation", 0);
+      __publicField(this, "turnFrom", 0);
+      __publicField(this, "turnTo", 0);
+      __publicField(this, "turnDirection", 1);
+      __publicField(this, "pendingTurns", 0);
+      __publicField(this, "turnStart", 0);
       __publicField(this, "last", 0);
       __publicField(this, "until", 0);
       __publicField(this, "animationStart", 0);
@@ -408,12 +463,28 @@
         Math.max(0, (this.now() - this.animationStart) / CONFIG.animationMs)
       );
     }
+    get turnProgress() {
+      return this.phase === "rotating" ? Math.min(
+        1,
+        Math.max(0, (this.now() - this.turnStart) / CONFIG.rotateMs)
+      ) : 1;
+    }
+    get presentationView() {
+      return this.phase === "rotating" ? this.turnProgress < 0.5 ? this.turnFrom : this.turnTo : this.state.view;
+    }
+    get visible() {
+      return faceVisible(this.board, this.state.view);
+    }
+    get canTurn() {
+      return this.phase === "active" || this.phase === "rotating";
+    }
     get locked() {
       return this.phase !== "active";
     }
     start(preset = 0, seed) {
       this.state = this.fresh(preset, seed != null ? seed : PRESETS[preset].seed);
       this.resume = null;
+      this.pendingTurns = 0;
       this.phase = "intro";
       this.animationStart = this.now();
       this.until = this.animationStart + 950;
@@ -446,7 +517,8 @@
       this.checkpoint();
     }
     tick() {
-      if (!["active", "resolving", "intro"].includes(this.phase)) return;
+      if (!["active", "resolving", "rotating", "intro"].includes(this.phase))
+        return;
       const now = this.now();
       if (this.phase === "active") {
         this.state.remaining = Math.max(
@@ -464,6 +536,21 @@
         this.introProgress = Math.min(1, (now - this.animationStart) / 950);
         if (now >= this.until) this.skipIntro();
       }
+      if (this.phase === "rotating" && now - this.turnStart >= CONFIG.rotateMs) {
+        if (this.pendingTurns) {
+          const direction = Math.sign(this.pendingTurns);
+          this.pendingTurns -= direction;
+          this.turnFrom = this.turnTo;
+          this.turnTo = (this.turnTo + direction + 3) % 3;
+          this.turnDirection = direction;
+          this.turnStart = now;
+        } else {
+          this.phase = "active";
+          this.rotation = this.state.view * Math.PI * 2 / 3;
+          this.last = now;
+          this.checkpoint();
+        }
+      }
       if (this.phase === "resolving" && now >= this.until) {
         this.phase = this.after;
         this.last = now;
@@ -474,6 +561,10 @@
     pick(id) {
       this.tick();
       if (this.phase !== "active") return;
+      if (!this.visible.has(id)) {
+        this.message = "\u8BE5\u7BA1\u4E0D\u5728\u5F53\u524D\u6B63\u9762\uFF0C\u8BF7\u65CB\u8F6C\u540E\u518D\u53D6\u7403";
+        return;
+      }
       const before = this.board;
       const after = take(
         before,
@@ -503,15 +594,28 @@
     }
     rotate(direction) {
       this.tick();
-      if (this.phase !== "active") return;
-      this.state.view = (this.state.view + direction + 3) % 3;
-      this.rotation = this.state.view * Math.PI * 2 / 3;
+      if (!this.canTurn || direction !== 1 && direction !== -1) return;
+      const from = this.state.view;
+      this.state.view = (from + direction + 3) % 3;
+      if (this.phase === "rotating")
+        this.pendingTurns = (this.pendingTurns + direction) % 3;
+      else {
+        this.turnFrom = from;
+        this.turnTo = this.state.view;
+        this.turnDirection = direction;
+        this.pendingTurns = 0;
+        this.turnStart = this.now();
+        this.phase = "rotating";
+      }
       this.hint = null;
       this.checkpoint();
     }
     interrupt(error) {
       console.error("TriCollect frame interrupted", error);
+      this.pendingTurns = 0;
+      this.rotation = this.state.view * Math.PI * 2 / 3;
       if (this.phase !== "home" && this.phase !== "result" && this.phase !== "ad") {
+        this.pendingTurns = 0;
         this.phase = this.board.status === "won" ? "result" : "paused";
         this.state.phase = this.board.status === "won" ? "result" : "paused";
         try {
@@ -523,7 +627,8 @@
     }
     pause() {
       this.tick();
-      if (["active", "resolving"].includes(this.phase)) {
+      if (["active", "resolving", "rotating"].includes(this.phase)) {
+        this.pendingTurns = 0;
         this.phase = this.board.status === "won" ? "result" : "paused";
         this.rotation = this.state.view * Math.PI * 2 / 3;
         this.checkpoint();
@@ -551,12 +656,18 @@
     hintNow() {
       this.tick();
       if (this.phase !== "active") return;
-      const result = solve(this.board, this.now);
+      const result = solve(
+        this.board,
+        this.now,
+        CONFIG.searchNodes,
+        CONFIG.searchMs,
+        this.visible
+      );
       this.tick();
       if (this.phase !== "active") return;
       if (result.status === "safe") this.state.hintsUsed++;
       this.hint = result.status === "safe" ? result.path[0] : null;
-      this.message = result.status === "safe" ? "\u4EAE\u6846\u7BA1\u4F4D\u6709\u5DF2\u9A8C\u8BC1\u7684\u540E\u7EED\u89E3\uFF08\u4E0D\u4FDD\u8BC1\u5269\u4F59\u65F6\u95F4\uFF09" : result.status === "unknown" ? "\u9884\u7B97\u5185\u5C1A\u672A\u786E\u5B9A\uFF0C\u53EF\u5C1D\u8BD5\u64A4\u9500\u6216\u7EE7\u7EED\u89C2\u5BDF" : "\u5F53\u524D\u5C40\u9762\u5DF2\u65E0\u5B8C\u6210\u8DEF\u7EBF\uFF0C\u53EF\u64A4\u9500\u6216\u7ED3\u675F";
+      this.message = result.status === "safe" ? "\u5F53\u524D\u9762\u4EAE\u6846\u7BA1\u4F4D\u6709\u5DF2\u9A8C\u8BC1\u7684\u540E\u7EED\u89E3" : result.status === "unknown" ? "\u9884\u7B97\u5185\u5C1A\u672A\u786E\u5B9A\uFF0C\u53EF\u5C1D\u8BD5\u64A4\u9500\u6216\u7EE7\u7EED\u89C2\u5BDF" : "\u5F53\u524D\u9762\u6682\u65E0\u53EF\u9760\u8DEF\u7EBF\uFF0C\u53EF\u65CB\u8F6C\u540E\u518D\u63D0\u793A";
     }
     end() {
       if (this.phase === "ad") return;
@@ -636,6 +747,8 @@
       this.width = width2;
       this.height = height2;
       __publicField(this, "buttons", []);
+      __publicField(this, "renderedIds", []);
+      __publicField(this, "renderedFace", 0);
       __publicField(this, "page", 0);
       __publicField(this, "drawer", false);
       __publicField(this, "targets", []);
@@ -705,6 +818,7 @@
     }
     render() {
       const c = this.ctx, g = this.game, w = this.width, h = this.height;
+      this.renderedIds = [];
       this.buttons = [];
       this.bodies = [];
       this.targets = [];
@@ -763,7 +877,7 @@
           this.drawer = false;
           g.pause();
         },
-        g.locked
+        !["active", "resolving", "rotating"].includes(g.phase)
       );
       this.button(
         "select",
@@ -805,7 +919,7 @@
           this.drawer = false;
           g.rotate(-1);
         },
-        g.locked
+        !g.canTurn
       );
       this.button(
         "rotate-right",
@@ -818,7 +932,7 @@
           this.drawer = false;
           g.rotate(1);
         },
-        g.locked
+        !g.canTurn
       );
       this.button(
         "undo",
@@ -888,14 +1002,14 @@
       }
     }
     drawSelector(y) {
-      const g = this.game, w = this.width, c = this.ctx, tiles = g.board.tubes, pages = Math.ceil(tiles.length / 10);
+      const g = this.game, w = this.width, c = this.ctx, tiles = g.board.tubes.filter((t) => g.visible.has(t.id)), pages = Math.ceil(tiles.length / 10);
       this.page = Math.min(this.page, pages - 1);
       this.rect(14, y, w - 28, 188, "#123139", 16);
-      this.text("\u906E\u6321\u65F6\u8F85\u52A9\u9009\u7403", 26, y + 27, 14, "#d9ece7");
+      this.text("\u5F53\u524D\u6B63\u9762 \xB7 \u9876\u90E8\u7403", 26, y + 27, 14, "#d9ece7");
       this.button("close-select", "\u6536\u8D77", w - 80, y + 10, 52, 32, () => {
         this.drawer = false;
       });
-      const e = exposed(g.board), gap = 7, tw = (w - 52 - gap * 4) / 5;
+      const e = g.visible, gap = 7, tw = (w - 52 - gap * 4) / 5;
       for (let i = 0; i < 10; i++) {
         const t = tiles[this.page * 10 + i];
         if (!t) continue;
@@ -915,7 +1029,7 @@
         );
         if (top) {
           this.ball(top.type, x + tw * 0.65, ty + 21, 11, allowed ? 1 : 0.25);
-          this.text(String(tiles.indexOf(t) + 1), x + 7, ty + 25, 11);
+          this.text(String(g.board.tubes.indexOf(t) + 1), x + 7, ty + 25, 11);
         } else this.text("\u2713", x + tw / 2, ty + 25, 12, "#759e91", "center");
         if (g.hint === t.id) {
           c.strokeStyle = "#f4d27e";
@@ -939,116 +1053,120 @@
       return t.length > n ? t.slice(0, n - 1) + "\u2026" : t;
     }
     drawBoard(top, bottom) {
-      var _a, _b;
       const c = this.ctx, g = this.game, w = this.width, n = g.board.side;
-      const available = Math.max(120, bottom - top), scale = Math.min((w - 55) / (n * 46), available / 255, 1.65), angle = g.rotation;
-      const projected = g.board.tubes.map((t, index) => {
-        const x = (t.q + t.r / 2 - (n - 1) / 2) * 46, z = (t.r * Math.sqrt(3) / 2 - (n - 1) * Math.sqrt(3) / 6) * 46;
-        const rx = x * Math.cos(angle) - z * Math.sin(angle), depth = x * Math.sin(angle) + z * Math.cos(angle);
-        return {
-          t,
-          index,
-          x: w / 2 + rx * scale,
-          y: top + available * 0.61 + depth * 0.5 * scale,
-          depth
-        };
-      }).sort((a, b) => a.depth - b.depth);
-      const low = Math.min(...projected.map((p) => p.depth * 0.5)) - 71;
-      const high = Math.max(...projected.map((p) => p.depth * 0.5)) + 62;
-      for (const p of projected)
-        p.y = top + available / 2 + (p.depth * 0.5 - (low + high) / 2) * scale;
-      const e = exposed(g.board);
-      for (const p of projected) {
-        const t = p.t;
-        if (!t.balls.length) {
-          if (g.phase === "resolving" && ((_b = (_a = g.state.history[g.state.history.length - 1]) == null ? void 0 : _a.tubes.find(
-            (x) => x.id === t.id
-          )) == null ? void 0 : _b.balls.length)) {
-            c.globalAlpha = 1 - g.transitionProgress;
-            this.rect(
-              p.x - 12 * scale,
-              p.y - 60 * scale,
-              24 * scale,
-              100 * scale,
-              "#b7d7d733"
-            );
-            c.globalAlpha = 1;
-          }
-          continue;
-        }
-        const r = 16 * scale, ht = 116 * scale, by = p.y + 45 * scale, ty = by - ht;
-        c.fillStyle = "#c7eceb13";
-        c.strokeStyle = e.has(t.id) ? "#c7eceb77" : "#c7eceb22";
-        c.lineWidth = 1;
-        c.beginPath();
-        c.rect(p.x - r, ty, r * 2, ht);
-        c.fill();
-        c.stroke();
-        for (let i = 0; i < t.balls.length; i++) {
-          const intro = g.phase === "intro" ? (1 - g.introProgress) * Math.max(0, 180 - i * 35) : 0;
-          this.ball(
-            t.balls[i].type,
-            p.x,
-            by - 17 * scale - i * 31 * scale - intro,
-            r * 0.82,
-            e.has(t.id) ? 1 : 0.25
-          );
-        }
-        c.beginPath();
-        c.ellipse(p.x, ty, r, r * 0.3, 0, 0, Math.PI * 2);
-        c.stroke();
-        this.text(
-          String(p.index + 1),
-          p.x,
-          by + 17 * scale,
-          11,
-          "#e9e9cd",
-          "center"
-        );
-        this.bodies.push({
-          id: t.id,
-          x: p.x - r,
-          y: ty,
-          w: r * 2,
-          h: ht,
-          topY: by - 17 * scale - (t.balls.length - 1) * 31 * scale
-        });
-      }
-      for (const body of this.bodies) {
-        const x = body.x + body.w / 2, y = body.topY;
-        const foreground = [...this.bodies].reverse().find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
-        if ((foreground == null ? void 0 : foreground.id) !== body.id || !e.has(body.id)) continue;
-        this.targets.push({ id: body.id, x, y, r: body.w * 0.45 });
-        c.strokeStyle = g.hint === body.id ? "#f4d27e" : "#d4e7b6";
-        c.lineWidth = g.hint === body.id ? 3 : 1.5;
-        c.beginPath();
-        c.arc(x, y, body.w * 0.45, 0, Math.PI * 2);
-        c.stroke();
-      }
+      const view = g.presentationView, face = FACES[view];
+      const visible = faceVisible(g.board, view);
+      this.renderedFace = view;
+      this.renderedIds = [...visible];
+      const lane = (w - 32) / n, radius = Math.min(22, lane * 0.38);
+      const height2 = Math.min(208, bottom - top - 65), by = top + (bottom - top + height2) / 2;
+      const step = Math.min(49, (height2 - 35) / 3);
+      const turning = g.phase === "rotating", progress = g.turnProgress;
+      const squeeze = turning ? Math.max(0.035, Math.abs(Math.cos(Math.PI * progress))) : 1;
       this.text(
-        "\u4E09\u9762\u89C2\u5BDF  " + (g.state.view + 1) + "/3",
+        `\u7B2C ${view + 1} \u9762 / 3 \xB7 ${face.name}`,
         w / 2,
-        top - 7,
-        11,
-        "#7fa9a4",
+        top + 13,
+        15,
+        face.color,
         "center"
       );
-      if (g.phase === "resolving") {
-        const prev = g.state.history[g.state.history.length - 1];
-        const t = prev == null ? void 0 : prev.tubes.find(
-          (t2) => t2.balls.length > g.board.tubes.find((n2) => n2.id === t2.id).balls.length
+      this.text(
+        `${g.board.tubes.filter((t) => t.balls.length).length} \u7BA1\u5F85\u6E05\u7A7A \xB7 \u524D\u7BA1\u6E05\u7A7A\u540E\u9732\u51FA\u540E\u7BA1`,
+        w / 2,
+        top + 34,
+        11,
+        "#a9c6bd",
+        "center"
+      );
+      c.save();
+      try {
+        c.translate(
+          w / 2 + (turning ? Math.sin(Math.PI * progress) * w * 0.1 * g.turnDirection * (progress < 0.5 ? -1 : 1) : 0),
+          0
         );
-        const p = projected.find((p2) => p2.t.id === (t == null ? void 0 : t.id));
-        if (t && p) {
-          const ball = t.balls[t.balls.length - 1];
-          const a = g.transitionProgress;
-          this.ball(
-            ball.type,
-            p.x + (w / 2 - p.x) * a,
-            p.y - 30 + (this.height - 122 - p.y + 30) * a,
-            14 * scale
+        c.scale(squeeze, 1);
+        c.translate(-w / 2, 0);
+        this.rect(12, by + 9, w - 24, 18, face.shell, 8);
+        for (const t of g.board.tubes.filter((t2) => visible.has(t2.id))) {
+          const { lane: column, depth } = faceCoordinates(t, g.board.side, view);
+          const x = 16 + lane * (column + 0.5), y = by - Math.min(depth, 5) * 4, ty = y - height2;
+          this.rect(x - radius, ty, radius * 2, height2, face.shell, 12);
+          this.rect(
+            x - radius + 5,
+            ty + 18,
+            radius * 2 - 10,
+            height2 - 29,
+            "#112e35",
+            7
           );
+          c.strokeStyle = face.color;
+          c.lineWidth = 1.2;
+          c.beginPath();
+          c.ellipse(x, ty + 5, radius, 5, 0, 0, Math.PI * 2);
+          c.stroke();
+          for (let j = 0; j < 4; j++) {
+            c.beginPath();
+            c.moveTo(x - radius + 1, ty + 26 + j * 36);
+            c.lineTo(x - radius + 4, ty + 31 + j * 36);
+            c.stroke();
+            c.beginPath();
+            c.moveTo(x + radius - 4, ty + 31 + j * 36);
+            c.lineTo(x + radius - 1, ty + 26 + j * 36);
+            c.stroke();
+          }
+          for (let i = 0; i < t.balls.length; i++) {
+            const drop = g.phase === "intro" ? (1 - g.introProgress) * (145 - i * 30) : 0;
+            this.ball(
+              t.balls[i].type,
+              x,
+              y - 20 - i * step - drop,
+              radius * 0.72
+            );
+          }
+          const topY = y - 20 - (t.balls.length - 1) * step;
+          c.strokeStyle = g.hint === t.id ? "#ffdc7f" : face.color;
+          c.lineWidth = 2;
+          c.beginPath();
+          c.arc(x, topY, radius * 0.84, 0, Math.PI * 2);
+          c.stroke();
+          this.text(
+            String(g.board.tubes.indexOf(t) + 1),
+            x,
+            ty - 8,
+            11,
+            face.color,
+            "center"
+          );
+          if (!turning) {
+            this.bodies.push({
+              id: t.id,
+              x: x - lane * 0.46,
+              y: ty - 5,
+              w: lane * 0.92,
+              h: height2 + 8,
+              topY
+            });
+            this.targets.push({ id: t.id, x, y: topY, r: radius * 0.84 });
+          }
         }
+        if (g.phase === "resolving") {
+          const prev = g.state.history.at(-1);
+          const t = prev == null ? void 0 : prev.tubes.find(
+            (t2) => t2.balls.length > g.board.tubes.find((n2) => n2.id === t2.id).balls.length
+          );
+          if (t && prev && faceVisible(prev, view).has(t.id)) {
+            const x = 16 + lane * (faceCoordinates(t, g.board.side, view).lane + 0.5), a = g.transitionProgress;
+            this.ball(
+              t.balls.at(-1).type,
+              x + (w / 2 - x) * a,
+              by - height2 / 2 + (this.height - 122 - by + height2 / 2) * a,
+              radius * 0.72
+            );
+          }
+        }
+      } finally {
+        c.restore();
       }
     }
     home() {

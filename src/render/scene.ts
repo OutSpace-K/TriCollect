@@ -1,5 +1,5 @@
-import { PALETTE, SYMBOLS, PRESETS, CONFIG, VERSION } from "../config";
-import { exposed, type Tube } from "../core/rules";
+import { PALETTE, SYMBOLS, PRESETS, CONFIG, VERSION, FACES } from "../config";
+import { faceVisible, faceCoordinates } from "../core/rules";
 import { Controller } from "../controller";
 export type Button = {
   id: string;
@@ -12,6 +12,8 @@ export type Button = {
 };
 export class Scene {
   buttons: Button[] = [];
+  renderedIds: string[] = [];
+  renderedFace = 0;
   page = 0;
   drawer = false;
   targets: { id: string; x: number; y: number; r: number }[] = [];
@@ -120,6 +122,7 @@ export class Scene {
       g = this.game,
       w = this.width,
       h = this.height;
+    this.renderedIds = [];
     this.buttons = [];
     this.bodies = [];
     this.targets = [];
@@ -179,7 +182,7 @@ export class Scene {
         this.drawer = false;
         g.pause();
       },
-      g.locked,
+      !["active", "resolving", "rotating"].includes(g.phase),
     );
     this.button(
       "select",
@@ -221,7 +224,7 @@ export class Scene {
         this.drawer = false;
         g.rotate(-1);
       },
-      g.locked,
+      !g.canTurn,
     );
     this.button(
       "rotate-right",
@@ -234,7 +237,7 @@ export class Scene {
         this.drawer = false;
         g.rotate(1);
       },
-      g.locked,
+      !g.canTurn,
     );
     this.button(
       "undo",
@@ -307,15 +310,15 @@ export class Scene {
     const g = this.game,
       w = this.width,
       c = this.ctx,
-      tiles = g.board.tubes,
+      tiles = g.board.tubes.filter((t) => g.visible.has(t.id)),
       pages = Math.ceil(tiles.length / 10);
     this.page = Math.min(this.page, pages - 1);
     this.rect(14, y, w - 28, 188, "#123139", 16);
-    this.text("遮挡时辅助选球", 26, y + 27, 14, "#d9ece7");
+    this.text("当前正面 · 顶部球", 26, y + 27, 14, "#d9ece7");
     this.button("close-select", "收起", w - 80, y + 10, 52, 32, () => {
       this.drawer = false;
     });
-    const e = exposed(g.board),
+    const e = g.visible,
       gap = 7,
       tw = (w - 52 - gap * 4) / 5;
     for (let i = 0; i < 10; i++) {
@@ -340,7 +343,7 @@ export class Scene {
       );
       if (top) {
         this.ball(top.type, x + tw * 0.65, ty + 21, 11, allowed ? 1 : 0.25);
-        this.text(String(tiles.indexOf(t) + 1), x + 7, ty + 25, 11);
+        this.text(String(g.board.tubes.indexOf(t) + 1), x + 7, ty + 25, 11);
       } else this.text("✓", x + tw / 2, ty + 25, 12, "#759e91", "center");
       if (g.hint === t.id) {
         c.strokeStyle = "#f4d27e";
@@ -368,135 +371,140 @@ export class Scene {
       g = this.game,
       w = this.width,
       n = g.board.side;
-    const available = Math.max(120, bottom - top),
-      scale = Math.min((w - 55) / (n * 46), available / 255, 1.65),
-      angle = g.rotation;
-    const projected = g.board.tubes
-      .map((t, index) => {
-        const x = (t.q + t.r / 2 - (n - 1) / 2) * 46,
-          z = ((t.r * Math.sqrt(3)) / 2 - ((n - 1) * Math.sqrt(3)) / 6) * 46;
-        const rx = x * Math.cos(angle) - z * Math.sin(angle),
-          depth = x * Math.sin(angle) + z * Math.cos(angle);
-        return {
-          t,
-          index,
-          x: w / 2 + rx * scale,
-          y: top + available * 0.61 + depth * 0.5 * scale,
-          depth,
-        };
-      })
-      .sort((a, b) => a.depth - b.depth);
-    const low = Math.min(...projected.map((p) => p.depth * 0.5)) - 71;
-    const high = Math.max(...projected.map((p) => p.depth * 0.5)) + 62;
-    for (const p of projected)
-      p.y = top + available / 2 + (p.depth * 0.5 - (low + high) / 2) * scale;
-    // Physical depth sorting; the overlay selection grid is the guaranteed accessible entry.
-    const e = exposed(g.board);
-    for (const p of projected) {
-      const t = p.t;
-      if (!t.balls.length) {
-        if (
-          g.phase === "resolving" &&
-          g.state.history[g.state.history.length - 1]?.tubes.find(
-            (x) => x.id === t.id,
-          )?.balls.length
-        ) {
-          c.globalAlpha = 1 - g.transitionProgress;
-          this.rect(
-            p.x - 12 * scale,
-            p.y - 60 * scale,
-            24 * scale,
-            100 * scale,
-            "#b7d7d733",
-          );
-          c.globalAlpha = 1;
-        }
-        continue;
-      }
-      const r = 16 * scale,
-        ht = 116 * scale,
-        by = p.y + 45 * scale,
-        ty = by - ht;
-      c.fillStyle = "#c7eceb13";
-      c.strokeStyle = e.has(t.id) ? "#c7eceb77" : "#c7eceb22";
-      c.lineWidth = 1;
-      c.beginPath();
-      c.rect(p.x - r, ty, r * 2, ht);
-      c.fill();
-      c.stroke();
-      for (let i = 0; i < t.balls.length; i++) {
-        const intro =
-          g.phase === "intro"
-            ? (1 - g.introProgress) * Math.max(0, 180 - i * 35)
-            : 0;
-        this.ball(
-          t.balls[i].type,
-          p.x,
-          by - 17 * scale - i * 31 * scale - intro,
-          r * 0.82,
-          e.has(t.id) ? 1 : 0.25,
-        );
-      }
-      c.beginPath();
-      c.ellipse(p.x, ty, r, r * 0.3, 0, 0, Math.PI * 2);
-      c.stroke();
-      this.text(
-        String(p.index + 1),
-        p.x,
-        by + 17 * scale,
-        11,
-        "#e9e9cd",
-        "center",
-      );
-      this.bodies.push({
-        id: t.id,
-        x: p.x - r,
-        y: ty,
-        w: r * 2,
-        h: ht,
-        topY: by - 17 * scale - (t.balls.length - 1) * 31 * scale,
-      });
-    }
-    for (const body of this.bodies) {
-      const x = body.x + body.w / 2,
-        y = body.topY;
-      const foreground = [...this.bodies]
-        .reverse()
-        .find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
-      if (foreground?.id !== body.id || !e.has(body.id)) continue;
-      this.targets.push({ id: body.id, x, y, r: body.w * 0.45 });
-      c.strokeStyle = g.hint === body.id ? "#f4d27e" : "#d4e7b6";
-      c.lineWidth = g.hint === body.id ? 3 : 1.5;
-      c.beginPath();
-      c.arc(x, y, body.w * 0.45, 0, Math.PI * 2);
-      c.stroke();
-    }
+    const view = g.presentationView,
+      face = FACES[view];
+    const visible = faceVisible(g.board, view);
+    this.renderedFace = view;
+    this.renderedIds = [...visible];
+    const lane = (w - 32) / n,
+      radius = Math.min(22, lane * 0.38);
+    const height = Math.min(208, bottom - top - 65),
+      by = top + (bottom - top + height) / 2;
+    const step = Math.min(49, (height - 35) / 3);
+    const turning = g.phase === "rotating",
+      progress = g.turnProgress;
+    const squeeze = turning
+      ? Math.max(0.035, Math.abs(Math.cos(Math.PI * progress)))
+      : 1;
     this.text(
-      "三面观察  " + (g.state.view + 1) + "/3",
+      `第 ${view + 1} 面 / 3 · ${face.name}`,
       w / 2,
-      top - 7,
-      11,
-      "#7fa9a4",
+      top + 13,
+      15,
+      face.color,
       "center",
     );
-    if (g.phase === "resolving") {
-      const prev = g.state.history[g.state.history.length - 1];
-      const t = prev?.tubes.find(
-        (t) =>
-          t.balls.length >
-          g.board.tubes.find((n) => n.id === t.id)!.balls.length,
+    this.text(
+      `${g.board.tubes.filter((t) => t.balls.length).length} 管待清空 · 前管清空后露出后管`,
+      w / 2,
+      top + 34,
+      11,
+      "#a9c6bd",
+      "center",
+    );
+    c.save();
+    try {
+      c.translate(
+        w / 2 +
+          (turning
+            ? Math.sin(Math.PI * progress) *
+              w *
+              0.1 *
+              g.turnDirection *
+              (progress < 0.5 ? -1 : 1)
+            : 0),
+        0,
       );
-      const p = projected.find((p) => p.t.id === t?.id);
-      if (t && p) {
-        const ball = t.balls[t.balls.length - 1]!;
-        const a = g.transitionProgress;
-        this.ball(
-          ball.type,
-          p.x + (w / 2 - p.x) * a,
-          p.y - 30 + (this.height - 122 - p.y + 30) * a,
-          14 * scale,
+      c.scale(squeeze, 1);
+      c.translate(-w / 2, 0);
+      this.rect(12, by + 9, w - 24, 18, face.shell, 8);
+      for (const t of g.board.tubes.filter((t) => visible.has(t.id))) {
+        const { lane: column, depth } = faceCoordinates(t, g.board.side, view);
+        const x = 16 + lane * (column + 0.5),
+          y = by - Math.min(depth, 5) * 4,
+          ty = y - height;
+        this.rect(x - radius, ty, radius * 2, height, face.shell, 12);
+        // Opaque decorated shell; the narrow observation window belongs only to this face.
+        this.rect(
+          x - radius + 5,
+          ty + 18,
+          radius * 2 - 10,
+          height - 29,
+          "#112e35",
+          7,
         );
+        c.strokeStyle = face.color;
+        c.lineWidth = 1.2;
+        c.beginPath();
+        c.ellipse(x, ty + 5, radius, 5, 0, 0, Math.PI * 2);
+        c.stroke();
+        for (let j = 0; j < 4; j++) {
+          c.beginPath();
+          c.moveTo(x - radius + 1, ty + 26 + j * 36);
+          c.lineTo(x - radius + 4, ty + 31 + j * 36);
+          c.stroke();
+          c.beginPath();
+          c.moveTo(x + radius - 4, ty + 31 + j * 36);
+          c.lineTo(x + radius - 1, ty + 26 + j * 36);
+          c.stroke();
+        }
+        for (let i = 0; i < t.balls.length; i++) {
+          const drop =
+            g.phase === "intro" ? (1 - g.introProgress) * (145 - i * 30) : 0;
+          this.ball(
+            t.balls[i].type,
+            x,
+            y - 20 - i * step - drop,
+            radius * 0.72,
+          );
+        }
+        const topY = y - 20 - (t.balls.length - 1) * step;
+        c.strokeStyle = g.hint === t.id ? "#ffdc7f" : face.color;
+        c.lineWidth = 2;
+        c.beginPath();
+        c.arc(x, topY, radius * 0.84, 0, Math.PI * 2);
+        c.stroke();
+        this.text(
+          String(g.board.tubes.indexOf(t) + 1),
+          x,
+          ty - 8,
+          11,
+          face.color,
+          "center",
+        );
+        if (!turning) {
+          this.bodies.push({
+            id: t.id,
+            x: x - lane * 0.46,
+            y: ty - 5,
+            w: lane * 0.92,
+            h: height + 8,
+            topY,
+          });
+          this.targets.push({ id: t.id, x, y: topY, r: radius * 0.84 });
+        }
       }
+      if (g.phase === "resolving") {
+        const prev = g.state.history.at(-1);
+        const t = prev?.tubes.find(
+          (t) =>
+            t.balls.length >
+            g.board.tubes.find((n) => n.id === t.id)!.balls.length,
+        );
+        if (t && prev && faceVisible(prev, view).has(t.id)) {
+          const x =
+              16 + lane * (faceCoordinates(t, g.board.side, view).lane + 0.5),
+            a = g.transitionProgress;
+          this.ball(
+            t.balls.at(-1)!.type,
+            x + (w / 2 - x) * a,
+            by - height / 2 + (this.height - 122 - by + height / 2) * a,
+            radius * 0.72,
+          );
+        }
+      }
+    } finally {
+      c.restore();
     }
   }
   private home() {

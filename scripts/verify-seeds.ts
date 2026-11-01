@@ -1,6 +1,6 @@
 import { PRESETS, RULE } from "../src/config";
 import { generate } from "../src/core/generation";
-import { take, invariant, exposed } from "../src/core/rules";
+import { take, invariant, faceVisible } from "../src/core/rules";
 import { writeFileSync } from "node:fs";
 const start = performance.now();
 const results = [];
@@ -11,7 +11,8 @@ for (const p of PRESETS)
       l = generate(p, seed);
     let b = l.board;
     for (let step = 0; step < l.witness.length; step++) {
-      if (!exposed(b).has(l.witness[step])) throw Error("not exposed");
+      if (!faceVisible(b, l.views[step]).has(l.witness[step]))
+        throw Error("not exposed");
       b = take(b, l.witness[step], `verify-${step}`);
       if (!invariant(b, l.witness.length)) throw Error("invariant");
     }

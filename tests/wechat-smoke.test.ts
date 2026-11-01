@@ -227,7 +227,7 @@ test("native bundle manually ended non-winning session never revives on home hid
 });
 
 for (const units of [1, 1000])
-  test(`native bundle ${units} units/ms: continuous picks, instant turns and all presets`, async () => {
+  test(`native bundle ${units} units/ms: continuous picks, animated turns and all presets`, async () => {
     for (let preset = 0; preset < 3; preset++) {
       const r = await boot(new Map(), units);
       r.tap(["初见", "探索", "深入"][preset]);
@@ -240,6 +240,7 @@ for (const units of [1, 1000])
       r.tap("继续游戏");
       for (let rotation = 0; rotation < 6; rotation++) {
         r.tap("↷", true);
+        r.advance(250_000);
         assert.equal(
           decode(r.storage.get(SAVE_KEY)!)!.view,
           (rotation + 1) % 3,
@@ -250,13 +251,11 @@ for (const units of [1, 1000])
         const index = level.board.tubes.findIndex(
           (t) => t.id === level.witness[step],
         );
-        r.tap("选球", true);
-        for (let i = 0; i < 3; i++) {
-          const page = r.labels.find((l) => l.s.startsWith("换页"))!.s;
-          if (Number(page.match(/(\d+)\//)![1]) === Math.floor(index / 10) + 1)
-            break;
-          r.tap("换页");
+        while (decode(r.storage.get(SAVE_KEY)!)!.view !== level.views[step]) {
+          r.tap("↷", true);
+          r.advance(250_000);
         }
+        r.tap("选球", true);
         r.tap(String(index + 1), true);
         r.advance(250_000);
         assert.equal(
@@ -372,7 +371,7 @@ for (const units of [1, 1000])
       secondPickAccepted: true,
     });
     writeFileSync(
-      "evidence/v0.1.2-animation-wallclock.json",
+      "evidence/v0.1.3-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -417,11 +416,58 @@ for (const units of [1, 1000])
       });
     }
     writeFileSync(
-      "evidence/v0.1.2-animation-wallclock.json",
+      "evidence/v0.1.3-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
             "Actual WeChat bundle with real host timers; not installed DevTools",
+          results: animationReports,
+        },
+        null,
+        2,
+      ),
+    );
+  });
+
+for (const units of [1, 1000])
+  test(`native 250ms turns and frozen-turn recovery at ${units} units/ms`, async () => {
+    const r = await boot(new Map(), units, false, true);
+    r.tap("初见");
+    r.tap("跳过开场");
+    r.tap("开始 ·");
+    r.tap("↷", true);
+    const ms = await driveUntil(
+      r,
+      () => r.labels.some((l) => l.s === "选球" && l.color === "#eef7ed"),
+      800,
+    );
+    assert.ok(ms >= 180 && ms < 500);
+    assert.equal(decode(r.storage.get(SAVE_KEY)!)!.view, 1);
+    r.tap("↶", true);
+    r.tap("↶", true);
+    r.tap("暂停", true);
+    assert.equal(decode(r.storage.get(SAVE_KEY)!)!.view, 2);
+    r.tap("继续游戏");
+    r.tap("↷", true);
+    r.freezeClock();
+    const interrupted = await driveUntil(
+      r,
+      () => r.labels.some((l) => l.s === "已暂停"),
+      2200,
+    );
+    r.tap("返回首页");
+    assert.ok(r.labels.some((l) => l.s.includes("初见")));
+    animationReports.push({
+      unitsPerMs: units,
+      rotationMs: ms,
+      frozenRotationPauseMs: interrupted,
+    });
+    writeFileSync(
+      "evidence/v0.1.3-animation-wallclock.json",
+      JSON.stringify(
+        {
+          scope:
+            "Native bundle with simulated wx, real host timers; not installed DevTools",
           results: animationReports,
         },
         null,
