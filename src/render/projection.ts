@@ -19,6 +19,7 @@ export function projection(
   top: number,
   bottom: number,
   angle: number,
+  maxCapacity = 5,
 ) {
   const edge = side - 1;
   // Reserve the complete circumcircle so intermediate angles never crop the bundle.
@@ -28,18 +29,21 @@ export function projection(
   const depthSpace = originalDepth * 0.62;
   const zScale = depthSpace / ((edge * Math.sqrt(3)) / 2),
     extent = (depthSpace * 2) / 3;
-  const maxHeight = Math.min(220, bottom - top - 75 - (originalDepth * 4) / 3);
-  const ballRadius = Math.min(radius * 0.78, (maxHeight - 20) / 10),
+  const maxHeight = Math.min(220, bottom - top - 48 - (originalDepth * 4) / 3);
+  const ballRadius = Math.min(
+      radius * 0.78,
+      (maxHeight - 20) / (maxCapacity * 2),
+    ),
     step = ballRadius * 2,
-    height = step * 5 + 20;
+    height = step * maxCapacity + 20;
   const axis = {
     x: width / 2,
     y:
       top +
-      55 +
+      30 +
       height +
       extent +
-      Math.max(0, (bottom - top - 75 - height - extent * 2) / 2),
+      Math.max(0, (bottom - top - 48 - height - extent * 2) / 2),
   };
   const point = (t: Pick<Tube, "q" | "r">) => {
     const p = rotateWorld(worldPosition(t, side), angle);

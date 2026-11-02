@@ -1,6 +1,6 @@
-export const VERSION = "0.1.12";
+export const VERSION = "0.1.13";
 export const DISPLAY_NAME = "转个“球”";
-export const RULE = "tricollect-4-fixedslots-front";
+export const RULE = "tricollect-5-variable-height";
 export const CONFIG = Object.freeze({
   baseMs: 300_000,
   capacity: 7,
@@ -17,15 +17,44 @@ export const CONFIG = Object.freeze({
   searchMs: 40,
 });
 export const PRESETS = [
-  { id: "learn", name: "初见", side: 6, height: 5, types: 5, seed: 104729 },
-  { id: "normal", name: "探索", side: 6, height: 5, types: 6, seed: 130363 },
-  { id: "deep", name: "深入", side: 8, height: 5, types: 7, seed: 155921 },
+  {
+    id: "learn",
+    name: "简单",
+    side: 6,
+    height: 5,
+    heights: [5],
+    groups: 1,
+    types: 5,
+    seed: 104729,
+  },
+  {
+    id: "normal",
+    name: "普通",
+    side: 6,
+    height: 7,
+    heights: [5, 6, 7],
+    groups: 2,
+    types: 6,
+    seed: 130363,
+  },
+  {
+    id: "deep",
+    name: "困难",
+    side: 8,
+    height: 7,
+    heights: [5, 6, 7],
+    groups: 3,
+    types: 7,
+    seed: 155921,
+  },
 ] as const;
 export type Preset = {
   id: string;
   name: string;
   side: number;
   height: number;
+  heights?: readonly number[];
+  groups?: number;
   types: number;
   seed: number;
 };

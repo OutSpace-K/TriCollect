@@ -1,3 +1,4 @@
+import { appendResult, readRecords } from "./platform/records";
 import { CONFIG, RULE, PRESETS } from "./config";
 import { createLevel } from "./core/generation";
 import { type Board, take, clone, faceVisible } from "./core/rules";
@@ -45,6 +46,8 @@ export class Controller {
     this.resume =
       loaded.save && loaded.save.phase !== "result" ? loaded.save : null;
     if (loaded.message) this.message = loaded.message;
+    if (loaded.save?.phase === "result" && loaded.save.finishedAt !== undefined)
+      appendResult(store, loaded.save);
   }
   private fresh(preset: number, seed: number): Saved {
     const level = createLevel(preset, seed);
@@ -68,6 +71,9 @@ export class Controller {
       phase: "ready",
       sound: this.soundPreference(),
     };
+  }
+  get records() {
+    return readRecords(this.store);
   }
   get board(): Board {
     return this.state.board;
@@ -149,6 +155,7 @@ export class Controller {
         : this.state.remaining <= 0
           ? "expired"
           : "active";
+    this.state.started = true;
     this.last = this.now();
     this.message = "取顶部球，三颗同类自动消除";
     this.checkpoint();
@@ -327,7 +334,7 @@ export class Controller {
           : "当前面暂无可靠路线，可旋转后再提示";
   }
   end() {
-    if (this.phase === "ad") return;
+    if (this.phase === "ad" || this.phase === "home") return;
     this.tick();
     this.phase = "result";
     this.hint = null;
@@ -426,11 +433,15 @@ export class Controller {
             : this.phase === "ready" || this.phase === "intro"
               ? "ready"
               : "paused";
+    if (this.state.phase === "result" && this.state.started)
+      this.state.finishedAt ??= Date.now();
     try {
       save(this.store, this.state);
       this.lastCheckpoint = this.now();
     } catch {
       this.message = "存档写入失败，本局可继续；退出可能丢失进度";
     }
+    if (!appendResult(this.store, this.state))
+      this.message = "本机战绩保存失败，本局仍可结束";
   }
 }

@@ -9,19 +9,24 @@ for (const p of PRESETS)
     const seed = p.seed + i,
       t = performance.now(),
       l = generate(p, seed);
-    if (l.board.tubes.some((t) => t.balls.length !== 5) || l.witness.length % 3)
-      throw Error("five-ball preset invalid");
+    if (
+      l.board.tubes.some((t) => t.balls.length !== t.capacity) ||
+      l.witness.length % 3
+    )
+      throw Error("variable-height preset invalid");
     let turns = 0,
       view = 0;
     for (const v of l.views) {
       if (v !== view) turns++;
       view = v;
     }
-    let b = l.board;
+    let b = l.board,
+      maxTray = 0;
     for (let step = 0; step < l.witness.length; step++) {
       if (!faceVisible(b, l.views[step]).has(l.witness[step]))
         throw Error("not exposed");
       b = take(b, l.witness[step], `verify-${step}`);
+      maxTray = Math.max(maxTray, b.tray.length);
       if (!invariant(b, l.witness.length)) throw Error("invariant");
     }
     if (b.status !== "won") throw Error("not won");
@@ -29,6 +34,9 @@ for (const p of PRESETS)
       preset: p.id,
       seed,
       moves: l.witness.length,
+      maxTray,
+      capacities: [...new Set(l.board.tubes.map((t) => t.capacity))].sort(),
+      types: p.types,
       turns,
       activeBudgetMsPerPick: +(CONFIG.baseMs / l.witness.length).toFixed(2),
       animationOnlyWallMs:

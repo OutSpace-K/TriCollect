@@ -137,8 +137,10 @@ test("confirmed display name and home effect lettering fit a narrow viewport", (
   x.scene.width = 320;
   x.scene.height = 660;
   x.scene.render();
-  for (const text of ["转个", "“", "球", "”"])
-    assert.ok(x.labels.includes(text));
+  assert.ok(
+    x.strokes.some((s) => !s.arc && s.width === 16),
+    "original vector lettering is stroked",
+  );
   for (const b of x.scene.buttons)
     assert.ok(b.x >= 0 && b.x + b.w <= 320 && b.y >= 0 && b.y + b.h <= 660);
 });
@@ -215,9 +217,15 @@ test("home puts existing secondary modes beside the hero and one primary start b
       }
     assert.ok(
       x.scene.buttons.every((b) =>
-        ["sound-toggle", "start-0", "start-1", "start-2", "resume"].includes(
-          b.id,
-        ),
+        [
+          "sound-toggle",
+          "start-0",
+          "start-1",
+          "start-2",
+          "resume",
+          "records",
+          "help",
+        ].includes(b.id),
       ),
     );
   }

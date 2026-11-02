@@ -1,47 +1,130 @@
 {
   "project": "TriCollect",
   "displayName": "转个“球”",
-  "version": "0.1.12",
-  "ruleVersion": "tricollect-4-fixedslots-front",
-  "baseCommit": "29ef84143f40ae39567b2f024a830f07a2c15fb6",
+  "version": "0.1.13",
+  "ruleVersion": "tricollect-5-variable-height",
+  "baseCommit": "cec841f82fb0146802f8400cbc1b6f35ad4a380b",
   "unitAndMockTests": {
-    "passed": 74,
+    "fullSuitePassed": 77,
+    "additionalTargetedPassed": 2,
+    "totalPassed": 79,
     "failed": 0,
-    "fullFinalRun": true
+    "note": "Full suite completed before two additional variable-height tests were added; both then passed separately."
   },
   "seeds": 300,
   "browser": {
-    "directPicks": 390,
+    "passed": true,
+    "platform": "Chromium only; not WeChat device",
+    "directPicks": 447,
     "fallbackPicks": 0,
-    "presetsWonWithoutAds": 3,
+    "results": [
+      {
+        "check": "browser real 10-second clock",
+        "elapsedMs": 10060.900000000373,
+        "chargedMs": 10071.900000000373
+      },
+      "12 consecutive 250ms pointer rotations completed without lock",
+      "one-frame exception recovered; pause/home/reload regression preserved",
+      {
+        "preset": 0,
+        "picks": 105,
+        "wonWithoutAds": true,
+        "remainingMs": 256824.49999999627
+      },
+      {
+        "preset": 1,
+        "picks": 126,
+        "wonWithoutAds": true,
+        "remainingMs": 277501.30000000633
+      },
+      {
+        "preset": 2,
+        "picks": 216,
+        "wonWithoutAds": true,
+        "remainingMs": 212037.70000001974
+      }
+    ],
     "errors": []
   },
-  "misclick": "Single neutral 280ms local pulse for invalid chamber taps; no pick or time penalty; background/UI excluded; phase/view/session/valid-pick cancellation passed",
-  "display": "Home secondary modes flank central physical bottle/table hero; one prominent start below; resume below start if present; sound upper right. No new social/shop/collection functionality. Wood, enamel wells, matte sage background and physical buttons replace arcade neon.",
-  "visual": "Actual v0.1.11/v0.1.12 browser pixels inspected: home before/after, 320/390, active three faces, rotation, misclick, inner reveal, all modals and real E2E success. Not aesthetic acceptance.",
+  "difficulty": {
+    "scope": "Generated reducer witnesses, not human timing; rotations and animation do not consume the 300s active clock",
+    "presets": [
+      {
+        "preset": "learn",
+        "seeds": 100,
+        "moves": 105,
+        "types": 5,
+        "capacities": [
+          5
+        ],
+        "turnRange": [
+          50,
+          79
+        ],
+        "maxTray": 2,
+        "activeBudgetMsPerPick": 2857.14
+      },
+      {
+        "preset": "normal",
+        "seeds": 100,
+        "moves": 126,
+        "types": 6,
+        "capacities": [
+          5,
+          6,
+          7
+        ],
+        "turnRange": [
+          62,
+          94
+        ],
+        "maxTray": 4,
+        "activeBudgetMsPerPick": 2380.95
+      },
+      {
+        "preset": "deep",
+        "seeds": 100,
+        "moves": 216,
+        "types": 7,
+        "capacities": [
+          5,
+          6,
+          7
+        ],
+        "turnRange": [
+          120,
+          156
+        ],
+        "maxTray": 6,
+        "activeBudgetMsPerPick": 1388.89
+      }
+    ]
+  },
+  "records": "Local only, max 30, completed started sessions only, session-id deduplication, restart reconciliation, backup recovery and failure isolation tested. No friend ranking implemented.",
+  "visual": "Actual v012/v013 home comparison; 320/390 home, all three faces for mixed heights, stable-slot before/after, rotation, inner reveal, modal states, records/help inspected. Geometry isolation fixture is not solvability evidence. Original-color direct E2E completed separately.",
+  "audio": "Unchanged original music; actual browser decode/playback/lifecycle passed; no human listening.",
+  "typecheck": "passed",
+  "formatCheck": "passed",
+  "cleanBuild": "Clean npm ci/build/typecheck; all 12 dist files byte-identical",
+  "nativeCanvas": "Actual dist/wechat/game.js in Chromium Canvas wx bridge at 320/390; not WeChat Developer Tools.",
+  "clock": "Both 1 and 1000 units/ms simulated; full three-preset native bundle runs passed, 10-second host measurements, freeze/paint exception recovery passed.",
+  "publication": "Source and prebuilt game only; no deployment.",
+  "remaining": [
+    "Actual WeChat Developer Tools and devices",
+    "Human 300s difficulty and small-sphere touch acceptance",
+    "Real AppID, advertising and callbacks",
+    "Friend ranking open-data-domain implementation and real platform authorization",
+    "Human visual and music preference acceptance"
+  ],
+  "saveCompatibility": "v012 and older in-progress rule saves explicitly rejected, not silently migrated; home does not overwrite them. Sound preference retained.",
   "background": {
     "file": "assets/background.png",
-    "bytes": 60987,
-    "sha256": "ccd3cf74ec5733c0232f094ae37b546bb593b054250c2f6b3b2067bb1ef7d5d4"
+    "bytes": 72616,
+    "sha256": "200e6aeab249943f6362b19ff5e8e399b8e9bd2aa20c08dd091f9e4d9cea6efd"
   },
-  "audio": "Unchanged original 32s music; real HTMLAudio lifecycle passed; no human listening",
-  "typecheck": "passed",
-  "cleanBuild": "Clean npm ci/build/typecheck; all 12 dist files byte-identical",
-  "scope": "Node, simulated wx and Chromium only; not actual WeChat Developer Tools or devices",
-  "publication": "Version 0.1.12 source, prebuilt game and validation records. No deployment.",
-  "remaining": [
-    "Actual WeChat import/device/performance",
-    "Visual preference and playtest acceptance",
-    "Real ad completion/cancellation/error callbacks",
-    "Human musical taste/listening",
-    "Human 300s balance"
-  ],
   "playBackground": {
     "file": "assets/play-background.png",
-    "bytes": 41492,
-    "sha256": "6bd6bf1ec98f5e02af23b41af2c9f577e1455fac5c2508d4eb1d333d8741467b"
-  },
-  "nativeCanvas": "Actual dist/wechat/game.js executed using Chromium Canvas and wx bridge at 320/390: capsule clearance, start/pause/resume/turn. Not actual WeChat.",
-  "safeArea": "Menu capsule bottom +8px, conservative fallback, bottom indicator clearance, inverse touch mapping. Home paint exception restores canvas state.",
-  "reference": "Homepage image search returned layout from m.51nacs.com/down/3918.html. Full-resolution image fetch timed out; executor proxy denied download with 403. No original image materialized, no bypass, no claim of latest official homepage."
+    "bytes": 65132,
+    "sha256": "681f0fe67d0d1ceda26256013fd0ede61d42448004b17bb2c47c3964fded0c1c"
+  }
 }

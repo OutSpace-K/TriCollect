@@ -119,7 +119,7 @@
   }
 
   // src/config.ts
-  var RULE = "tricollect-4-fixedslots-front";
+  var RULE = "tricollect-5-variable-height";
   var CONFIG = Object.freeze({
     baseMs: 3e5,
     capacity: 7,
@@ -136,9 +136,36 @@
     searchMs: 40
   });
   var PRESETS = [
-    { id: "learn", name: "\u521D\u89C1", side: 6, height: 5, types: 5, seed: 104729 },
-    { id: "normal", name: "\u63A2\u7D22", side: 6, height: 5, types: 6, seed: 130363 },
-    { id: "deep", name: "\u6DF1\u5165", side: 8, height: 5, types: 7, seed: 155921 }
+    {
+      id: "learn",
+      name: "\u7B80\u5355",
+      side: 6,
+      height: 5,
+      heights: [5],
+      groups: 1,
+      types: 5,
+      seed: 104729
+    },
+    {
+      id: "normal",
+      name: "\u666E\u901A",
+      side: 6,
+      height: 7,
+      heights: [5, 6, 7],
+      groups: 2,
+      types: 6,
+      seed: 130363
+    },
+    {
+      id: "deep",
+      name: "\u56F0\u96BE",
+      side: 8,
+      height: 7,
+      heights: [5, 6, 7],
+      groups: 3,
+      types: 7,
+      seed: 155921
+    }
   ];
   var FACES = [
     { name: "\u73CA\u745A\u9762", color: "#c44c30", shell: "#f4d4bf" },
@@ -155,6 +182,76 @@
     "#8bc72d"
   ];
   var SYMBOLS = ["\u25CF", "\u25C6", "\u25B2", "\u271A", "\u25A0", "\u2605", "\u2665"];
+
+  // src/platform/records.ts
+  var RECORDS_KEY = "tricollect.records.v1";
+  var RECORD_LIMIT = 30;
+  function parse(raw) {
+    if (!raw) return [];
+    try {
+      const v = JSON.parse(raw);
+      if (v.schema !== 1 || !Array.isArray(v.entries) || v.entries.length > RECORD_LIMIT)
+        return null;
+      const a = v.entries;
+      if (new Set(a.map((r) => r.session)).size !== a.length || a.some(
+        (r) => typeof r.session !== "string" || !r.session || !Number.isFinite(r.endedAt) || r.endedAt < 0 || !Number.isInteger(r.preset) || !PRESETS[r.preset] || typeof r.difficulty !== "string" || !["won", "lost"].includes(r.outcome) || ![r.score, r.cleared, r.total, r.elapsedMs, r.addedMs].every(
+          (n) => Number.isFinite(n) && n >= 0
+        ) || r.total < 1 || r.cleared > r.total || r.elapsedMs > CONFIG.baseMs + CONFIG.extraMs * CONFIG.maxExtensions
+      ))
+        return null;
+      return a;
+    } catch (e) {
+      return null;
+    }
+  }
+  function readRecords(store) {
+    try {
+      const raw = store.get(RECORDS_KEY), a = parse(raw);
+      if (a) return { entries: a, available: true, recovered: false };
+      const backupRaw = store.get(RECORDS_KEY + ".backup");
+      const backup = backupRaw ? parse(backupRaw) : null;
+      return {
+        entries: backup != null ? backup : [],
+        available: backup !== null,
+        recovered: true
+      };
+    } catch (e) {
+      return { entries: [], available: false, recovered: false };
+    }
+  }
+  function appendResult(store, s) {
+    if (!s.started || s.phase !== "result" || s.finishedAt === void 0)
+      return true;
+    const loaded = readRecords(store);
+    if (!loaded.available) return false;
+    if (loaded.entries.some((r) => r.session === s.session)) return true;
+    const entry = {
+      session: s.session,
+      endedAt: s.finishedAt,
+      preset: s.preset,
+      difficulty: PRESETS[s.preset].name,
+      outcome: s.board.status === "won" ? "won" : "lost",
+      score: s.board.score,
+      cleared: s.board.cleared.length,
+      total: s.board.tubes.reduce((n, t) => n + t.capacity, 0),
+      elapsedMs: Math.max(0, CONFIG.baseMs + s.added - s.remaining),
+      addedMs: s.added
+    };
+    const payload = JSON.stringify({
+      schema: 1,
+      entries: [entry, ...loaded.entries].slice(0, RECORD_LIMIT)
+    });
+    try {
+      store.set(
+        RECORDS_KEY + ".backup",
+        JSON.stringify({ schema: 1, entries: loaded.entries })
+      );
+      store.set(RECORDS_KEY, payload);
+      return store.get(RECORDS_KEY) === payload;
+    } catch (e) {
+      return false;
+    }
+  }
 
   // src/core/rules.ts
   var DIRS = [
@@ -238,7 +335,7 @@
     if (b.tubes.length !== b.side * (b.side + 1) / 2 || new Set(b.tubes.map((t) => t.id)).size !== b.tubes.length)
       return false;
     if (b.tubes.some(
-      (t) => !Number.isInteger(t.q) || !Number.isInteger(t.r) || t.q < 0 || t.r < 0 || t.q + t.r >= b.side || t.id !== key(t.q, t.r) || !Array.isArray(t.balls)
+      (t) => !Number.isInteger(t.q) || !Number.isInteger(t.r) || t.q < 0 || t.r < 0 || t.q + t.r >= b.side || t.id !== key(t.q, t.r) || !Array.isArray(t.balls) || !Number.isInteger(t.capacity) || t.capacity < 1 || t.capacity > 8 || t.balls.length > t.capacity
     ))
       return false;
     const all = [...b.tubes.flatMap((t) => t.balls), ...b.tray, ...b.cleared];
@@ -279,6 +376,7 @@
     };
   }
   function generate(p, seed) {
+    var _a, _b, _c, _d, _e;
     const rnd = random(seed), tubes = [];
     for (let q = 0; q < p.side; q++)
       for (let r = 0; r < p.side - q; r++)
@@ -286,10 +384,14 @@
           id: key(q, r),
           q,
           r,
-          balls: Array.from({ length: p.height }, (_, i) => ({
-            id: `${q},${r}:${i}`,
-            type: 0
-          }))
+          capacity: (_b = (_a = p.heights) == null ? void 0 : _a[tubes.length % p.heights.length]) != null ? _b : p.height,
+          balls: Array.from(
+            { length: (_d = (_c = p.heights) == null ? void 0 : _c[tubes.length % p.heights.length]) != null ? _d : p.height },
+            (_, i) => ({
+              id: `${q},${r}:${i}`,
+              type: 0
+            })
+          )
         });
     const b = {
       side: p.side,
@@ -311,11 +413,13 @@
       });
       t.balls.pop();
     }
+    if (order.length % 3) throw Error("Total must be divisible by three");
     const types = [];
-    for (let g = 0; g < order.length / 3; g += 2) {
-      const window = [g % p.types, g % p.types, g % p.types];
-      if ((g + 1) * 3 < order.length)
-        window.push((g + 1) % p.types, (g + 1) % p.types, (g + 1) % p.types);
+    const groups = (_e = p.groups) != null ? _e : 2;
+    for (let g = 0; g < order.length / 3; g += groups) {
+      const window = [];
+      for (let k = 0; k < groups && g + k < order.length / 3; k++)
+        window.push(...Array(3).fill((g + k) % p.types));
       for (let i = window.length - 1; i > 0; i--) {
         const j = Math.floor(rnd() * (i + 1));
         [window[i], window[j]] = [window[j], window[i]];
@@ -408,7 +512,7 @@
         return false;
       if (!Number.isInteger(s.hintsUsed) || s.hintsUsed < 0 || s.undoAvailable !== void 0 && typeof s.undoAvailable !== "boolean" || !Number.isInteger(s.undosUsed) || s.undosUsed < 0)
         return false;
-      if (!Number.isInteger(s.sequence) || s.sequence < 0 || !Number.isInteger(s.view) || s.view < 0 || s.view > 2 || typeof s.sound !== "boolean" || !["ready", "paused", "blocked", "expired", "result"].includes(s.phase))
+      if (!Number.isInteger(s.sequence) || s.sequence < 0 || !Number.isInteger(s.view) || s.view < 0 || s.view > 2 || typeof s.sound !== "boolean" || s.started !== void 0 && typeof s.started !== "boolean" || s.finishedAt !== void 0 && (!Number.isFinite(s.finishedAt) || s.finishedAt < 0) || !["ready", "paused", "blocked", "expired", "result"].includes(s.phase))
         return false;
       if (!Array.isArray(s.rewards) || new Set(s.rewards.map((r) => r.id)).size !== s.rewards.length || s.rewards.some(
         (r) => r.session !== s.session || typeof r.id !== "string" || !["requested", "completed", "cancelled", "failed"].includes(
@@ -422,12 +526,15 @@
       const check = (b) => invariant(b, all.length) && b.side === original.side && [...b.tubes.flatMap((t) => t.balls), ...b.tray, ...b.cleared].every(
         (b2) => identities.get(b2.id) === b2.type
       ) && b.tubes.every(
-        (t) => t.balls.every(
-          (b2, i) => {
-            var _a, _b;
-            return ((_b = (_a = original.tubes.find((x) => x.id === t.id)) == null ? void 0 : _a.balls[i]) == null ? void 0 : _b.id) === b2.id;
-          }
-        )
+        (t) => {
+          var _a;
+          return t.capacity === ((_a = original.tubes.find((x) => x.id === t.id)) == null ? void 0 : _a.capacity) && t.balls.every(
+            (b2, i) => {
+              var _a2, _b;
+              return ((_b = (_a2 = original.tubes.find((x) => x.id === t.id)) == null ? void 0 : _a2.balls[i]) == null ? void 0 : _b.id) === b2.id;
+            }
+          );
+        }
       );
       return check(s.board) && Array.isArray(s.history) && s.history.length <= all.length && s.history.every(check);
     } catch (e) {
@@ -501,10 +608,13 @@
       __publicField(this, "animationStart", 0);
       __publicField(this, "after", "active");
       __publicField(this, "lastCheckpoint", 0);
+      var _a;
       this.state = this.fresh(0, PRESETS[0].seed);
       const loaded = restore(store);
       this.resume = loaded.save && loaded.save.phase !== "result" ? loaded.save : null;
       if (loaded.message) this.message = loaded.message;
+      if (((_a = loaded.save) == null ? void 0 : _a.phase) === "result" && loaded.save.finishedAt !== void 0)
+        appendResult(store, loaded.save);
     }
     fresh(preset, seed) {
       const level = createLevel(preset, seed);
@@ -528,6 +638,9 @@
         phase: "ready",
         sound: this.soundPreference()
       };
+    }
+    get records() {
+      return readRecords(this.store);
     }
     get board() {
       return this.state.board;
@@ -591,6 +704,7 @@
     begin() {
       if (this.phase !== "ready" && this.phase !== "paused") return;
       this.phase = this.board.status === "blocked" ? "blocked" : this.state.remaining <= 0 ? "expired" : "active";
+      this.state.started = true;
       this.last = this.now();
       this.message = "\u53D6\u9876\u90E8\u7403\uFF0C\u4E09\u9897\u540C\u7C7B\u81EA\u52A8\u6D88\u9664";
       this.checkpoint();
@@ -751,7 +865,7 @@
       this.message = result.status === "safe" ? "\u5F53\u524D\u9762\u4EAE\u6846\u7BA1\u4F4D\u6709\u5DF2\u9A8C\u8BC1\u7684\u540E\u7EED\u89E3" : result.status === "unknown" ? "\u9884\u7B97\u5185\u5C1A\u672A\u786E\u5B9A\uFF0C\u53EF\u5C1D\u8BD5\u64A4\u9500\u6216\u7EE7\u7EED\u89C2\u5BDF" : "\u5F53\u524D\u9762\u6682\u65E0\u53EF\u9760\u8DEF\u7EBF\uFF0C\u53EF\u65CB\u8F6C\u540E\u518D\u63D0\u793A";
     }
     end() {
-      if (this.phase === "ad") return;
+      if (this.phase === "ad" || this.phase === "home") return;
       this.tick();
       this.phase = "result";
       this.hint = null;
@@ -821,14 +935,19 @@
       this.checkpoint();
     }
     checkpoint() {
+      var _a, _b;
       if (this.phase === "home") return;
       this.state.phase = this.phase === "result" || this.board.status === "won" ? "result" : this.board.status === "blocked" ? "blocked" : this.state.remaining <= 0 ? "expired" : this.phase === "ready" || this.phase === "intro" ? "ready" : "paused";
+      if (this.state.phase === "result" && this.state.started)
+        (_b = (_a = this.state).finishedAt) != null ? _b : _a.finishedAt = Date.now();
       try {
         save(this.store, this.state);
         this.lastCheckpoint = this.now();
       } catch (e) {
         this.message = "\u5B58\u6863\u5199\u5165\u5931\u8D25\uFF0C\u672C\u5C40\u53EF\u7EE7\u7EED\uFF1B\u9000\u51FA\u53EF\u80FD\u4E22\u5931\u8FDB\u5EA6";
       }
+      if (!appendResult(this.store, this.state))
+        this.message = "\u672C\u673A\u6218\u7EE9\u4FDD\u5B58\u5931\u8D25\uFF0C\u672C\u5C40\u4ECD\u53EF\u7ED3\u675F";
     }
   };
 
@@ -846,17 +965,20 @@
       z: -p.x * Math.sin(angle) + p.z * Math.cos(angle)
     };
   }
-  function projection(side, width2, top, bottom, angle) {
+  function projection(side, width2, top, bottom, angle, maxCapacity = 5) {
     const edge = side - 1;
     const lane = (width2 - 32) / (2 * edge / Math.sqrt(3) + 1), radius = lane / 2;
     const originalDepth = Math.min(108, edge * 18, (bottom - top) * 0.24);
     const depthSpace = originalDepth * 0.62;
     const zScale = depthSpace / (edge * Math.sqrt(3) / 2), extent = depthSpace * 2 / 3;
-    const maxHeight = Math.min(220, bottom - top - 75 - originalDepth * 4 / 3);
-    const ballRadius = Math.min(radius * 0.78, (maxHeight - 20) / 10), step = ballRadius * 2, height2 = step * 5 + 20;
+    const maxHeight = Math.min(220, bottom - top - 48 - originalDepth * 4 / 3);
+    const ballRadius = Math.min(
+      radius * 0.78,
+      (maxHeight - 20) / (maxCapacity * 2)
+    ), step = ballRadius * 2, height2 = step * maxCapacity + 20;
     const axis = {
       x: width2 / 2,
-      y: top + 55 + height2 + extent + Math.max(0, (bottom - top - 75 - height2 - extent * 2) / 2)
+      y: top + 30 + height2 + extent + Math.max(0, (bottom - top - 48 - height2 - extent * 2) / 2)
     };
     const point = (t) => {
       const p = rotateWorld(worldPosition(t, side), angle);
@@ -873,6 +995,9 @@
       this.width = width2;
       this.height = height2;
       __publicField(this, "buttons", []);
+      __publicField(this, "homePanel", null);
+      __publicField(this, "recordPage", 0);
+      __publicField(this, "mascotTime", 0);
       __publicField(this, "misclickFeedback", null);
       __publicField(this, "backgroundLoaded", false);
       __publicField(this, "background", null);
@@ -1079,12 +1204,12 @@
         y,
         r
       );
-      shade.addColorStop(0, "#c7ccbb");
-      shade.addColorStop(0.28, "#9da68f");
-      shade.addColorStop(0.72, "#707b65");
-      shade.addColorStop(1, "#414d3e");
+      shade.addColorStop(0, "#a7c9dd");
+      shade.addColorStop(0.28, "#344d73");
+      shade.addColorStop(0.72, "#192942");
+      shade.addColorStop(1, "#080f23");
       c.fillStyle = shade;
-      c.strokeStyle = "#84937b";
+      c.strokeStyle = "#789db7";
       c.lineWidth = 1.1;
       c.beginPath();
       c.arc(x, y, r, 0, Math.PI * 2);
@@ -1203,6 +1328,7 @@
         this.home();
         return;
       }
+      this.homePanel = null;
       this.rect(16, 16, 116, 51, "#697d61", 16);
       this.rect(19, 19, 110, 45, "#fffbed", 13);
       const secs = Math.ceil(g.state.remaining / 1e3);
@@ -1214,7 +1340,7 @@
         g.state.remaining < 3e4 ? "#bd3b30" : "#294d3c",
         "center"
       );
-      const total = PRESETS[g.state.preset].side * (PRESETS[g.state.preset].side + 1) / 2 * 5;
+      const total = g.board.tubes.reduce((n, t) => n + t.capacity, 0);
       const progress = g.board.cleared.length / total;
       this.text(`\u6E05\u7A7A ${g.board.cleared.length}/${total}`, 20, 91, 13, "#294d3c");
       this.rect(20, 101, w - 40, 9, "#a6b49a", 5);
@@ -1355,8 +1481,15 @@
       const view = g.presentationView, face = FACES[view], turning = g.phase === "rotating", p = g.turnProgress;
       const ease = p * p * (3 - 2 * p);
       const angle = (turning ? g.turnFrom + g.turnDirection * ease : g.state.view) * Math.PI * 2 / 3;
-      const layout = projection(n, w, top, bottom, angle);
-      const { radius, height: height2, step, ballRadius, point, axis } = layout;
+      const layout = projection(
+        n,
+        w,
+        top,
+        bottom,
+        angle,
+        Math.max(...g.board.tubes.map((t) => t.capacity))
+      );
+      const { radius, step, ballRadius, point, axis } = layout;
       this.rotationAxis = axis;
       this.projectionScale = { x: layout.lane, z: layout.zScale };
       const visible = turning ? /* @__PURE__ */ new Set() : faceVisible(g.board, view);
@@ -1436,7 +1569,7 @@
         c.fill();
       }
       for (const item of ordered) {
-        const { t, x, y } = item, ty = y - height2, front = visible.has(t.id);
+        const { t, x, y } = item, height2 = t.capacity * step + 20, ty = y - height2, front = visible.has(t.id);
         c.save();
         try {
           this.chamberPath(x, ty, y, radius);
@@ -1554,7 +1687,7 @@
           };
           if (front && i >= first) {
             this.ballPositions.push(position);
-            const drop = g.phase === "intro" ? (1 - g.introProgress) * (145 - i * 20) : 0;
+            const drop = g.phase === "intro" ? (1 - g.introProgress) * (150 - i * 14) : 0;
             this.ball(t.balls[i].type, x, by - drop, ballRadius);
           } else {
             this.ghostPositions.push(position);
@@ -1629,50 +1762,256 @@
       }
     }
     homeTitle() {
-      const c = this.ctx, scale = Math.min(1, (this.width - 48) / 230), left = this.width / 2 - 98 * scale;
-      const parts = [
-        { text: "\u8F6C\u4E2A", x: 0, size: 42, y: 130 },
-        { text: "\u201C", x: 84, size: 28, y: 125 },
-        { text: "\u7403", x: 108, size: 64, y: 140 },
-        { text: "\u201D", x: 172, size: 28, y: 125 }
+      const glyphs = [
+        [
+          [
+            [0, 8],
+            [20, 8]
+          ],
+          [
+            [8, 0],
+            [0, 23],
+            [21, 23]
+          ],
+          [
+            [0, 33],
+            [23, 33]
+          ],
+          [
+            [12, 12],
+            [12, 50]
+          ],
+          [
+            [28, 14],
+            [55, 14]
+          ],
+          [
+            [25, 25],
+            [59, 25]
+          ],
+          [
+            [44, 5],
+            [37, 34],
+            [55, 34],
+            [41, 47]
+          ],
+          [
+            [39, 41],
+            [46, 48]
+          ]
+        ],
+        [
+          [
+            [31, 0],
+            [5, 26]
+          ],
+          [
+            [31, 0],
+            [57, 26]
+          ],
+          [
+            [31, 20],
+            [31, 52]
+          ]
+        ],
+        [
+          [
+            [0, 8],
+            [21, 8]
+          ],
+          [
+            [0, 24],
+            [21, 24]
+          ],
+          [
+            [0, 45],
+            [23, 43]
+          ],
+          [
+            [11, 8],
+            [11, 45]
+          ],
+          [
+            [32, 13],
+            [61, 13]
+          ],
+          [
+            [46, 0],
+            [46, 52],
+            [41, 56]
+          ],
+          [
+            [54, 2],
+            [59, 6]
+          ],
+          [
+            [29, 24],
+            [37, 31]
+          ],
+          [
+            [37, 35],
+            [26, 43]
+          ],
+          [
+            [61, 23],
+            [54, 31]
+          ],
+          [
+            [49, 25],
+            [62, 46]
+          ]
+        ]
       ];
+      const c = this.ctx, scale = Math.min(1.12, (this.width - 70) / 226);
       c.save();
       try {
-        c.textAlign = "left";
-        c.lineJoin = "round";
-        for (const part of parts) {
-          const x = left + part.x * scale, y = part.y, size = part.size * scale;
-          c.font = `900 ${size}px sans-serif`;
-          c.fillStyle = "#8f6e8050";
-          c.fillText(part.text, x + 2, y + 7);
-          for (let depth = 4; depth >= 1; depth--) {
-            c.fillStyle = part.text === "\u7403" ? "#a35225" : "#27593e";
-            c.fillText(part.text, x + depth * 0.35, y + depth);
+        c.translate(this.width / 2 - 106 * scale, 88);
+        c.scale(scale, scale);
+        glyphs.forEach((paths, i) => {
+          c.save();
+          try {
+            c.translate(i * 76, i === 1 ? 8 : 0);
+            c.rotate(i === 0 ? -0.08 : i === 2 ? 0.08 : 0);
+            c.lineCap = "round";
+            c.lineJoin = "round";
+            for (const [offset, width2, color] of [
+              [4, 16, "#47624a"],
+              [0, 16, "#fff9dc"],
+              [0, 9, i === 2 ? "#f48a24" : "#238a61"],
+              [-1, 3, i === 2 ? "#ffd865" : "#86e9a3"]
+            ]) {
+              c.strokeStyle = color;
+              c.lineWidth = width2;
+              for (const path of paths) {
+                c.beginPath();
+                path.forEach(
+                  ([x, y], j) => j ? c.lineTo(x, y + offset) : c.moveTo(x, y + offset)
+                );
+                c.stroke();
+              }
+            }
+          } finally {
+            c.restore();
           }
-          c.lineWidth = 6 * scale;
-          c.strokeStyle = "#fff9df";
-          c.strokeText(part.text, x, y);
-          const shine = c.createLinearGradient(0, y - size, 0, y);
-          if (part.text === "\u7403") {
-            shine.addColorStop(0, "#ffffad");
-            shine.addColorStop(0.25, "#ffc64a");
-            shine.addColorStop(0.53, "#ffa62b");
-            shine.addColorStop(1, "#f66a2e");
-          } else {
-            shine.addColorStop(0, "#ffffff");
-            shine.addColorStop(0.35, "#68ca75");
-            shine.addColorStop(1, "#20835c");
-          }
-          c.fillStyle = shine;
-          c.fillText(part.text, x, y);
-        }
+        });
       } finally {
         c.restore();
       }
     }
+    homeDialog() {
+      const w = this.width, h = this.height, c = this.ctx;
+      this.buttons = [];
+      c.fillStyle = "#233c4288";
+      c.fillRect(0, 0, w, h);
+      this.rect(14, 76, w - 28, h - 128, "#fff9e8", 22);
+      this.text(
+        this.homePanel === "records" ? "\u672C\u673A\u6218\u7EE9" : "\u600E\u4E48\u73A9",
+        w / 2,
+        116,
+        25,
+        "#294d3c",
+        "center"
+      );
+      if (this.homePanel === "records") {
+        const records = this.game.records, pages = Math.max(1, Math.ceil(records.entries.length / 4));
+        this.recordPage = Math.min(this.recordPage, pages - 1);
+        this.text("\u4EC5\u672C\u673A \xB7 \u6700\u8FD130\u5C40", w / 2, 145, 12, "#617366", "center");
+        if (!records.available)
+          this.text("\u8BB0\u5F55\u6682\u65F6\u65E0\u6CD5\u8BFB\u53D6", w / 2, 208, 16, "#8b3e26", "center");
+        else if (!records.entries.length)
+          this.text(
+            "\u5B8C\u6210\u7B2C\u4E00\u5C40\uFF0C\u7559\u4E0B\u6218\u7EE9\u5427",
+            w / 2,
+            208,
+            16,
+            "#617366",
+            "center"
+          );
+        records.entries.slice(this.recordPage * 4, this.recordPage * 4 + 4).forEach((r, i) => {
+          const y = 182 + i * 78, date = new Date(r.endedAt);
+          this.rect(26, y, w - 52, 66, "#e6edda", 12);
+          this.text(
+            `${r.difficulty} \xB7 ${r.outcome === "won" ? "\u901A\u5173" : "\u672A\u901A\u5173"}`,
+            38,
+            y + 24,
+            16,
+            "#294d3c"
+          );
+          this.text(
+            `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`,
+            w - 38,
+            y + 24,
+            12,
+            "#617366",
+            "right"
+          );
+          this.text(
+            `${r.score}\u5206  \xB7  ${r.cleared}/${r.total}\u9897  \xB7  ${Math.round(r.elapsedMs / 1e3)}\u79D2`,
+            38,
+            y + 49,
+            13,
+            "#617366"
+          );
+        });
+        if (pages > 1) {
+          this.button(
+            "records-prev",
+            "\u4E0A\u4E00\u9875",
+            28,
+            h - 151,
+            100,
+            36,
+            () => this.recordPage--,
+            this.recordPage === 0
+          );
+          this.button(
+            "records-next",
+            "\u4E0B\u4E00\u9875",
+            w - 128,
+            h - 151,
+            100,
+            36,
+            () => this.recordPage++,
+            this.recordPage === pages - 1
+          );
+        }
+      } else {
+        [
+          "\u70B9\u6B63\u9762\u6700\u4E0A\u7403\uFF0C\u4E09\u4E2A\u540C\u7C7B\u6D88\u9664",
+          "\u5DE6\u53F3\u8F6C\u52A8\uFF0C\u6E05\u7A7A\u5916\u5C42\u770B\u91CC\u9762",
+          "\u64A4\u9500\u4E00\u6B65\uFF1B\u6BCF\u5C40\u6709\u6548\u65F6\u95F45\u5206\u949F",
+          "\u7B80\u5355 105\u9897 / 5\u7C7B / 5\u5C42",
+          "\u666E\u901A 126\u9897 / 6\u7C7B / 5\u20137\u5C42",
+          "\u56F0\u96BE 216\u9897 / 7\u7C7B / 5\u20137\u5C42"
+        ].forEach(
+          (t, i) => this.text(t, w / 2, 182 + i * 40, 14, "#294d3c", "center")
+        );
+      }
+      this.button(
+        "home-dialog-close",
+        "\u8FD4\u56DE",
+        28,
+        h - 100,
+        w - 56,
+        40,
+        () => this.homePanel = null
+      );
+    }
     home() {
       const w = this.width, h = this.height;
       this.homeTitle();
+      this.button("records", "\u6218\u7EE9", 18, 18, 60, 34, () => {
+        this.homePanel = "records";
+        this.recordPage = 0;
+      });
+      this.button("help", "\u73A9\u6CD5", 88, 18, 60, 34, () => {
+        this.homePanel = "help";
+      });
+      try {
+        const t = this.game.now();
+        if (Number.isFinite(t)) this.mascotTime = t;
+      } catch (e) {
+      }
       const c = this.ctx;
       c.save();
       try {
@@ -1726,10 +2065,30 @@
       } finally {
         c.restore();
       }
+      const mx = w / 2, my = 400 + Math.sin(this.mascotTime / 650) * 5;
+      this.ball(3, mx, my, 23);
+      for (const dx of [-7, 7]) {
+        c.fillStyle = "#fff";
+        c.beginPath();
+        c.ellipse(
+          mx + dx,
+          my - 3,
+          5,
+          Math.sin(this.mascotTime / 1900) > 0.985 ? 1 : 7,
+          0,
+          0,
+          Math.PI * 2
+        );
+        c.fill();
+        c.fillStyle = "#25384e";
+        c.beginPath();
+        c.arc(mx + dx + 1, my - 2, 2.5, 0, Math.PI * 2);
+        c.fill();
+      }
       const y = Math.min(h - 180, 455);
       this.button(
         "start-0",
-        "\u5F00\u59CB \xB7 \u521D\u89C1",
+        "\u5F00\u59CB \xB7 \u7B80\u5355",
         28,
         y,
         w - 56,
@@ -1738,10 +2097,10 @@
         false,
         true
       );
-      this.button("start-1", "\u63A2\u7D22", 18, 266, 58, 48, () => this.game.start(1));
+      this.button("start-1", "\u666E\u901A", 18, 266, 58, 48, () => this.game.start(1));
       this.button(
         "start-2",
-        "\u6DF1\u5165",
+        "\u56F0\u96BE",
         w - 76,
         266,
         58,
@@ -1758,6 +2117,10 @@
           40,
           () => this.game.continueSaved()
         );
+      if (this.homePanel) {
+        this.homeDialog();
+        return;
+      }
       if (this.game.message.includes("\u5B58\u6863"))
         this.text(
           this.fit(this.game.message, 24),

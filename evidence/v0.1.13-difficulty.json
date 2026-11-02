@@ -1,0 +1,54 @@
+{
+  "scope": "Generated reducer witnesses, not human timing; rotations and animation do not consume the 300s active clock",
+  "presets": [
+    {
+      "preset": "learn",
+      "seeds": 100,
+      "moves": 105,
+      "types": 5,
+      "capacities": [
+        5
+      ],
+      "turnRange": [
+        50,
+        79
+      ],
+      "maxTray": 2,
+      "activeBudgetMsPerPick": 2857.14
+    },
+    {
+      "preset": "normal",
+      "seeds": 100,
+      "moves": 126,
+      "types": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "turnRange": [
+        62,
+        94
+      ],
+      "maxTray": 4,
+      "activeBudgetMsPerPick": 2380.95
+    },
+    {
+      "preset": "deep",
+      "seeds": 100,
+      "moves": 216,
+      "types": 7,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "turnRange": [
+        120,
+        156
+      ],
+      "maxTray": 6,
+      "activeBudgetMsPerPick": 1388.89
+    }
+  ]
+}

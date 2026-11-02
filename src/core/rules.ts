@@ -1,6 +1,12 @@
 import { CONFIG } from "../config";
 export type Ball = { id: string; type: number };
-export type Tube = { id: string; q: number; r: number; balls: Ball[] };
+export type Tube = {
+  id: string;
+  q: number;
+  r: number;
+  capacity: number;
+  balls: Ball[];
+};
 export type Board = {
   side: number;
   tubes: Tube[];
@@ -52,7 +58,7 @@ export function faceCoordinates(t: Tube, side: number, view: number) {
   return { lane: axes[view], depth: axes[(view + 1) % 3] };
 }
 /** Front projection is centered: horizontal center = 2*lane + depth.
- * Each opaque tube covers two half-width segments. Both half-width segments must be uncovered to grant front access. */
+ * Each opaque tube covers two half-width segments. Both half-width segments must be uncovered to grant front access. Height NEVER grants access over an occupied front segment; taller rear tubes remain neutral silhouettes. */
 export function faceWindows(b: Board, view: number): Map<string, number[]> {
   const result = new Map<string, number[]>();
   if (!Number.isInteger(view) || view < 0 || view > 2) return result;
@@ -132,7 +138,11 @@ export function invariant(b: Board, expected: number): boolean {
         t.r < 0 ||
         t.q + t.r >= b.side ||
         t.id !== key(t.q, t.r) ||
-        !Array.isArray(t.balls),
+        !Array.isArray(t.balls) ||
+        !Number.isInteger(t.capacity) ||
+        t.capacity < 1 ||
+        t.capacity > 8 ||
+        t.balls.length > t.capacity,
     )
   )
     return false;

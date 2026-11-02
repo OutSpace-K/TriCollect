@@ -13,6 +13,9 @@ export type Button = {
 };
 export class Scene {
   buttons: Button[] = [];
+  homePanel: "records" | "help" | null = null;
+  recordPage = 0;
+  private mascotTime = 0;
   misclickFeedback: {
     x: number;
     y: number;
@@ -302,12 +305,12 @@ export class Scene {
       y,
       r,
     );
-    shade.addColorStop(0, "#c7ccbb");
-    shade.addColorStop(0.28, "#9da68f");
-    shade.addColorStop(0.72, "#707b65");
-    shade.addColorStop(1, "#414d3e");
+    shade.addColorStop(0, "#a7c9dd");
+    shade.addColorStop(0.28, "#344d73");
+    shade.addColorStop(0.72, "#192942");
+    shade.addColorStop(1, "#080f23");
     c.fillStyle = shade;
-    c.strokeStyle = "#84937b";
+    c.strokeStyle = "#789db7";
     c.lineWidth = 1.1;
     c.beginPath();
     c.arc(x, y, r, 0, Math.PI * 2);
@@ -439,6 +442,7 @@ export class Scene {
       this.home();
       return;
     }
+    this.homePanel = null;
     this.rect(16, 16, 116, 51, "#697d61", 16);
     this.rect(19, 19, 110, 45, "#fffbed", 13);
     const secs = Math.ceil(g.state.remaining / 1000);
@@ -450,10 +454,7 @@ export class Scene {
       g.state.remaining < 30000 ? "#bd3b30" : "#294d3c",
       "center",
     );
-    const total =
-      ((PRESETS[g.state.preset].side * (PRESETS[g.state.preset].side + 1)) /
-        2) *
-      5;
+    const total = g.board.tubes.reduce((n, t) => n + t.capacity, 0);
     const progress = g.board.cleared.length / total;
     this.text(`清空 ${g.board.cleared.length}/${total}`, 20, 91, 13, "#294d3c");
     this.rect(20, 101, w - 40, 9, "#a6b49a", 5);
@@ -611,8 +612,15 @@ export class Scene {
         Math.PI *
         2) /
       3;
-    const layout = projection(n, w, top, bottom, angle);
-    const { radius, height, step, ballRadius, point, axis } = layout;
+    const layout = projection(
+      n,
+      w,
+      top,
+      bottom,
+      angle,
+      Math.max(...g.board.tubes.map((t) => t.capacity)),
+    );
+    const { radius, step, ballRadius, point, axis } = layout;
     this.rotationAxis = axis;
     this.projectionScale = { x: layout.lane, z: layout.zScale };
     const visible = turning ? new Set<string>() : faceVisible(g.board, view);
@@ -702,6 +710,7 @@ export class Scene {
     }
     for (const item of ordered) {
       const { t, x, y } = item,
+        height = t.capacity * step + 20,
         ty = y - height,
         front = visible.has(t.id);
       // Optical backdrop transmission is composited independently of hidden game contents.
@@ -832,7 +841,7 @@ export class Scene {
         if (front && i >= first) {
           this.ballPositions.push(position);
           const drop =
-            g.phase === "intro" ? (1 - g.introProgress) * (145 - i * 20) : 0;
+            g.phase === "intro" ? (1 - g.introProgress) * (150 - i * 14) : 0;
           this.ball(t.balls[i].type, x, by - drop, ballRadius);
         } else {
           this.ghostPositions.push(position);
@@ -913,56 +922,268 @@ export class Scene {
     }
   }
   private homeTitle() {
-    const c = this.ctx,
-      scale = Math.min(1, (this.width - 48) / 230),
-      left = this.width / 2 - 98 * scale;
-    const parts = [
-      { text: "转个", x: 0, size: 42, y: 130 },
-      { text: "“", x: 84, size: 28, y: 125 },
-      { text: "球", x: 108, size: 64, y: 140 },
-      { text: "”", x: 172, size: 28, y: 125 },
+    // Original hand-drawn rounded character strokes, not a licensed display font.
+    const glyphs = [
+      [
+        [
+          [0, 8],
+          [20, 8],
+        ],
+        [
+          [8, 0],
+          [0, 23],
+          [21, 23],
+        ],
+        [
+          [0, 33],
+          [23, 33],
+        ],
+        [
+          [12, 12],
+          [12, 50],
+        ],
+        [
+          [28, 14],
+          [55, 14],
+        ],
+        [
+          [25, 25],
+          [59, 25],
+        ],
+        [
+          [44, 5],
+          [37, 34],
+          [55, 34],
+          [41, 47],
+        ],
+        [
+          [39, 41],
+          [46, 48],
+        ],
+      ],
+      [
+        [
+          [31, 0],
+          [5, 26],
+        ],
+        [
+          [31, 0],
+          [57, 26],
+        ],
+        [
+          [31, 20],
+          [31, 52],
+        ],
+      ],
+      [
+        [
+          [0, 8],
+          [21, 8],
+        ],
+        [
+          [0, 24],
+          [21, 24],
+        ],
+        [
+          [0, 45],
+          [23, 43],
+        ],
+        [
+          [11, 8],
+          [11, 45],
+        ],
+        [
+          [32, 13],
+          [61, 13],
+        ],
+        [
+          [46, 0],
+          [46, 52],
+          [41, 56],
+        ],
+        [
+          [54, 2],
+          [59, 6],
+        ],
+        [
+          [29, 24],
+          [37, 31],
+        ],
+        [
+          [37, 35],
+          [26, 43],
+        ],
+        [
+          [61, 23],
+          [54, 31],
+        ],
+        [
+          [49, 25],
+          [62, 46],
+        ],
+      ],
     ];
+    const c = this.ctx,
+      scale = Math.min(1.12, (this.width - 70) / 226);
     c.save();
     try {
-      c.textAlign = "left";
-      c.lineJoin = "round";
-      for (const part of parts) {
-        const x = left + part.x * scale,
-          y = part.y,
-          size = part.size * scale;
-        c.font = `900 ${size}px sans-serif`;
-        c.fillStyle = "#8f6e8050";
-        c.fillText(part.text, x + 2, y + 7);
-        for (let depth = 4; depth >= 1; depth--) {
-          c.fillStyle = part.text === "球" ? "#a35225" : "#27593e";
-          c.fillText(part.text, x + depth * 0.35, y + depth);
+      c.translate(this.width / 2 - 106 * scale, 88);
+      c.scale(scale, scale);
+      glyphs.forEach((paths, i) => {
+        c.save();
+        try {
+          c.translate(i * 76, i === 1 ? 8 : 0);
+          c.rotate(i === 0 ? -0.08 : i === 2 ? 0.08 : 0);
+          c.lineCap = "round";
+          c.lineJoin = "round";
+          for (const [offset, width, color] of [
+            [4, 16, "#47624a"],
+            [0, 16, "#fff9dc"],
+            [0, 9, i === 2 ? "#f48a24" : "#238a61"],
+            [-1, 3, i === 2 ? "#ffd865" : "#86e9a3"],
+          ] as const) {
+            c.strokeStyle = color;
+            c.lineWidth = width;
+            for (const path of paths) {
+              c.beginPath();
+              path.forEach(([x, y], j) =>
+                j ? c.lineTo(x, y + offset) : c.moveTo(x, y + offset),
+              );
+              c.stroke();
+            }
+          }
+        } finally {
+          c.restore();
         }
-        c.lineWidth = 6 * scale;
-        c.strokeStyle = "#fff9df";
-        c.strokeText(part.text, x, y);
-        const shine = c.createLinearGradient(0, y - size, 0, y);
-        if (part.text === "球") {
-          shine.addColorStop(0, "#ffffad");
-          shine.addColorStop(0.25, "#ffc64a");
-          shine.addColorStop(0.53, "#ffa62b");
-          shine.addColorStop(1, "#f66a2e");
-        } else {
-          shine.addColorStop(0, "#ffffff");
-          shine.addColorStop(0.35, "#68ca75");
-          shine.addColorStop(1, "#20835c");
-        }
-        c.fillStyle = shine;
-        c.fillText(part.text, x, y);
-      }
+      });
     } finally {
       c.restore();
     }
+  }
+  private homeDialog() {
+    const w = this.width,
+      h = this.height,
+      c = this.ctx;
+    this.buttons = [];
+    c.fillStyle = "#233c4288";
+    c.fillRect(0, 0, w, h);
+    this.rect(14, 76, w - 28, h - 128, "#fff9e8", 22);
+    this.text(
+      this.homePanel === "records" ? "本机战绩" : "怎么玩",
+      w / 2,
+      116,
+      25,
+      "#294d3c",
+      "center",
+    );
+    if (this.homePanel === "records") {
+      const records = this.game.records,
+        pages = Math.max(1, Math.ceil(records.entries.length / 4));
+      this.recordPage = Math.min(this.recordPage, pages - 1);
+      this.text("仅本机 · 最近30局", w / 2, 145, 12, "#617366", "center");
+      if (!records.available)
+        this.text("记录暂时无法读取", w / 2, 208, 16, "#8b3e26", "center");
+      else if (!records.entries.length)
+        this.text(
+          "完成第一局，留下战绩吧",
+          w / 2,
+          208,
+          16,
+          "#617366",
+          "center",
+        );
+      records.entries
+        .slice(this.recordPage * 4, this.recordPage * 4 + 4)
+        .forEach((r, i) => {
+          const y = 182 + i * 78,
+            date = new Date(r.endedAt);
+          this.rect(26, y, w - 52, 66, "#e6edda", 12);
+          this.text(
+            `${r.difficulty} · ${r.outcome === "won" ? "通关" : "未通关"}`,
+            38,
+            y + 24,
+            16,
+            "#294d3c",
+          );
+          this.text(
+            `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`,
+            w - 38,
+            y + 24,
+            12,
+            "#617366",
+            "right",
+          );
+          this.text(
+            `${r.score}分  ·  ${r.cleared}/${r.total}颗  ·  ${Math.round(r.elapsedMs / 1000)}秒`,
+            38,
+            y + 49,
+            13,
+            "#617366",
+          );
+        });
+      if (pages > 1) {
+        this.button(
+          "records-prev",
+          "上一页",
+          28,
+          h - 151,
+          100,
+          36,
+          () => this.recordPage--,
+          this.recordPage === 0,
+        );
+        this.button(
+          "records-next",
+          "下一页",
+          w - 128,
+          h - 151,
+          100,
+          36,
+          () => this.recordPage++,
+          this.recordPage === pages - 1,
+        );
+      }
+    } else {
+      [
+        "点正面最上球，三个同类消除",
+        "左右转动，清空外层看里面",
+        "撤销一步；每局有效时间5分钟",
+        "简单 105颗 / 5类 / 5层",
+        "普通 126颗 / 6类 / 5–7层",
+        "困难 216颗 / 7类 / 5–7层",
+      ].forEach((t, i) =>
+        this.text(t, w / 2, 182 + i * 40, 14, "#294d3c", "center"),
+      );
+    }
+    this.button(
+      "home-dialog-close",
+      "返回",
+      28,
+      h - 100,
+      w - 56,
+      40,
+      () => (this.homePanel = null),
+    );
   }
   private home() {
     const w = this.width,
       h = this.height;
 
     this.homeTitle();
+    this.button("records", "战绩", 18, 18, 60, 34, () => {
+      this.homePanel = "records";
+      this.recordPage = 0;
+    });
+    this.button("help", "玩法", 88, 18, 60, 34, () => {
+      this.homePanel = "help";
+    });
+    try {
+      const t = this.game.now();
+      if (Number.isFinite(t)) this.mascotTime = t;
+    } catch {
+      /* Decorative motion cannot stop home input. */
+    }
+
     const c = this.ctx;
     c.save();
     try {
@@ -1019,10 +1240,31 @@ export class Scene {
     } finally {
       c.restore();
     }
+    const mx = w / 2,
+      my = 400 + Math.sin(this.mascotTime / 650) * 5;
+    this.ball(3, mx, my, 23);
+    for (const dx of [-7, 7]) {
+      c.fillStyle = "#fff";
+      c.beginPath();
+      c.ellipse(
+        mx + dx,
+        my - 3,
+        5,
+        Math.sin(this.mascotTime / 1900) > 0.985 ? 1 : 7,
+        0,
+        0,
+        Math.PI * 2,
+      );
+      c.fill();
+      c.fillStyle = "#25384e";
+      c.beginPath();
+      c.arc(mx + dx + 1, my - 2, 2.5, 0, Math.PI * 2);
+      c.fill();
+    }
     const y = Math.min(h - 180, 455);
     this.button(
       "start-0",
-      "开始 · 初见",
+      "开始 · 简单",
       28,
       y,
       w - 56,
@@ -1031,14 +1273,18 @@ export class Scene {
       false,
       true,
     );
-    this.button("start-1", "探索", 18, 266, 58, 48, () => this.game.start(1));
-    this.button("start-2", "深入", w - 76, 266, 58, 48, () =>
+    this.button("start-1", "普通", 18, 266, 58, 48, () => this.game.start(1));
+    this.button("start-2", "困难", w - 76, 266, 58, 48, () =>
       this.game.start(2),
     );
     if (this.game.resume)
       this.button("resume", "继续上次", 28, y + 80, w - 56, 40, () =>
         this.game.continueSaved(),
       );
+    if (this.homePanel) {
+      this.homeDialog();
+      return;
+    }
     if (this.game.message.includes("存档"))
       this.text(
         this.fit(this.game.message, 24),

@@ -37,7 +37,7 @@ test("bundle rotates rigidly about its geometric center with no horizontal scale
           s = f.point(t);
         assert.ok(Math.abs(Math.hypot(p.x, p.z) - Math.hypot(r.x, r.z)) < 1e-9);
         assert.ok(s.x - f.radius >= 15.99 && s.x + f.radius <= 304.01);
-        assert.ok(s.y - f.height >= 201.99 && s.y <= 467.01);
+        assert.ok(s.y - f.height >= 176.99 && s.y <= 467.01);
       }
     }
     for (let v = 0; v < 3; v++) {
@@ -72,7 +72,7 @@ test("lower plan depth preserves original bottle height and circular touching sp
       const originalDepth = Math.min(108, edge * 18, (bottom - top) * 0.24);
       const maxHeight = Math.min(
         220,
-        bottom - top - 75 - (originalDepth * 4) / 3,
+        bottom - top - 48 - (originalDepth * 4) / 3,
       );
       const p = projection(side, width, top, bottom, 0);
       assert.ok(

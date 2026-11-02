@@ -35,10 +35,14 @@ export function generate(p: Preset, seed: number): Level {
         id: key(q, r),
         q,
         r,
-        balls: Array.from({ length: p.height }, (_, i) => ({
-          id: `${q},${r}:${i}`,
-          type: 0,
-        })),
+        capacity: p.heights?.[tubes.length % p.heights.length] ?? p.height,
+        balls: Array.from(
+          { length: p.heights?.[tubes.length % p.heights.length] ?? p.height },
+          (_, i) => ({
+            id: `${q},${r}:${i}`,
+            type: 0,
+          }),
+        ),
       });
   const b: Board = {
     side: p.side,
@@ -63,13 +67,15 @@ export function generate(p: Preset, seed: number): Level {
     });
     t.balls.pop();
   }
-  // Two interleaved triples per window: at most four balls wait in the tray.
-  // Type quotas round-robin over triple groups, then shuffle each bounded window.
+  // Difficulty controls simultaneous groups; at most 2 per group can wait.
+  // 1/2/3 groups cap the witness tray at 2/4/6, below the 7-slot failure.
+  if (order.length % 3) throw Error("Total must be divisible by three");
   const types: number[] = [];
-  for (let g = 0; g < order.length / 3; g += 2) {
-    const window = [g % p.types, g % p.types, g % p.types];
-    if ((g + 1) * 3 < order.length)
-      window.push((g + 1) % p.types, (g + 1) % p.types, (g + 1) % p.types);
+  const groups = p.groups ?? 2;
+  for (let g = 0; g < order.length / 3; g += groups) {
+    const window: number[] = [];
+    for (let k = 0; k < groups && g + k < order.length / 3; k++)
+      window.push(...Array(3).fill((g + k) % p.types));
     for (let i = window.length - 1; i > 0; i--) {
       const j = Math.floor(rnd() * (i + 1));
       [window[i], window[j]] = [window[j], window[i]];

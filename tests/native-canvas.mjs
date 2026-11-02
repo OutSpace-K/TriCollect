@@ -80,15 +80,15 @@ try {
       );
     });
     await p.addScriptTag({ content: source });
-    await p.waitForFunction(() => labels.some((l) => l.s === "开始 · 初见"));
+    await p.waitForFunction(() => labels.some((l) => l.s === "开始 · 简单"));
     async function click(s) {
       const l = await p.evaluate((s) => labels.find((l) => l.s === s), s);
       assert.ok(l, s);
       await p.mouse.click(l.x, l.y);
       await p.waitForTimeout(40);
     }
-    await p.screenshot({ path: `evidence/v012-native-${width}-home.png` });
-    await click("开始 · 初见");
+    await p.screenshot({ path: `evidence/v013-native-${width}-home.png` });
+    await click("开始 · 简单");
     await click("跳过开场");
     await click("开始 · 05:00");
     await p.waitForTimeout(60);
@@ -100,9 +100,9 @@ try {
     assert.equal(buttons.length, 6);
     for (const b of buttons)
       assert.ok(b.y > 64 && b.y < height - 24, JSON.stringify(b));
-    await p.screenshot({ path: `evidence/v012-native-${width}-active.png` });
+    await p.screenshot({ path: `evidence/v013-native-${width}-active.png` });
     await click("暂停");
-    await p.screenshot({ path: `evidence/v012-native-${width}-pause.png` });
+    await p.screenshot({ path: `evidence/v013-native-${width}-pause.png` });
     await click("继续游戏");
     await click("→");
     await p.waitForTimeout(300);
@@ -116,7 +116,7 @@ try {
     await p.close();
   }
   await writeFile(
-    "evidence/v0.1.12-native-canvas.json",
+    "evidence/v0.1.13-native-canvas.json",
     JSON.stringify(
       {
         platform:

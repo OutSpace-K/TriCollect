@@ -31,6 +31,8 @@ export type Saved = {
   undosUsed: number;
   phase: "ready" | "paused" | "blocked" | "expired" | "result";
   sound: boolean;
+  started?: boolean;
+  finishedAt?: number;
 };
 export const SAVE_KEY = "tricollect.save.v1";
 export function hash(text: string): string {
@@ -85,6 +87,9 @@ export function valid(s: Saved): boolean {
       s.view < 0 ||
       s.view > 2 ||
       typeof s.sound !== "boolean" ||
+      (s.started !== undefined && typeof s.started !== "boolean") ||
+      (s.finishedAt !== undefined &&
+        (!Number.isFinite(s.finishedAt) || s.finishedAt < 0)) ||
       !["ready", "paused", "blocked", "expired", "result"].includes(s.phase)
     )
       return false;
@@ -114,11 +119,13 @@ export function valid(s: Saved): boolean {
       [...b.tubes.flatMap((t) => t.balls), ...b.tray, ...b.cleared].every(
         (b) => identities.get(b.id) === b.type,
       ) &&
-      b.tubes.every((t) =>
-        t.balls.every(
-          (b, i) =>
-            original.tubes.find((x) => x.id === t.id)?.balls[i]?.id === b.id,
-        ),
+      b.tubes.every(
+        (t) =>
+          t.capacity === original.tubes.find((x) => x.id === t.id)?.capacity &&
+          t.balls.every(
+            (b, i) =>
+              original.tubes.find((x) => x.id === t.id)?.balls[i]?.id === b.id,
+          ),
       );
     return (
       check(s.board) &&

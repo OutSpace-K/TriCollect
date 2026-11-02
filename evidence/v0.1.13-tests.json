@@ -1,0 +1,16 @@
+{
+  "fullSuite": {
+    "passed": 77,
+    "failed": 0,
+    "durationMs": 720275.044311
+  },
+  "additionalVariableTests": {
+    "passed": 2,
+    "failed": 0
+  },
+  "scope": "Node and simulated wx, not actual WeChat",
+  "commands": [
+    "npm test",
+    "npx tsx --test tests/variable.test.ts"
+  ]
+}

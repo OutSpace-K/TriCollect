@@ -143,10 +143,11 @@ test("clearing the full outer boundary exposes inner pipes in all three views", 
     }
   }
 });
-test("five-ball presets have divisible totals and reveal only actual front windows", () => {
+test("variable-height presets have divisible totals and reveal only actual front windows", () => {
   for (let p = 0; p < 3; p++) {
     const l = createLevel(p);
-    assert.ok(l.board.tubes.every((t) => t.balls.length === 5));
+    assert.ok(l.board.tubes.every((t) => t.balls.length === t.capacity));
+    assert.equal(l.witness.length, [105, 126, 216][p]);
     assert.equal(l.witness.length % 3, 0);
   }
   const b = createLevel(0).board;

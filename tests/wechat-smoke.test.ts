@@ -216,6 +216,7 @@ async function boot(
         147,
         748 - 173,
         (saved.view * Math.PI * 2) / 3,
+        Math.max(...saved.board.tubes.map((t) => t.capacity)),
       );
       const visible = faceVisible(saved.board, saved.view);
       saved.board.tubes.forEach((t, i) => {
@@ -280,7 +281,7 @@ async function boot(
   };
 }
 function beginRuntime(r: Awaited<ReturnType<typeof boot>>) {
-  r.tap("初见");
+  r.tap("简单");
   r.advance(1_000_000);
   r.tap("开始 ·");
 }
@@ -352,7 +353,7 @@ for (const units of [1, 1000])
   test(`native bundle ${units} units/ms: continuous picks, animated turns and all presets`, async () => {
     for (let preset = 0; preset < 3; preset++) {
       const r = await boot(new Map(), units);
-      r.tap(["初见", "探索", "深入"][preset]);
+      r.tap(["简单", "普通", "困难"][preset]);
       r.advance(1_000_000);
       r.tap("开始 ·");
       r.advance(10_000_000);
@@ -412,7 +413,7 @@ test("native frozen clock pauses instead of trapping input and can return home",
   r.render();
   assert.ok(r.labels.some((l) => l.s === "休息一下"));
   r.tap("返回首页");
-  assert.ok(r.labels.some((l) => l.s.includes("初见")));
+  assert.ok(r.labels.some((l) => l.s.includes("简单")));
 });
 
 const animationReports: unknown[] = [];
@@ -435,7 +436,7 @@ async function driveUntil(
 for (const units of [1, 1000])
   test(`native animation wall-clock deadlines at ${units} units/ms`, async () => {
     const r = await boot(new Map(), units, false, true);
-    r.tap("初见");
+    r.tap("简单");
     const introMs = await driveUntil(
       r,
       () => r.labels.some((l) => l.s.includes("开始 ·")),
@@ -490,7 +491,7 @@ for (const units of [1, 1000])
       secondPickAccepted: true,
     });
     writeFileSync(
-      "evidence/v0.1.12-animation-wallclock.json",
+      "evidence/v0.1.13-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -506,10 +507,10 @@ for (const units of [1, 1000])
   test(`native frozen-clock intro/transfer fail safely at ${units} units/ms`, async () => {
     const invalid = await boot(new Map(), units, false, true, true);
     assert.ok(invalid.labels.some((l) => l.s.includes("时钟无法")));
-    assert.ok(!invalid.labels.some((l) => l.s.includes("初见")));
+    assert.ok(!invalid.labels.some((l) => l.s.includes("简单")));
     for (const stage of ["intro", "transfer"]) {
       const r = await boot(new Map(), units, false, true);
-      r.tap("初见");
+      r.tap("简单");
       if (stage === "transfer") {
         r.tap("跳过开场");
         r.tap("开始 ·");
@@ -525,7 +526,7 @@ for (const units of [1, 1000])
       if (stage === "transfer")
         assert.equal(decode(r.storage.get(SAVE_KEY)!)!.history.length, 1);
       r.tap("返回首页");
-      assert.ok(r.labels.some((l) => l.s.includes("初见")));
+      assert.ok(r.labels.some((l) => l.s.includes("简单")));
       animationReports.push({
         unitsPerMs: units,
         frozenStage: stage,
@@ -534,7 +535,7 @@ for (const units of [1, 1000])
       });
     }
     writeFileSync(
-      "evidence/v0.1.12-animation-wallclock.json",
+      "evidence/v0.1.13-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -550,7 +551,7 @@ for (const units of [1, 1000])
 for (const units of [1, 1000])
   test(`native 250ms turns and frozen-turn recovery at ${units} units/ms`, async () => {
     const r = await boot(new Map(), units, false, true);
-    r.tap("初见");
+    r.tap("简单");
     r.tap("跳过开场");
     r.tap("开始 ·");
     r.tap("→", true);
@@ -570,14 +571,14 @@ for (const units of [1, 1000])
       2200,
     );
     r.tap("返回首页");
-    assert.ok(r.labels.some((l) => l.s.includes("初见")));
+    assert.ok(r.labels.some((l) => l.s.includes("简单")));
     animationReports.push({
       unitsPerMs: units,
       rotationMs: ms,
       frozenRotationPauseMs: interrupted,
     });
     writeFileSync(
-      "evidence/v0.1.12-animation-wallclock.json",
+      "evidence/v0.1.13-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -647,12 +648,12 @@ test("native home hero restores canvas state after a paint fault", async () => {
   r.render();
   r.render();
   assert.equal(r.canvasDepth(), 0);
-  assert.ok(r.labels.some((l) => l.s.includes("初见")));
-  r.tap("初见");
+  assert.ok(r.labels.some((l) => l.s.includes("简单")));
+  r.tap("简单");
   r.tap("跳过开场");
   r.tap("开始 ·");
   r.tap("暂停", true);
   r.tap("返回首页", true);
-  assert.ok(r.labels.some((l) => l.s.includes("初见")));
+  assert.ok(r.labels.some((l) => l.s.includes("简单")));
   assert.equal(r.canvasDepth(), 0);
 });

@@ -23,3 +23,5 @@ v0.1.4 音频接口核验：官方类型中的 InnerAudioContext `loop`、`volum
 - v0.1.11替换首页及局内背景：两张PNG由原创脚本 `scripts/make-arcade-backgrounds.py` 生成，MIT，Pillow仅离线使用。参考研究只提炼布局和明暗规律，未复制第三方截图/素材。历史生成脚本保留，不再代表当前资源。
 
 - v0.1.12首页与局内背景为 `scripts/make-tabletop-backgrounds.py` 原创程序绘制，MIT。桌面/木质承托/搪瓷槽/玻璃与球由本项目绘制，不含抓大鹅素材、商标、鹅形象或未知字体。
+
+v0.1.13：首页标题使用本项目原创Canvas笔画路径，无新增商业字体；卡通眼睛与微动由程序绘制。两张背景PNG由 `scripts/make-tabletop-backgrounds.py` 原创生成，增加窗台/植物/木纹边缘装饰，无第三方图像素材。音频未改动。

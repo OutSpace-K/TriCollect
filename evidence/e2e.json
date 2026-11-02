@@ -1,13 +1,13 @@
 {
   "passed": true,
   "platform": "Chromium only; not WeChat device",
-  "directPicks": 390,
+  "directPicks": 447,
   "fallbackPicks": 0,
   "results": [
     {
       "check": "browser real 10-second clock",
-      "elapsedMs": 10098,
-      "chargedMs": 10040.89999999851
+      "elapsedMs": 10060.900000000373,
+      "chargedMs": 10071.900000000373
     },
     "12 consecutive 250ms pointer rotations completed without lock",
     "one-frame exception recovered; pause/home/reload regression preserved",
@@ -15,19 +15,19 @@
       "preset": 0,
       "picks": 105,
       "wonWithoutAds": true,
-      "remainingMs": 245839.1999999918
+      "remainingMs": 256824.49999999627
     },
     {
       "preset": 1,
-      "picks": 105,
+      "picks": 126,
       "wonWithoutAds": true,
-      "remainingMs": 273741.0999999959
+      "remainingMs": 277501.30000000633
     },
     {
       "preset": 2,
-      "picks": 180,
+      "picks": 216,
       "wonWithoutAds": true,
-      "remainingMs": 221214.3999999985
+      "remainingMs": 212037.70000001974
     }
   ],
   "errors": []
