@@ -1,0 +1,15 @@
+{
+  "scope": "Real Chromium localStorage with deterministic controller witness; not pointer E2E or WeChat",
+  "results": [
+    {
+      "build": "final compact terminal",
+      "status": "won",
+      "phase": "result",
+      "records": 1,
+      "message": "三同收集成功 +100",
+      "errors": [],
+      "storedChars": 49513,
+      "journalChars": 0
+    }
+  ]
+}

@@ -538,7 +538,8 @@ test("single undo restores a removed pipe and legacy saves offer only their most
   assert.deepEqual(x.g.board, before);
   // v0.1.7 saves have no availability flag. They get one latest-step undo, not unlimited history.
   delete x.g.state.undoAvailable;
-  save(x.store, x.g.state);
+  // Construct an actual legacy full-history payload; modern save compacts it.
+  x.data.set(SAVE_KEY, encode(x.g.state));
   const old = decode(x.data.get(SAVE_KEY)!)!;
   assert.ok(old.history.length > 1);
   x.g.state = old;

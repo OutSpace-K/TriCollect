@@ -58,7 +58,7 @@ async function pick(id) {
   assert.fail(`No direct top-ball target for ${id} on any face`);
 }
 try {
-  await page.goto("http://127.0.0.1:4173");
+  await page.goto(`http://127.0.0.1:${process.env.PORT || 4173}`);
   await phase("home");
   await page.screenshot({ path: "evidence/home.png" });
   for (let preset = 0; preset < 3; preset++) {

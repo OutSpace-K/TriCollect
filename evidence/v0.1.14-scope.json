@@ -1,0 +1,12 @@
+{
+  "baseCommit": "5854dcd51b98f14ee3ff2c901fd5d41f9d7992f2",
+  "unchangedPaths": [
+    "src/core",
+    "src/render",
+    "assets"
+  ],
+  "ruleVersion": "tricollect-5-variable-height",
+  "configChange": "VERSION only",
+  "cleanBuildDistFilesIdentical": 12,
+  "actualWeChatTested": false
+}

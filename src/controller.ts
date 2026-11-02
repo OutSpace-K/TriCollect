@@ -1,4 +1,5 @@
-import { appendResult, readRecords } from "./platform/records";
+import { commitTerminal, drainTerminal } from "./platform/terminal";
+import { readRecords } from "./platform/records";
 import { CONFIG, RULE, PRESETS } from "./config";
 import { createLevel } from "./core/generation";
 import { type Board, take, clone, faceVisible } from "./core/rules";
@@ -35,6 +36,7 @@ export class Controller {
   private animationStart = 0;
   private after: Phase = "active";
   private lastCheckpoint = 0;
+  private terminalDurable = false;
   constructor(
     public now: () => number,
     private store: Store,
@@ -42,12 +44,32 @@ export class Controller {
     private playSound: () => void = () => {},
   ) {
     this.state = this.fresh(0, PRESETS[0].seed);
+    const drained = drainTerminal(store);
     const loaded = restore(store);
+    const records = readRecords(store);
+    // A pre-patch recorded result is authoritative even if an old active save remains.
+    const settled =
+      loaded.save &&
+      records.entries.some((r) => r.session === loaded.save!.session);
     this.resume =
-      loaded.save && loaded.save.phase !== "result" ? loaded.save : null;
+      drained &&
+      records.available &&
+      loaded.save &&
+      loaded.save.phase !== "result" &&
+      !settled
+        ? loaded.save
+        : null;
     if (loaded.message) this.message = loaded.message;
-    if (loaded.save?.phase === "result" && loaded.save.finishedAt !== undefined)
-      appendResult(store, loaded.save);
+    if (!drained || !records.available)
+      this.message = "终局存档或战绩保存失败，请稍后重试";
+    if (
+      loaded.save?.phase === "result" &&
+      loaded.save.started &&
+      loaded.save.finishedAt !== undefined
+    ) {
+      const result = commitTerminal(store, loaded.save);
+      if (!result.complete) this.message = "终局存档或战绩保存失败，请稍后重试";
+    }
   }
   private fresh(preset: number, seed: number): Saved {
     const level = createLevel(preset, seed);
@@ -112,6 +134,26 @@ export class Controller {
     return this.phase !== "active";
   }
   start(preset = 0, seed?: number) {
+    if (this.state.phase === "result" && this.state.started) {
+      this.checkpoint();
+      if (!this.terminalDurable) return;
+    }
+    if (!drainTerminal(this.store)) {
+      this.message = "终局存档或战绩保存失败，新局暂未开始";
+      return;
+    }
+    // Main terminal may remain if the journal itself could not be written.
+    const saved = restore(this.store).save;
+    if (
+      saved?.phase === "result" &&
+      saved.started &&
+      saved.finishedAt !== undefined &&
+      !commitTerminal(this.store, saved).complete
+    ) {
+      this.message = "终局存档或战绩保存失败，新局暂未开始";
+      return;
+    }
+    this.terminalDurable = false;
     this.state = this.fresh(preset, seed ?? PRESETS[preset].seed);
     this.resume = null;
     this.pendingTurns = 0;
@@ -344,6 +386,8 @@ export class Controller {
     if (this.phase === "ad" || this.phase === "home") return;
     this.pause();
     this.checkpoint();
+    if (this.phase === "result" && this.state.started && !this.terminalDurable)
+      return;
     this.resume = this.phase === "result" ? null : clone(this.state);
     this.phase = "home";
   }
@@ -435,13 +479,18 @@ export class Controller {
               : "paused";
     if (this.state.phase === "result" && this.state.started)
       this.state.finishedAt ??= Date.now();
+    if (this.state.phase === "result" && this.state.started) {
+      const result = commitTerminal(this.store, this.state);
+      this.terminalDurable = result.durable;
+      if (!result.complete)
+        this.message = "终局存档或战绩保存失败；保留终局，恢复后重试";
+      return;
+    }
     try {
       save(this.store, this.state);
       this.lastCheckpoint = this.now();
     } catch {
       this.message = "存档写入失败，本局可继续；退出可能丢失进度";
     }
-    if (!appendResult(this.store, this.state))
-      this.message = "本机战绩保存失败，本局仍可结束";
   }
 }

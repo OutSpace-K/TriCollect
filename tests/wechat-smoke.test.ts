@@ -380,10 +380,7 @@ for (const units of [1, 1000])
         }
         r.tapTube(index + 1);
         r.advance(250_000);
-        assert.equal(
-          decode(r.storage.get(SAVE_KEY)!)!.history.length,
-          step + 1,
-        );
+        assert.equal(decode(r.storage.get(SAVE_KEY)!)!.sequence, step + 1);
       }
       assert.equal(decode(r.storage.get(SAVE_KEY)!)!.board.status, "won");
     }
@@ -399,10 +396,10 @@ test("native RAF survives one rendering exception and audio exception never abor
   r.tap("继续游戏");
   r.tapTube(1);
   r.advance(250_000);
-  assert.equal(decode(r.storage.get(SAVE_KEY)!)!.history.length, 1);
+  assert.equal(decode(r.storage.get(SAVE_KEY)!)!.sequence, 1);
   r.tapTube(1);
   r.advance(250_000);
-  assert.equal(decode(r.storage.get(SAVE_KEY)!)!.history.length, 2);
+  assert.equal(decode(r.storage.get(SAVE_KEY)!)!.sequence, 2);
 });
 
 test("native frozen clock pauses instead of trapping input and can return home", async () => {
@@ -473,7 +470,7 @@ for (const units of [1, 1000])
       () => r.labels.some((l) => l.s === "撤销" && l.color === "#ffffff"),
       800,
     );
-    assert.equal(decode(r.storage.get(SAVE_KEY)!)!.history.length, 2);
+    assert.equal(decode(r.storage.get(SAVE_KEY)!)!.sequence, 2);
     r.tap("暂停", true);
     r.tap("结束本局");
     r.tap("再来一局");
@@ -491,7 +488,7 @@ for (const units of [1, 1000])
       secondPickAccepted: true,
     });
     writeFileSync(
-      "evidence/v0.1.13-animation-wallclock.json",
+      "evidence/v0.1.14-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -524,7 +521,7 @@ for (const units of [1, 1000])
       );
       assert.ok(pauseMs < 2000);
       if (stage === "transfer")
-        assert.equal(decode(r.storage.get(SAVE_KEY)!)!.history.length, 1);
+        assert.equal(decode(r.storage.get(SAVE_KEY)!)!.sequence, 1);
       r.tap("返回首页");
       assert.ok(r.labels.some((l) => l.s.includes("简单")));
       animationReports.push({
@@ -535,7 +532,7 @@ for (const units of [1, 1000])
       });
     }
     writeFileSync(
-      "evidence/v0.1.13-animation-wallclock.json",
+      "evidence/v0.1.14-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -578,7 +575,7 @@ for (const units of [1, 1000])
       frozenRotationPauseMs: interrupted,
     });
     writeFileSync(
-      "evidence/v0.1.13-animation-wallclock.json",
+      "evidence/v0.1.14-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -638,7 +635,7 @@ test("native image asset loads and image failure leaves gameplay available", asy
     assert.equal(r.backgroundDraws() > 0, !fail);
     r.tapTube(1);
     r.advance(250000);
-    assert.equal(decode(r.storage.get(SAVE_KEY)!)!.history.length, 1);
+    assert.equal(decode(r.storage.get(SAVE_KEY)!)!.sequence, 1);
   }
 });
 

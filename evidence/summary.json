@@ -1,17 +1,14 @@
 {
   "project": "TriCollect",
-  "displayName": "转个“球”",
-  "version": "0.1.13",
+  "version": "0.1.14",
+  "baseCommit": "5854dcd51b98f14ee3ff2c901fd5d41f9d7992f2",
   "ruleVersion": "tricollect-5-variable-height",
-  "baseCommit": "cec841f82fb0146802f8400cbc1b6f35ad4a380b",
-  "unitAndMockTests": {
-    "fullSuitePassed": 77,
-    "additionalTargetedPassed": 2,
-    "totalPassed": 79,
+  "tests": {
+    "passed": 94,
     "failed": 0,
-    "note": "Full suite completed before two additional variable-height tests were added; both then passed separately."
+    "durationMs": 105867.03413
   },
-  "seeds": 300,
+  "terminalFaultCases": 15,
   "browser": {
     "passed": true,
     "platform": "Chromium only; not WeChat device",
@@ -20,8 +17,8 @@
     "results": [
       {
         "check": "browser real 10-second clock",
-        "elapsedMs": 10060.900000000373,
-        "chargedMs": 10071.900000000373
+        "elapsedMs": 10042.599999999627,
+        "chargedMs": 10067.400000000373
       },
       "12 consecutive 250ms pointer rotations completed without lock",
       "one-frame exception recovered; pause/home/reload regression preserved",
@@ -29,102 +26,79 @@
         "preset": 0,
         "picks": 105,
         "wonWithoutAds": true,
-        "remainingMs": 256824.49999999627
+        "remainingMs": 269937.2999999821
       },
       {
         "preset": 1,
         "picks": 126,
         "wonWithoutAds": true,
-        "remainingMs": 277501.30000000633
+        "remainingMs": 280961.59999998286
       },
       {
         "preset": 2,
         "picks": 216,
         "wonWithoutAds": true,
-        "remainingMs": 212037.70000001974
+        "remainingMs": 256544.90000000037
       }
     ],
     "errors": []
   },
-  "difficulty": {
-    "scope": "Generated reducer witnesses, not human timing; rotations and animation do not consume the 300s active clock",
-    "presets": [
+  "terminalBrowser": {
+    "platform": "Actual browser bundle in Chromium, not WeChat",
+    "results": [
       {
-        "preset": "learn",
-        "seeds": 100,
-        "moves": 105,
-        "types": 5,
-        "capacities": [
-          5
+        "failures": [
+          "tricollect.save.v1"
         ],
-        "turnRange": [
-          50,
-          79
-        ],
-        "maxTray": 2,
-        "activeBudgetMsPerPick": 2857.14
+        "restarts": 3,
+        "recordCount": 1,
+        "resumable": false
       },
       {
-        "preset": "normal",
-        "seeds": 100,
-        "moves": 126,
-        "types": 6,
-        "capacities": [
-          5,
-          6,
-          7
+        "failures": [
+          "tricollect.records.v1"
         ],
-        "turnRange": [
-          62,
-          94
-        ],
-        "maxTray": 4,
-        "activeBudgetMsPerPick": 2380.95
+        "restarts": 3,
+        "recordCount": 1,
+        "resumable": false
       },
       {
-        "preset": "deep",
-        "seeds": 100,
-        "moves": 216,
-        "types": 7,
-        "capacities": [
-          5,
-          6,
-          7
+        "failures": [
+          "tricollect.save.v1",
+          "tricollect.records.v1"
         ],
-        "turnRange": [
-          120,
-          156
-        ],
-        "maxTray": 6,
-        "activeBudgetMsPerPick": 1388.89
+        "restarts": 3,
+        "recordCount": 1,
+        "resumable": false
       }
     ]
   },
-  "records": "Local only, max 30, completed started sessions only, session-id deduplication, restart reconciliation, backup recovery and failure isolation tested. No friend ranking implemented.",
-  "visual": "Actual v012/v013 home comparison; 320/390 home, all three faces for mixed heights, stable-slot before/after, rotation, inner reveal, modal states, records/help inspected. Geometry isolation fixture is not solvability evidence. Original-color direct E2E completed separately.",
-  "audio": "Unchanged original music; actual browser decode/playback/lifecycle passed; no human listening.",
+  "quotaFinal": {
+    "scope": "Real Chromium localStorage with deterministic controller witness; not pointer E2E or WeChat",
+    "results": [
+      {
+        "build": "final compact terminal",
+        "status": "won",
+        "phase": "result",
+        "records": 1,
+        "message": "三同收集成功 +100",
+        "errors": [],
+        "storedChars": 49513,
+        "journalChars": 0
+      }
+    ]
+  },
+  "scope": "Storage consistency and persistence size only; no rule, renderer or asset changes. Node/wx mock/Chromium, not actual WeChat.",
+  "strategy": "Verified terminal journal, verified main save, idempotent record, clear journal last. Startup drains terminal before resume/new session; recorded legacy sessions cannot revive. Verified legacy win can correct lost entry without duplication or downgrade.",
+  "persistence": "Active save stores one undo snapshot, terminal saves none; in-memory history unchanged. Record limit remains 30.",
   "typecheck": "passed",
   "formatCheck": "passed",
-  "cleanBuild": "Clean npm ci/build/typecheck; all 12 dist files byte-identical",
-  "nativeCanvas": "Actual dist/wechat/game.js in Chromium Canvas wx bridge at 320/390; not WeChat Developer Tools.",
-  "clock": "Both 1 and 1000 units/ms simulated; full three-preset native bundle runs passed, 10-second host measurements, freeze/paint exception recovery passed.",
-  "publication": "Source and prebuilt game only; no deployment.",
+  "cleanBuild": "npm ci/build/typecheck; all 12 dist files byte-identical",
+  "seeds": "Unchanged generator; 300-seed v0.1.13 evidence retained, not rerun in this storage-only patch. Core generation tests and all-preset native/browser completions passed.",
+  "publication": "Source and prebuilt game; no deployment",
   "remaining": [
-    "Actual WeChat Developer Tools and devices",
-    "Human 300s difficulty and small-sphere touch acceptance",
-    "Real AppID, advertising and callbacks",
-    "Friend ranking open-data-domain implementation and real platform authorization",
-    "Human visual and music preference acceptance"
-  ],
-  "saveCompatibility": "v012 and older in-progress rule saves explicitly rejected, not silently migrated; home does not overwrite them. Sound preference retained.",
-  "background": {
-    "file": "assets/background.png",
-    "bytes": 72616,
-    "sha256": "200e6aeab249943f6362b19ff5e8e399b8e9bd2aa20c08dd091f9e4d9cea6efd"
-  },
-  "playBackground": {
-    "file": "assets/play-background.png",
-    "bytes": 65132,
-    "sha256": "681f0fe67d0d1ceda26256013fd0ede61d42448004b17bb2c47c3964fded0c1c"
-  }
+    "Actual WeChat tool/device/real advertising validation",
+    "If every storage write fails and process is forcibly terminated, unpersisted terminal cannot be guaranteed; UI reports failure and prevents voluntary departure/new game until durable.",
+    "Human visual, audio and difficulty acceptance unchanged"
+  ]
 }

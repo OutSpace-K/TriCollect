@@ -154,8 +154,12 @@ export function decode(raw: string | null): Saved | null {
   }
 }
 export function save(store: Store, s: Saved) {
-  const encoded = encode(s);
   if (!valid(s)) throw Error("Refusing invalid save");
+  // Only one undo is permitted; older snapshots are never usable after reload.
+  const encoded = encode({
+    ...s,
+    history: s.phase === "result" ? [] : s.history.slice(-1),
+  });
   store.set(SAVE_KEY + ".tmp", encoded);
   if (store.get(SAVE_KEY + ".tmp") !== encoded)
     throw Error("Storage readback failed");
@@ -163,6 +167,8 @@ export function save(store: Store, s: Saved) {
   if (previous && (previous === lastStored.get(store) || decode(previous)))
     store.set(SAVE_KEY + ".backup", previous);
   store.set(SAVE_KEY, encoded);
+  if (store.get(SAVE_KEY) !== encoded)
+    throw Error("Main storage readback failed");
   lastStored.set(store, encoded);
 }
 export function restore(store: Store): { save: Saved | null; message: string } {

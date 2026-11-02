@@ -72,12 +72,21 @@ export function readRecords(store: Store): RecordRead {
     return { entries: [], available: false, recovered: false };
   }
 }
-export function appendResult(store: Store, s: Saved): boolean {
+export function appendResult(
+  store: Store,
+  s: Saved,
+  correctVictory = false,
+): boolean {
   if (!s.started || s.phase !== "result" || s.finishedAt === undefined)
     return true;
   const loaded = readRecords(store);
   if (!loaded.available) return false;
-  if (loaded.entries.some((r) => r.session === s.session)) return true;
+  const existing = loaded.entries.find((r) => r.session === s.session);
+  if (
+    existing &&
+    !(correctVictory && existing.outcome === "lost" && s.board.status === "won")
+  )
+    return true;
   const entry: MatchRecord = {
     session: s.session,
     endedAt: s.finishedAt,
@@ -92,7 +101,9 @@ export function appendResult(store: Store, s: Saved): boolean {
   };
   const payload = JSON.stringify({
     schema: 1,
-    entries: [entry, ...loaded.entries].slice(0, RECORD_LIMIT),
+    entries: existing
+      ? loaded.entries.map((r) => (r.session === s.session ? entry : r))
+      : [entry, ...loaded.entries].slice(0, RECORD_LIMIT),
   });
   try {
     store.set(

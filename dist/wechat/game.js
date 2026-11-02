@@ -183,76 +183,6 @@
   ];
   var SYMBOLS = ["\u25CF", "\u25C6", "\u25B2", "\u271A", "\u25A0", "\u2605", "\u2665"];
 
-  // src/platform/records.ts
-  var RECORDS_KEY = "tricollect.records.v1";
-  var RECORD_LIMIT = 30;
-  function parse(raw) {
-    if (!raw) return [];
-    try {
-      const v = JSON.parse(raw);
-      if (v.schema !== 1 || !Array.isArray(v.entries) || v.entries.length > RECORD_LIMIT)
-        return null;
-      const a = v.entries;
-      if (new Set(a.map((r) => r.session)).size !== a.length || a.some(
-        (r) => typeof r.session !== "string" || !r.session || !Number.isFinite(r.endedAt) || r.endedAt < 0 || !Number.isInteger(r.preset) || !PRESETS[r.preset] || typeof r.difficulty !== "string" || !["won", "lost"].includes(r.outcome) || ![r.score, r.cleared, r.total, r.elapsedMs, r.addedMs].every(
-          (n) => Number.isFinite(n) && n >= 0
-        ) || r.total < 1 || r.cleared > r.total || r.elapsedMs > CONFIG.baseMs + CONFIG.extraMs * CONFIG.maxExtensions
-      ))
-        return null;
-      return a;
-    } catch (e) {
-      return null;
-    }
-  }
-  function readRecords(store) {
-    try {
-      const raw = store.get(RECORDS_KEY), a = parse(raw);
-      if (a) return { entries: a, available: true, recovered: false };
-      const backupRaw = store.get(RECORDS_KEY + ".backup");
-      const backup = backupRaw ? parse(backupRaw) : null;
-      return {
-        entries: backup != null ? backup : [],
-        available: backup !== null,
-        recovered: true
-      };
-    } catch (e) {
-      return { entries: [], available: false, recovered: false };
-    }
-  }
-  function appendResult(store, s) {
-    if (!s.started || s.phase !== "result" || s.finishedAt === void 0)
-      return true;
-    const loaded = readRecords(store);
-    if (!loaded.available) return false;
-    if (loaded.entries.some((r) => r.session === s.session)) return true;
-    const entry = {
-      session: s.session,
-      endedAt: s.finishedAt,
-      preset: s.preset,
-      difficulty: PRESETS[s.preset].name,
-      outcome: s.board.status === "won" ? "won" : "lost",
-      score: s.board.score,
-      cleared: s.board.cleared.length,
-      total: s.board.tubes.reduce((n, t) => n + t.capacity, 0),
-      elapsedMs: Math.max(0, CONFIG.baseMs + s.added - s.remaining),
-      addedMs: s.added
-    };
-    const payload = JSON.stringify({
-      schema: 1,
-      entries: [entry, ...loaded.entries].slice(0, RECORD_LIMIT)
-    });
-    try {
-      store.set(
-        RECORDS_KEY + ".backup",
-        JSON.stringify({ schema: 1, entries: loaded.entries })
-      );
-      store.set(RECORDS_KEY, payload);
-      return store.get(RECORDS_KEY) === payload;
-    } catch (e) {
-      return false;
-    }
-  }
-
   // src/core/rules.ts
   var DIRS = [
     [1, 0],
@@ -452,40 +382,6 @@
     }
   }
 
-  // src/core/solver.ts
-  function solve(initial, now, maxNodes = CONFIG.searchNodes, maxMs = CONFIG.searchMs, firstVisible) {
-    const start = now();
-    let nodes = 0, exhausted = false;
-    const seen = /* @__PURE__ */ new Set();
-    function dfs(b, first = false) {
-      if (b.status === "won") return [];
-      if (b.status === "blocked") return null;
-      if (++nodes > maxNodes || now() - start >= maxMs) {
-        exhausted = true;
-        return null;
-      }
-      const k = b.tubes.map((t) => t.balls.length).join(",") + "|" + b.tray.map((x) => x.type).sort().join(",");
-      if (seen.has(k)) return null;
-      seen.add(k);
-      const ids = [...available(b)].filter((id) => !first || !firstVisible || firstVisible.has(id)).sort((a, c) => {
-        const count = (id) => b.tray.filter(
-          (x) => x.type === b.tubes.find((t) => t.id === id).balls.slice(-1)[0].type
-        ).length;
-        return count(c) - count(a);
-      });
-      for (const id of ids) {
-        const path2 = dfs(take(b, id, `solver-${nodes}-${id}`));
-        if (path2) return [id, ...path2];
-        if (exhausted) return null;
-      }
-      return null;
-    }
-    const path = dfs(initial, true);
-    if (path && replay(initial, path).status === "won")
-      return { status: "safe", path, nodes };
-    return { status: exhausted ? "unknown" : "dead", nodes };
-  }
-
   // src/platform/storage.ts
   var SAVE_KEY = "tricollect.save.v1";
   function hash(text) {
@@ -558,8 +454,11 @@
     }
   }
   function save(store, s) {
-    const encoded = encode(s);
     if (!valid(s)) throw Error("Refusing invalid save");
+    const encoded = encode({
+      ...s,
+      history: s.phase === "result" ? [] : s.history.slice(-1)
+    });
     store.set(SAVE_KEY + ".tmp", encoded);
     if (store.get(SAVE_KEY + ".tmp") !== encoded)
       throw Error("Storage readback failed");
@@ -567,6 +466,8 @@
     if (previous && (previous === lastStored.get(store) || decode(previous)))
       store.set(SAVE_KEY + ".backup", previous);
     store.set(SAVE_KEY, encoded);
+    if (store.get(SAVE_KEY) !== encoded)
+      throw Error("Main storage readback failed");
     lastStored.set(store, encoded);
   }
   function restore(store) {
@@ -581,6 +482,168 @@
     } catch (e) {
       return { save: null, message: "\u672C\u5730\u5B58\u50A8\u4E0D\u53EF\u7528\uFF0C\u672C\u6B21\u53EF\u7EE7\u7EED\u6E38\u73A9" };
     }
+  }
+
+  // src/platform/records.ts
+  var RECORDS_KEY = "tricollect.records.v1";
+  var RECORD_LIMIT = 30;
+  function parse(raw) {
+    if (!raw) return [];
+    try {
+      const v = JSON.parse(raw);
+      if (v.schema !== 1 || !Array.isArray(v.entries) || v.entries.length > RECORD_LIMIT)
+        return null;
+      const a = v.entries;
+      if (new Set(a.map((r) => r.session)).size !== a.length || a.some(
+        (r) => typeof r.session !== "string" || !r.session || !Number.isFinite(r.endedAt) || r.endedAt < 0 || !Number.isInteger(r.preset) || !PRESETS[r.preset] || typeof r.difficulty !== "string" || !["won", "lost"].includes(r.outcome) || ![r.score, r.cleared, r.total, r.elapsedMs, r.addedMs].every(
+          (n) => Number.isFinite(n) && n >= 0
+        ) || r.total < 1 || r.cleared > r.total || r.elapsedMs > CONFIG.baseMs + CONFIG.extraMs * CONFIG.maxExtensions
+      ))
+        return null;
+      return a;
+    } catch (e) {
+      return null;
+    }
+  }
+  function readRecords(store) {
+    try {
+      const raw = store.get(RECORDS_KEY), a = parse(raw);
+      if (a) return { entries: a, available: true, recovered: false };
+      const backupRaw = store.get(RECORDS_KEY + ".backup");
+      const backup = backupRaw ? parse(backupRaw) : null;
+      return {
+        entries: backup != null ? backup : [],
+        available: backup !== null,
+        recovered: true
+      };
+    } catch (e) {
+      return { entries: [], available: false, recovered: false };
+    }
+  }
+  function appendResult(store, s, correctVictory = false) {
+    if (!s.started || s.phase !== "result" || s.finishedAt === void 0)
+      return true;
+    const loaded = readRecords(store);
+    if (!loaded.available) return false;
+    const existing = loaded.entries.find((r) => r.session === s.session);
+    if (existing && !(correctVictory && existing.outcome === "lost" && s.board.status === "won"))
+      return true;
+    const entry = {
+      session: s.session,
+      endedAt: s.finishedAt,
+      preset: s.preset,
+      difficulty: PRESETS[s.preset].name,
+      outcome: s.board.status === "won" ? "won" : "lost",
+      score: s.board.score,
+      cleared: s.board.cleared.length,
+      total: s.board.tubes.reduce((n, t) => n + t.capacity, 0),
+      elapsedMs: Math.max(0, CONFIG.baseMs + s.added - s.remaining),
+      addedMs: s.added
+    };
+    const payload = JSON.stringify({
+      schema: 1,
+      entries: existing ? loaded.entries.map((r) => r.session === s.session ? entry : r) : [entry, ...loaded.entries].slice(0, RECORD_LIMIT)
+    });
+    try {
+      store.set(
+        RECORDS_KEY + ".backup",
+        JSON.stringify({ schema: 1, entries: loaded.entries })
+      );
+      store.set(RECORDS_KEY, payload);
+      return store.get(RECORDS_KEY) === payload;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // src/platform/terminal.ts
+  var TERMINAL_KEY = "tricollect.terminal.v1";
+  function pendingTerminal(store) {
+    const raw = store.get(TERMINAL_KEY);
+    if (!raw) return null;
+    const s = decode(raw);
+    if (!s || s.phase !== "result" || !s.started || s.finishedAt === void 0)
+      throw Error("Unreadable terminal journal");
+    return s;
+  }
+  function commitTerminal(store, s) {
+    if (!valid(s) || s.phase !== "result" || !s.started || s.finishedAt === void 0)
+      return { durable: false, complete: false };
+    try {
+      const pending = pendingTerminal(store);
+      if (pending && pending.session !== s.session)
+        return { durable: false, complete: false };
+    } catch (e) {
+      return { durable: false, complete: false };
+    }
+    s = { ...s, history: [], undoAvailable: false };
+    let durable = false, journal = false, main = false;
+    try {
+      const encoded = encode(s);
+      store.set(TERMINAL_KEY, encoded);
+      journal = store.get(TERMINAL_KEY) === encoded;
+      durable = journal;
+    } catch (e) {
+    }
+    try {
+      save(store, s);
+      main = true;
+      durable = true;
+    } catch (e) {
+    }
+    const recorded = durable && appendResult(store, s, true);
+    let complete = main && recorded;
+    if (complete) {
+      try {
+        store.set(TERMINAL_KEY, "");
+        complete = !store.get(TERMINAL_KEY);
+      } catch (e) {
+        complete = false;
+      }
+    }
+    return { durable, complete };
+  }
+  function drainTerminal(store) {
+    try {
+      const s = pendingTerminal(store);
+      return !s || commitTerminal(store, s).complete;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // src/core/solver.ts
+  function solve(initial, now, maxNodes = CONFIG.searchNodes, maxMs = CONFIG.searchMs, firstVisible) {
+    const start = now();
+    let nodes = 0, exhausted = false;
+    const seen = /* @__PURE__ */ new Set();
+    function dfs(b, first = false) {
+      if (b.status === "won") return [];
+      if (b.status === "blocked") return null;
+      if (++nodes > maxNodes || now() - start >= maxMs) {
+        exhausted = true;
+        return null;
+      }
+      const k = b.tubes.map((t) => t.balls.length).join(",") + "|" + b.tray.map((x) => x.type).sort().join(",");
+      if (seen.has(k)) return null;
+      seen.add(k);
+      const ids = [...available(b)].filter((id) => !first || !firstVisible || firstVisible.has(id)).sort((a, c) => {
+        const count = (id) => b.tray.filter(
+          (x) => x.type === b.tubes.find((t) => t.id === id).balls.slice(-1)[0].type
+        ).length;
+        return count(c) - count(a);
+      });
+      for (const id of ids) {
+        const path2 = dfs(take(b, id, `solver-${nodes}-${id}`));
+        if (path2) return [id, ...path2];
+        if (exhausted) return null;
+      }
+      return null;
+    }
+    const path = dfs(initial, true);
+    if (path && replay(initial, path).status === "won")
+      return { status: "safe", path, nodes };
+    return { status: exhausted ? "unknown" : "dead", nodes };
   }
 
   // src/controller.ts
@@ -608,13 +671,21 @@
       __publicField(this, "animationStart", 0);
       __publicField(this, "after", "active");
       __publicField(this, "lastCheckpoint", 0);
+      __publicField(this, "terminalDurable", false);
       var _a;
       this.state = this.fresh(0, PRESETS[0].seed);
+      const drained = drainTerminal(store);
       const loaded = restore(store);
-      this.resume = loaded.save && loaded.save.phase !== "result" ? loaded.save : null;
+      const records = readRecords(store);
+      const settled = loaded.save && records.entries.some((r) => r.session === loaded.save.session);
+      this.resume = drained && records.available && loaded.save && loaded.save.phase !== "result" && !settled ? loaded.save : null;
       if (loaded.message) this.message = loaded.message;
-      if (((_a = loaded.save) == null ? void 0 : _a.phase) === "result" && loaded.save.finishedAt !== void 0)
-        appendResult(store, loaded.save);
+      if (!drained || !records.available)
+        this.message = "\u7EC8\u5C40\u5B58\u6863\u6216\u6218\u7EE9\u4FDD\u5B58\u5931\u8D25\uFF0C\u8BF7\u7A0D\u540E\u91CD\u8BD5";
+      if (((_a = loaded.save) == null ? void 0 : _a.phase) === "result" && loaded.save.started && loaded.save.finishedAt !== void 0) {
+        const result = commitTerminal(store, loaded.save);
+        if (!result.complete) this.message = "\u7EC8\u5C40\u5B58\u6863\u6216\u6218\u7EE9\u4FDD\u5B58\u5931\u8D25\uFF0C\u8BF7\u7A0D\u540E\u91CD\u8BD5";
+      }
     }
     fresh(preset, seed) {
       const level = createLevel(preset, seed);
@@ -673,6 +744,20 @@
       return this.phase !== "active";
     }
     start(preset = 0, seed) {
+      if (this.state.phase === "result" && this.state.started) {
+        this.checkpoint();
+        if (!this.terminalDurable) return;
+      }
+      if (!drainTerminal(this.store)) {
+        this.message = "\u7EC8\u5C40\u5B58\u6863\u6216\u6218\u7EE9\u4FDD\u5B58\u5931\u8D25\uFF0C\u65B0\u5C40\u6682\u672A\u5F00\u59CB";
+        return;
+      }
+      const saved = restore(this.store).save;
+      if ((saved == null ? void 0 : saved.phase) === "result" && saved.started && saved.finishedAt !== void 0 && !commitTerminal(this.store, saved).complete) {
+        this.message = "\u7EC8\u5C40\u5B58\u6863\u6216\u6218\u7EE9\u4FDD\u5B58\u5931\u8D25\uFF0C\u65B0\u5C40\u6682\u672A\u5F00\u59CB";
+        return;
+      }
+      this.terminalDurable = false;
       this.state = this.fresh(preset, seed != null ? seed : PRESETS[preset].seed);
       this.resume = null;
       this.pendingTurns = 0;
@@ -875,6 +960,8 @@
       if (this.phase === "ad" || this.phase === "home") return;
       this.pause();
       this.checkpoint();
+      if (this.phase === "result" && this.state.started && !this.terminalDurable)
+        return;
       this.resume = this.phase === "result" ? null : clone(this.state);
       this.phase = "home";
     }
@@ -940,14 +1027,19 @@
       this.state.phase = this.phase === "result" || this.board.status === "won" ? "result" : this.board.status === "blocked" ? "blocked" : this.state.remaining <= 0 ? "expired" : this.phase === "ready" || this.phase === "intro" ? "ready" : "paused";
       if (this.state.phase === "result" && this.state.started)
         (_b = (_a = this.state).finishedAt) != null ? _b : _a.finishedAt = Date.now();
+      if (this.state.phase === "result" && this.state.started) {
+        const result = commitTerminal(this.store, this.state);
+        this.terminalDurable = result.durable;
+        if (!result.complete)
+          this.message = "\u7EC8\u5C40\u5B58\u6863\u6216\u6218\u7EE9\u4FDD\u5B58\u5931\u8D25\uFF1B\u4FDD\u7559\u7EC8\u5C40\uFF0C\u6062\u590D\u540E\u91CD\u8BD5";
+        return;
+      }
       try {
         save(this.store, this.state);
         this.lastCheckpoint = this.now();
       } catch (e) {
         this.message = "\u5B58\u6863\u5199\u5165\u5931\u8D25\uFF0C\u672C\u5C40\u53EF\u7EE7\u7EED\uFF1B\u9000\u51FA\u53EF\u80FD\u4E22\u5931\u8FDB\u5EA6";
       }
-      if (!appendResult(this.store, this.state))
-        this.message = "\u672C\u673A\u6218\u7EE9\u4FDD\u5B58\u5931\u8D25\uFF0C\u672C\u5C40\u4ECD\u53EF\u7ED3\u675F";
     }
   };
 

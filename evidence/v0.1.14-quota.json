@@ -1,0 +1,1862 @@
+{
+  "scope": "Real Chromium localStorage with deterministic controller witness; not pointer E2E or WeChat",
+  "results": [
+    {
+      "build": "pre-compaction candidate",
+      "status": "won",
+      "phase": "result",
+      "records": 0,
+      "message": "终局存档或战绩保存失败；保留终局，恢复后重试",
+      "errors": [
+        {
+          "key": "tricollect.save.v1.backup",
+          "name": "QuotaExceededError",
+          "chars": 1750378
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1764303
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1764303
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1778262
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1778262
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1792255
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1792255
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1806283
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1806283
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1806283
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1820345
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1820345
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1820345
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1834441
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1834441
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1834441
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1848571
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1848571
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1848571
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1862735
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1862735
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1862735
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1876934
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1876934
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1876934
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1891166
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1891166
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1891166
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1905432
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1905432
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1905432
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1919733
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1919733
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1919733
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1934068
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1934068
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1934068
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1948438
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1948438
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1948438
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1962842
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1962842
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1962842
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1977280
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1977280
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1977280
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1991753
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1991753
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1991753
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2006259
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2006259
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2006259
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2020800
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2020800
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2020800
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2035375
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2035375
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2035375
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2049984
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2049984
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2049984
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2064627
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2064627
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2064627
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2079304
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2079304
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2079304
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2094014
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2094014
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2094014
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2108760
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2108760
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2108760
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2123541
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2123541
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2123541
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2138355
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2138355
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2138355
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2153204
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2153204
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2153203
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2168087
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2168087
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2168087
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2183004
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2183004
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2183004
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2197955
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2197955
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2197955
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2212940
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2212940
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2212940
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2227960
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2227960
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2227960
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2243014
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2243014
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2243014
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2258103
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2258103
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2258103
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2273225
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2273225
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2273224
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2288381
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2288381
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2288381
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2303572
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2303572
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2303572
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2318798
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2318798
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2318798
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2334058
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2334058
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2334058
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2349352
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2349352
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2349352
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2364680
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2364680
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2364680
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2380042
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2380042
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2380042
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2395440
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2395440
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2395440
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2410872
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2410872
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2410872
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2426338
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2426338
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2426337
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2441838
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2441838
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2441838
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2457372
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2457372
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2457372
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2472940
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2472940
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2472940
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2488542
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2488542
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2488542
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2504179
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2504179
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2504179
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2519850
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2519850
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2519850
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2535556
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2535556
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2535556
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2551295
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2551295
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2551295
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2567068
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2567068
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2567068
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2582874
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2582874
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2582874
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2598717
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2598717
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2598717
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2614594
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2614594
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2614594
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2630505
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2630505
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2630505
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2646450
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2646450
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2646450
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2662429
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2662429
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2662429
+        },
+        {
+          "key": "tricollect.terminal.v1",
+          "name": "QuotaExceededError",
+          "chars": 2678469
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2678469
+        },
+        {
+          "key": "tricollect.terminal.v1",
+          "name": "QuotaExceededError",
+          "chars": 2678469
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2678469
+        }
+      ],
+      "storedChars": 5237243,
+      "journalChars": 0
+    },
+    {
+      "build": "final compact terminal",
+      "status": "won",
+      "phase": "result",
+      "records": 1,
+      "message": "三同收集成功 +100",
+      "errors": [
+        {
+          "key": "tricollect.save.v1.backup",
+          "name": "QuotaExceededError",
+          "chars": 1750378
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1764303
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1764303
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1778262
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1778262
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1792255
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1792255
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1806283
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1806283
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1806283
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1820345
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1820345
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1820344
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1834441
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1834441
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1834441
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1848571
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1848571
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1848571
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1862736
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1862736
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1862736
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1876934
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1876934
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1876934
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1891166
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1891166
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1891166
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1905432
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1905432
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1905432
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1919733
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1919733
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1919733
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1934068
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1934068
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1934068
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1948438
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1948438
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1948438
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1962842
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1962842
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1962842
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1977280
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1977280
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1977280
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1991753
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1991753
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 1991753
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2006259
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2006259
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2006259
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2020800
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2020800
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2020799
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2035375
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2035375
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2035375
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2049984
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2049984
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2049984
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2064627
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2064627
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2064627
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2079304
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2079304
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2079304
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2094015
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2094015
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2094015
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2108760
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2108760
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2108760
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2123541
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2123541
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2123541
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2138355
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2138355
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2138355
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2153204
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2153204
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2153204
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2168087
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2168087
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2168087
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2183004
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2183004
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2183004
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2197955
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2197955
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2197955
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2212940
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2212940
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2212940
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2227960
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2227960
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2227960
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2243014
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2243014
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2243014
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2258103
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2258103
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2258103
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2273225
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2273225
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2273225
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2288381
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2288381
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2288381
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2303572
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2303572
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2303572
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2318798
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2318798
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2318798
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2334058
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2334058
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2334058
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2349352
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2349352
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2349352
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2364680
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2364680
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2364680
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2380042
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2380042
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2380042
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2395440
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2395440
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2395440
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2410872
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2410872
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2410872
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2426338
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2426338
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2426338
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2441838
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2441838
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2441838
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2457372
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2457372
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2457372
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2472940
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2472940
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2472940
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2488542
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2488542
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2488542
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2504179
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2504179
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2504179
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2519850
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2519850
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2519850
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2535556
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2535556
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2535556
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2551295
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2551295
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2551295
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2567068
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2567068
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2567068
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2582874
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2582874
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2582874
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2598717
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2598717
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2598717
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2614594
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2614594
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2614594
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2630505
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2630505
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2630505
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2646450
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2646450
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2646450
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2662429
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2662429
+        },
+        {
+          "key": "tricollect.save.v1.tmp",
+          "name": "QuotaExceededError",
+          "chars": 2662429
+        },
+        {
+          "key": "tricollect.terminal.v1",
+          "name": "QuotaExceededError",
+          "chars": 16429
+        }
+      ],
+      "storedChars": 49510,
+      "journalChars": 0
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "fullSuite": {
+    "passed": 94,
+    "failed": 0,
+    "durationMs": 105867.03413
+  },
+  "terminalFaultCases": 15,
+  "scope": "Node and simulated wx, not actual WeChat",
+  "command": "npm test"
+}
