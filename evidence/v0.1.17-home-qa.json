@@ -1,0 +1,21 @@
+{
+  "platform": "Chromium actual pixels and input, not WeChat",
+  "reports": [
+    {
+      "width": 320,
+      "wraps": 12,
+      "paused": true,
+      "resumeDelta": 16,
+      "modalNoOverwrite": true,
+      "hiddenPixelEquality": true
+    },
+    {
+      "width": 390,
+      "wraps": 9,
+      "paused": true,
+      "resumeDelta": 16,
+      "modalNoOverwrite": true,
+      "hiddenPixelEquality": true
+    }
+  ]
+}

@@ -188,10 +188,10 @@ try {
   });
   await page.waitForFunction(() => window.tri && tri.scene.backgroundLoaded);
   assert.equal(await page.title(), "转个“球” · 开发预览");
-  await page.screenshot({ path: "evidence/v016-current-home.png" });
+  await page.screenshot({ path: "evidence/v017-current-home.png" });
   await page.setViewportSize({ width: 320, height: 660 });
   await page.waitForTimeout(50);
-  await page.screenshot({ path: "evidence/v016-current-home-narrow.png" });
+  await page.screenshot({ path: "evidence/v017-current-home-narrow.png" });
   for (const b of await page.evaluate(() => tri.scene.buttons))
     assert.ok(b.x >= 0 && b.x + b.w <= 320 && b.y + b.h <= 660);
   await page.setViewportSize({ width: 390, height: 844 });
@@ -224,7 +224,7 @@ try {
     tri.game.tick();
     tri.scene.render();
   });
-  await page.screenshot({ path: "evidence/v016-current-misclick.png" });
+  await page.screenshot({ path: "evidence/v017-current-misclick.png" });
   assert.equal(
     await page.evaluate(() => tri.game.state.history.length),
     beforeWrong.history,
@@ -267,7 +267,7 @@ try {
   for (let face = 0; face < 3; face++) {
     results.push(await visibility());
     await page.screenshot({
-      path: `evidence/v016-current-face-${face + 1}.png`,
+      path: `evidence/v017-current-face-${face + 1}.png`,
     });
     await click("rotate-right");
     await stable();
@@ -282,7 +282,7 @@ try {
     tri.scene.render();
   });
   const fixedReports = [];
-  await page.screenshot({ path: "evidence/v016-current-slots-before.png" });
+  await page.screenshot({ path: "evidence/v017-current-slots-before.png" });
   for (const id of ["1,0", "2,0"]) {
     for (let i = 0; i < 5; i++) {
       const before = await page.evaluate(() => tri.scene.ballPositions);
@@ -324,7 +324,7 @@ try {
       await visibility();
       if (id === "1,0" && i < 2)
         await page.screenshot({
-          path: `evidence/v016-current-slots-after-${i + 1}.png`,
+          path: `evidence/v017-current-slots-after-${i + 1}.png`,
         });
     }
     if (id === "1,0")
@@ -336,7 +336,7 @@ try {
   const revealed = await visibility();
   assert.ok(revealed.drawn.includes("1,1"));
   results.push({ fixedSlots: fixedReports, innerReveal: revealed });
-  await page.screenshot({ path: "evidence/v016-current-inner.png" });
+  await page.screenshot({ path: "evidence/v017-current-inner.png" });
   await click("undo");
   await stable();
   assert.equal(
@@ -429,7 +429,7 @@ try {
     rotation.push({ elapsed, ...frame });
     if (elapsed === 125)
       await page.screenshot({
-        path: "evidence/v016-current-center-rotation.png",
+        path: "evidence/v017-current-center-rotation.png",
       });
   }
   const directions = [];
@@ -519,10 +519,10 @@ try {
   const targets = await page.evaluate(() => tri.scene.targets);
   assert.equal(targets.length, 8);
   for (const t of targets) assert.ok(t.x - t.r >= 0 && t.x + t.r <= 320);
-  await page.screenshot({ path: "evidence/v016-current-narrow.png" });
+  await page.screenshot({ path: "evidence/v017-current-narrow.png" });
   results.push("320x660: 36 tubes, 8 visible front targets within viewport");
   await writeFile(
-    "evidence/v0.1.16-visual-qa.json",
+    "evidence/v0.1.17-visual-qa.json",
     JSON.stringify(
       { passed: true, platform: "Chromium, not WeChat DevTools", results },
       null,

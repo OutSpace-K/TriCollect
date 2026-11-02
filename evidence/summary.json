@@ -1,15 +1,41 @@
 {
   "project": "TriCollect",
   "displayName": "转个“球”",
-  "version": "0.1.16",
-  "baseCommit": "3a0cbe4983862425ab905a087b6312647f7ca743",
+  "version": "0.1.17",
+  "baseCommit": "b5790cf128d7a670e62658c456509d3c68b00094",
   "ruleVersion": "tricollect-5-variable-height",
   "tests": {
-    "passed": 97,
-    "failed": 0,
-    "durationMs": 93938.93227,
-    "command": "tsx --test --test-concurrency=1 tests/*.test.ts",
-    "rerunNote": "Parallel run had a wall-clock rotation bound failure; isolated rotation passed both units. Final complete serial suite passed unchanged timing bounds. npm test now runs files serially for real-timer tests."
+    "version": "0.1.17",
+    "failures": [
+      "native animation wall-clock deadlines at 1000 units/ms: transfer duration bound",
+      "native frozen-clock intro/transfer fail safely at 1 units/ms: pause duration bound"
+    ],
+    "isolatedRecheck": {
+      "passed": 4,
+      "failed": 0,
+      "durationMs": 12021.378888,
+      "sameAssertions": true
+    },
+    "initialGeometryFinding": "Enlarged ball layout exceeded rotation bottom padding; corrected height budget. Original viewport bound passes unchanged.",
+    "earlierFullRun": {
+      "total": 98,
+      "passed": 96,
+      "failed": 2,
+      "durationMs": 97160.296642
+    },
+    "fullRun": {
+      "total": 98,
+      "passed": 98,
+      "failed": 0,
+      "durationMs": 99111.724824
+    },
+    "finalPaintGuardRegression": {
+      "passed": 14,
+      "failed": 0,
+      "newUniqueTest": 1,
+      "scope": "After full run, added only try/finally drawing-state guards; interaction/projection and new injected paint-fault tests passed. Normal rendered output and gameplay unchanged."
+    },
+    "uniqueTestsCovered": 99
   },
   "browser": {
     "passed": true,
@@ -19,8 +45,8 @@
     "results": [
       {
         "check": "browser real 10-second clock",
-        "elapsedMs": 10053.800000000745,
-        "chargedMs": 10076.300000000745
+        "elapsedMs": 10038.199999999255,
+        "chargedMs": 10029.20000000298
       },
       "12 consecutive 250ms pointer rotations completed without lock",
       "one-frame exception recovered; pause/home/reload regression preserved",
@@ -28,19 +54,19 @@
         "preset": 0,
         "picks": 105,
         "wonWithoutAds": true,
-        "remainingMs": 275901.59999999404
+        "remainingMs": 272232.7000000328
       },
       {
         "preset": 1,
         "picks": 126,
         "wonWithoutAds": true,
-        "remainingMs": 283285.40000003204
+        "remainingMs": 287884.30000003055
       },
       {
         "preset": 2,
         "picks": 216,
         "wonWithoutAds": true,
-        "remainingMs": 216352.40000001714
+        "remainingMs": 269208.09999996424
       }
     ],
     "errors": []
@@ -50,7 +76,7 @@
     "reports": [
       {
         "width": 320,
-        "wraps": 6,
+        "wraps": 12,
         "paused": true,
         "resumeDelta": 16,
         "modalNoOverwrite": true,
@@ -58,7 +84,7 @@
       },
       {
         "width": 390,
-        "wraps": 5,
+        "wraps": 9,
         "paused": true,
         "resumeDelta": 16,
         "modalNoOverwrite": true,
@@ -96,29 +122,28 @@
       }
     ]
   },
-  "visual": "Actual 320/390 pixels inspected: bold first glyph, self-rotating middle glyph, circular ink last glyph, staggered track, three-face caps, mid-turn, inner reveal, mixed heights and stable bottom controls. Screenshots internal only; not user aesthetic acceptance.",
+  "visual": "Actual 320/390 Chromium pixels inspected: rest/edge/back title poses, different toys, three-face caps, mid-turn, inner reveal, mixed heights, fixed slots and unchanged bottom strip during pick locks. No aesthetic acceptance claim.",
   "changes": [
-    "Actual bold filled system first glyph; middle glyph rotates on its own center; circular last-glyph outline without backing disc",
-    "Six irregularly spaced toys on three left-to-right track lanes",
-    "Closed tubes have volumetric caps computed by actual face visibility, independent of transient input lock",
-    "Thin glass rims, stronger bottle side shading, deeper triangular projection and thicker tray",
-    "Button dimming separated from action guards; no transient gray flash while repeated picks/turn/undo remain rejected"
+    "All three title glyphs are custom paths: heavy designed first glyph, perspective vertical-axis middle glyph and curved last-glyph strokes without enclosing circle",
+    "Five original identifiable toys with distinct speeds, scales and lanes; hidden/background motion remains paused",
+    "Five cap palettes depend only on immutable tube coordinates, never hidden ball identities",
+    "Larger wall-contained balls with matching hit areas and corrected rotating viewport margins",
+    "Opaque warm ivory/lilac frosted glass conceals lower ball identities"
   ],
   "storage": "v0.1.14 terminal consistency and compact persistence unchanged; current browser failure-order regression passed",
-  "unchanged": "Core rules, 105/126/216 balls, 300s, fixed slots, single undo, scoring, music and background assets",
+  "unchanged": "Core rules, 105/126/216 balls, 300s, single undo without refund, terminal journal/records, music and background assets. Drawing positions scale with new layout but remain fixed within each round.",
   "typecheck": "passed",
   "formatCheck": "passed",
   "cleanBuild": {
-    "version": "0.1.16",
-    "install": "npm ci --offline --cache /tmp/tricollect-npm-cache (existing integrity-checked cache)",
+    "version": "0.1.17",
+    "install": "npm ci --offline --cache /tmp/tricollect-npm-cache",
     "build": "passed",
     "typecheck": "passed",
     "distFiles": 12,
-    "byteIdentical": true,
-    "initialAttempt": "Default-cache install failed with npm extraction ENOENT; clean offline install using existing cache succeeded."
+    "byteIdentical": true
   },
-  "audio": "Actual browser decode/playback/lifecycle passed; music unchanged; no human listening",
-  "nativeCanvas": "Actual native bundle in Chromium Canvas wx bridge at 320/390, not actual WeChat",
+  "audio": "Unchanged original audio; v0.1.16 playback/lifecycle evidence retained. No new listening claim.",
+  "nativeCanvas": "Actual current WeChat bundle in Chromium Canvas wx bridge at 320/390 passed; not real WeChat.",
   "seeds": "300-seed v0.1.13 evidence retained; generator unchanged, no new 300-seed claim. All-preset native/browser completions and core tests passed.",
   "publication": "Source and prebuilt game; no deployment",
   "remaining": [
@@ -132,8 +157,16 @@
     "reports": [
       {
         "width": 320,
-        "selfRotation": true,
+        "verticalAxisFlip": true,
         "threeTrackLanes": true,
+        "distinctToySpeeds": [
+          0.023,
+          0.041,
+          0.017,
+          0.052,
+          0.031
+        ],
+        "differentToySizes": true,
         "capsThreeFaces": true,
         "noTransientGray": true,
         "inputLockPreserved": true,
@@ -141,8 +174,16 @@
       },
       {
         "width": 390,
-        "selfRotation": true,
+        "verticalAxisFlip": true,
         "threeTrackLanes": true,
+        "distinctToySpeeds": [
+          0.023,
+          0.041,
+          0.017,
+          0.052,
+          0.031
+        ],
+        "differentToySizes": true,
         "capsThreeFaces": true,
         "noTransientGray": true,
         "inputLockPreserved": true,

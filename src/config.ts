@@ -1,4 +1,4 @@
-export const VERSION = "0.1.16";
+export const VERSION = "0.1.17";
 export const DISPLAY_NAME = "转个“球”";
 export const RULE = "tricollect-5-variable-height";
 export const CONFIG = Object.freeze({

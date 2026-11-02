@@ -29,9 +29,9 @@ export function projection(
   const depthSpace = originalDepth * 0.8;
   const zScale = depthSpace / ((edge * Math.sqrt(3)) / 2),
     extent = (depthSpace * 2) / 3;
-  const maxHeight = Math.min(220, bottom - top - 48 - (originalDepth * 4) / 3);
+  const maxHeight = Math.min(260, bottom - top - 52 - (depthSpace * 4) / 3);
   const ballRadius = Math.min(
-      radius * 0.78,
+      radius * 0.88,
       (maxHeight - 20) / (maxCapacity * 2),
     ),
     step = ballRadius * 2,
@@ -43,7 +43,7 @@ export function projection(
       30 +
       height +
       extent +
-      Math.max(0, (bottom - top - 48 - height - extent * 2) / 2),
+      Math.max(0, (bottom - top - 52 - height - extent * 2) / 2),
   };
   const point = (t: Pick<Tube, "q" | "r">) => {
     const p = rotateWorld(worldPosition(t, side), angle);

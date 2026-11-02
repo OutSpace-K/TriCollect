@@ -1,0 +1,33 @@
+{
+  "version": "0.1.17",
+  "failures": [
+    "native animation wall-clock deadlines at 1000 units/ms: transfer duration bound",
+    "native frozen-clock intro/transfer fail safely at 1 units/ms: pause duration bound"
+  ],
+  "isolatedRecheck": {
+    "passed": 4,
+    "failed": 0,
+    "durationMs": 12021.378888,
+    "sameAssertions": true
+  },
+  "initialGeometryFinding": "Enlarged ball layout exceeded rotation bottom padding; corrected height budget. Original viewport bound passes unchanged.",
+  "earlierFullRun": {
+    "total": 98,
+    "passed": 96,
+    "failed": 2,
+    "durationMs": 97160.296642
+  },
+  "fullRun": {
+    "total": 98,
+    "passed": 98,
+    "failed": 0,
+    "durationMs": 99111.724824
+  },
+  "finalPaintGuardRegression": {
+    "passed": 14,
+    "failed": 0,
+    "newUniqueTest": 1,
+    "scope": "After full run, added only try/finally drawing-state guards; interaction/projection and new injected paint-fault tests passed. Normal rendered output and gameplay unchanged."
+  },
+  "uniqueTestsCovered": 99
+}

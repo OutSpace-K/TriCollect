@@ -38,13 +38,13 @@ try {
       tri.scene.render();
     });
     await page.screenshot({
-      path: `evidence/v016-current-home-title-${width}-0.png`,
+      path: `evidence/v017-current-home-title-${width}-0.png`,
     });
     const animation = await page.evaluate(() => {
       const s = tri.scene;
       let prev = s.trackObjects.map((o) => o.x),
         wraps = 0;
-      for (let i = 0; i < 1000; i++) {
+      for (let i = 0; i < 2000; i++) {
         window.decorTime += 16;
         s.render();
         const next = s.trackObjects.map((o) => o.x);
@@ -72,11 +72,11 @@ try {
     assert.ok(animation.wraps >= 5);
     assert.equal(animation.resumeDelta, 16);
     await page.screenshot({
-      path: `evidence/v016-current-home-title-${width}-moving.png`,
+      path: `evidence/v017-current-home-title-${width}-moving.png`,
     });
     await click("start-menu");
     await page.screenshot({
-      path: `evidence/v016-current-difficulty-${width}.png`,
+      path: `evidence/v017-current-difficulty-${width}.png`,
     });
     const tiers = await page.evaluate(() =>
       tri.scene.buttons.filter((b) => /^start-[012]$/.test(b.id)),
@@ -101,7 +101,7 @@ try {
     await click("start-menu");
     await click("start-2");
     await page.screenshot({
-      path: `evidence/v016-current-confirm-${width}.png`,
+      path: `evidence/v017-current-confirm-${width}.png`,
     });
     assert.equal(
       await page.evaluate(() => localStorage.getItem("tricollect.save.v1")),
@@ -144,7 +144,7 @@ try {
     await page.close();
   }
   await writeFile(
-    "evidence/v0.1.16-home-qa.json",
+    "evidence/v0.1.17-home-qa.json",
     JSON.stringify(
       { platform: "Chromium actual pixels and input, not WeChat", reports },
       null,

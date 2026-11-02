@@ -88,7 +88,7 @@ try {
       await p.waitForTimeout(40);
     }
     await p.screenshot({
-      path: `evidence/v016-current-native-${width}-home.png`,
+      path: `evidence/v017-current-native-${width}-home.png`,
     });
     await click("开始游戏");
     await click("简单");
@@ -104,11 +104,11 @@ try {
     for (const b of buttons)
       assert.ok(b.y > 64 && b.y < height - 24, JSON.stringify(b));
     await p.screenshot({
-      path: `evidence/v016-current-native-${width}-active.png`,
+      path: `evidence/v017-current-native-${width}-active.png`,
     });
     await click("暂停");
     await p.screenshot({
-      path: `evidence/v016-current-native-${width}-pause.png`,
+      path: `evidence/v017-current-native-${width}-pause.png`,
     });
     await click("继续游戏");
     await click("→");
@@ -123,7 +123,7 @@ try {
     await p.close();
   }
   await writeFile(
-    "evidence/v0.1.16-native-canvas.json",
+    "evidence/v0.1.17-native-canvas.json",
     JSON.stringify(
       {
         platform:

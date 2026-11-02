@@ -1,0 +1,8 @@
+{
+  "version": "0.1.17",
+  "install": "npm ci --offline --cache /tmp/tricollect-npm-cache",
+  "build": "passed",
+  "typecheck": "passed",
+  "distFiles": 12,
+  "byteIdentical": true
+}

@@ -6,8 +6,8 @@
   "results": [
     {
       "check": "browser real 10-second clock",
-      "elapsedMs": 10053.800000000745,
-      "chargedMs": 10076.300000000745
+      "elapsedMs": 10038.199999999255,
+      "chargedMs": 10029.20000000298
     },
     "12 consecutive 250ms pointer rotations completed without lock",
     "one-frame exception recovered; pause/home/reload regression preserved",
@@ -15,19 +15,19 @@
       "preset": 0,
       "picks": 105,
       "wonWithoutAds": true,
-      "remainingMs": 275901.59999999404
+      "remainingMs": 272232.7000000328
     },
     {
       "preset": 1,
       "picks": 126,
       "wonWithoutAds": true,
-      "remainingMs": 283285.40000003204
+      "remainingMs": 287884.30000003055
     },
     {
       "preset": 2,
       "picks": 216,
       "wonWithoutAds": true,
-      "remainingMs": 216352.40000001714
+      "remainingMs": 269208.09999996424
     }
   ],
   "errors": []

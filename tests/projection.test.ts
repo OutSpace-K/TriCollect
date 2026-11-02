@@ -63,7 +63,7 @@ test("five fixed ball slots touch without crossing tube walls at mobile sizes", 
       assert.ok(p.step * 4 + 2 * p.ballRadius + 6 <= p.height);
     }
 });
-test("lower plan depth preserves original bottle height and circular touching spheres", () => {
+test("enlarged spheres retain wall clearance, fixed height and touching slots", () => {
   for (const side of [6, 8])
     for (const width of [320, 390, 500]) {
       const top = 147,
@@ -71,8 +71,8 @@ test("lower plan depth preserves original bottle height and circular touching sp
         edge = side - 1;
       const originalDepth = Math.min(108, edge * 18, (bottom - top) * 0.24);
       const maxHeight = Math.min(
-        220,
-        bottom - top - 48 - (originalDepth * 4) / 3,
+        260,
+        bottom - top - 52 - (originalDepth * 0.8 * 4) / 3,
       );
       const p = projection(side, width, top, bottom, 0);
       assert.ok(
@@ -81,7 +81,7 @@ test("lower plan depth preserves original bottle height and circular touching sp
       );
       assert.equal(
         p.ballRadius,
-        Math.min(p.radius * 0.78, (maxHeight - 20) / 10),
+        Math.min(p.radius * 0.88, (maxHeight - 20) / 10),
       );
       assert.equal(p.height, p.ballRadius * 10 + 20);
     }

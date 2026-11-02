@@ -1,0 +1,39 @@
+{
+  "platform": "Actual Chromium pixels/input, not WeChat",
+  "reports": [
+    {
+      "width": 320,
+      "verticalAxisFlip": true,
+      "threeTrackLanes": true,
+      "distinctToySpeeds": [
+        0.023,
+        0.041,
+        0.017,
+        0.052,
+        0.031
+      ],
+      "differentToySizes": true,
+      "capsThreeFaces": true,
+      "noTransientGray": true,
+      "inputLockPreserved": true,
+      "revealedCapOpens": true
+    },
+    {
+      "width": 390,
+      "verticalAxisFlip": true,
+      "threeTrackLanes": true,
+      "distinctToySpeeds": [
+        0.023,
+        0.041,
+        0.017,
+        0.052,
+        0.031
+      ],
+      "differentToySizes": true,
+      "capsThreeFaces": true,
+      "noTransientGray": true,
+      "inputLockPreserved": true,
+      "revealedCapOpens": true
+    }
+  ]
+}

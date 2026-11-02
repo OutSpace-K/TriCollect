@@ -1006,14 +1006,14 @@
     const originalDepth = Math.min(108, edge * 18, (bottom - top) * 0.24);
     const depthSpace = originalDepth * 0.8;
     const zScale = depthSpace / (edge * Math.sqrt(3) / 2), extent = depthSpace * 2 / 3;
-    const maxHeight = Math.min(220, bottom - top - 48 - originalDepth * 4 / 3);
+    const maxHeight = Math.min(260, bottom - top - 52 - depthSpace * 4 / 3);
     const ballRadius = Math.min(
-      radius * 0.78,
+      radius * 0.88,
       (maxHeight - 20) / (maxCapacity * 2)
     ), step = ballRadius * 2, height = step * maxCapacity + 20;
     const axis = {
       x: width / 2,
-      y: top + 30 + height + extent + Math.max(0, (bottom - top - 48 - height - extent * 2) / 2)
+      y: top + 30 + height + extent + Math.max(0, (bottom - top - 52 - height - extent * 2) / 2)
     };
     const point = (t) => {
       const p = rotateWorld(worldPosition(t, side), angle);
@@ -1678,15 +1678,22 @@
           );
           c.stroke();
           if (capped) {
+            const palette = [
+              ["#ffa9a2", "#e96c6b", "#a94350"],
+              ["#ffe39a", "#ebba4d", "#ab792d"],
+              ["#c5b6fa", "#9d85dd", "#63549b"],
+              ["#a4e4ed", "#64becb", "#347e97"],
+              ["#c9e7a8", "#91bd78", "#5d8753"]
+            ][(t.q * 3 + t.r * 7) % 5];
             const lidSide = c.createLinearGradient(
               x - radius,
               ty - 5,
               x + radius,
               ty + 6
             );
-            lidSide.addColorStop(0, "#c9a66a");
-            lidSide.addColorStop(0.3, "#ead09a");
-            lidSide.addColorStop(1, "#9b7648");
+            lidSide.addColorStop(0, palette[1]);
+            lidSide.addColorStop(0.3, palette[0]);
+            lidSide.addColorStop(1, palette[2]);
             c.fillStyle = "#29483935";
             c.beginPath();
             c.ellipse(
@@ -1710,9 +1717,9 @@
               x + radius,
               ty + opening - 7
             );
-            lidTop.addColorStop(0, "#fff0c8");
-            lidTop.addColorStop(0.45, "#e6c78b");
-            lidTop.addColorStop(1, "#bc955e");
+            lidTop.addColorStop(0, "#fff7e9");
+            lidTop.addColorStop(0.45, palette[0]);
+            lidTop.addColorStop(1, palette[1]);
             c.fillStyle = lidTop;
             c.beginPath();
             c.ellipse(x, ty - 7, radius * 1.02, opening, 0, 0, Math.PI * 2);
@@ -1915,14 +1922,14 @@
             this.chamberPath(x, ty, y, radius);
             c.clip();
             const frost = c.createLinearGradient(x - radius, 0, x + radius, 0);
-            frost.addColorStop(0, "#529b91");
-            frost.addColorStop(0.18, "#c4ecdc");
-            frost.addColorStop(0.48, "#8dcec0");
-            frost.addColorStop(1, "#438b89");
+            frost.addColorStop(0, "#bba9d4");
+            frost.addColorStop(0.18, "#fff2e0");
+            frost.addColorStop(0.48, "#ead8e7");
+            frost.addColorStop(1, "#a6a5cb");
             c.fillStyle = frost;
             c.fillRect(x - radius, frostTop, radius * 2, y - frostTop + 4);
             for (let i = 0; i < first; i++) {
-              c.fillStyle = "#effff51c";
+              c.fillStyle = "#ffffff28";
               c.beginPath();
               c.ellipse(
                 x,
@@ -1976,7 +1983,7 @@
           topY
         });
         if (!front) continue;
-        const hitRadius = Math.min(radius * 0.77, step * 0.48);
+        const hitRadius = Math.min(radius * 0.87, step * 0.49);
         if (g.hint === t.id)
           this.text(
             "\u2726",
@@ -2007,6 +2014,46 @@
     }
     homeTitle() {
       const c = this.ctx, scale = Math.min(1.05, (this.width - 40) / 272);
+      const cycle = this.mascotTime % 9e3;
+      const t = Math.max(0, Math.min(1, (cycle - 1800) / 1600));
+      this.titleAngle = cycle >= 1800 && cycle < 3400 ? t * t * (3 - 2 * t) * Math.PI * 2 : 0;
+      const zhuan = [
+        [
+          [1, 12],
+          [24, 10]
+        ],
+        [
+          [12, 2],
+          [4, 31],
+          [23, 29]
+        ],
+        [
+          [1, 45],
+          [24, 41]
+        ],
+        [
+          [15, 21],
+          [13, 62]
+        ],
+        [
+          [39, 10],
+          [68, 8]
+        ],
+        [
+          [37, 24],
+          [72, 21]
+        ],
+        [
+          [52, 0],
+          [45, 34],
+          [68, 32],
+          [56, 48]
+        ],
+        [
+          [43, 43],
+          [64, 60]
+        ]
+      ];
       const ge = [
         [
           [31, 0],
@@ -2018,125 +2065,310 @@
         ],
         [
           [31, 20],
-          [31, 52]
+          [31, 55]
         ]
       ];
-      const ball = [
+      const qiu = [
         [
-          [10, 9],
-          [25, 9]
+          [10, 11],
+          [16, 3, 28, 4]
         ],
         [
-          [0, 31],
-          [27, 31]
+          [4, 31],
+          [12, 27, 27, 28]
         ],
         [
-          [8, 53],
-          [27, 53]
+          [10, 53],
+          [18, 61, 28, 58]
         ],
         [
-          [16, 9],
-          [16, 53]
+          [18, 9],
+          [3, 30, 18, 55]
         ],
         [
-          [28, 14],
-          [60, 14]
+          [30, 15],
+          [45, 7, 61, 17]
         ],
         [
-          [40, 1],
-          [40, 57],
-          [33, 61]
+          [39, 2],
+          [49, 31, 40, 60],
+          [35, 65, 30, 60]
         ],
         [
-          [48, 4],
-          [53, 8]
+          [53, 5],
+          [58, 8]
         ],
         [
-          [29, 24],
-          [34, 30]
+          [29, 25],
+          [35, 31]
         ],
         [
-          [34, 37],
-          [25, 47]
+          [34, 39],
+          [28, 48, 21, 49]
         ],
         [
-          [64, 26],
-          [52, 33]
+          [65, 26],
+          [62, 36, 53, 38]
         ],
         [
-          [43, 32],
-          [60, 51]
+          [47, 35],
+          [58, 41, 62, 51],
+          [56, 59, 48, 60]
         ]
       ];
-      const ink = (paths, weight, fill, dy = 0) => {
-        c.fillStyle = fill;
+      const paint = (paths, width, color, dy = 0, yaw = false, depth = 0) => {
+        c.strokeStyle = color;
+        c.lineWidth = width;
+        c.lineCap = "round";
+        c.lineJoin = "round";
+        const point = (x, y) => {
+          if (!yaw) return [x, y + dy];
+          const xx = x - 31, yy = y - 26, z = -xx * Math.sin(this.titleAngle) + depth * Math.cos(this.titleAngle);
+          const perspective = 1 + z / 220;
+          return [
+            31 + (xx * Math.cos(this.titleAngle) + depth * Math.sin(this.titleAngle)) / perspective,
+            26 + yy / perspective + dy
+          ];
+        };
         for (const path of paths) {
-          for (let j = 1; j < path.length; j++) {
-            const [x0, y0] = path[j - 1], [x1, y1] = path[j], d = Math.hypot(x1 - x0, y1 - y0) || 1, nx = -(y1 - y0) / d * weight / 2, ny = (x1 - x0) / d * weight / 2;
-            c.beginPath();
-            c.moveTo(x0 + nx, y0 + ny + dy);
-            c.lineTo(x1 + nx, y1 + ny + dy);
-            c.lineTo(x1 - nx, y1 - ny + dy);
-            c.lineTo(x0 - nx, y0 - ny + dy);
-            c.closePath();
-            c.fill();
+          c.beginPath();
+          const start2 = point(path[0][0], path[0][1]);
+          c.moveTo(start2[0], start2[1]);
+          for (const v of path.slice(1)) {
+            if (v.length === 2) {
+              const p = point(v[0], v[1]);
+              c.lineTo(p[0], p[1]);
+            } else {
+              const a = point(v[0], v[1]), b = point(v[2], v[3]);
+              c.quadraticCurveTo(a[0], a[1], b[0], b[1]);
+            }
           }
-          for (const [x, y] of path) {
-            c.beginPath();
-            c.arc(x, y + dy, weight / 2, 0, Math.PI * 2);
-            c.fill();
-          }
+          c.stroke();
         }
       };
-      const cycle = this.mascotTime % 9e3, t = Math.max(0, Math.min(1, (cycle - 1800) / 1600));
-      this.titleAngle = cycle >= 1800 && cycle < 3400 ? t * t * (3 - 2 * t) * Math.PI * 2 : 0;
       c.save();
       try {
         c.translate(this.width / 2 - 128 * scale, 88);
         c.scale(scale, scale);
-        const green = c.createLinearGradient(0, 0, 0, 57);
-        green.addColorStop(0, "#55c98e");
-        green.addColorStop(0.35, "#269766");
-        green.addColorStop(1, "#126c51");
-        c.font = "900 72px sans-serif";
-        c.textAlign = "left";
-        c.fillStyle = "#315744";
-        c.fillText("\u8F6C", -3, 62);
-        c.fillStyle = green;
-        c.fillText("\u8F6C", -4, 59);
+        const green = c.createLinearGradient(0, 0, 0, 64);
+        green.addColorStop(0, "#73dda0");
+        green.addColorStop(0.4, "#249b6d");
+        green.addColorStop(1, "#09684e");
+        paint(zhuan, 9.5, "#28513f", 4);
+        paint(zhuan, 9.5, green);
+        paint(
+          [
+            [
+              [4, 10],
+              [26, 8]
+            ],
+            [
+              [37, 8],
+              [62, 6]
+            ]
+          ],
+          1.5,
+          "#c6ffcb"
+        );
         c.save();
         try {
-          c.translate(92 + 31, 26);
-          c.rotate(this.titleAngle);
-          c.translate(-31, -26);
-          ink(ge, 11, "#315744", 4);
-          ink(ge, 11, green);
+          c.translate(92, 0);
+          paint(ge, 10, "#165444", 3, true, -4);
+          paint(ge, 10, green, 0, true, 0);
         } finally {
           c.restore();
         }
         c.save();
         try {
           c.translate(184, 0);
-          const orange = c.createLinearGradient(0, -5, 62, 67);
-          orange.addColorStop(0, "#ffc84b");
-          orange.addColorStop(0.45, "#ed8e21");
-          orange.addColorStop(1, "#b8561d");
-          c.strokeStyle = "#97622d";
-          c.lineWidth = 5;
-          c.beginPath();
-          c.arc(31, 34, 36, 0, Math.PI * 2);
-          c.stroke();
-          c.strokeStyle = orange;
-          c.beginPath();
-          c.arc(31, 31, 36, 0, Math.PI * 2);
-          c.stroke();
-          c.beginPath();
-          c.arc(31, 31, 35.5, 0, Math.PI * 2);
-          c.clip();
-          ink(ball, 8.5, "#9a632b", 3);
-          ink(ball, 8.5, orange);
+          const gold = c.createLinearGradient(0, 0, 65, 62);
+          gold.addColorStop(0, "#ffe282");
+          gold.addColorStop(0.45, "#ffb62b");
+          gold.addColorStop(1, "#dc6819");
+          paint(qiu, 8, "#9b5625", 3);
+          paint(qiu, 8, gold);
+          paint(
+            [
+              [
+                [11, 9],
+                [17, 3, 26, 4]
+              ],
+              [
+                [31, 13],
+                [45, 6, 59, 16]
+              ]
+            ],
+            1.5,
+            "#fff4ba"
+          );
         } finally {
           c.restore();
+        }
+      } finally {
+        c.restore();
+      }
+    }
+    /** Original miniature toys, no emoji/font or external artwork dependence. */
+    trackToy(kind, x, y, size) {
+      const c = this.ctx;
+      c.save();
+      try {
+        c.translate(x, y);
+        c.scale(size / 18, size / 18);
+        const ellipse = (x2, y2, rx, ry, fill) => {
+          c.fillStyle = fill;
+          c.beginPath();
+          c.ellipse(x2, y2, rx, ry, 0, 0, Math.PI * 2);
+          c.fill();
+        };
+        const line = (points, color, width) => {
+          c.strokeStyle = color;
+          c.lineWidth = width;
+          c.lineCap = "round";
+          c.lineJoin = "round";
+          c.beginPath();
+          c.moveTo(points[0][0], points[0][1]);
+          for (const p of points.slice(1)) c.lineTo(p[0], p[1]);
+          c.stroke();
+        };
+        ellipse(2, 12, 18, 3, "#354c3430");
+        if (kind === 0) {
+          line(
+            [
+              [-13, 0],
+              [-21, -2],
+              [-21, -8]
+            ],
+            "#b58c50",
+            3
+          );
+          ellipse(-21, -8, 4, 3, "#f8d783");
+          ellipse(-2, 1, 15, 11, "#e8a82a");
+          ellipse(-4, -2, 12, 9, "#ffdd61");
+          ellipse(8, -10, 9, 9, "#ffe47a");
+          ellipse(16, -8, 7, 3, "#ed7830");
+          ellipse(10, -12, 1.8, 2, "#283f3b");
+          ellipse(8, -14, 0.8, 0.8, "white");
+          ellipse(-5, 1, 8, 5, "#f4bf3e");
+          line(
+            [
+              [-10, -2],
+              [-4, -4],
+              [1, -1]
+            ],
+            "#fff0a4",
+            1.4
+          );
+        } else if (kind === 1) {
+          this.rect(-20, -6, 35, 16, "#dd6052", 4);
+          this.rect(-15, -18, 15, 17, "#268f94", 3);
+          this.rect(-12, -15, 9, 9, "#bceff0", 2);
+          this.rect(-18, -21, 21, 4, "#f2c665", 2);
+          this.rect(7, -15, 5, 10, "#395d66", 1);
+          ellipse(9, -16, 4, 2, "#efc470");
+          this.rect(1, -5, 16, 3, "#ffbd87", 1);
+          for (const dx of [-12, 10]) {
+            ellipse(dx, 10, 6, 6, "#344c59");
+            ellipse(dx, 10, 3, 3, "#f1cf77");
+          }
+          line(
+            [
+              [-12, 10],
+              [10, 10]
+            ],
+            "#9fb4ad",
+            2
+          );
+        } else if (kind === 2) {
+          ellipse(0, 7, 20, 6, "#72b895");
+          ellipse(14, 0, 5, 9, "#9ed9ad");
+          line(
+            [
+              [12, -3],
+              [10, -12]
+            ],
+            "#65a881",
+            2
+          );
+          line(
+            [
+              [17, -3],
+              [20, -11]
+            ],
+            "#65a881",
+            2
+          );
+          ellipse(10, -12, 3, 3, "#e8f7cf");
+          ellipse(20, -11, 3, 3, "#e8f7cf");
+          ellipse(11, -12, 1.3, 1.5, "#2c5350");
+          ellipse(21, -11, 1.3, 1.5, "#2c5350");
+          ellipse(-6, -2, 13, 13, "#b45d8e");
+          ellipse(-8, -5, 11, 10, "#ed9fbf");
+          c.strokeStyle = "#a75383";
+          c.lineWidth = 2;
+          c.beginPath();
+          for (let a = 0; a < Math.PI * 4; a += 0.15) {
+            const r = 1 + a * 0.65;
+            const xx = -7 + Math.cos(a) * r, yy = -3 + Math.sin(a) * r;
+            if (a === 0) c.moveTo(xx, yy);
+            else c.lineTo(xx, yy);
+          }
+          c.stroke();
+          ellipse(-11, -10, 3, 2, "#ffe3df");
+          line(
+            [
+              [15, 3],
+              [18, 4],
+              [20, 2]
+            ],
+            "#46876b",
+            1
+          );
+        } else if (kind === 3) {
+          ellipse(-1, 0, 21, 6, "#ed8351");
+          ellipse(-3, -2, 15, 4, "#ffb76a");
+          line(
+            [
+              [-4, -11],
+              [3, 11]
+            ],
+            "#f6cf70",
+            8
+          );
+          ellipse(2, -4, 5, 4, "#5eabb5");
+          ellipse(1, -5, 3, 2, "#b8eef1");
+          line(
+            [
+              [-16, -2],
+              [-21, -9]
+            ],
+            "#e4684f",
+            5
+          );
+          line(
+            [
+              [21, -9],
+              [21, 9]
+            ],
+            "#526c6d",
+            2
+          );
+          ellipse(20, 0, 3, 3, "#ffe1a4");
+        } else {
+          ellipse(-6, -19, 4, 11, "#ede0ce");
+          ellipse(5, -20, 4, 11, "#f8eddb");
+          ellipse(-6, -20, 1.6, 7, "#e7b3b3");
+          ellipse(5, -21, 1.6, 7, "#e7b3b3");
+          ellipse(0, -4, 12, 11, "#f8eddb");
+          ellipse(0, 6, 10, 8, "#e9d9bd");
+          ellipse(-4, -5, 1.5, 2, "#4e5055");
+          ellipse(5, -5, 1.5, 2, "#4e5055");
+          ellipse(1, -1, 2, 1.4, "#d48c96");
+          ellipse(-7, -1, 2.5, 1.5, "#efb5b1");
+          ellipse(8, -1, 2.5, 1.5, "#efb5b1");
+          this.rect(-15, 12, 30, 4, "#64a6b5", 2);
+          ellipse(-9, 18, 3, 3, "#4c686b");
+          ellipse(9, 18, 3, 3, "#4c686b");
         }
       } finally {
         c.restore();
@@ -2413,21 +2645,11 @@
         c.beginPath();
         c.rect(0, h - 77, w, 65);
         c.clip();
-        const phases = [0.02, 0.18, 0.43, 0.59, 0.89, 0.97], lanes = [0, 2, 1, 2, 0, 1];
+        const phases = [0.03, 0.23, 0.47, 0.69, 0.91], lanes = [0, 2, 1, 0, 2];
         for (let i = 0; i < phases.length; i++) {
-          const lane = lanes[i], x = (this.mascotTime * [0.026, 0.032, 0.037][lane] + phases[i] * (w + 140)) % (w + 140) - 70, y2 = h - [31, 47, 61][lane], r = [11, 10, 13, 9, 12, 10][i];
+          const speed = [0.023, 0.041, 0.017, 0.052, 0.031][i], x = (this.mascotTime * speed + phases[i] * (w + 140)) % (w + 140) - 70, y2 = h - [36, 45, 52][lanes[i]], r = [17, 14, 16, 13, 12][i];
           this.trackObjects.push({ x, y: y2, r });
-          if (i % 2 === 0) this.ball(i % 7, x, y2, r);
-          else {
-            this.rect(x - 13, y2 - 12, 26, 23, i === 1 ? "#efad48" : "#66bba1", 6);
-            this.rect(x - 11, y2 - 12, 22, 5, "#ffffff66", 3);
-            c.fillStyle = "#4b6554";
-            for (const dx of [-7, 7]) {
-              c.beginPath();
-              c.arc(x + dx, y2 + 12, 4, 0, Math.PI * 2);
-              c.fill();
-            }
-          }
+          this.trackToy(i, x, y2, r);
         }
       } finally {
         c.restore();

@@ -276,3 +276,73 @@ test("caps depend on shared-lattice front access, never on transient pick locks"
   x.scene.render();
   assert.deepEqual(x.scene.capStates, caps);
 });
+
+test("custom title uses curved glyph strokes and vertical-axis projection, never an enclosing circle", () => {
+  const x = setup();
+  let circles = 0,
+    rotations = 0,
+    fonts = 0,
+    curves = 0;
+  const noop = () => {};
+  const ctx = new Proxy(
+    {
+      arc: () => circles++,
+      rotate: () => rotations++,
+      fillText: () => fonts++,
+      quadraticCurveTo: () => curves++,
+      createLinearGradient: () => ({ addColorStop: noop }),
+    },
+    {
+      get: (o, k) => (k in o ? o[k as keyof typeof o] : noop),
+      set: () => true,
+    },
+  ) as unknown as CanvasRenderingContext2D;
+  const s = new Scene(ctx, x.game, 320, 660);
+  for (const time of [0, 2322, 2600]) {
+    (s as unknown as { mascotTime: number }).mascotTime = time;
+    (s as unknown as { homeTitle: () => void }).homeTitle();
+  }
+  assert.equal(circles, 0);
+  assert.equal(rotations, 0);
+  assert.equal(fonts, 0);
+  assert.ok(curves > 20);
+});
+
+test("new title and toy drawing restore transforms after paint exceptions", () => {
+  const x = setup();
+  for (const method of ["homeTitle", "trackToy"] as const) {
+    for (const failAt of [1, 20, 30]) {
+      let depth = 0,
+        paints = 0;
+      const noop = () => {};
+      const paint = () => {
+        if (++paints === failAt) throw Error("injected paint fault");
+      };
+      const ctx = new Proxy(
+        {
+          save: () => depth++,
+          restore: () => depth--,
+          stroke: paint,
+          fill: paint,
+          createLinearGradient: () => ({ addColorStop: noop }),
+        },
+        {
+          get: (o, k) => (k in o ? o[k as keyof typeof o] : noop),
+          set: () => true,
+        },
+      ) as unknown as CanvasRenderingContext2D;
+      const s = new Scene(ctx, x.game, 320, 660);
+      try {
+        (s as unknown as Record<string, (...args: number[]) => void>)[method](
+          4,
+          100,
+          600,
+          18,
+        );
+      } catch (e) {
+        assert.match(String(e), /injected paint fault/);
+      }
+      assert.equal(depth, 0, `${method} leaked a transform at paint ${failAt}`);
+    }
+  }
+});
