@@ -26,7 +26,7 @@ export function projection(
   const lane = (width - 32) / ((2 * edge) / Math.sqrt(3) + 1),
     radius = lane / 2;
   const originalDepth = Math.min(108, edge * 18, (bottom - top) * 0.24);
-  const depthSpace = originalDepth * 0.62;
+  const depthSpace = originalDepth * 0.8;
   const zScale = depthSpace / ((edge * Math.sqrt(3)) / 2),
     extent = (depthSpace * 2) / 3;
   const maxHeight = Math.min(220, bottom - top - 48 - (originalDepth * 4) / 3);

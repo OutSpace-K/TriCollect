@@ -1,0 +1,29 @@
+{
+  "scope": "Chromium pixels and input, not WeChat",
+  "results": [
+    {
+      "width": 320,
+      "preset": 1,
+      "threeFaces": true,
+      "slotsFixed": true
+    },
+    {
+      "width": 320,
+      "preset": 2,
+      "threeFaces": true,
+      "slotsFixed": true
+    },
+    {
+      "width": 390,
+      "preset": 1,
+      "threeFaces": true,
+      "slotsFixed": true
+    },
+    {
+      "width": 390,
+      "preset": 2,
+      "threeFaces": true,
+      "slotsFixed": true
+    }
+  ]
+}

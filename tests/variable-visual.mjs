@@ -53,7 +53,7 @@ try {
           assert.equal(ball.y, target.y);
         }
         await p.screenshot({
-          path: `evidence/v015-${width}-preset${preset}-face${view}.png`,
+          path: `evidence/v016-current-${width}-preset${preset}-face${view}.png`,
         });
       }
       await p.evaluate(() => {
@@ -84,7 +84,7 @@ try {
         }
       }
       await p.screenshot({
-        path: `evidence/v015-${width}-preset${preset}-after-pick.png`,
+        path: `evidence/v016-current-${width}-preset${preset}-after-pick.png`,
       });
       results.push({ width, preset, threeFaces: true, slotsFixed: true });
     }
@@ -95,7 +95,7 @@ try {
       tri.scene.buttons.find((b) => b.id === "records").act();
       tri.scene.render();
     });
-    await p.screenshot({ path: `evidence/v015-${width}-records.png` });
+    await p.screenshot({ path: `evidence/v016-current-${width}-records.png` });
     assert.equal(await p.evaluate(() => tri.game.records.entries.length), 1);
     assert.equal(
       await p.evaluate(() => tri.scene.buttons.some((b) => b.id === "start-0")),
@@ -105,11 +105,11 @@ try {
       tri.scene.homePanel = "help";
       tri.scene.render();
     });
-    await p.screenshot({ path: `evidence/v015-${width}-help.png` });
+    await p.screenshot({ path: `evidence/v016-current-${width}-help.png` });
     await p.close();
   }
   await writeFile(
-    "evidence/v0.1.15-variable-visual.json",
+    "evidence/v0.1.16-variable-visual.json",
     JSON.stringify(
       { scope: "Chromium pixels and input, not WeChat", results },
       null,

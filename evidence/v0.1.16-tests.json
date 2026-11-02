@@ -1,0 +1,7 @@
+{
+  "passed": 97,
+  "failed": 0,
+  "durationMs": 93938.93227,
+  "command": "tsx --test --test-concurrency=1 tests/*.test.ts",
+  "rerunNote": "Parallel run had a wall-clock rotation bound failure; isolated rotation passed both units. Final complete serial suite passed unchanged timing bounds. npm test now runs files serially for real-timer tests."
+}

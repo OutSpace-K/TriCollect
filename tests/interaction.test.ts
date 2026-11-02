@@ -138,8 +138,8 @@ test("confirmed display name and home effect lettering fit a narrow viewport", (
   x.scene.height = 660;
   x.scene.render();
   assert.ok(
-    x.strokes.some((s) => !s.arc && s.width === 16),
-    "original vector lettering is stroked",
+    !x.labels.includes("转个"),
+    "custom filled glyphs replace ordinary title text",
   );
   for (const b of x.scene.buttons)
     assert.ok(b.x >= 0 && b.x + b.w <= 320 && b.y >= 0 && b.y + b.h <= 660);
@@ -231,4 +231,48 @@ test("decorative motion freezes offscreen and returns without a large elapsed ju
   assert.equal(x.scene.decorationTime, before);
   x.advance(40);
   assert.equal(x.scene.decorationTime, before + 40);
+});
+
+test("transient controls retain color while input lock and real unavailable undo remain enforced", () => {
+  const x = setup();
+  const initial = x.scene.buttons.find((b) => b.id === "undo")!;
+  assert.equal(initial.disabled, true);
+  assert.equal(initial.dimmed, true);
+  const top = x.scene.targets[0];
+  x.scene.tap(top.x, top.y);
+  x.scene.render();
+  const seq = x.game.state.sequence,
+    view = x.game.state.view;
+  for (const id of ["rotate-left", "rotate-right", "undo", "hint"]) {
+    const b = x.scene.buttons.find((b) => b.id === id)!;
+    assert.equal(b.disabled, true);
+    assert.equal(b.dimmed, false);
+    x.scene.tap(b.x + b.w / 2, b.y + b.h / 2);
+  }
+  x.scene.tap(top.x, top.y);
+  assert.equal(x.game.state.sequence, seq);
+  assert.equal(x.game.state.view, view);
+  x.advance(250);
+  x.game.rotate(1);
+  x.scene.render();
+  const undo = x.scene.buttons.find((b) => b.id === "undo")!;
+  assert.equal(undo.disabled, true);
+  assert.equal(undo.dimmed, false);
+  x.scene.tap(undo.x + 5, undo.y + 5);
+  assert.equal(x.game.state.sequence, seq);
+  x.advance(250);
+  x.game.undo();
+  x.scene.render();
+  assert.equal(x.scene.buttons.find((b) => b.id === "undo")!.dimmed, true);
+});
+test("caps depend on shared-lattice front access, never on transient pick locks", () => {
+  const x = setup();
+  const expected = new Set(x.game.visible);
+  for (const cap of x.scene.capStates)
+    assert.equal(cap.closed, !expected.has(cap.id));
+  const caps = structuredClone(x.scene.capStates);
+  const t = x.scene.targets[0];
+  x.scene.tap(t.x, t.y);
+  x.scene.render();
+  assert.deepEqual(x.scene.capStates, caps);
 });

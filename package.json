@@ -1,12 +1,12 @@
 {
   "name": "tricollect",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/*.test.ts",
+    "test": "tsx --test --test-concurrency=1 tests/*.test.ts",
     "test:audio": "node tests/audio-browser.mjs",
     "test:visual": "node tests/visual-qa.mjs",
     "test:e2e": "node tests/e2e.mjs",

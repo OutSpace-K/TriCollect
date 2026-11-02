@@ -76,7 +76,7 @@ test("lower plan depth preserves original bottle height and circular touching sp
       );
       const p = projection(side, width, top, bottom, 0);
       assert.ok(
-        Math.abs((p.zScale * edge * Math.sqrt(3)) / 2 - originalDepth * 0.62) <
+        Math.abs((p.zScale * edge * Math.sqrt(3)) / 2 - originalDepth * 0.8) <
           1e-8,
       );
       assert.equal(

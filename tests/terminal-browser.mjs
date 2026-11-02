@@ -49,7 +49,7 @@ try {
     assert.equal(before.journal, true);
     assert.match(before.message, /保存失败/);
     await page.screenshot({
-      path: `evidence/v015-storage-${results.length}.png`,
+      path: `evidence/v016-current-storage-${results.length}.png`,
     });
     for (let i = 0; i < 3; i++) {
       await page.reload();
@@ -69,7 +69,7 @@ try {
     await page.close();
   }
   await writeFile(
-    "evidence/v0.1.15-terminal-browser.json",
+    "evidence/v0.1.16-terminal-browser.json",
     JSON.stringify(
       { platform: "Actual browser bundle in Chromium, not WeChat", results },
       null,

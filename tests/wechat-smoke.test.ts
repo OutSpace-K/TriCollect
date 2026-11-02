@@ -261,6 +261,7 @@ async function boot(
     backgroundDraws: () => backgroundDraws,
     rings,
     topBalls,
+    paintedBalls,
     tapTube: (index: number) => {
       const ring = topBalls.get(String(index));
       assert.ok(ring, `painted top ball ${index}`);
@@ -454,14 +455,20 @@ for (const units of [1, 1000])
     );
     assert.ok(introMs >= 800 && introMs <= 1400);
     r.tap("开始 ·");
+    const oldTop = { ...r.topBalls.get("1")! };
     r.tapTube(1);
     const movingCircles = r.circles.map((c) => ({ ...c }));
     const transferMs = await driveUntil(
       r,
-      () => r.labels.some((l) => l.s === "撤销" && l.color === "#ffffff"),
+      () =>
+        r.paintedBalls.some(
+          (b) =>
+            Math.abs(b.x - oldTop.x) < 0.01 &&
+            Math.abs(b.y - (oldTop.y + 6 * oldTop.r)) < 0.01,
+        ),
       800,
     );
-    assert.ok(transferMs <= 500);
+    assert.ok(transferMs >= 180 && transferMs <= 500);
     assert.ok(
       movingCircles.some(
         (a) =>
@@ -477,10 +484,16 @@ for (const units of [1, 1000])
       settled,
       "remaining tube/tray balls no longer move",
     );
+    const nextTop = { ...r.topBalls.get("1")! };
     r.tapTube(1);
     await driveUntil(
       r,
-      () => r.labels.some((l) => l.s === "撤销" && l.color === "#ffffff"),
+      () =>
+        r.paintedBalls.some(
+          (b) =>
+            Math.abs(b.x - nextTop.x) < 0.01 &&
+            Math.abs(b.y - (nextTop.y + 6 * nextTop.r)) < 0.01,
+        ),
       800,
     );
     assert.equal(decode(r.storage.get(SAVE_KEY)!)!.sequence, 2);
@@ -501,7 +514,7 @@ for (const units of [1, 1000])
       secondPickAccepted: true,
     });
     writeFileSync(
-      "evidence/v0.1.15-animation-wallclock.json",
+      "evidence/v0.1.16-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -545,7 +558,7 @@ for (const units of [1, 1000])
       });
     }
     writeFileSync(
-      "evidence/v0.1.15-animation-wallclock.json",
+      "evidence/v0.1.16-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -588,7 +601,7 @@ for (const units of [1, 1000])
       frozenRotationPauseMs: interrupted,
     });
     writeFileSync(
-      "evidence/v0.1.15-animation-wallclock.json",
+      "evidence/v0.1.16-animation-wallclock.json",
       JSON.stringify(
         {
           scope:

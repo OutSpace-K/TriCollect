@@ -1004,7 +1004,7 @@
     const edge = side - 1;
     const lane = (width - 32) / (2 * edge / Math.sqrt(3) + 1), radius = lane / 2;
     const originalDepth = Math.min(108, edge * 18, (bottom - top) * 0.24);
-    const depthSpace = originalDepth * 0.62;
+    const depthSpace = originalDepth * 0.8;
     const zScale = depthSpace / (edge * Math.sqrt(3) / 2), extent = depthSpace * 2 / 3;
     const maxHeight = Math.min(220, bottom - top - 48 - originalDepth * 4 / 3);
     const ballRadius = Math.min(
@@ -1054,6 +1054,8 @@
       __publicField(this, "silhouetteIds", []);
       __publicField(this, "rearOpenings", []);
       __publicField(this, "renderedFace", 0);
+      __publicField(this, "capStates", []);
+      __publicField(this, "titleAngle", 0);
       __publicField(this, "targets", []);
       __publicField(this, "bodies", []);
     }
@@ -1108,16 +1110,16 @@
       c.fillStyle = color;
       c.fill();
     }
-    button(id, label, x, y, w, h, act, disabled = false, accent = false) {
+    button(id, label, x, y, w, h, act, disabled = false, accent = false, dimmed = disabled) {
       const primary = accent || id === "hint" || id === "again";
-      const fill = disabled ? "#b5bdb0" : primary ? "#f5a340" : "#278b71";
+      const fill = dimmed ? "#b5bdb0" : primary ? "#f5a340" : "#278b71";
       this.rect(x - 2, y - 2, w + 4, h + 10, "#355447", 16);
       this.rect(
         x,
         y + 5,
         w,
         h,
-        disabled ? "#8a9587" : primary ? "#a95f27" : "#1b5749",
+        dimmed ? "#8a9587" : primary ? "#a95f27" : "#1b5749",
         14
       );
       this.rect(x, y, w, h, fill, 14);
@@ -1126,7 +1128,7 @@
         y + 3,
         w - 10,
         Math.min(10, h / 4),
-        disabled ? "#ffffff08" : "#ffffff30",
+        dimmed ? "#ffffff08" : "#ffffff30",
         7
       );
       this.text(
@@ -1134,10 +1136,10 @@
         x + w / 2,
         y + h / 2 + 5,
         id.startsWith("rotate") ? 24 : 15,
-        disabled ? "#4f5c50" : primary ? "#3b2b1d" : "#ffffff",
+        dimmed ? "#4f5c50" : primary ? "#3b2b1d" : "#ffffff",
         "center"
       );
-      this.buttons.push({ id, x, y, w, h, act, disabled });
+      this.buttons.push({ id, x, y, w, h, act, disabled, dimmed });
     }
     ball(type, x, y, r, alpha = 1) {
       const c = this.ctx;
@@ -1445,6 +1447,7 @@
         if (ball) this.ball(ball.type, x + (cell - 4) / 2, trayY + 21, 15);
       }
       const bw = (w - 65) / 4;
+      const transientLock = g.phase === "resolving" || g.phase === "rotating";
       this.button(
         "rotate-left",
         "\u2190",
@@ -1455,7 +1458,9 @@
         () => {
           g.rotate(-1);
         },
-        !g.canTurn
+        !g.canTurn,
+        false,
+        !g.canTurn && !transientLock
       );
       this.button(
         "rotate-right",
@@ -1467,7 +1472,9 @@
         () => {
           g.rotate(1);
         },
-        !g.canTurn
+        !g.canTurn,
+        false,
+        !g.canTurn && !transientLock
       );
       this.button(
         "undo",
@@ -1477,7 +1484,9 @@
         bw,
         44,
         () => g.undo(),
-        g.locked || !g.canUndo
+        g.locked || !g.canUndo,
+        false,
+        !g.canUndo || g.locked && !transientLock
       );
       this.button(
         "hint",
@@ -1487,7 +1496,9 @@
         bw,
         44,
         () => g.hintNow(),
-        g.locked
+        g.locked,
+        false,
+        g.locked && !transientLock
       );
       const notice = /失败|中断|预算|暂无/.test(g.message) ? g.message.includes("\u9884\u7B97") ? "\u6682\u672A\u627E\u5230\u63D0\u793A\uFF0C\u8BD5\u8BD5\u8F6C\u9762" : g.message.includes("\u6682\u65E0") ? "\u6362\u4E00\u9762\u518D\u8BD5\u8BD5" : g.message : "";
       if (notice)
@@ -1548,7 +1559,9 @@
       const { radius, step, ballRadius, point, axis } = layout;
       this.rotationAxis = axis;
       this.projectionScale = { x: layout.lane, z: layout.zScale };
-      const visible = turning ? /* @__PURE__ */ new Set() : faceVisible(g.board, view);
+      const accessible = faceVisible(g.board, view);
+      const visible = turning ? /* @__PURE__ */ new Set() : accessible;
+      this.capStates = [];
       this.renderedFace = view;
       this.renderedIds = [...visible];
       for (let i = 0; i < 3; i++) {
@@ -1578,9 +1591,9 @@
       const ratio = layout.zScale / layout.lane, padding = radius + 4;
       this.decorativeTray = {
         corners: corners.map((p2) => ({ x: p2.x, y: p2.y })),
-        frontY: Math.max(...corners.map((p2) => p2.y)) + padding * ratio + 13,
+        frontY: Math.max(...corners.map((p2) => p2.y)) + padding * ratio + 17,
         axis: { ...axis },
-        thickness: 9
+        thickness: 15
       };
       const dish = (offset, color, inset = 0) => {
         c.save();
@@ -1602,8 +1615,8 @@
           c.restore();
         }
       };
-      dish(22, "#263e2933");
-      dish(14, "#805737");
+      dish(27, "#263e2940");
+      dish(18, "#805737");
       dish(3, "#e0b273");
       dish(1, "#b28b59", 3.5);
       const opening = Math.min(
@@ -1626,15 +1639,19 @@
       }
       for (const item of ordered) {
         const { t, x, y } = item, height = t.capacity * step + 20, ty = y - height, front = visible.has(t.id);
+        const capped = !accessible.has(t.id);
+        this.capStates.push({ id: t.id, closed: capped, x, y: ty });
         if (!front) {
           const rear = c.createLinearGradient(x - radius, ty, x + radius, y);
-          rear.addColorStop(0, "#d9e3c9");
-          rear.addColorStop(0.55, "#c0d0b7");
-          rear.addColorStop(1, "#a7bba3");
+          rear.addColorStop(0, "#88a99c");
+          rear.addColorStop(0.13, "#e8f3df");
+          rear.addColorStop(0.32, "#c1d7c4");
+          rear.addColorStop(0.7, "#afc7b7");
+          rear.addColorStop(1, "#76968c");
           this.chamberPath(x, ty, y, radius);
           c.fillStyle = rear;
           c.fill();
-          c.strokeStyle = "#9db39d66";
+          c.strokeStyle = "#76998e80";
           c.lineWidth = 1;
           c.stroke();
           c.beginPath();
@@ -1649,6 +1666,84 @@
           c.ellipse(x, y - 1, radius * 0.9, opening * 0.6, 0, 0, Math.PI * 2);
           c.fillStyle = "#9bb19855";
           c.fill();
+          c.strokeStyle = "#f4fff5b0";
+          c.lineWidth = 0.8;
+          c.beginPath();
+          c.moveTo(x - radius * 0.79, ty + 12);
+          c.quadraticCurveTo(
+            x - radius * 0.88,
+            ty + height * 0.55,
+            x - radius * 0.7,
+            y - 10
+          );
+          c.stroke();
+          if (capped) {
+            const lidSide = c.createLinearGradient(
+              x - radius,
+              ty - 5,
+              x + radius,
+              ty + 6
+            );
+            lidSide.addColorStop(0, "#c9a66a");
+            lidSide.addColorStop(0.3, "#ead09a");
+            lidSide.addColorStop(1, "#9b7648");
+            c.fillStyle = "#29483935";
+            c.beginPath();
+            c.ellipse(
+              x + radius * 0.12,
+              ty + 7,
+              radius * 1.03,
+              opening * 0.9,
+              0,
+              0,
+              Math.PI * 2
+            );
+            c.fill();
+            c.fillStyle = lidSide;
+            c.fillRect(x - radius * 0.99, ty - 7, radius * 1.98, 9);
+            c.beginPath();
+            c.ellipse(x, ty + 2, radius * 0.99, opening, 0, 0, Math.PI * 2);
+            c.fill();
+            const lidTop = c.createLinearGradient(
+              x - radius,
+              ty - opening - 7,
+              x + radius,
+              ty + opening - 7
+            );
+            lidTop.addColorStop(0, "#fff0c8");
+            lidTop.addColorStop(0.45, "#e6c78b");
+            lidTop.addColorStop(1, "#bc955e");
+            c.fillStyle = lidTop;
+            c.beginPath();
+            c.ellipse(x, ty - 7, radius * 1.02, opening, 0, 0, Math.PI * 2);
+            c.fill();
+            c.strokeStyle = "#fff6d9b0";
+            c.lineWidth = 0.8;
+            c.beginPath();
+            c.ellipse(
+              x,
+              ty - 8,
+              radius * 0.87,
+              opening * 0.6,
+              0,
+              Math.PI,
+              Math.PI * 1.95
+            );
+            c.stroke();
+            c.strokeStyle = "#a4835050";
+            c.lineWidth = 0.7;
+            c.beginPath();
+            c.ellipse(
+              x,
+              ty - 7,
+              radius * 0.55,
+              opening * 0.38,
+              0,
+              0,
+              Math.PI * 2
+            );
+            c.stroke();
+          }
           this.rearOpenings.push({
             id: t.id,
             x,
@@ -1739,7 +1834,7 @@
         well.addColorStop(1, "#e8f5e8");
         c.fillStyle = well;
         c.beginPath();
-        c.ellipse(x, ty - 1, radius * 0.8, opening * 0.57, 0, 0, Math.PI * 2);
+        c.ellipse(x, ty - 1, radius * 0.89, opening * 0.63, 0, 0, Math.PI * 2);
         c.fill();
         c.strokeStyle = "#ffffffd9";
         c.lineWidth = 1.2;
@@ -1847,7 +1942,7 @@
             c.quadraticCurveTo(x, frostTop + 3, x + radius, frostTop);
             c.stroke();
             c.strokeStyle = "#ffffff4d";
-            c.lineWidth = radius * 0.14;
+            c.lineWidth = radius * 0.07;
             c.beginPath();
             c.moveTo(x - radius * 0.66, frostTop + 4);
             c.lineTo(x - radius * 0.66, y - 9);
@@ -1859,7 +1954,7 @@
           }
         }
         c.strokeStyle = "#ffffff75";
-        c.lineWidth = Math.max(1.4, radius * 0.14);
+        c.lineWidth = Math.max(0.8, radius * 0.07);
         c.beginPath();
         c.moveTo(x - radius * 0.7, ty + 16);
         c.bezierCurveTo(
@@ -1911,178 +2006,138 @@
       }
     }
     homeTitle() {
-      const glyphs = [
+      const c = this.ctx, scale = Math.min(1.05, (this.width - 40) / 272);
+      const ge = [
         [
-          [
-            [0, 8],
-            [20, 8]
-          ],
-          [
-            [8, 0],
-            [0, 23],
-            [21, 23]
-          ],
-          [
-            [0, 33],
-            [23, 33]
-          ],
-          [
-            [12, 12],
-            [12, 50]
-          ],
-          [
-            [28, 14],
-            [55, 14]
-          ],
-          [
-            [25, 25],
-            [59, 25]
-          ],
-          [
-            [44, 5],
-            [37, 34],
-            [55, 34],
-            [41, 47]
-          ],
-          [
-            [39, 41],
-            [46, 48]
-          ]
+          [31, 0],
+          [5, 26]
         ],
         [
-          [
-            [31, 0],
-            [5, 26]
-          ],
-          [
-            [31, 0],
-            [57, 26]
-          ],
-          [
-            [31, 20],
-            [31, 52]
-          ]
+          [31, 0],
+          [57, 26]
         ],
         [
-          [
-            [0, 8],
-            [21, 8]
-          ],
-          [
-            [0, 24],
-            [21, 24]
-          ],
-          [
-            [0, 45],
-            [23, 43]
-          ],
-          [
-            [11, 8],
-            [11, 45]
-          ],
-          [
-            [32, 13],
-            [61, 13]
-          ],
-          [
-            [46, 0],
-            [46, 52],
-            [41, 56]
-          ],
-          [
-            [54, 2],
-            [59, 6]
-          ],
-          [
-            [29, 24],
-            [37, 31]
-          ],
-          [
-            [37, 35],
-            [26, 43]
-          ],
-          [
-            [61, 23],
-            [54, 31]
-          ],
-          [
-            [49, 25],
-            [62, 46]
-          ]
+          [31, 20],
+          [31, 52]
         ]
       ];
-      const c = this.ctx, scale = Math.min(1.12, (this.width - 70) / 226);
+      const ball = [
+        [
+          [10, 9],
+          [25, 9]
+        ],
+        [
+          [0, 31],
+          [27, 31]
+        ],
+        [
+          [8, 53],
+          [27, 53]
+        ],
+        [
+          [16, 9],
+          [16, 53]
+        ],
+        [
+          [28, 14],
+          [60, 14]
+        ],
+        [
+          [40, 1],
+          [40, 57],
+          [33, 61]
+        ],
+        [
+          [48, 4],
+          [53, 8]
+        ],
+        [
+          [29, 24],
+          [34, 30]
+        ],
+        [
+          [34, 37],
+          [25, 47]
+        ],
+        [
+          [64, 26],
+          [52, 33]
+        ],
+        [
+          [43, 32],
+          [60, 51]
+        ]
+      ];
+      const ink = (paths, weight, fill, dy = 0) => {
+        c.fillStyle = fill;
+        for (const path of paths) {
+          for (let j = 1; j < path.length; j++) {
+            const [x0, y0] = path[j - 1], [x1, y1] = path[j], d = Math.hypot(x1 - x0, y1 - y0) || 1, nx = -(y1 - y0) / d * weight / 2, ny = (x1 - x0) / d * weight / 2;
+            c.beginPath();
+            c.moveTo(x0 + nx, y0 + ny + dy);
+            c.lineTo(x1 + nx, y1 + ny + dy);
+            c.lineTo(x1 - nx, y1 - ny + dy);
+            c.lineTo(x0 - nx, y0 - ny + dy);
+            c.closePath();
+            c.fill();
+          }
+          for (const [x, y] of path) {
+            c.beginPath();
+            c.arc(x, y + dy, weight / 2, 0, Math.PI * 2);
+            c.fill();
+          }
+        }
+      };
+      const cycle = this.mascotTime % 9e3, t = Math.max(0, Math.min(1, (cycle - 1800) / 1600));
+      this.titleAngle = cycle >= 1800 && cycle < 3400 ? t * t * (3 - 2 * t) * Math.PI * 2 : 0;
       c.save();
       try {
-        c.translate(this.width / 2 - 106 * scale, 88);
+        c.translate(this.width / 2 - 128 * scale, 88);
         c.scale(scale, scale);
-        glyphs.forEach((paths, i) => {
-          c.save();
-          try {
-            c.translate(i * 76, i === 1 ? 8 : 0);
-            if (i === 1) {
-              const a = this.mascotTime / 1700;
-              c.strokeStyle = "#c1e2b7";
-              c.lineWidth = 2;
-              c.beginPath();
-              c.ellipse(30, 25, 34, 31, 0, 0, Math.PI * 2);
-              c.stroke();
-              c.fillStyle = "#f5b844";
-              c.beginPath();
-              c.arc(
-                30 + 34 * Math.cos(a),
-                25 + 31 * Math.sin(a),
-                4,
-                0,
-                Math.PI * 2
-              );
-              c.fill();
-              c.translate(4 * Math.cos(a), 4 * Math.sin(a));
-            }
-            if (i === 2) {
-              const orb = c.createRadialGradient(17, 9, 2, 31, 27, 43);
-              orb.addColorStop(0, "#fff7ad");
-              orb.addColorStop(0.35, "#ffc742");
-              orb.addColorStop(0.8, "#ed8b22");
-              orb.addColorStop(1, "#b9551c");
-              c.fillStyle = "#88684035";
-              c.beginPath();
-              c.ellipse(34, 61, 37, 7, 0, 0, Math.PI * 2);
-              c.fill();
-              c.fillStyle = orb;
-              c.beginPath();
-              c.arc(31, 27, 41, 0, Math.PI * 2);
-              c.fill();
-              c.fillStyle = "#fff9dcba";
-              c.beginPath();
-              c.ellipse(16, 4, 10, 5, -0.45, 0, Math.PI * 2);
-              c.fill();
-              c.translate(6, 5);
-              c.scale(0.8, 0.8);
-            }
-            c.rotate(i === 0 ? -0.08 : i === 2 ? 0.08 : 0);
-            c.lineCap = "round";
-            c.lineJoin = "round";
-            for (const [offset, width, color] of [
-              [4, 16, "#47624a"],
-              [0, 16, "#fff9dc"],
-              [0, 9, i === 2 ? "#fff7d5" : "#238a61"],
-              [-1, 3, i === 2 ? "#fffef1" : "#86e9a3"]
-            ]) {
-              c.strokeStyle = color;
-              c.lineWidth = i === 0 ? width * 1.22 : width;
-              for (const path of paths) {
-                c.beginPath();
-                path.forEach(
-                  ([x, y], j) => j ? c.lineTo(x, y + offset) : c.moveTo(x, y + offset)
-                );
-                c.stroke();
-              }
-            }
-          } finally {
-            c.restore();
-          }
-        });
+        const green = c.createLinearGradient(0, 0, 0, 57);
+        green.addColorStop(0, "#55c98e");
+        green.addColorStop(0.35, "#269766");
+        green.addColorStop(1, "#126c51");
+        c.font = "900 72px sans-serif";
+        c.textAlign = "left";
+        c.fillStyle = "#315744";
+        c.fillText("\u8F6C", -3, 62);
+        c.fillStyle = green;
+        c.fillText("\u8F6C", -4, 59);
+        c.save();
+        try {
+          c.translate(92 + 31, 26);
+          c.rotate(this.titleAngle);
+          c.translate(-31, -26);
+          ink(ge, 11, "#315744", 4);
+          ink(ge, 11, green);
+        } finally {
+          c.restore();
+        }
+        c.save();
+        try {
+          c.translate(184, 0);
+          const orange = c.createLinearGradient(0, -5, 62, 67);
+          orange.addColorStop(0, "#ffc84b");
+          orange.addColorStop(0.45, "#ed8e21");
+          orange.addColorStop(1, "#b8561d");
+          c.strokeStyle = "#97622d";
+          c.lineWidth = 5;
+          c.beginPath();
+          c.arc(31, 34, 36, 0, Math.PI * 2);
+          c.stroke();
+          c.strokeStyle = orange;
+          c.beginPath();
+          c.arc(31, 31, 36, 0, Math.PI * 2);
+          c.stroke();
+          c.beginPath();
+          c.arc(31, 31, 35.5, 0, Math.PI * 2);
+          c.clip();
+          ink(ball, 8.5, "#9a632b", 3);
+          ink(ball, 8.5, orange);
+        } finally {
+          c.restore();
+        }
       } finally {
         c.restore();
       }
@@ -2356,10 +2411,11 @@
       c.save();
       try {
         c.beginPath();
-        c.rect(0, h - 69, w, 54);
+        c.rect(0, h - 77, w, 65);
         c.clip();
-        for (let i = 0; i < 5; i++) {
-          const x = (this.mascotTime * 0.035 + i * (w + 120) / 5) % (w + 120) - 60, y2 = h - 38, r = 12;
+        const phases = [0.02, 0.18, 0.43, 0.59, 0.89, 0.97], lanes = [0, 2, 1, 2, 0, 1];
+        for (let i = 0; i < phases.length; i++) {
+          const lane = lanes[i], x = (this.mascotTime * [0.026, 0.032, 0.037][lane] + phases[i] * (w + 140)) % (w + 140) - 70, y2 = h - [31, 47, 61][lane], r = [11, 10, 13, 9, 12, 10][i];
           this.trackObjects.push({ x, y: y2, r });
           if (i % 2 === 0) this.ball(i % 7, x, y2, r);
           else {

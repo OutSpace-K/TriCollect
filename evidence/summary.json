@@ -1,13 +1,15 @@
 {
   "project": "TriCollect",
   "displayName": "转个“球”",
-  "version": "0.1.15",
-  "baseCommit": "cb43009039d9d7f0784102f8fa5959607b80da17",
+  "version": "0.1.16",
+  "baseCommit": "3a0cbe4983862425ab905a087b6312647f7ca743",
   "ruleVersion": "tricollect-5-variable-height",
   "tests": {
-    "passed": 95,
+    "passed": 97,
     "failed": 0,
-    "durationMs": 139985.92879
+    "durationMs": 93938.93227,
+    "command": "tsx --test --test-concurrency=1 tests/*.test.ts",
+    "rerunNote": "Parallel run had a wall-clock rotation bound failure; isolated rotation passed both units. Final complete serial suite passed unchanged timing bounds. npm test now runs files serially for real-timer tests."
   },
   "browser": {
     "passed": true,
@@ -17,8 +19,8 @@
     "results": [
       {
         "check": "browser real 10-second clock",
-        "elapsedMs": 10100.599999999627,
-        "chargedMs": 10105.300000000745
+        "elapsedMs": 10053.800000000745,
+        "chargedMs": 10076.300000000745
       },
       "12 consecutive 250ms pointer rotations completed without lock",
       "one-frame exception recovered; pause/home/reload regression preserved",
@@ -26,19 +28,19 @@
         "preset": 0,
         "picks": 105,
         "wonWithoutAds": true,
-        "remainingMs": 275054.0000000093
+        "remainingMs": 275901.59999999404
       },
       {
         "preset": 1,
         "picks": 126,
         "wonWithoutAds": true,
-        "remainingMs": 290695.7999999877
+        "remainingMs": 283285.40000003204
       },
       {
         "preset": 2,
         "picks": 216,
         "wonWithoutAds": true,
-        "remainingMs": 270714.799999984
+        "remainingMs": 216352.40000001714
       }
     ],
     "errors": []
@@ -94,18 +96,27 @@
       }
     ]
   },
-  "visual": "Actual 320/390 pixels inspected: home before/after, title motion, difficulty/replacement modals, mixed-height three faces, fixed slots, inner reveal, rotation and modal states. Hidden identity changes produce identical board pixels. Screenshots internal only; not aesthetic acceptance.",
+  "visual": "Actual 320/390 pixels inspected: bold first glyph, self-rotating middle glyph, circular ink last glyph, staggered track, three-face caps, mid-turn, inner reveal, mixed heights and stable bottom controls. Screenshots internal only; not user aesthetic acceptance.",
   "changes": [
-    "One start button opens same-column difficulty modal; unfinished save replacement requires explicit confirmation",
-    "Original heavier first glyph, upright orbiting middle glyph, ball-shaped last glyph",
-    "Decorative balls/toys loop offscreen left-to-right; background pauses and no resume jump",
-    "Front lower opaque frosted glass with neutral faint silhouettes; rear reduced detail/contrast and no true ball colors"
+    "Actual bold filled system first glyph; middle glyph rotates on its own center; circular last-glyph outline without backing disc",
+    "Six irregularly spaced toys on three left-to-right track lanes",
+    "Closed tubes have volumetric caps computed by actual face visibility, independent of transient input lock",
+    "Thin glass rims, stronger bottle side shading, deeper triangular projection and thicker tray",
+    "Button dimming separated from action guards; no transient gray flash while repeated picks/turn/undo remain rejected"
   ],
-  "storage": "v0.1.14 terminal consistency/compact persistence unchanged; failure-order browser regression repeated on current bundle",
+  "storage": "v0.1.14 terminal consistency and compact persistence unchanged; current browser failure-order regression passed",
   "unchanged": "Core rules, 105/126/216 balls, 300s, fixed slots, single undo, scoring, music and background assets",
   "typecheck": "passed",
   "formatCheck": "passed",
-  "cleanBuild": "npm ci/build/typecheck; all 12 dist files byte-identical",
+  "cleanBuild": {
+    "version": "0.1.16",
+    "install": "npm ci --offline --cache /tmp/tricollect-npm-cache (existing integrity-checked cache)",
+    "build": "passed",
+    "typecheck": "passed",
+    "distFiles": 12,
+    "byteIdentical": true,
+    "initialAttempt": "Default-cache install failed with npm extraction ENOENT; clean offline install using existing cache succeeded."
+  },
   "audio": "Actual browser decode/playback/lifecycle passed; music unchanged; no human listening",
   "nativeCanvas": "Actual native bundle in Chromium Canvas wx bridge at 320/390, not actual WeChat",
   "seeds": "300-seed v0.1.13 evidence retained; generator unchanged, no new 300-seed claim. All-preset native/browser completions and core tests passed.",
@@ -115,5 +126,28 @@
     "Human visual preference/touch and 300s balance",
     "Real AppID/advertising callbacks and friend-ranking integration",
     "Total storage failure plus forced process termination cannot guarantee unpersisted terminal data"
-  ]
+  ],
+  "ui": {
+    "platform": "Actual Chromium pixels/input, not WeChat",
+    "reports": [
+      {
+        "width": 320,
+        "selfRotation": true,
+        "threeTrackLanes": true,
+        "capsThreeFaces": true,
+        "noTransientGray": true,
+        "inputLockPreserved": true,
+        "revealedCapOpens": true
+      },
+      {
+        "width": 390,
+        "selfRotation": true,
+        "threeTrackLanes": true,
+        "capsThreeFaces": true,
+        "noTransientGray": true,
+        "inputLockPreserved": true,
+        "revealedCapOpens": true
+      }
+    ]
+  }
 }

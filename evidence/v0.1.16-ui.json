@@ -1,0 +1,23 @@
+{
+  "platform": "Actual Chromium pixels/input, not WeChat",
+  "reports": [
+    {
+      "width": 320,
+      "selfRotation": true,
+      "threeTrackLanes": true,
+      "capsThreeFaces": true,
+      "noTransientGray": true,
+      "inputLockPreserved": true,
+      "revealedCapOpens": true
+    },
+    {
+      "width": 390,
+      "selfRotation": true,
+      "threeTrackLanes": true,
+      "capsThreeFaces": true,
+      "noTransientGray": true,
+      "inputLockPreserved": true,
+      "revealedCapOpens": true
+    }
+  ]
+}

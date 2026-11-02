@@ -1,0 +1,9 @@
+{
+  "version": "0.1.16",
+  "install": "npm ci --offline --cache /tmp/tricollect-npm-cache (existing integrity-checked cache)",
+  "build": "passed",
+  "typecheck": "passed",
+  "distFiles": 12,
+  "byteIdentical": true,
+  "initialAttempt": "Default-cache install failed with npm extraction ENOENT; clean offline install using existing cache succeeded."
+}
