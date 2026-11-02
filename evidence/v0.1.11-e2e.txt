@@ -1,0 +1,40 @@
+
+> tricollect@0.1.11 test:e2e
+> node tests/e2e.mjs
+
+{
+  "directPicks": 390,
+  "fallbackPicks": 0,
+  "results": [
+    {
+      "check": "browser real 10-second clock",
+      "elapsedMs": 10024.200000000186,
+      "chargedMs": 10112.099999999627
+    },
+    "12 consecutive 250ms pointer rotations completed without lock",
+    "one-frame exception recovered; pause/home/reload regression preserved",
+    {
+      "preset": 0,
+      "picks": 105,
+      "wonWithoutAds": true,
+      "remainingMs": 264225.59999999683
+    },
+    {
+      "preset": 1,
+      "picks": 105,
+      "wonWithoutAds": true,
+      "remainingMs": 274020.00000000466
+    },
+    {
+      "preset": 2,
+      "picks": 180,
+      "wonWithoutAds": true,
+      "remainingMs": 242608.00000000186
+    }
+  ]
+}
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

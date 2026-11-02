@@ -19,3 +19,5 @@
 v0.1.4 音频接口核验：官方类型中的 InnerAudioContext `loop`、`volume`、`play()`、`pause()`、`onError()`；浏览器使用 HTMLAudioElement，不依赖外部服务。实际设备播放与音质未验收。
 
 - v0.1.10局内背景 `assets/play-background.png`：本项目原创程序绘制墙面陈列、光束与台面，按MIT随工程提供。生成脚本 `scripts/make-play-background.py`，无外部图片或采样；首页原图片保留。
+
+- v0.1.11替换首页及局内背景：两张PNG由原创脚本 `scripts/make-arcade-backgrounds.py` 生成，MIT，Pillow仅离线使用。参考研究只提炼布局和明暗规律，未复制第三方截图/素材。历史生成脚本保留，不再代表当前资源。

@@ -1,0 +1,1 @@
+18 actual browser screen captures; all button bounds and modal target exclusions passed

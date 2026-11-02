@@ -1,3 +1,4 @@
+import { viewport } from "./platform/viewport";
 import { Music } from "./platform/music";
 import { calibrateClock } from "./platform/clock";
 import { startFrames } from "./platform/frame";
@@ -29,9 +30,9 @@ const ads = AD_UNIT
     )
   : new UnavailableAd();
 async function boot() {
-  ctx.fillStyle = "#fff9ed";
+  ctx.fillStyle = "#18234f";
   ctx.fillRect(0, 0, width, height);
-  ctx.fillStyle = "#44352e";
+  ctx.fillStyle = "#f5f7ff";
   ctx.font = "16px sans-serif";
   ctx.fillText("正在准备球仓…", 24, 80);
   const clock = await calibrateClock(() => perf.now());
@@ -67,11 +68,18 @@ async function boot() {
       audio.play();
     },
   );
-  // Reserve the top system capsule area and bottom safe area without changing rule coordinates.
-  const top = Math.max(info.safeArea?.top ?? 0, 24),
-    bottom = Math.max(0, height - (info.safeArea?.bottom ?? height));
-  const logicalHeight = Math.max(height - top - bottom, 660),
-    factor = Math.min(1, (height - top - bottom) / logicalHeight);
+  let menuBottom: number | undefined;
+  try {
+    menuBottom = wx.getMenuButtonBoundingClientRect?.().bottom;
+  } catch {
+    /* Conservative capsule fallback. */
+  }
+  const { top, bottom, logicalHeight, factor } = viewport(
+    height,
+    info.safeArea?.top,
+    info.safeArea?.bottom,
+    menuBottom,
+  );
   const scene = new Scene(ctx, game, width / factor, logicalHeight);
   for (const file of ["background.png", "play-background.png"]) {
     try {
@@ -118,6 +126,9 @@ async function boot() {
   wx.onShow(() => {
     pointer = null;
   });
+  // Remove bootstrap text from the reserved system area before the first scene.
+  ctx.fillStyle = "#18234f";
+  ctx.fillRect(0, 0, width, height);
   startFrames(
     requestAnimationFrame,
     () => {
@@ -140,9 +151,9 @@ async function boot() {
 }
 void boot().catch((error) => {
   console.error("TriCollect startup failed", error);
-  ctx.fillStyle = "#fff9ed";
+  ctx.fillStyle = "#18234f";
   ctx.fillRect(0, 0, width, height);
-  ctx.fillStyle = "#44352e";
+  ctx.fillStyle = "#f5f7ff";
   ctx.font = "16px sans-serif";
   ctx.fillText("时钟无法正常运行，请重新打开游戏", 20, 100);
 });

@@ -159,3 +159,31 @@ test("play backdrop is distinct with home fallback; decorative tray never select
   x.game.home();
   assert.equal(x.scene.backgroundKind, "home");
 });
+test("arcade HUD omits seed, tube numbering and routine narration; modal controls fit narrow screens", () => {
+  const x = setup();
+  assert.ok(!x.labels.includes(String(x.game.state.seed)));
+  assert.ok(
+    !x.labels.some(
+      (t) =>
+        t.includes("仅正面") || t.includes("原型") || t.includes("管待清空"),
+    ),
+  );
+  assert.ok(!x.labels.some((t) => /^\d+$/.test(t)), "no debug tube numbers");
+  for (const phase of [
+    "paused",
+    "blocked",
+    "expired",
+    "ad",
+    "result",
+  ] as const) {
+    x.game.phase = phase;
+    x.scene.width = 320;
+    x.scene.height = 660;
+    x.scene.render();
+    assert.equal(x.scene.targets.length, 0);
+    for (const b of x.scene.buttons)
+      assert.ok(
+        b.x >= 0 && b.y >= 0 && b.x + b.w <= 320 && b.y + b.h + 8 <= 660,
+      );
+  }
+});

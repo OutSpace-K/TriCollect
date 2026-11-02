@@ -1,13 +1,5 @@
 import { projection } from "./projection";
-import {
-  PALETTE,
-  SYMBOLS,
-  PRESETS,
-  CONFIG,
-  VERSION,
-  DISPLAY_NAME,
-  FACES,
-} from "../config";
+import { PALETTE, SYMBOLS, PRESETS, CONFIG, FACES } from "../config";
 import { faceVisible, faceCoordinates } from "../core/rules";
 import { Controller } from "../controller";
 export type Button = {
@@ -109,7 +101,7 @@ export class Scene {
     x: number,
     y: number,
     size = 14,
-    color = "#44352e",
+    color = "#f5f7ff",
     align: CanvasTextAlign = "left",
   ) {
     const c = this.ctx;
@@ -148,19 +140,32 @@ export class Scene {
     disabled = false,
     accent = false,
   ) {
+    const primary = accent || id === "hint" || id === "again";
+    const fill = disabled ? "#464a79" : primary ? "#ffdb39" : "#6554ed";
+    this.rect(x - 2, y - 2, w + 4, h + 10, "#111735", 16);
     this.rect(
       x,
-      y,
+      y + 5,
       w,
       h,
-      disabled ? "#e7ddd0" : accent || id === "hint" ? "#c94322" : "#6534ce",
+      disabled ? "#303657" : primary ? "#b66a14" : "#342594",
+      14,
+    );
+    this.rect(x, y, w, h, fill, 14);
+    this.rect(
+      x + 5,
+      y + 3,
+      w - 10,
+      Math.min(10, h / 4),
+      disabled ? "#ffffff08" : "#ffffff38",
+      7,
     );
     this.text(
       label,
       x + w / 2,
       y + h / 2 + 5,
-      14,
-      disabled ? "#88796a" : "#ffffff",
+      id.startsWith("rotate") ? 24 : 15,
+      disabled ? "#c0c4db" : primary ? "#242046" : "#ffffff",
       "center",
     );
     this.buttons.push({ id, x, y, w, h, act, disabled });
@@ -297,12 +302,12 @@ export class Scene {
       y,
       r,
     );
-    shade.addColorStop(0, "#e8dfd1");
-    shade.addColorStop(0.28, "#c3b7a6");
-    shade.addColorStop(0.72, "#9a8d7b");
-    shade.addColorStop(1, "#746756");
+    shade.addColorStop(0, "#b9c4db");
+    shade.addColorStop(0.28, "#8390ae");
+    shade.addColorStop(0.72, "#556382");
+    shade.addColorStop(1, "#303d5d");
     c.fillStyle = shade;
-    c.strokeStyle = "#897a65";
+    c.strokeStyle = "#6d80a9";
     c.lineWidth = 1.1;
     c.beginPath();
     c.arc(x, y, r, 0, Math.PI * 2);
@@ -329,7 +334,7 @@ export class Scene {
   }
   private transmittedBackdrop(x: number, y: number, w: number, h: number) {
     const c = this.ctx;
-    c.fillStyle = "#f8f2e4";
+    c.fillStyle = "#253469";
     c.fillRect(x, y, w, h);
     if (this.currentBackground) {
       const scale = Math.max(this.width / 600, this.height / 1040),
@@ -407,8 +412,8 @@ export class Scene {
     this.targets = [];
     c.clearRect(0, 0, w, h);
     const bg = c.createLinearGradient(0, 0, w, h);
-    bg.addColorStop(0, "#fff9ed");
-    bg.addColorStop(1, "#f4e4cf");
+    bg.addColorStop(0, "#3932a2");
+    bg.addColorStop(1, "#101d49");
     c.fillStyle = bg;
     c.fillRect(0, 0, w, h);
     if (this.currentBackground) {
@@ -423,10 +428,10 @@ export class Scene {
     }
     this.button(
       "sound-toggle",
-      g.state.sound ? "声音：开" : "声音：关",
-      g.phase === "home" ? w - 106 : w / 2 - 42,
-      g.phase === "home" ? 18 : 100,
-      84,
+      g.state.sound ? "声音开" : "静音",
+      w - 78,
+      18,
+      60,
       34,
       () => g.toggleSound(),
     );
@@ -434,31 +439,26 @@ export class Scene {
       this.home();
       return;
     }
-    this.text("旋转 · 收集 · 消除", 22, 35, 12, "#786254");
-
+    this.rect(16, 16, 116, 51, "#111735", 16);
+    this.rect(19, 19, 110, 45, "#f2fbff", 13);
+    const secs = Math.ceil(g.state.remaining / 1000);
     this.text(
-      PRESETS[g.state.preset].name + " · " + g.state.seed,
-      22,
-      63,
-      13,
-      "#786254",
+      `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`,
+      74,
+      51,
+      29,
+      g.state.remaining < 30000 ? "#c72b51" : "#18234f",
+      "center",
     );
-    this.text(
-      `${Math.ceil(g.state.remaining / 1000 / 60) - (Math.ceil(g.state.remaining / 1000) % 60 === 0 ? 0 : 1)}:${String(Math.ceil(g.state.remaining / 1000) % 60).padStart(2, "0")}`,
-      w - 24,
-      46,
-      28,
-      g.state.remaining < 30_000 ? "#fb826f" : "#3c302a",
-      "right",
-    );
-    this.text(
-      `${g.board.score} 分  ·  +${g.state.added / 1000}秒`,
-      w - 24,
-      71,
-      12,
-      "#786254",
-      "right",
-    );
+    const total =
+      ((PRESETS[g.state.preset].side * (PRESETS[g.state.preset].side + 1)) /
+        2) *
+      5;
+    const progress = g.board.cleared.length / total;
+    this.text(`清空 ${g.board.cleared.length}/${total}`, 20, 91, 13, "#ecf6ff");
+    this.rect(20, 101, w - 40, 9, "#101731", 5);
+    if (progress > 0)
+      this.rect(20, 101, Math.max(9, (w - 40) * progress), 9, "#42e6cb", 5);
     const hidden = ["paused", "ad", "expired", "blocked", "result"].includes(
       g.phase,
     );
@@ -473,27 +473,20 @@ export class Scene {
     this.button(
       "pause",
       "暂停",
-      w - 77,
-      88,
-      55,
+      w - 146,
+      18,
+      60,
       34,
       () => {
         g.pause();
       },
       !["active", "resolving", "rotating"].includes(g.phase),
     );
-    this.text(
-      "轻触正面顶球 · 横滑转动球仓",
-      w / 2,
-      boardBottom + 10,
-      12,
-      "#786254",
-      "center",
-    );
-    this.text("三同消除", 22, trayY - 7, 12, "#786254");
+    this.rect(14, trayY - 8, w - 28, 60, "#101735", 17);
+    this.rect(17, trayY - 5, w - 34, 53, "#394887", 14);
     const cell = (w - 44) / 7;
     for (let i = 0; i < 7; i++) {
-      this.rect(22 + i * cell, trayY, cell - 4, 43, "#eadbc8", 9);
+      this.rect(22 + i * cell, trayY, cell - 4, 43, "#15244f", 9);
       const ball = g.board.tray[i];
       if (ball)
         this.ball(ball.type, 22 + i * cell + (cell - 4) / 2, trayY + 21, 15);
@@ -543,29 +536,38 @@ export class Scene {
       () => g.hintNow(),
       g.locked,
     );
-    this.text(
-      this.fit(g.message, Math.floor((w - 40) / 11)),
-      w / 2,
-      h - 20,
-      11,
-      "#6f5a4d",
-      "center",
-    );
+    // Routine rule narration is omitted. Only actionable failures/hint status remain.
+    const notice = /失败|中断|预算|暂无/.test(g.message)
+      ? g.message.includes("预算")
+        ? "暂未找到提示，试试转面"
+        : g.message.includes("暂无")
+          ? "换一面再试试"
+          : g.message
+      : "";
+    if (notice)
+      this.text(
+        this.fit(notice, Math.floor((w - 40) / 11)),
+        w / 2,
+        h - 16,
+        11,
+        "#ffdf62",
+        "center",
+      );
     if (g.phase === "intro" || g.phase === "ready") {
       this.rect(
         18,
         Math.max(100, boardBottom - 103),
         w - 36,
         92,
-        "#fff9ed",
+        "#18234f",
         18,
       );
       this.text(
-        "只取顶部 · 三同消除 · 逐层揭开",
+        "点顶球 · 三颗同色消除",
         w / 2,
         boardBottom - 73,
         13,
-        "#44352e",
+        "#f5f7ff",
         "center",
       );
       this.button(
@@ -606,22 +608,16 @@ export class Scene {
     const visible = turning ? new Set<string>() : faceVisible(g.board, view);
     this.renderedFace = view;
     this.renderedIds = [...visible];
-    this.text(
-      `第 ${view + 1} 面 / 3 · ${face.name}`,
-      w / 2,
-      top + 13,
-      15,
-      face.color,
-      "center",
-    );
-    this.text(
-      `${g.board.tubes.filter((t) => t.balls.length).length} 管待清空 · 仅正面顶部可取`,
-      w / 2,
-      top + 34,
-      11,
-      "#786254",
-      "center",
-    );
+    for (let i = 0; i < 3; i++) {
+      this.rect(
+        w / 2 - 35 + i * 26,
+        top - 20,
+        18,
+        6,
+        i === view ? "#ffdc41" : "#6472b4",
+        3,
+      );
+    }
     const ordered = g.board.tubes
       .filter((t) => t.balls.length)
       .map((t) => ({ t, ...point(t) }))
@@ -672,10 +668,10 @@ export class Scene {
         c.restore();
       }
     };
-    dish(19, "#755e4b20");
-    dish(13, "#ab9580");
-    dish(4, "#d8c5a6");
-    dish(3, "#fff5df", 2.2);
+    dish(19, "#080e3966");
+    dish(13, "#182459");
+    dish(4, "#54c6eb");
+    dish(3, "#344d91", 2.2);
     const opening = Math.min(
       9,
       Math.max(4, (radius * layout.zScale) / layout.lane),
@@ -882,14 +878,6 @@ export class Scene {
           "#3849b2",
           "center",
         );
-      this.text(
-        String(g.board.tubes.indexOf(t) + 1),
-        x,
-        ty - 7,
-        11,
-        face.color,
-        "center",
-      );
       this.targets.push({ id: t.id, x, y: topY, r: hitRadius });
     }
     if (g.phase === "resolving") {
@@ -936,22 +924,22 @@ export class Scene {
         c.fillStyle = "#8f6e8050";
         c.fillText(part.text, x + 2, y + 7);
         for (let depth = 4; depth >= 1; depth--) {
-          c.fillStyle = part.text === "球" ? "#9b456f" : "#77628e";
+          c.fillStyle = part.text === "球" ? "#b64b15" : "#203591";
           c.fillText(part.text, x + depth * 0.35, y + depth);
         }
-        c.lineWidth = 3 * scale;
-        c.strokeStyle = "#fffcf0";
+        c.lineWidth = 6 * scale;
+        c.strokeStyle = "#141d47";
         c.strokeText(part.text, x, y);
         const shine = c.createLinearGradient(0, y - size, 0, y);
         if (part.text === "球") {
-          shine.addColorStop(0, "#fff0b9");
-          shine.addColorStop(0.25, "#ffb53d");
-          shine.addColorStop(0.53, "#fa6575");
-          shine.addColorStop(1, "#c847a1");
+          shine.addColorStop(0, "#ffffad");
+          shine.addColorStop(0.25, "#ffe33d");
+          shine.addColorStop(0.53, "#ffa62b");
+          shine.addColorStop(1, "#f66a2e");
         } else {
           shine.addColorStop(0, "#ffffff");
-          shine.addColorStop(0.35, "#d4bef8");
-          shine.addColorStop(1, "#7560b7");
+          shine.addColorStop(0.35, "#7fffee");
+          shine.addColorStop(1, "#2cbadf");
         }
         c.fillStyle = shine;
         c.fillText(part.text, x, y);
@@ -963,162 +951,154 @@ export class Scene {
   private home() {
     const w = this.width,
       h = this.height;
-    this.text("转一转 · 凑三颗", w / 2, 43, 13, "#786254", "center");
+
     this.homeTitle();
-    this.text("转一个角度，发现下一组。", w / 2, 174, 14, "#786254", "center");
+    this.rect(w / 2 - 46, 159, 92, 5, "#35ead8", 3);
     const c = this.ctx;
-    for (let i = 0; i < 3; i++) {
-      const x = w / 2 + (i - 1) * 61,
-        top = 202 + Math.abs(i - 1) * 12,
-        bottom = top + 112;
-      this.chamberPath(x, top, bottom, 23);
-      const glass = c.createLinearGradient(x - 23, top, x + 23, bottom);
-      glass.addColorStop(0, "#fffefecc");
-      glass.addColorStop(0.22, "#c9f4f54d");
-      glass.addColorStop(0.76, "#ffffff18");
-      glass.addColorStop(1, "#9ba9c078");
-      c.fillStyle = glass;
-      c.fill();
-      c.strokeStyle = "#a8aaaab0";
-      c.lineWidth = 1;
-      c.stroke();
-      for (let j = 0; j < 3; j++)
-        this.ball((i * 2 + j) % 7, x, top + 22 + j * 32, 16);
-      c.fillStyle = "#bec9d5";
-      c.beginPath();
-      c.ellipse(x, bottom, 23, 4, 0, 0, Math.PI * 2);
-      c.fill();
-      c.fillStyle = "#d3eaed";
-      c.beginPath();
-      c.ellipse(x, top, 22, 4, 0, 0, Math.PI * 2);
-      c.fill();
-      c.fillStyle = "#91b1ba";
-      c.beginPath();
-      c.ellipse(x, top, 18, 2.3, 0, 0, Math.PI * 2);
-      c.fill();
-      c.strokeStyle = "#ffffffe0";
-      c.beginPath();
-      c.moveTo(x - 19, top + 8);
-      c.lineTo(x - 19, bottom - 8);
-      c.stroke();
+    c.save();
+    try {
+      c.translate(w / 2, 264);
+      c.scale(1.24, 1.24);
+      c.translate(-w / 2, -264);
+      this.rect(w / 2 - 106, 331, 212, 15, "#111735", 12);
+      this.rect(w / 2 - 106, 327, 212, 9, "#42dce6", 7);
+      for (let i = 0; i < 3; i++) {
+        const x = w / 2 + (i - 1) * 61,
+          top = 202 + Math.abs(i - 1) * 12,
+          bottom = top + 112;
+        this.chamberPath(x, top, bottom, 23);
+        const glass = c.createLinearGradient(x - 23, top, x + 23, bottom);
+        glass.addColorStop(0, "#fffefecc");
+        glass.addColorStop(0.22, "#c9f4f54d");
+        glass.addColorStop(0.76, "#ffffff18");
+        glass.addColorStop(1, "#9ba9c078");
+        c.fillStyle = glass;
+        c.fill();
+        c.strokeStyle = "#a8aaaab0";
+        c.lineWidth = 1;
+        c.stroke();
+        for (let j = 0; j < 3; j++)
+          this.ball((i * 2 + j) % 7, x, top + 22 + j * 32, 16);
+        c.fillStyle = "#bec9d5";
+        c.beginPath();
+        c.ellipse(x, bottom, 23, 4, 0, 0, Math.PI * 2);
+        c.fill();
+        c.fillStyle = "#d3eaed";
+        c.beginPath();
+        c.ellipse(x, top, 22, 4, 0, 0, Math.PI * 2);
+        c.fill();
+        c.fillStyle = "#91b1ba";
+        c.beginPath();
+        c.ellipse(x, top, 18, 2.3, 0, 0, Math.PI * 2);
+        c.fill();
+        c.strokeStyle = "#ffffffe0";
+        c.beginPath();
+        c.moveTo(x - 19, top + 8);
+        c.lineTo(x - 19, bottom - 8);
+        c.stroke();
+      }
+    } finally {
+      c.restore();
     }
-    this.text(
-      "取顶部球放入七格槽，凑齐三颗同类。",
-      w / 2,
-      343,
-      13,
-      "#594739",
-      "center",
+    const y = Math.max(390, Math.min(h - 245, 460));
+    this.button(
+      "start-0",
+      "开始 · 初见",
+      28,
+      y,
+      w - 56,
+      58,
+      () => this.game.start(0),
+      false,
+      true,
     );
-    this.text(
-      "外层清空后，新的球仓逐渐显露。",
-      w / 2,
-      367,
-      13,
-      "#786254",
-      "center",
+    this.button("start-1", "探索", 28, y + 76, (w - 70) / 2, 44, () =>
+      this.game.start(1),
     );
-    const y = Math.min(h - 280, 405);
-    PRESETS.forEach((p, i) =>
-      this.button(
-        "start-" + i,
-        `${p.name}  ·  ${((p.side * (p.side + 1)) / 2) * p.height} 颗  ·  5 分钟`,
-        28,
-        y + i * 53,
-        w - 56,
-        44,
-        () => {
-          this.game.start(i);
-        },
-        false,
-        i === 0,
-      ),
+    this.button(
+      "start-2",
+      "深入",
+      42 + (w - 70) / 2,
+      y + 76,
+      (w - 70) / 2,
+      44,
+      () => this.game.start(2),
     );
     if (this.game.resume)
-      this.button("resume", "继续上次球仓", 28, y + 166, w - 56, 42, () =>
+      this.button("resume", "继续上次", 28, y + 136, w - 56, 40, () =>
         this.game.continueSaved(),
       );
     if (this.game.message.includes("存档"))
       this.text(
-        this.fit(this.game.message, 26),
+        this.fit(this.game.message, 24),
         w / 2,
-        391,
+        h - 18,
         11,
-        "#f3c667",
+        "#ffdc41",
         "center",
       );
-    this.text(
-      "无广告可通关 · 免费撤销与提示",
-      w / 2,
-      h - 55,
-      12,
-      "#786254",
-      "center",
-    );
-    this.text(
-      `原型 v${VERSION} · 难度与时长待试玩校准`,
-      w / 2,
-      h - 32,
-      11,
-      "#786254",
-      "center",
-    );
   }
   private overlay() {
     const g = this.game,
       w = this.width,
-      h = this.height,
-      y = Math.max(138, h * 0.25);
+      h = this.height;
+    const won = g.phase === "result" && g.board.status === "won";
+    const y = Math.max(142, h * 0.23),
+      cardH = g.phase === "expired" ? 366 : 340;
+    this.ctx.fillStyle = "#080c2699";
+    this.ctx.fillRect(0, 120, w, h - 120);
+    this.rect(20, y + 8, w - 40, cardH, "#090f2d", 26);
+    this.rect(18, y - 2, w - 36, cardH, "#7885ed", 26);
+    this.rect(22, y + 2, w - 44, cardH - 8, "#252b65", 22);
+    this.rect(w / 2 - 38, y - 30, 76, 64, won ? "#ffda3d" : "#44dded", 20);
+    this.text(
+      won ? "★" : g.phase === "paused" ? "Ⅱ" : "!",
+      w / 2,
+      y + 16,
+      36,
+      "#18234f",
+      "center",
+    );
     const title =
       g.phase === "result"
-        ? g.board.status === "won"
-          ? "球仓清空"
-          : "本局结束"
+        ? won
+          ? "漂亮！全清空"
+          : "下次再挑战"
         : g.phase === "blocked"
-          ? "暂存槽已满"
+          ? "槽位满了"
           : g.phase === "expired"
-            ? "时间用尽"
+            ? "时间到"
             : g.phase === "ad"
-              ? "正在请求广告"
-              : "已暂停";
-    this.rect(20, y - 30, w - 40, Math.min(460, h - y - 30), "#fffaf1", 22);
-    this.text(title, w / 2, y + 20, 30, "#3c302a", "center");
-    this.text(
-      `${g.board.score} 分 · 已消除 ${g.board.cleared.length} 颗`,
-      w / 2,
-      y + 55,
-      15,
-      "#594739",
-      "center",
-    );
-    this.text(
-      `有效用时 ${Math.ceil((CONFIG.baseMs + g.state.added - g.state.remaining) / 1000)} 秒`,
-      w / 2,
-      y + 80,
-      13,
-      "#786254",
-      "center",
-    );
-    if (g.phase === "ad") {
+              ? "广告加载中"
+              : "休息一下";
+    this.text(title, w / 2, y + 75, 27, "#ffffff", "center");
+    if (g.phase === "result") {
+      this.text(String(g.board.score), w / 2, y + 124, 36, "#ffdf43", "center");
       this.text(
-        "计时已暂停，等待广告结果",
+        `消除 ${g.board.cleared.length} 颗`,
         w / 2,
-        y + 145,
-        14,
-        "#c94322",
+        y + 149,
+        13,
+        "#bacaf9",
         "center",
       );
-      return;
-    }
-    this.text(
-      `提示 ${g.state.hintsUsed} · 撤销 ${g.state.undosUsed} · 续时 ${g.state.extensions}`,
-      w / 2,
-      y + 102,
-      11,
-      "#786254",
-      "center",
-    );
-    let by = y + 125;
+    } else
+      this.text(
+        g.phase === "paused"
+          ? "准备好了就继续"
+          : g.phase === "blocked"
+            ? "撤销一步，再想想"
+            : g.phase === "ad"
+              ? "计时已暂停"
+              : "差一点！再试一次",
+        w / 2,
+        y + 117,
+        14,
+        "#ced9ff",
+        "center",
+      );
+    if (g.phase === "ad") return;
+    let by = y + 170;
     const add = (
       id: string,
       label: string,
@@ -1131,43 +1111,41 @@ export class Scene {
         40,
         by,
         w - 80,
-        44,
+        42,
         fn,
         disabled,
-        id === "continue",
+        ["continue", "again", "undo-blocked"].includes(id),
       );
-      by += 56;
+      by += 55;
     };
     if (g.phase === "paused") add("continue", "继续游戏", () => g.begin());
     if (g.phase === "blocked")
-      add("undo-blocked", "免费撤销一步", () => g.undo(), !g.canUndo);
+      add("undo-blocked", "撤销一步", () => g.undo(), !g.canUndo);
     if (g.phase === "expired") {
       add(
         "extend",
-        g.ads.available
-          ? `自愿看广告 +30秒 (${g.state.extensions}/${CONFIG.maxExtensions})`
-          : "广告未配置 · 可直接结束",
+        g.ads.available ? "看广告 +30秒" : "广告未配置",
         () => void g.extend(),
         !g.ads.available || g.state.extensions >= CONFIG.maxExtensions,
       );
-      this.text(g.ads.label, w / 2, by - 2, 11, "#786254", "center");
+      this.text(g.ads.label, w / 2, by - 2, 10, "#ced9ff", "center");
       by += 8;
     }
-    if (g.phase !== "result") add("end", "结束并保留本局成绩", () => g.end());
+    if (g.phase !== "result") add("end", "结束本局", () => g.end());
     else
       add("again", "再来一局", () =>
         g.start(g.state.preset, (g.state.seed + 1) >>> 0),
       );
     add("home", "返回首页", () => g.home());
-
-    this.text(
-      this.fit(g.message, Math.floor((w - 55) / 12)),
-      w / 2,
-      Math.min(h - 25, by + 15),
-      12,
-      "#594739",
-      "center",
-    );
+    if (/失败|中断|取消|未完成/.test(g.message))
+      this.text(
+        this.fit(g.message, Math.floor((w - 55) / 12)),
+        w / 2,
+        Math.min(h - 20, by + 21),
+        12,
+        "#ffdf62",
+        "center",
+      );
   }
   tap(x: number, y: number) {
     const button = [...this.buttons]

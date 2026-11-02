@@ -1,0 +1,1 @@
+Native bundle actual pixels at 320/390: capsule clearance, start/pause/resume/turn passed

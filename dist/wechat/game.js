@@ -4,6 +4,21 @@
   var __defNormalProp = (obj, key2, value) => key2 in obj ? __defProp(obj, key2, { enumerable: true, configurable: true, writable: true, value }) : obj[key2] = value;
   var __publicField = (obj, key2, value) => __defNormalProp(obj, typeof key2 !== "symbol" ? key2 + "" : key2, value);
 
+  // src/platform/viewport.ts
+  function viewport(height2, safeTop = 24, safeBottom = height2, menuBottom) {
+    const status = Number.isFinite(safeTop) ? Math.max(24, safeTop) : 24;
+    const capsule = menuBottom !== void 0 && Number.isFinite(menuBottom) && menuBottom >= status && menuBottom < height2 / 3 ? menuBottom + 8 : status + 44;
+    const top = Math.max(status, capsule);
+    const bottom = Number.isFinite(safeBottom) ? Math.max(0, height2 - safeBottom) : 0;
+    const usable = Math.max(1, height2 - top - bottom), logicalHeight = Math.max(usable, 660);
+    return {
+      top,
+      bottom,
+      logicalHeight,
+      factor: Math.min(1, usable / logicalHeight)
+    };
+  }
+
   // src/platform/music.ts
   var Music = class {
     constructor(create) {
@@ -104,7 +119,6 @@
   }
 
   // src/config.ts
-  var VERSION = "0.1.10";
   var RULE = "tricollect-4-fixedslots-front";
   var CONFIG = Object.freeze({
     baseMs: 3e5,
@@ -894,7 +908,7 @@
       this.background = image;
       this.backgroundLoaded = true;
     }
-    text(t, x, y, size = 14, color = "#44352e", align = "left") {
+    text(t, x, y, size = 14, color = "#f5f7ff", align = "left") {
       const c = this.ctx;
       c.font = `${size >= 24 ? "600" : "400"} ${size}px sans-serif`;
       c.fillStyle = color;
@@ -914,19 +928,32 @@
       c.fill();
     }
     button(id, label, x, y, w, h, act, disabled = false, accent = false) {
+      const primary = accent || id === "hint" || id === "again";
+      const fill = disabled ? "#464a79" : primary ? "#ffdb39" : "#6554ed";
+      this.rect(x - 2, y - 2, w + 4, h + 10, "#111735", 16);
       this.rect(
         x,
-        y,
+        y + 5,
         w,
         h,
-        disabled ? "#e7ddd0" : accent || id === "hint" ? "#c94322" : "#6534ce"
+        disabled ? "#303657" : primary ? "#b66a14" : "#342594",
+        14
+      );
+      this.rect(x, y, w, h, fill, 14);
+      this.rect(
+        x + 5,
+        y + 3,
+        w - 10,
+        Math.min(10, h / 4),
+        disabled ? "#ffffff08" : "#ffffff38",
+        7
       );
       this.text(
         label,
         x + w / 2,
         y + h / 2 + 5,
-        14,
-        disabled ? "#88796a" : "#ffffff",
+        id.startsWith("rotate") ? 24 : 15,
+        disabled ? "#c0c4db" : primary ? "#242046" : "#ffffff",
         "center"
       );
       this.buttons.push({ id, x, y, w, h, act, disabled });
@@ -1052,12 +1079,12 @@
         y,
         r
       );
-      shade.addColorStop(0, "#e8dfd1");
-      shade.addColorStop(0.28, "#c3b7a6");
-      shade.addColorStop(0.72, "#9a8d7b");
-      shade.addColorStop(1, "#746756");
+      shade.addColorStop(0, "#b9c4db");
+      shade.addColorStop(0.28, "#8390ae");
+      shade.addColorStop(0.72, "#556382");
+      shade.addColorStop(1, "#303d5d");
       c.fillStyle = shade;
-      c.strokeStyle = "#897a65";
+      c.strokeStyle = "#6d80a9";
       c.lineWidth = 1.1;
       c.beginPath();
       c.arc(x, y, r, 0, Math.PI * 2);
@@ -1082,7 +1109,7 @@
     }
     transmittedBackdrop(x, y, w, h) {
       const c = this.ctx;
-      c.fillStyle = "#f8f2e4";
+      c.fillStyle = "#253469";
       c.fillRect(x, y, w, h);
       if (this.currentBackground) {
         const scale = Math.max(this.width / 600, this.height / 1040), left = (this.width - 600 * scale) / 2, top = (this.height - 1040 * scale) / 2;
@@ -1149,8 +1176,8 @@
       this.targets = [];
       c.clearRect(0, 0, w, h);
       const bg = c.createLinearGradient(0, 0, w, h);
-      bg.addColorStop(0, "#fff9ed");
-      bg.addColorStop(1, "#f4e4cf");
+      bg.addColorStop(0, "#3932a2");
+      bg.addColorStop(1, "#101d49");
       c.fillStyle = bg;
       c.fillRect(0, 0, w, h);
       if (this.currentBackground) {
@@ -1165,10 +1192,10 @@
       }
       this.button(
         "sound-toggle",
-        g.state.sound ? "\u58F0\u97F3\uFF1A\u5F00" : "\u58F0\u97F3\uFF1A\u5173",
-        g.phase === "home" ? w - 106 : w / 2 - 42,
-        g.phase === "home" ? 18 : 100,
-        84,
+        g.state.sound ? "\u58F0\u97F3\u5F00" : "\u9759\u97F3",
+        w - 78,
+        18,
+        60,
         34,
         () => g.toggleSound()
       );
@@ -1176,30 +1203,23 @@
         this.home();
         return;
       }
-      this.text("\u65CB\u8F6C \xB7 \u6536\u96C6 \xB7 \u6D88\u9664", 22, 35, 12, "#786254");
+      this.rect(16, 16, 116, 51, "#111735", 16);
+      this.rect(19, 19, 110, 45, "#f2fbff", 13);
+      const secs = Math.ceil(g.state.remaining / 1e3);
       this.text(
-        PRESETS[g.state.preset].name + " \xB7 " + g.state.seed,
-        22,
-        63,
-        13,
-        "#786254"
+        `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`,
+        74,
+        51,
+        29,
+        g.state.remaining < 3e4 ? "#c72b51" : "#18234f",
+        "center"
       );
-      this.text(
-        `${Math.ceil(g.state.remaining / 1e3 / 60) - (Math.ceil(g.state.remaining / 1e3) % 60 === 0 ? 0 : 1)}:${String(Math.ceil(g.state.remaining / 1e3) % 60).padStart(2, "0")}`,
-        w - 24,
-        46,
-        28,
-        g.state.remaining < 3e4 ? "#fb826f" : "#3c302a",
-        "right"
-      );
-      this.text(
-        `${g.board.score} \u5206  \xB7  +${g.state.added / 1e3}\u79D2`,
-        w - 24,
-        71,
-        12,
-        "#786254",
-        "right"
-      );
+      const total = PRESETS[g.state.preset].side * (PRESETS[g.state.preset].side + 1) / 2 * 5;
+      const progress = g.board.cleared.length / total;
+      this.text(`\u6E05\u7A7A ${g.board.cleared.length}/${total}`, 20, 91, 13, "#ecf6ff");
+      this.rect(20, 101, w - 40, 9, "#101731", 5);
+      if (progress > 0)
+        this.rect(20, 101, Math.max(9, (w - 40) * progress), 9, "#42e6cb", 5);
       const hidden = ["paused", "ad", "expired", "blocked", "result"].includes(
         g.phase
       );
@@ -1213,27 +1233,20 @@
       this.button(
         "pause",
         "\u6682\u505C",
-        w - 77,
-        88,
-        55,
+        w - 146,
+        18,
+        60,
         34,
         () => {
           g.pause();
         },
         !["active", "resolving", "rotating"].includes(g.phase)
       );
-      this.text(
-        "\u8F7B\u89E6\u6B63\u9762\u9876\u7403 \xB7 \u6A2A\u6ED1\u8F6C\u52A8\u7403\u4ED3",
-        w / 2,
-        boardBottom + 10,
-        12,
-        "#786254",
-        "center"
-      );
-      this.text("\u4E09\u540C\u6D88\u9664", 22, trayY - 7, 12, "#786254");
+      this.rect(14, trayY - 8, w - 28, 60, "#101735", 17);
+      this.rect(17, trayY - 5, w - 34, 53, "#394887", 14);
       const cell = (w - 44) / 7;
       for (let i = 0; i < 7; i++) {
-        this.rect(22 + i * cell, trayY, cell - 4, 43, "#eadbc8", 9);
+        this.rect(22 + i * cell, trayY, cell - 4, 43, "#15244f", 9);
         const ball = g.board.tray[i];
         if (ball)
           this.ball(ball.type, 22 + i * cell + (cell - 4) / 2, trayY + 21, 15);
@@ -1283,29 +1296,31 @@
         () => g.hintNow(),
         g.locked
       );
-      this.text(
-        this.fit(g.message, Math.floor((w - 40) / 11)),
-        w / 2,
-        h - 20,
-        11,
-        "#6f5a4d",
-        "center"
-      );
+      const notice = /失败|中断|预算|暂无/.test(g.message) ? g.message.includes("\u9884\u7B97") ? "\u6682\u672A\u627E\u5230\u63D0\u793A\uFF0C\u8BD5\u8BD5\u8F6C\u9762" : g.message.includes("\u6682\u65E0") ? "\u6362\u4E00\u9762\u518D\u8BD5\u8BD5" : g.message : "";
+      if (notice)
+        this.text(
+          this.fit(notice, Math.floor((w - 40) / 11)),
+          w / 2,
+          h - 16,
+          11,
+          "#ffdf62",
+          "center"
+        );
       if (g.phase === "intro" || g.phase === "ready") {
         this.rect(
           18,
           Math.max(100, boardBottom - 103),
           w - 36,
           92,
-          "#fff9ed",
+          "#18234f",
           18
         );
         this.text(
-          "\u53EA\u53D6\u9876\u90E8 \xB7 \u4E09\u540C\u6D88\u9664 \xB7 \u9010\u5C42\u63ED\u5F00",
+          "\u70B9\u9876\u7403 \xB7 \u4E09\u9897\u540C\u8272\u6D88\u9664",
           w / 2,
           boardBottom - 73,
           13,
-          "#44352e",
+          "#f5f7ff",
           "center"
         );
         this.button(
@@ -1337,22 +1352,16 @@
       const visible = turning ? /* @__PURE__ */ new Set() : faceVisible(g.board, view);
       this.renderedFace = view;
       this.renderedIds = [...visible];
-      this.text(
-        `\u7B2C ${view + 1} \u9762 / 3 \xB7 ${face.name}`,
-        w / 2,
-        top + 13,
-        15,
-        face.color,
-        "center"
-      );
-      this.text(
-        `${g.board.tubes.filter((t) => t.balls.length).length} \u7BA1\u5F85\u6E05\u7A7A \xB7 \u4EC5\u6B63\u9762\u9876\u90E8\u53EF\u53D6`,
-        w / 2,
-        top + 34,
-        11,
-        "#786254",
-        "center"
-      );
+      for (let i = 0; i < 3; i++) {
+        this.rect(
+          w / 2 - 35 + i * 26,
+          top - 20,
+          18,
+          6,
+          i === view ? "#ffdc41" : "#6472b4",
+          3
+        );
+      }
       const ordered = g.board.tubes.filter((t) => t.balls.length).map((t) => ({ t, ...point(t) })).sort((a, b) => b.depth - a.depth);
       this.tubeLayout = ordered.map((t) => ({
         id: t.t.id,
@@ -1394,10 +1403,10 @@
           c.restore();
         }
       };
-      dish(19, "#755e4b20");
-      dish(13, "#ab9580");
-      dish(4, "#d8c5a6");
-      dish(3, "#fff5df", 2.2);
+      dish(19, "#080e3966");
+      dish(13, "#182459");
+      dish(4, "#54c6eb");
+      dish(3, "#344d91", 2.2);
       const opening = Math.min(
         9,
         Math.max(4, radius * layout.zScale / layout.lane)
@@ -1590,14 +1599,6 @@
             "#3849b2",
             "center"
           );
-        this.text(
-          String(g.board.tubes.indexOf(t) + 1),
-          x,
-          ty - 7,
-          11,
-          face.color,
-          "center"
-        );
         this.targets.push({ id: t.id, x, y: topY, r: hitRadius });
       }
       if (g.phase === "resolving") {
@@ -1635,22 +1636,22 @@
           c.fillStyle = "#8f6e8050";
           c.fillText(part.text, x + 2, y + 7);
           for (let depth = 4; depth >= 1; depth--) {
-            c.fillStyle = part.text === "\u7403" ? "#9b456f" : "#77628e";
+            c.fillStyle = part.text === "\u7403" ? "#b64b15" : "#203591";
             c.fillText(part.text, x + depth * 0.35, y + depth);
           }
-          c.lineWidth = 3 * scale;
-          c.strokeStyle = "#fffcf0";
+          c.lineWidth = 6 * scale;
+          c.strokeStyle = "#141d47";
           c.strokeText(part.text, x, y);
           const shine = c.createLinearGradient(0, y - size, 0, y);
           if (part.text === "\u7403") {
-            shine.addColorStop(0, "#fff0b9");
-            shine.addColorStop(0.25, "#ffb53d");
-            shine.addColorStop(0.53, "#fa6575");
-            shine.addColorStop(1, "#c847a1");
+            shine.addColorStop(0, "#ffffad");
+            shine.addColorStop(0.25, "#ffe33d");
+            shine.addColorStop(0.53, "#ffa62b");
+            shine.addColorStop(1, "#f66a2e");
           } else {
             shine.addColorStop(0, "#ffffff");
-            shine.addColorStop(0.35, "#d4bef8");
-            shine.addColorStop(1, "#7560b7");
+            shine.addColorStop(0.35, "#7fffee");
+            shine.addColorStop(1, "#2cbadf");
           }
           c.fillStyle = shine;
           c.fillText(part.text, x, y);
@@ -1661,152 +1662,143 @@
     }
     home() {
       const w = this.width, h = this.height;
-      this.text("\u8F6C\u4E00\u8F6C \xB7 \u51D1\u4E09\u9897", w / 2, 43, 13, "#786254", "center");
       this.homeTitle();
-      this.text("\u8F6C\u4E00\u4E2A\u89D2\u5EA6\uFF0C\u53D1\u73B0\u4E0B\u4E00\u7EC4\u3002", w / 2, 174, 14, "#786254", "center");
+      this.rect(w / 2 - 46, 159, 92, 5, "#35ead8", 3);
       const c = this.ctx;
-      for (let i = 0; i < 3; i++) {
-        const x = w / 2 + (i - 1) * 61, top = 202 + Math.abs(i - 1) * 12, bottom = top + 112;
-        this.chamberPath(x, top, bottom, 23);
-        const glass = c.createLinearGradient(x - 23, top, x + 23, bottom);
-        glass.addColorStop(0, "#fffefecc");
-        glass.addColorStop(0.22, "#c9f4f54d");
-        glass.addColorStop(0.76, "#ffffff18");
-        glass.addColorStop(1, "#9ba9c078");
-        c.fillStyle = glass;
-        c.fill();
-        c.strokeStyle = "#a8aaaab0";
-        c.lineWidth = 1;
-        c.stroke();
-        for (let j = 0; j < 3; j++)
-          this.ball((i * 2 + j) % 7, x, top + 22 + j * 32, 16);
-        c.fillStyle = "#bec9d5";
-        c.beginPath();
-        c.ellipse(x, bottom, 23, 4, 0, 0, Math.PI * 2);
-        c.fill();
-        c.fillStyle = "#d3eaed";
-        c.beginPath();
-        c.ellipse(x, top, 22, 4, 0, 0, Math.PI * 2);
-        c.fill();
-        c.fillStyle = "#91b1ba";
-        c.beginPath();
-        c.ellipse(x, top, 18, 2.3, 0, 0, Math.PI * 2);
-        c.fill();
-        c.strokeStyle = "#ffffffe0";
-        c.beginPath();
-        c.moveTo(x - 19, top + 8);
-        c.lineTo(x - 19, bottom - 8);
-        c.stroke();
+      c.save();
+      try {
+        c.translate(w / 2, 264);
+        c.scale(1.24, 1.24);
+        c.translate(-w / 2, -264);
+        this.rect(w / 2 - 106, 331, 212, 15, "#111735", 12);
+        this.rect(w / 2 - 106, 327, 212, 9, "#42dce6", 7);
+        for (let i = 0; i < 3; i++) {
+          const x = w / 2 + (i - 1) * 61, top = 202 + Math.abs(i - 1) * 12, bottom = top + 112;
+          this.chamberPath(x, top, bottom, 23);
+          const glass = c.createLinearGradient(x - 23, top, x + 23, bottom);
+          glass.addColorStop(0, "#fffefecc");
+          glass.addColorStop(0.22, "#c9f4f54d");
+          glass.addColorStop(0.76, "#ffffff18");
+          glass.addColorStop(1, "#9ba9c078");
+          c.fillStyle = glass;
+          c.fill();
+          c.strokeStyle = "#a8aaaab0";
+          c.lineWidth = 1;
+          c.stroke();
+          for (let j = 0; j < 3; j++)
+            this.ball((i * 2 + j) % 7, x, top + 22 + j * 32, 16);
+          c.fillStyle = "#bec9d5";
+          c.beginPath();
+          c.ellipse(x, bottom, 23, 4, 0, 0, Math.PI * 2);
+          c.fill();
+          c.fillStyle = "#d3eaed";
+          c.beginPath();
+          c.ellipse(x, top, 22, 4, 0, 0, Math.PI * 2);
+          c.fill();
+          c.fillStyle = "#91b1ba";
+          c.beginPath();
+          c.ellipse(x, top, 18, 2.3, 0, 0, Math.PI * 2);
+          c.fill();
+          c.strokeStyle = "#ffffffe0";
+          c.beginPath();
+          c.moveTo(x - 19, top + 8);
+          c.lineTo(x - 19, bottom - 8);
+          c.stroke();
+        }
+      } finally {
+        c.restore();
       }
-      this.text(
-        "\u53D6\u9876\u90E8\u7403\u653E\u5165\u4E03\u683C\u69FD\uFF0C\u51D1\u9F50\u4E09\u9897\u540C\u7C7B\u3002",
-        w / 2,
-        343,
-        13,
-        "#594739",
-        "center"
+      const y = Math.max(390, Math.min(h - 245, 460));
+      this.button(
+        "start-0",
+        "\u5F00\u59CB \xB7 \u521D\u89C1",
+        28,
+        y,
+        w - 56,
+        58,
+        () => this.game.start(0),
+        false,
+        true
       );
-      this.text(
-        "\u5916\u5C42\u6E05\u7A7A\u540E\uFF0C\u65B0\u7684\u7403\u4ED3\u9010\u6E10\u663E\u9732\u3002",
-        w / 2,
-        367,
-        13,
-        "#786254",
-        "center"
+      this.button(
+        "start-1",
+        "\u63A2\u7D22",
+        28,
+        y + 76,
+        (w - 70) / 2,
+        44,
+        () => this.game.start(1)
       );
-      const y = Math.min(h - 280, 405);
-      PRESETS.forEach(
-        (p, i) => this.button(
-          "start-" + i,
-          `${p.name}  \xB7  ${p.side * (p.side + 1) / 2 * p.height} \u9897  \xB7  5 \u5206\u949F`,
-          28,
-          y + i * 53,
-          w - 56,
-          44,
-          () => {
-            this.game.start(i);
-          },
-          false,
-          i === 0
-        )
+      this.button(
+        "start-2",
+        "\u6DF1\u5165",
+        42 + (w - 70) / 2,
+        y + 76,
+        (w - 70) / 2,
+        44,
+        () => this.game.start(2)
       );
       if (this.game.resume)
         this.button(
           "resume",
-          "\u7EE7\u7EED\u4E0A\u6B21\u7403\u4ED3",
+          "\u7EE7\u7EED\u4E0A\u6B21",
           28,
-          y + 166,
+          y + 136,
           w - 56,
-          42,
+          40,
           () => this.game.continueSaved()
         );
       if (this.game.message.includes("\u5B58\u6863"))
         this.text(
-          this.fit(this.game.message, 26),
+          this.fit(this.game.message, 24),
           w / 2,
-          391,
+          h - 18,
           11,
-          "#f3c667",
+          "#ffdc41",
           "center"
         );
-      this.text(
-        "\u65E0\u5E7F\u544A\u53EF\u901A\u5173 \xB7 \u514D\u8D39\u64A4\u9500\u4E0E\u63D0\u793A",
-        w / 2,
-        h - 55,
-        12,
-        "#786254",
-        "center"
-      );
-      this.text(
-        `\u539F\u578B v${VERSION} \xB7 \u96BE\u5EA6\u4E0E\u65F6\u957F\u5F85\u8BD5\u73A9\u6821\u51C6`,
-        w / 2,
-        h - 32,
-        11,
-        "#786254",
-        "center"
-      );
     }
     overlay() {
-      const g = this.game, w = this.width, h = this.height, y = Math.max(138, h * 0.25);
-      const title = g.phase === "result" ? g.board.status === "won" ? "\u7403\u4ED3\u6E05\u7A7A" : "\u672C\u5C40\u7ED3\u675F" : g.phase === "blocked" ? "\u6682\u5B58\u69FD\u5DF2\u6EE1" : g.phase === "expired" ? "\u65F6\u95F4\u7528\u5C3D" : g.phase === "ad" ? "\u6B63\u5728\u8BF7\u6C42\u5E7F\u544A" : "\u5DF2\u6682\u505C";
-      this.rect(20, y - 30, w - 40, Math.min(460, h - y - 30), "#fffaf1", 22);
-      this.text(title, w / 2, y + 20, 30, "#3c302a", "center");
+      const g = this.game, w = this.width, h = this.height;
+      const won = g.phase === "result" && g.board.status === "won";
+      const y = Math.max(142, h * 0.23), cardH = g.phase === "expired" ? 366 : 340;
+      this.ctx.fillStyle = "#080c2699";
+      this.ctx.fillRect(0, 120, w, h - 120);
+      this.rect(20, y + 8, w - 40, cardH, "#090f2d", 26);
+      this.rect(18, y - 2, w - 36, cardH, "#7885ed", 26);
+      this.rect(22, y + 2, w - 44, cardH - 8, "#252b65", 22);
+      this.rect(w / 2 - 38, y - 30, 76, 64, won ? "#ffda3d" : "#44dded", 20);
       this.text(
-        `${g.board.score} \u5206 \xB7 \u5DF2\u6D88\u9664 ${g.board.cleared.length} \u9897`,
+        won ? "\u2605" : g.phase === "paused" ? "\u2161" : "!",
         w / 2,
-        y + 55,
-        15,
-        "#594739",
+        y + 16,
+        36,
+        "#18234f",
         "center"
       );
-      this.text(
-        `\u6709\u6548\u7528\u65F6 ${Math.ceil((CONFIG.baseMs + g.state.added - g.state.remaining) / 1e3)} \u79D2`,
-        w / 2,
-        y + 80,
-        13,
-        "#786254",
-        "center"
-      );
-      if (g.phase === "ad") {
+      const title = g.phase === "result" ? won ? "\u6F02\u4EAE\uFF01\u5168\u6E05\u7A7A" : "\u4E0B\u6B21\u518D\u6311\u6218" : g.phase === "blocked" ? "\u69FD\u4F4D\u6EE1\u4E86" : g.phase === "expired" ? "\u65F6\u95F4\u5230" : g.phase === "ad" ? "\u5E7F\u544A\u52A0\u8F7D\u4E2D" : "\u4F11\u606F\u4E00\u4E0B";
+      this.text(title, w / 2, y + 75, 27, "#ffffff", "center");
+      if (g.phase === "result") {
+        this.text(String(g.board.score), w / 2, y + 124, 36, "#ffdf43", "center");
         this.text(
-          "\u8BA1\u65F6\u5DF2\u6682\u505C\uFF0C\u7B49\u5F85\u5E7F\u544A\u7ED3\u679C",
+          `\u6D88\u9664 ${g.board.cleared.length} \u9897`,
           w / 2,
-          y + 145,
-          14,
-          "#c94322",
+          y + 149,
+          13,
+          "#bacaf9",
           "center"
         );
-        return;
-      }
-      this.text(
-        `\u63D0\u793A ${g.state.hintsUsed} \xB7 \u64A4\u9500 ${g.state.undosUsed} \xB7 \u7EED\u65F6 ${g.state.extensions}`,
-        w / 2,
-        y + 102,
-        11,
-        "#786254",
-        "center"
-      );
-      let by = y + 125;
+      } else
+        this.text(
+          g.phase === "paused" ? "\u51C6\u5907\u597D\u4E86\u5C31\u7EE7\u7EED" : g.phase === "blocked" ? "\u64A4\u9500\u4E00\u6B65\uFF0C\u518D\u60F3\u60F3" : g.phase === "ad" ? "\u8BA1\u65F6\u5DF2\u6682\u505C" : "\u5DEE\u4E00\u70B9\uFF01\u518D\u8BD5\u4E00\u6B21",
+          w / 2,
+          y + 117,
+          14,
+          "#ced9ff",
+          "center"
+        );
+      if (g.phase === "ad") return;
+      let by = y + 170;
       const add = (id, label, fn, disabled = false) => {
         this.button(
           id,
@@ -1814,27 +1806,27 @@
           40,
           by,
           w - 80,
-          44,
+          42,
           fn,
           disabled,
-          id === "continue"
+          ["continue", "again", "undo-blocked"].includes(id)
         );
-        by += 56;
+        by += 55;
       };
       if (g.phase === "paused") add("continue", "\u7EE7\u7EED\u6E38\u620F", () => g.begin());
       if (g.phase === "blocked")
-        add("undo-blocked", "\u514D\u8D39\u64A4\u9500\u4E00\u6B65", () => g.undo(), !g.canUndo);
+        add("undo-blocked", "\u64A4\u9500\u4E00\u6B65", () => g.undo(), !g.canUndo);
       if (g.phase === "expired") {
         add(
           "extend",
-          g.ads.available ? `\u81EA\u613F\u770B\u5E7F\u544A +30\u79D2 (${g.state.extensions}/${CONFIG.maxExtensions})` : "\u5E7F\u544A\u672A\u914D\u7F6E \xB7 \u53EF\u76F4\u63A5\u7ED3\u675F",
+          g.ads.available ? "\u770B\u5E7F\u544A +30\u79D2" : "\u5E7F\u544A\u672A\u914D\u7F6E",
           () => void g.extend(),
           !g.ads.available || g.state.extensions >= CONFIG.maxExtensions
         );
-        this.text(g.ads.label, w / 2, by - 2, 11, "#786254", "center");
+        this.text(g.ads.label, w / 2, by - 2, 10, "#ced9ff", "center");
         by += 8;
       }
-      if (g.phase !== "result") add("end", "\u7ED3\u675F\u5E76\u4FDD\u7559\u672C\u5C40\u6210\u7EE9", () => g.end());
+      if (g.phase !== "result") add("end", "\u7ED3\u675F\u672C\u5C40", () => g.end());
       else
         add(
           "again",
@@ -1842,14 +1834,15 @@
           () => g.start(g.state.preset, g.state.seed + 1 >>> 0)
         );
       add("home", "\u8FD4\u56DE\u9996\u9875", () => g.home());
-      this.text(
-        this.fit(g.message, Math.floor((w - 55) / 12)),
-        w / 2,
-        Math.min(h - 25, by + 15),
-        12,
-        "#594739",
-        "center"
-      );
+      if (/失败|中断|取消|未完成/.test(g.message))
+        this.text(
+          this.fit(g.message, Math.floor((w - 55) / 12)),
+          w / 2,
+          Math.min(h - 20, by + 21),
+          12,
+          "#ffdf62",
+          "center"
+        );
     }
     tap(x, y) {
       const button = [...this.buttons].reverse().find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
@@ -1912,10 +1905,10 @@
     wx.createRewardedVideoAd({ adUnitId: "" })
   ) : new UnavailableAd();
   async function boot() {
-    var _a, _b, _c, _d;
-    ctx.fillStyle = "#fff9ed";
+    var _a, _b, _c;
+    ctx.fillStyle = "#18234f";
     ctx.fillRect(0, 0, width, height);
-    ctx.fillStyle = "#44352e";
+    ctx.fillStyle = "#f5f7ff";
     ctx.font = "16px sans-serif";
     ctx.fillText("\u6B63\u5728\u51C6\u5907\u7403\u4ED3\u2026", 24, 80);
     const clock = await calibrateClock(() => perf.now());
@@ -1952,8 +1945,17 @@
         audio.play();
       }
     );
-    const top = Math.max((_b = (_a = info.safeArea) == null ? void 0 : _a.top) != null ? _b : 0, 24), bottom = Math.max(0, height - ((_d = (_c = info.safeArea) == null ? void 0 : _c.bottom) != null ? _d : height));
-    const logicalHeight = Math.max(height - top - bottom, 660), factor = Math.min(1, (height - top - bottom) / logicalHeight);
+    let menuBottom;
+    try {
+      menuBottom = (_a = wx.getMenuButtonBoundingClientRect) == null ? void 0 : _a.call(wx).bottom;
+    } catch (e) {
+    }
+    const { top, bottom, logicalHeight, factor } = viewport(
+      height,
+      (_b = info.safeArea) == null ? void 0 : _b.top,
+      (_c = info.safeArea) == null ? void 0 : _c.bottom,
+      menuBottom
+    );
     const scene = new Scene(ctx, game, width / factor, logicalHeight);
     for (const file of ["background.png", "play-background.png"]) {
       try {
@@ -1993,6 +1995,8 @@
     wx.onShow(() => {
       pointer = null;
     });
+    ctx.fillStyle = "#18234f";
+    ctx.fillRect(0, 0, width, height);
     startFrames(
       requestAnimationFrame,
       () => {
@@ -2015,9 +2019,9 @@
   }
   void boot().catch((error) => {
     console.error("TriCollect startup failed", error);
-    ctx.fillStyle = "#fff9ed";
+    ctx.fillStyle = "#18234f";
     ctx.fillRect(0, 0, width, height);
-    ctx.fillStyle = "#44352e";
+    ctx.fillStyle = "#f5f7ff";
     ctx.font = "16px sans-serif";
     ctx.fillText("\u65F6\u949F\u65E0\u6CD5\u6B63\u5E38\u8FD0\u884C\uFF0C\u8BF7\u91CD\u65B0\u6253\u5F00\u6E38\u620F", 20, 100);
   });

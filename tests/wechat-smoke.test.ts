@@ -1,3 +1,5 @@
+import { projection } from "../src/render/projection";
+import { faceVisible } from "../src/core/rules";
 import { createLevel } from "../src/core/generation";
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -22,7 +24,7 @@ async function boot(
     live ? performance.now() - liveStart : microseconds / 1000;
   const circles: { x: number; y: number; r: number }[] = [];
   const topBalls = new Map<string, { x: number; y: number; r: number }>();
-  const latestBall = new Map<number, { x: number; y: number; r: number }>();
+  const paintedBalls: { x: number; y: number; r: number }[] = [];
   const rings: { x: number; y: number; r: number }[] = [];
   let lastArc: { x: number; y: number; r: number } | undefined;
   let microseconds = 0;
@@ -64,10 +66,9 @@ async function boot(
           const ball = [...circles]
             .reverse()
             .find((b) => Math.abs(b.x - x) < 0.01 && y > b.y && y - b.y < b.r);
-          if (ball) latestBall.set(x, ball);
+          if (ball) paintedBalls.push(ball);
         }
-        if (/^\d+$/.test(s) && latestBall.has(x))
-          topBalls.set(s, latestBall.get(x)!);
+
         labels.push({
           s,
           x,
@@ -119,6 +120,14 @@ async function boot(
       windowHeight: 844,
       pixelRatio: 2,
       safeArea: { top: 24, bottom: 820 },
+    }),
+    getMenuButtonBoundingClientRect: () => ({
+      top: 32,
+      bottom: 64,
+      left: 290,
+      right: 380,
+      width: 90,
+      height: 32,
     }),
     getPerformance: () => ({
       now: () => frozenRaw ?? rawMs() * unitsPerMs,
@@ -197,15 +206,37 @@ async function boot(
     circles.length = 0;
     rings.length = 0;
     topBalls.clear();
-    latestBall.clear();
+    paintedBalls.length = 0;
     frame();
+    const saved = decode(storage.get(SAVE_KEY) ?? "");
+    if (saved) {
+      const layout = projection(
+        saved.board.side,
+        390,
+        147,
+        748 - 173,
+        (saved.view * Math.PI * 2) / 3,
+      );
+      const visible = faceVisible(saved.board, saved.view);
+      saved.board.tubes.forEach((t, i) => {
+        if (!visible.has(t.id)) return;
+        const p = layout.point(t),
+          y = p.y - layout.ballRadius - 6 - (t.balls.length - 1) * layout.step;
+        const ball = paintedBalls.find(
+          (b) => Math.abs(b.x - p.x) < 0.01 && Math.abs(b.y - y) < 0.01,
+        );
+        if (ball) topBalls.set(String(i + 1), ball);
+      });
+    }
   };
   const tap = (text: string, exact = false) => {
-    const l = [...labels]
-      .reverse()
-      .find((l) => (exact ? l.s === text : l.s.includes(text)));
+    const l =
+      [...labels].reverse().find((l) => l.s === text) ??
+      (!exact
+        ? [...labels].reverse().find((l) => l.s.includes(text))
+        : undefined);
     assert.ok(l, `button ${text}`);
-    const t = { clientX: l.x, clientY: l.y - 5 + 24 };
+    const t = { clientX: l.x, clientY: l.y - 5 + 72 };
     handlers.start({ touches: [t] });
     handlers.end({ changedTouches: [t] });
     render();
@@ -217,12 +248,10 @@ async function boot(
     rings,
     topBalls,
     tapTube: (index: number) => {
-      const label = labels.find((l) => l.s === String(index));
-      assert.ok(label, `front tube label ${index}`);
       const ring = topBalls.get(String(index));
       assert.ok(ring, `painted top ball ${index}`);
       assert.equal(rings.length, 0, "no permanent selection ring");
-      const t = { clientX: ring.x, clientY: ring.y + 24 };
+      const t = { clientX: ring.x, clientY: ring.y + 72 };
       handlers.start({ touches: [t] });
       handlers.end({ changedTouches: [t] });
       render();
@@ -263,7 +292,7 @@ test("prebuilt native game boots without DOM; wx microseconds normalized, touch 
   r.hide();
   r.advance(50_000_000);
   r.show();
-  assert.ok(r.labels.some((l) => l.s === "已暂停"));
+  assert.ok(r.labels.some((l) => l.s === "休息一下"));
   assert.equal(decode(r.storage.get(SAVE_KEY)!)!.remaining, 298500);
 });
 test("native bundle home restart/hide preserves 290000ms session and both save copies", async () => {
@@ -285,7 +314,7 @@ test("native bundle home restart/hide preserves 290000ms session and both save c
     assert.equal(decode(r.storage.get(SAVE_KEY)!)!.session, expected.session);
   }
   const resumed = await boot(r.storage);
-  resumed.tap("继续上次球仓");
+  resumed.tap("继续上次");
   resumed.tap("继续游戏");
   resumed.advance(1_000_000);
   resumed.hide();
@@ -299,7 +328,7 @@ test("native bundle manually ended non-winning session never revives on home hid
   r.advance(10_000_000);
   r.hide();
   r.render();
-  r.tap("结束并保留");
+  r.tap("结束本局");
   assert.equal(decode(r.storage.get(SAVE_KEY)!)!.phase, "result");
   assert.equal(decode(r.storage.get(SAVE_KEY)!)!.board.status, "playing");
   r.tap("返回首页");
@@ -313,7 +342,7 @@ test("native bundle manually ended non-winning session never revives on home hid
     const home = await boot(r.storage);
     home.hide();
     home.show();
-    assert.ok(!home.labels.some((l) => l.s === "继续上次球仓"));
+    assert.ok(!home.labels.some((l) => l.s === "继续上次"));
     assert.deepEqual(r.storage, snapshot);
     assert.equal(decode(r.storage.get(SAVE_KEY)!)!.phase, "result");
   }
@@ -364,7 +393,7 @@ test("native RAF survives one rendering exception and audio exception never abor
   r.failNextRender("●");
   r.render();
   r.render();
-  assert.ok(r.labels.some((l) => l.s === "已暂停"));
+  assert.ok(r.labels.some((l) => l.s === "休息一下"));
   assert.equal(r.canvasDepth(), 0);
   r.tap("继续游戏");
   r.tapTube(1);
@@ -381,7 +410,7 @@ test("native frozen clock pauses instead of trapping input and can return home",
   r.freezeClock();
   r.advance(2_000_000);
   r.render();
-  assert.ok(r.labels.some((l) => l.s === "已暂停"));
+  assert.ok(r.labels.some((l) => l.s === "休息一下"));
   r.tap("返回首页");
   assert.ok(r.labels.some((l) => l.s.includes("初见")));
 });
@@ -445,7 +474,7 @@ for (const units of [1, 1000])
     );
     assert.equal(decode(r.storage.get(SAVE_KEY)!)!.history.length, 2);
     r.tap("暂停", true);
-    r.tap("结束并保留");
+    r.tap("结束本局");
     r.tap("再来一局");
     const start = Date.now();
     r.tap("跳过开场");
@@ -461,7 +490,7 @@ for (const units of [1, 1000])
       secondPickAccepted: true,
     });
     writeFileSync(
-      "evidence/v0.1.10-animation-wallclock.json",
+      "evidence/v0.1.11-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -489,7 +518,7 @@ for (const units of [1, 1000])
       r.freezeClock();
       const pauseMs = await driveUntil(
         r,
-        () => r.labels.some((l) => l.s === "已暂停"),
+        () => r.labels.some((l) => l.s === "休息一下"),
         2200,
       );
       assert.ok(pauseMs < 2000);
@@ -505,7 +534,7 @@ for (const units of [1, 1000])
       });
     }
     writeFileSync(
-      "evidence/v0.1.10-animation-wallclock.json",
+      "evidence/v0.1.11-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -537,7 +566,7 @@ for (const units of [1, 1000])
     r.freezeClock();
     const interrupted = await driveUntil(
       r,
-      () => r.labels.some((l) => l.s === "已暂停"),
+      () => r.labels.some((l) => l.s === "休息一下"),
       2200,
     );
     r.tap("返回首页");
@@ -548,7 +577,7 @@ for (const units of [1, 1000])
       frozenRotationPauseMs: interrupted,
     });
     writeFileSync(
-      "evidence/v0.1.10-animation-wallclock.json",
+      "evidence/v0.1.11-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -578,13 +607,13 @@ test("native music starts on touch, pauses on hide and reuses one loop across ro
   assert.equal(music.playing, false);
   r.tap("继续游戏");
   assert.equal(music.plays, 2);
-  r.tap("声音：开", true);
+  r.tap("声音开", true);
   assert.equal(music.playing, false);
   r.tap("暂停", true);
   r.tap("返回首页");
   beginRuntime(r);
   assert.equal(music.playing, false);
-  r.tap("声音：关", true);
+  r.tap("静音", true);
   assert.equal(music.playing, true);
   for (let i = 0; i < 3; i++) {
     r.tap("暂停", true);
@@ -610,4 +639,20 @@ test("native image asset loads and image failure leaves gameplay available", asy
     r.advance(250000);
     assert.equal(decode(r.storage.get(SAVE_KEY)!)!.history.length, 1);
   }
+});
+
+test("native home hero restores canvas state after a paint fault", async () => {
+  const r = await boot();
+  r.failNextRender("●");
+  r.render();
+  r.render();
+  assert.equal(r.canvasDepth(), 0);
+  assert.ok(r.labels.some((l) => l.s.includes("初见")));
+  r.tap("初见");
+  r.tap("跳过开场");
+  r.tap("开始 ·");
+  r.tap("暂停", true);
+  r.tap("返回首页", true);
+  assert.ok(r.labels.some((l) => l.s.includes("初见")));
+  assert.equal(r.canvasDepth(), 0);
 });
