@@ -26,6 +26,12 @@ const frame = () =>
       new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))),
   );
 async function click(id) {
+  if (/^start-[012]$/.test(id)) {
+    const menu = await page.evaluate(() =>
+      window.tri.scene.buttons.some((b) => b.id === "start-menu"),
+    );
+    if (menu) await click("start-menu");
+  }
   await frame();
   await page.waitForFunction(
     (id) => window.tri.scene.buttons.some((b) => b.id === id && !b.disabled),
@@ -37,6 +43,13 @@ async function click(id) {
   );
   await page.mouse.click(b.x + b.w / 2, b.y + b.h / 2);
   await frame();
+  if (
+    /^start-[012]$/.test(id) &&
+    (await page.evaluate(() =>
+      tri.scene.buttons.some((b) => b.id === "confirm-new"),
+    ))
+  )
+    await click("confirm-new");
 }
 const phase = (p) =>
   page.waitForFunction((p) => window.tri.game.phase === p, p);

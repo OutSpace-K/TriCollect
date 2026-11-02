@@ -1033,6 +1033,10 @@
       __publicField(this, "homePanel", null);
       __publicField(this, "recordPage", 0);
       __publicField(this, "mascotTime", 0);
+      __publicField(this, "foreground", true);
+      __publicField(this, "decorationLast", null);
+      __publicField(this, "selectedDifficulty", 0);
+      __publicField(this, "trackObjects", []);
       __publicField(this, "misclickFeedback", null);
       __publicField(this, "backgroundLoaded", false);
       __publicField(this, "background", null);
@@ -1052,6 +1056,24 @@
       __publicField(this, "renderedFace", 0);
       __publicField(this, "targets", []);
       __publicField(this, "bodies", []);
+    }
+    get decorationTime() {
+      return this.mascotTime;
+    }
+    setForeground(value) {
+      this.foreground = value;
+      this.decorationLast = null;
+    }
+    animateHome() {
+      try {
+        const now = this.game.now();
+        if (!Number.isFinite(now)) return;
+        if (this.foreground && !this.homePanel && this.decorationLast !== null)
+          this.mascotTime += Math.max(0, Math.min(64, now - this.decorationLast));
+        this.decorationLast = now;
+      } catch {
+        this.decorationLast = null;
+      }
     }
     get backgroundKind() {
       return this.game.phase === "home" ? this.background ? "home" : "fallback" : this.playBackground ? "play" : this.background ? "home" : "fallback";
@@ -1363,6 +1385,7 @@
         return;
       }
       this.homePanel = null;
+      this.decorationLast = null;
       this.rect(16, 16, 116, 51, "#697d61", 16);
       this.rect(19, 19, 110, 45, "#fffbed", 13);
       const secs = Math.ceil(g.state.remaining / 1e3);
@@ -1603,6 +1626,55 @@
       }
       for (const item of ordered) {
         const { t, x, y } = item, height = t.capacity * step + 20, ty = y - height, front = visible.has(t.id);
+        if (!front) {
+          const rear = c.createLinearGradient(x - radius, ty, x + radius, y);
+          rear.addColorStop(0, "#d9e3c9");
+          rear.addColorStop(0.55, "#c0d0b7");
+          rear.addColorStop(1, "#a7bba3");
+          this.chamberPath(x, ty, y, radius);
+          c.fillStyle = rear;
+          c.fill();
+          c.strokeStyle = "#9db39d66";
+          c.lineWidth = 1;
+          c.stroke();
+          c.beginPath();
+          c.ellipse(x, ty - 1, radius * 0.98, opening, 0, 0, Math.PI * 2);
+          c.fillStyle = "#e3e9d4";
+          c.fill();
+          c.beginPath();
+          c.ellipse(x, ty - 1, radius * 0.79, opening * 0.55, 0, 0, Math.PI * 2);
+          c.fillStyle = "#afc2ac";
+          c.fill();
+          c.beginPath();
+          c.ellipse(x, y - 1, radius * 0.9, opening * 0.6, 0, 0, Math.PI * 2);
+          c.fillStyle = "#9bb19855";
+          c.fill();
+          this.rearOpenings.push({
+            id: t.id,
+            x,
+            y: ty - 1,
+            rx: radius * 0.98,
+            ry: opening
+          });
+          for (let i = 0; i < t.balls.length; i++)
+            this.ghostPositions.push({
+              id: t.balls[i].id,
+              tube: t.id,
+              slot: i,
+              x,
+              y: y - ballRadius - 6 - i * step,
+              r: ballRadius
+            });
+          this.bodies.push({
+            id: t.id,
+            x: x - radius,
+            y: ty - opening,
+            w: radius * 2,
+            h: height + opening,
+            topY: y - ballRadius - 6 - (t.balls.length - 1) * step
+          });
+          continue;
+        }
         c.save();
         try {
           this.chamberPath(x, ty, y, radius);
@@ -1724,7 +1796,6 @@
             this.ball(t.balls[i].type, x, by - drop, ballRadius);
           } else {
             this.ghostPositions.push(position);
-            this.shadowBall(x, by, ballRadius);
           }
         }
         c.save();
@@ -1741,6 +1812,51 @@
           c.fill();
         } finally {
           c.restore();
+        }
+        if (first > 0) {
+          const frostTop = y - 6 - first * step;
+          c.save();
+          try {
+            this.chamberPath(x, ty, y, radius);
+            c.clip();
+            const frost = c.createLinearGradient(x - radius, 0, x + radius, 0);
+            frost.addColorStop(0, "#529b91");
+            frost.addColorStop(0.18, "#c4ecdc");
+            frost.addColorStop(0.48, "#8dcec0");
+            frost.addColorStop(1, "#438b89");
+            c.fillStyle = frost;
+            c.fillRect(x - radius, frostTop, radius * 2, y - frostTop + 4);
+            for (let i = 0; i < first; i++) {
+              c.fillStyle = "#effff51c";
+              c.beginPath();
+              c.ellipse(
+                x,
+                y - ballRadius - 6 - i * step,
+                ballRadius * 0.68,
+                ballRadius * 0.7,
+                0,
+                0,
+                Math.PI * 2
+              );
+              c.fill();
+            }
+            c.strokeStyle = "#edfff5a0";
+            c.lineWidth = 1.1;
+            c.beginPath();
+            c.moveTo(x - radius, frostTop);
+            c.quadraticCurveTo(x, frostTop + 3, x + radius, frostTop);
+            c.stroke();
+            c.strokeStyle = "#ffffff4d";
+            c.lineWidth = radius * 0.14;
+            c.beginPath();
+            c.moveTo(x - radius * 0.66, frostTop + 4);
+            c.lineTo(x - radius * 0.66, y - 9);
+            c.stroke();
+            c.fillStyle = "#f4d480aa";
+            c.fillRect(x - radius, y - 10, radius * 2, 3);
+          } finally {
+            c.restore();
+          }
         }
         c.strokeStyle = "#ffffff75";
         c.lineWidth = Math.max(1.4, radius * 0.14);
@@ -1904,17 +2020,57 @@
           c.save();
           try {
             c.translate(i * 76, i === 1 ? 8 : 0);
+            if (i === 1) {
+              const a = this.mascotTime / 1700;
+              c.strokeStyle = "#c1e2b7";
+              c.lineWidth = 2;
+              c.beginPath();
+              c.ellipse(30, 25, 34, 31, 0, 0, Math.PI * 2);
+              c.stroke();
+              c.fillStyle = "#f5b844";
+              c.beginPath();
+              c.arc(
+                30 + 34 * Math.cos(a),
+                25 + 31 * Math.sin(a),
+                4,
+                0,
+                Math.PI * 2
+              );
+              c.fill();
+              c.translate(4 * Math.cos(a), 4 * Math.sin(a));
+            }
+            if (i === 2) {
+              const orb = c.createRadialGradient(17, 9, 2, 31, 27, 43);
+              orb.addColorStop(0, "#fff7ad");
+              orb.addColorStop(0.35, "#ffc742");
+              orb.addColorStop(0.8, "#ed8b22");
+              orb.addColorStop(1, "#b9551c");
+              c.fillStyle = "#88684035";
+              c.beginPath();
+              c.ellipse(34, 61, 37, 7, 0, 0, Math.PI * 2);
+              c.fill();
+              c.fillStyle = orb;
+              c.beginPath();
+              c.arc(31, 27, 41, 0, Math.PI * 2);
+              c.fill();
+              c.fillStyle = "#fff9dcba";
+              c.beginPath();
+              c.ellipse(16, 4, 10, 5, -0.45, 0, Math.PI * 2);
+              c.fill();
+              c.translate(6, 5);
+              c.scale(0.8, 0.8);
+            }
             c.rotate(i === 0 ? -0.08 : i === 2 ? 0.08 : 0);
             c.lineCap = "round";
             c.lineJoin = "round";
             for (const [offset, width, color] of [
               [4, 16, "#47624a"],
               [0, 16, "#fff9dc"],
-              [0, 9, i === 2 ? "#f48a24" : "#238a61"],
-              [-1, 3, i === 2 ? "#ffd865" : "#86e9a3"]
+              [0, 9, i === 2 ? "#fff7d5" : "#238a61"],
+              [-1, 3, i === 2 ? "#fffef1" : "#86e9a3"]
             ]) {
               c.strokeStyle = color;
-              c.lineWidth = width;
+              c.lineWidth = i === 0 ? width * 1.22 : width;
               for (const path of paths) {
                 c.beginPath();
                 path.forEach(
@@ -1938,14 +2094,72 @@
       c.fillRect(0, 0, w, h);
       this.rect(14, 76, w - 28, h - 128, "#fff9e8", 22);
       this.text(
-        this.homePanel === "records" ? "\u672C\u673A\u6218\u7EE9" : "\u600E\u4E48\u73A9",
+        this.homePanel === "records" ? "\u672C\u673A\u6218\u7EE9" : this.homePanel === "difficulty" ? "\u9009\u62E9\u96BE\u5EA6" : this.homePanel === "replace" ? "\u5F00\u59CB\u65B0\u4E00\u5C40\uFF1F" : "\u600E\u4E48\u73A9",
         w / 2,
         116,
         25,
         "#294d3c",
         "center"
       );
-      if (this.homePanel === "records") {
+      if (this.homePanel === "difficulty") {
+        PRESETS.forEach((p, i) => {
+          const y = 176 + i * 88;
+          this.button(
+            `start-${i}`,
+            p.name,
+            36,
+            y,
+            w - 72,
+            52,
+            () => {
+              this.selectedDifficulty = i;
+              if (this.game.resume) this.homePanel = "replace";
+              else {
+                this.homePanel = null;
+                this.game.start(i);
+              }
+            },
+            false,
+            i === 0
+          );
+          this.text(
+            `${[105, 126, 216][i]}\u9897 \xB7 ${p.types}\u7C7B`,
+            w / 2,
+            y + 72,
+            12,
+            "#617366",
+            "center"
+          );
+        });
+      } else if (this.homePanel === "replace") {
+        this.text("\u4E0A\u6B21\u8FDB\u5EA6\u5C06\u88AB\u66FF\u6362", w / 2, 190, 16, "#80603e", "center");
+        this.text(
+          `\u65B0\u5C40\uFF1A${PRESETS[this.selectedDifficulty].name}`,
+          w / 2,
+          226,
+          17,
+          "#294d3c",
+          "center"
+        );
+        this.button(
+          "confirm-new",
+          "\u5F00\u59CB\u65B0\u5C40",
+          32,
+          280,
+          w - 64,
+          52,
+          () => {
+            this.homePanel = null;
+            this.game.start(this.selectedDifficulty);
+          },
+          false,
+          true
+        );
+        this.button("keep-saved", "\u7EE7\u7EED\u4E0A\u6B21", 32, 354, w - 64, 44, () => {
+          this.homePanel = null;
+          this.game.continueSaved();
+        });
+      } else if (this.homePanel === "records") {
         const records = this.game.records, pages = Math.max(1, Math.ceil(records.entries.length / 4));
         this.recordPage = Math.min(this.recordPage, pages - 1);
         this.text("\u4EC5\u672C\u673A \xB7 \u6700\u8FD130\u5C40", w / 2, 145, 12, "#617366", "center");
@@ -2032,6 +2246,7 @@
     }
     home() {
       const w = this.width, h = this.height;
+      this.animateHome();
       this.homeTitle();
       this.button("records", "\u6218\u7EE9", 18, 18, 60, 34, () => {
         this.homePanel = "records";
@@ -2040,11 +2255,6 @@
       this.button("help", "\u73A9\u6CD5", 88, 18, 60, 34, () => {
         this.homePanel = "help";
       });
-      try {
-        const t = this.game.now();
-        if (Number.isFinite(t)) this.mascotTime = t;
-      } catch {
-      }
       const c = this.ctx;
       c.save();
       try {
@@ -2120,25 +2330,17 @@
       }
       const y = Math.min(h - 180, 455);
       this.button(
-        "start-0",
-        "\u5F00\u59CB \xB7 \u7B80\u5355",
+        "start-menu",
+        "\u5F00\u59CB\u6E38\u620F",
         28,
         y,
         w - 56,
         58,
-        () => this.game.start(0),
+        () => {
+          this.homePanel = "difficulty";
+        },
         false,
         true
-      );
-      this.button("start-1", "\u666E\u901A", 18, 266, 58, 48, () => this.game.start(1));
-      this.button(
-        "start-2",
-        "\u56F0\u96BE",
-        w - 76,
-        266,
-        58,
-        48,
-        () => this.game.start(2)
       );
       if (this.game.resume)
         this.button(
@@ -2150,6 +2352,30 @@
           40,
           () => this.game.continueSaved()
         );
+      this.trackObjects = [];
+      c.save();
+      try {
+        c.beginPath();
+        c.rect(0, h - 69, w, 54);
+        c.clip();
+        for (let i = 0; i < 5; i++) {
+          const x = (this.mascotTime * 0.035 + i * (w + 120) / 5) % (w + 120) - 60, y2 = h - 38, r = 12;
+          this.trackObjects.push({ x, y: y2, r });
+          if (i % 2 === 0) this.ball(i % 7, x, y2, r);
+          else {
+            this.rect(x - 13, y2 - 12, 26, 23, i === 1 ? "#efad48" : "#66bba1", 6);
+            this.rect(x - 11, y2 - 12, 22, 5, "#ffffff66", 3);
+            c.fillStyle = "#4b6554";
+            for (const dx of [-7, 7]) {
+              c.beginPath();
+              c.arc(x + dx, y2 + 12, 4, 0, Math.PI * 2);
+              c.fill();
+            }
+          }
+        }
+      } finally {
+        c.restore();
+      }
       if (this.homePanel) {
         this.homeDialog();
         return;
@@ -2361,12 +2587,15 @@
   resize();
   addEventListener("resize", resize);
   document.addEventListener("visibilitychange", () => {
+    scene.setForeground(!document.hidden);
     if (document.hidden) {
       music.suspend();
       game.hide();
     }
   });
+  addEventListener("pageshow", () => scene.setForeground(true));
   addEventListener("pagehide", () => {
+    scene.setForeground(false);
     music.suspend();
     game.hide();
   });

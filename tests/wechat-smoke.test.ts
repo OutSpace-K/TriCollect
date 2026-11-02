@@ -230,7 +230,15 @@ async function boot(
       });
     }
   };
-  const tap = (text: string, exact = false) => {
+  const tap: (text: string, exact?: boolean) => void = (
+    text,
+    exact = false,
+  ) => {
+    if (
+      ["简单", "普通", "困难"].includes(text) &&
+      !labels.some((l) => l.s === text)
+    )
+      tap("开始游戏", true);
     const l =
       [...labels].reverse().find((l) => l.s === text) ??
       (!exact
@@ -241,6 +249,11 @@ async function boot(
     handlers.start({ touches: [t] });
     handlers.end({ changedTouches: [t] });
     render();
+    if (
+      ["简单", "普通", "困难"].includes(text) &&
+      labels.some((l) => l.s === "开始新局")
+    )
+      tap("开始新局", true);
   };
   return {
     storage,
@@ -410,7 +423,7 @@ test("native frozen clock pauses instead of trapping input and can return home",
   r.render();
   assert.ok(r.labels.some((l) => l.s === "休息一下"));
   r.tap("返回首页");
-  assert.ok(r.labels.some((l) => l.s.includes("简单")));
+  assert.ok(r.labels.some((l) => l.s.includes("开始游戏")));
 });
 
 const animationReports: unknown[] = [];
@@ -488,7 +501,7 @@ for (const units of [1, 1000])
       secondPickAccepted: true,
     });
     writeFileSync(
-      "evidence/v0.1.14-animation-wallclock.json",
+      "evidence/v0.1.15-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -504,7 +517,7 @@ for (const units of [1, 1000])
   test(`native frozen-clock intro/transfer fail safely at ${units} units/ms`, async () => {
     const invalid = await boot(new Map(), units, false, true, true);
     assert.ok(invalid.labels.some((l) => l.s.includes("时钟无法")));
-    assert.ok(!invalid.labels.some((l) => l.s.includes("简单")));
+    assert.ok(!invalid.labels.some((l) => l.s.includes("开始游戏")));
     for (const stage of ["intro", "transfer"]) {
       const r = await boot(new Map(), units, false, true);
       r.tap("简单");
@@ -523,7 +536,7 @@ for (const units of [1, 1000])
       if (stage === "transfer")
         assert.equal(decode(r.storage.get(SAVE_KEY)!)!.sequence, 1);
       r.tap("返回首页");
-      assert.ok(r.labels.some((l) => l.s.includes("简单")));
+      assert.ok(r.labels.some((l) => l.s.includes("开始游戏")));
       animationReports.push({
         unitsPerMs: units,
         frozenStage: stage,
@@ -532,7 +545,7 @@ for (const units of [1, 1000])
       });
     }
     writeFileSync(
-      "evidence/v0.1.14-animation-wallclock.json",
+      "evidence/v0.1.15-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -568,14 +581,14 @@ for (const units of [1, 1000])
       2200,
     );
     r.tap("返回首页");
-    assert.ok(r.labels.some((l) => l.s.includes("简单")));
+    assert.ok(r.labels.some((l) => l.s.includes("开始游戏")));
     animationReports.push({
       unitsPerMs: units,
       rotationMs: ms,
       frozenRotationPauseMs: interrupted,
     });
     writeFileSync(
-      "evidence/v0.1.14-animation-wallclock.json",
+      "evidence/v0.1.15-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -645,12 +658,12 @@ test("native home hero restores canvas state after a paint fault", async () => {
   r.render();
   r.render();
   assert.equal(r.canvasDepth(), 0);
-  assert.ok(r.labels.some((l) => l.s.includes("简单")));
+  assert.ok(r.labels.some((l) => l.s.includes("开始游戏")));
   r.tap("简单");
   r.tap("跳过开场");
   r.tap("开始 ·");
   r.tap("暂停", true);
   r.tap("返回首页", true);
-  assert.ok(r.labels.some((l) => l.s.includes("简单")));
+  assert.ok(r.labels.some((l) => l.s.includes("开始游戏")));
   assert.equal(r.canvasDepth(), 0);
 });

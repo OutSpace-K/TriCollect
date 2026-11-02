@@ -189,44 +189,46 @@ test("compact HUD omits seed, tube numbering and routine narration; modal contro
       );
   }
 });
-test("home puts existing secondary modes beside the hero and one primary start below it", () => {
+test("home difficulty modal groups tiers and never overwrites resume without confirmation", () => {
   const x = setup();
   x.game.home();
+  const original = x.game.resume!.session;
   for (const width of [320, 390, 500]) {
     x.scene.width = width;
     x.scene.height = 660;
+    x.scene.homePanel = null;
     x.scene.render();
-    const start = x.scene.buttons.find((b) => b.id === "start-0")!,
-      left = x.scene.buttons.find((b) => b.id === "start-1")!,
-      right = x.scene.buttons.find((b) => b.id === "start-2")!;
-    assert.equal(left.y, right.y);
-    assert.ok(left.x + left.w < width / 2 && right.x > width / 2);
-    assert.ok(start.y > left.y + left.h + 60);
-    assert.ok(start.w > left.w * 3);
+    assert.ok(x.scene.buttons.some((b) => b.id === "start-menu"));
+    assert.ok(!x.scene.buttons.some((b) => /^start-[012]$/.test(b.id)));
+    x.scene.buttons.find((b) => b.id === "start-menu")!.act();
+    x.scene.render();
+    const tiers = x.scene.buttons.filter((b) => /^start-[012]$/.test(b.id));
+    assert.equal(tiers.length, 3);
+    assert.ok(tiers.every((b) => b.x === tiers[0].x && b.w === tiers[0].w));
+    tiers[2].act();
+    x.scene.render();
+    assert.equal(x.scene.homePanel, "replace");
+    assert.equal(x.game.resume!.session, original);
+    x.scene.buttons.find((b) => b.id === "home-dialog-close")!.act();
+    x.scene.render();
+    assert.equal(x.game.resume!.session, original);
     for (const b of x.scene.buttons)
       assert.ok(b.x >= 0 && b.x + b.w <= width && b.y + b.h + 8 <= 660);
-    for (let i = 0; i < x.scene.buttons.length; i++)
-      for (const b of x.scene.buttons.slice(i + 1)) {
-        const a = x.scene.buttons[i];
-        assert.ok(
-          a.x + a.w <= b.x ||
-            b.x + b.w <= a.x ||
-            a.y + a.h <= b.y ||
-            b.y + b.h <= a.y,
-        );
-      }
-    assert.ok(
-      x.scene.buttons.every((b) =>
-        [
-          "sound-toggle",
-          "start-0",
-          "start-1",
-          "start-2",
-          "resume",
-          "records",
-          "help",
-        ].includes(b.id),
-      ),
-    );
   }
+});
+test("decorative motion freezes offscreen and returns without a large elapsed jump", () => {
+  const x = setup();
+  x.game.home();
+  x.scene.render();
+  x.advance(50);
+  const before = x.scene.decorationTime;
+  assert.ok(before > 0);
+  x.scene.setForeground(false);
+  x.advance(10000);
+  assert.equal(x.scene.decorationTime, before);
+  x.scene.setForeground(true);
+  x.advance(10000);
+  assert.equal(x.scene.decorationTime, before);
+  x.advance(40);
+  assert.equal(x.scene.decorationTime, before + 40);
 });

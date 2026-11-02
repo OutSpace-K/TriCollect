@@ -79,12 +79,15 @@ function resize() {
 resize();
 addEventListener("resize", resize);
 document.addEventListener("visibilitychange", () => {
+  scene.setForeground(!document.hidden);
   if (document.hidden) {
     music.suspend();
     game.hide();
   }
 });
+addEventListener("pageshow", () => scene.setForeground(true));
 addEventListener("pagehide", () => {
+  scene.setForeground(false);
   music.suspend();
   game.hide();
 });

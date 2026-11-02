@@ -1,14 +1,14 @@
 {
   "project": "TriCollect",
-  "version": "0.1.14",
-  "baseCommit": "5854dcd51b98f14ee3ff2c901fd5d41f9d7992f2",
+  "displayName": "转个“球”",
+  "version": "0.1.15",
+  "baseCommit": "cb43009039d9d7f0784102f8fa5959607b80da17",
   "ruleVersion": "tricollect-5-variable-height",
   "tests": {
-    "passed": 94,
+    "passed": 95,
     "failed": 0,
-    "durationMs": 105867.03413
+    "durationMs": 139985.92879
   },
-  "terminalFaultCases": 15,
   "browser": {
     "passed": true,
     "platform": "Chromium only; not WeChat device",
@@ -17,8 +17,8 @@
     "results": [
       {
         "check": "browser real 10-second clock",
-        "elapsedMs": 10042.599999999627,
-        "chargedMs": 10067.400000000373
+        "elapsedMs": 10100.599999999627,
+        "chargedMs": 10105.300000000745
       },
       "12 consecutive 250ms pointer rotations completed without lock",
       "one-frame exception recovered; pause/home/reload regression preserved",
@@ -26,22 +26,43 @@
         "preset": 0,
         "picks": 105,
         "wonWithoutAds": true,
-        "remainingMs": 269937.2999999821
+        "remainingMs": 275054.0000000093
       },
       {
         "preset": 1,
         "picks": 126,
         "wonWithoutAds": true,
-        "remainingMs": 280961.59999998286
+        "remainingMs": 290695.7999999877
       },
       {
         "preset": 2,
         "picks": 216,
         "wonWithoutAds": true,
-        "remainingMs": 256544.90000000037
+        "remainingMs": 270714.799999984
       }
     ],
     "errors": []
+  },
+  "homeAndPixels": {
+    "platform": "Chromium actual pixels and input, not WeChat",
+    "reports": [
+      {
+        "width": 320,
+        "wraps": 6,
+        "paused": true,
+        "resumeDelta": 16,
+        "modalNoOverwrite": true,
+        "hiddenPixelEquality": true
+      },
+      {
+        "width": 390,
+        "wraps": 5,
+        "paused": true,
+        "resumeDelta": 16,
+        "modalNoOverwrite": true,
+        "hiddenPixelEquality": true
+      }
+    ]
   },
   "terminalBrowser": {
     "platform": "Actual browser bundle in Chromium, not WeChat",
@@ -73,32 +94,26 @@
       }
     ]
   },
-  "quotaFinal": {
-    "scope": "Real Chromium localStorage with deterministic controller witness; not pointer E2E or WeChat",
-    "results": [
-      {
-        "build": "final compact terminal",
-        "status": "won",
-        "phase": "result",
-        "records": 1,
-        "message": "三同收集成功 +100",
-        "errors": [],
-        "storedChars": 49513,
-        "journalChars": 0
-      }
-    ]
-  },
-  "scope": "Storage consistency and persistence size only; no rule, renderer or asset changes. Node/wx mock/Chromium, not actual WeChat.",
-  "strategy": "Verified terminal journal, verified main save, idempotent record, clear journal last. Startup drains terminal before resume/new session; recorded legacy sessions cannot revive. Verified legacy win can correct lost entry without duplication or downgrade.",
-  "persistence": "Active save stores one undo snapshot, terminal saves none; in-memory history unchanged. Record limit remains 30.",
+  "visual": "Actual 320/390 pixels inspected: home before/after, title motion, difficulty/replacement modals, mixed-height three faces, fixed slots, inner reveal, rotation and modal states. Hidden identity changes produce identical board pixels. Screenshots internal only; not aesthetic acceptance.",
+  "changes": [
+    "One start button opens same-column difficulty modal; unfinished save replacement requires explicit confirmation",
+    "Original heavier first glyph, upright orbiting middle glyph, ball-shaped last glyph",
+    "Decorative balls/toys loop offscreen left-to-right; background pauses and no resume jump",
+    "Front lower opaque frosted glass with neutral faint silhouettes; rear reduced detail/contrast and no true ball colors"
+  ],
+  "storage": "v0.1.14 terminal consistency/compact persistence unchanged; failure-order browser regression repeated on current bundle",
+  "unchanged": "Core rules, 105/126/216 balls, 300s, fixed slots, single undo, scoring, music and background assets",
   "typecheck": "passed",
   "formatCheck": "passed",
   "cleanBuild": "npm ci/build/typecheck; all 12 dist files byte-identical",
-  "seeds": "Unchanged generator; 300-seed v0.1.13 evidence retained, not rerun in this storage-only patch. Core generation tests and all-preset native/browser completions passed.",
+  "audio": "Actual browser decode/playback/lifecycle passed; music unchanged; no human listening",
+  "nativeCanvas": "Actual native bundle in Chromium Canvas wx bridge at 320/390, not actual WeChat",
+  "seeds": "300-seed v0.1.13 evidence retained; generator unchanged, no new 300-seed claim. All-preset native/browser completions and core tests passed.",
   "publication": "Source and prebuilt game; no deployment",
   "remaining": [
-    "Actual WeChat tool/device/real advertising validation",
-    "If every storage write fails and process is forcibly terminated, unpersisted terminal cannot be guaranteed; UI reports failure and prevents voluntary departure/new game until durable.",
-    "Human visual, audio and difficulty acceptance unchanged"
+    "Actual WeChat Developer Tools and devices",
+    "Human visual preference/touch and 300s balance",
+    "Real AppID/advertising callbacks and friend-ranking integration",
+    "Total storage failure plus forced process termination cannot guarantee unpersisted terminal data"
   ]
 }

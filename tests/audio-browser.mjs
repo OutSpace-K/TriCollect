@@ -26,6 +26,12 @@ await page.addInitScript(() => {
   };
 });
 async function click(id) {
+  if (/^start-[012]$/.test(id)) {
+    const menu = await page.evaluate(() =>
+      window.tri.scene.buttons.some((b) => b.id === "start-menu"),
+    );
+    if (menu) await click("start-menu");
+  }
   await page.waitForFunction(
     (id) => tri.scene.buttons.some((b) => b.id === id && !b.disabled),
     id,
@@ -36,6 +42,13 @@ async function click(id) {
   );
   await page.mouse.click(b.x + b.w / 2, b.y + b.h / 2);
   await page.waitForTimeout(40);
+  if (
+    /^start-[012]$/.test(id) &&
+    (await page.evaluate(() =>
+      tri.scene.buttons.some((b) => b.id === "confirm-new"),
+    ))
+  )
+    await click("confirm-new");
 }
 try {
   await page.goto("http://127.0.0.1:4175");
@@ -94,7 +107,7 @@ try {
   await click("extend");
   assert.ok(await page.evaluate(() => players[0].paused));
   await writeFile(
-    "evidence/v0.1.13-audio-browser.json",
+    "evidence/v0.1.15-audio-browser.json",
     JSON.stringify(
       {
         passed: true,

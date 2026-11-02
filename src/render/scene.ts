@@ -13,9 +13,31 @@ export type Button = {
 };
 export class Scene {
   buttons: Button[] = [];
-  homePanel: "records" | "help" | null = null;
+  homePanel: "records" | "help" | "difficulty" | "replace" | null = null;
   recordPage = 0;
   private mascotTime = 0;
+  private foreground = true;
+  private decorationLast: number | null = null;
+  private selectedDifficulty = 0;
+  trackObjects: { x: number; y: number; r: number }[] = [];
+  get decorationTime() {
+    return this.mascotTime;
+  }
+  setForeground(value: boolean) {
+    this.foreground = value;
+    this.decorationLast = null;
+  }
+  private animateHome() {
+    try {
+      const now = this.game.now();
+      if (!Number.isFinite(now)) return;
+      if (this.foreground && !this.homePanel && this.decorationLast !== null)
+        this.mascotTime += Math.max(0, Math.min(64, now - this.decorationLast));
+      this.decorationLast = now;
+    } catch {
+      this.decorationLast = null;
+    }
+  }
   misclickFeedback: {
     x: number;
     y: number;
@@ -443,6 +465,7 @@ export class Scene {
       return;
     }
     this.homePanel = null;
+    this.decorationLast = null;
     this.rect(16, 16, 116, 51, "#697d61", 16);
     this.rect(19, 19, 110, 45, "#fffbed", 13);
     const secs = Math.ceil(g.state.remaining / 1000);
@@ -713,6 +736,55 @@ export class Scene {
         height = t.capacity * step + 20,
         ty = y - height,
         front = visible.has(t.id);
+      if (!front) {
+        const rear = c.createLinearGradient(x - radius, ty, x + radius, y);
+        rear.addColorStop(0, "#d9e3c9");
+        rear.addColorStop(0.55, "#c0d0b7");
+        rear.addColorStop(1, "#a7bba3");
+        this.chamberPath(x, ty, y, radius);
+        c.fillStyle = rear;
+        c.fill();
+        c.strokeStyle = "#9db39d66";
+        c.lineWidth = 1;
+        c.stroke();
+        c.beginPath();
+        c.ellipse(x, ty - 1, radius * 0.98, opening, 0, 0, Math.PI * 2);
+        c.fillStyle = "#e3e9d4";
+        c.fill();
+        c.beginPath();
+        c.ellipse(x, ty - 1, radius * 0.79, opening * 0.55, 0, 0, Math.PI * 2);
+        c.fillStyle = "#afc2ac";
+        c.fill();
+        c.beginPath();
+        c.ellipse(x, y - 1, radius * 0.9, opening * 0.6, 0, 0, Math.PI * 2);
+        c.fillStyle = "#9bb19855";
+        c.fill();
+        this.rearOpenings.push({
+          id: t.id,
+          x,
+          y: ty - 1,
+          rx: radius * 0.98,
+          ry: opening,
+        });
+        for (let i = 0; i < t.balls.length; i++)
+          this.ghostPositions.push({
+            id: t.balls[i].id,
+            tube: t.id,
+            slot: i,
+            x,
+            y: y - ballRadius - 6 - i * step,
+            r: ballRadius,
+          });
+        this.bodies.push({
+          id: t.id,
+          x: x - radius,
+          y: ty - opening,
+          w: radius * 2,
+          h: height + opening,
+          topY: y - ballRadius - 6 - (t.balls.length - 1) * step,
+        });
+        continue;
+      }
       // Optical backdrop transmission is composited independently of hidden game contents.
       c.save();
       try {
@@ -845,7 +917,7 @@ export class Scene {
           this.ball(t.balls[i].type, x, by - drop, ballRadius);
         } else {
           this.ghostPositions.push(position);
-          this.shadowBall(x, by, ballRadius);
+          // Hidden identity remains available to QA only; opaque glass hides its contents.
         }
       }
       c.save();
@@ -862,6 +934,52 @@ export class Scene {
         c.fill();
       } finally {
         c.restore();
+      }
+      // A descending reveal boundary uncovers fixed slots; the balls never move.
+      if (first > 0) {
+        const frostTop = y - 6 - first * step;
+        c.save();
+        try {
+          this.chamberPath(x, ty, y, radius);
+          c.clip();
+          const frost = c.createLinearGradient(x - radius, 0, x + radius, 0);
+          frost.addColorStop(0, "#529b91");
+          frost.addColorStop(0.18, "#c4ecdc");
+          frost.addColorStop(0.48, "#8dcec0");
+          frost.addColorStop(1, "#438b89");
+          c.fillStyle = frost;
+          c.fillRect(x - radius, frostTop, radius * 2, y - frostTop + 4);
+          for (let i = 0; i < first; i++) {
+            c.fillStyle = "#effff51c";
+            c.beginPath();
+            c.ellipse(
+              x,
+              y - ballRadius - 6 - i * step,
+              ballRadius * 0.68,
+              ballRadius * 0.7,
+              0,
+              0,
+              Math.PI * 2,
+            );
+            c.fill();
+          }
+          c.strokeStyle = "#edfff5a0";
+          c.lineWidth = 1.1;
+          c.beginPath();
+          c.moveTo(x - radius, frostTop);
+          c.quadraticCurveTo(x, frostTop + 3, x + radius, frostTop);
+          c.stroke();
+          c.strokeStyle = "#ffffff4d";
+          c.lineWidth = radius * 0.14;
+          c.beginPath();
+          c.moveTo(x - radius * 0.66, frostTop + 4);
+          c.lineTo(x - radius * 0.66, y - 9);
+          c.stroke();
+          c.fillStyle = "#f4d480aa";
+          c.fillRect(x - radius, y - 10, radius * 2, 3);
+        } finally {
+          c.restore();
+        }
       }
       // The curved reflections sit on the front wall, above the balls, without covering their centers.
       c.strokeStyle = "#ffffff75";
@@ -1033,17 +1151,57 @@ export class Scene {
         c.save();
         try {
           c.translate(i * 76, i === 1 ? 8 : 0);
+          if (i === 1) {
+            const a = this.mascotTime / 1700;
+            c.strokeStyle = "#c1e2b7";
+            c.lineWidth = 2;
+            c.beginPath();
+            c.ellipse(30, 25, 34, 31, 0, 0, Math.PI * 2);
+            c.stroke();
+            c.fillStyle = "#f5b844";
+            c.beginPath();
+            c.arc(
+              30 + 34 * Math.cos(a),
+              25 + 31 * Math.sin(a),
+              4,
+              0,
+              Math.PI * 2,
+            );
+            c.fill();
+            c.translate(4 * Math.cos(a), 4 * Math.sin(a));
+          }
+          if (i === 2) {
+            const orb = c.createRadialGradient(17, 9, 2, 31, 27, 43);
+            orb.addColorStop(0, "#fff7ad");
+            orb.addColorStop(0.35, "#ffc742");
+            orb.addColorStop(0.8, "#ed8b22");
+            orb.addColorStop(1, "#b9551c");
+            c.fillStyle = "#88684035";
+            c.beginPath();
+            c.ellipse(34, 61, 37, 7, 0, 0, Math.PI * 2);
+            c.fill();
+            c.fillStyle = orb;
+            c.beginPath();
+            c.arc(31, 27, 41, 0, Math.PI * 2);
+            c.fill();
+            c.fillStyle = "#fff9dcba";
+            c.beginPath();
+            c.ellipse(16, 4, 10, 5, -0.45, 0, Math.PI * 2);
+            c.fill();
+            c.translate(6, 5);
+            c.scale(0.8, 0.8);
+          }
           c.rotate(i === 0 ? -0.08 : i === 2 ? 0.08 : 0);
           c.lineCap = "round";
           c.lineJoin = "round";
           for (const [offset, width, color] of [
             [4, 16, "#47624a"],
             [0, 16, "#fff9dc"],
-            [0, 9, i === 2 ? "#f48a24" : "#238a61"],
-            [-1, 3, i === 2 ? "#ffd865" : "#86e9a3"],
+            [0, 9, i === 2 ? "#fff7d5" : "#238a61"],
+            [-1, 3, i === 2 ? "#fffef1" : "#86e9a3"],
           ] as const) {
             c.strokeStyle = color;
-            c.lineWidth = width;
+            c.lineWidth = i === 0 ? width * 1.22 : width;
             for (const path of paths) {
               c.beginPath();
               path.forEach(([x, y], j) =>
@@ -1069,14 +1227,78 @@ export class Scene {
     c.fillRect(0, 0, w, h);
     this.rect(14, 76, w - 28, h - 128, "#fff9e8", 22);
     this.text(
-      this.homePanel === "records" ? "本机战绩" : "怎么玩",
+      this.homePanel === "records"
+        ? "本机战绩"
+        : this.homePanel === "difficulty"
+          ? "选择难度"
+          : this.homePanel === "replace"
+            ? "开始新一局？"
+            : "怎么玩",
       w / 2,
       116,
       25,
       "#294d3c",
       "center",
     );
-    if (this.homePanel === "records") {
+    if (this.homePanel === "difficulty") {
+      PRESETS.forEach((p, i) => {
+        const y = 176 + i * 88;
+        this.button(
+          `start-${i}`,
+          p.name,
+          36,
+          y,
+          w - 72,
+          52,
+          () => {
+            this.selectedDifficulty = i;
+            if (this.game.resume) this.homePanel = "replace";
+            else {
+              this.homePanel = null;
+              this.game.start(i);
+            }
+          },
+          false,
+          i === 0,
+        );
+        this.text(
+          `${[105, 126, 216][i]}颗 · ${p.types}类`,
+          w / 2,
+          y + 72,
+          12,
+          "#617366",
+          "center",
+        );
+      });
+    } else if (this.homePanel === "replace") {
+      this.text("上次进度将被替换", w / 2, 190, 16, "#80603e", "center");
+      this.text(
+        `新局：${PRESETS[this.selectedDifficulty].name}`,
+        w / 2,
+        226,
+        17,
+        "#294d3c",
+        "center",
+      );
+      this.button(
+        "confirm-new",
+        "开始新局",
+        32,
+        280,
+        w - 64,
+        52,
+        () => {
+          this.homePanel = null;
+          this.game.start(this.selectedDifficulty);
+        },
+        false,
+        true,
+      );
+      this.button("keep-saved", "继续上次", 32, 354, w - 64, 44, () => {
+        this.homePanel = null;
+        this.game.continueSaved();
+      });
+    } else if (this.homePanel === "records") {
       const records = this.game.records,
         pages = Math.max(1, Math.ceil(records.entries.length / 4));
       this.recordPage = Math.min(this.recordPage, pages - 1);
@@ -1169,6 +1391,7 @@ export class Scene {
     const w = this.width,
       h = this.height;
 
+    this.animateHome();
     this.homeTitle();
     this.button("records", "战绩", 18, 18, 60, 34, () => {
       this.homePanel = "records";
@@ -1177,12 +1400,6 @@ export class Scene {
     this.button("help", "玩法", 88, 18, 60, 34, () => {
       this.homePanel = "help";
     });
-    try {
-      const t = this.game.now();
-      if (Number.isFinite(t)) this.mascotTime = t;
-    } catch {
-      /* Decorative motion cannot stop home input. */
-    }
 
     const c = this.ctx;
     c.save();
@@ -1263,24 +1480,49 @@ export class Scene {
     }
     const y = Math.min(h - 180, 455);
     this.button(
-      "start-0",
-      "开始 · 简单",
+      "start-menu",
+      "开始游戏",
       28,
       y,
       w - 56,
       58,
-      () => this.game.start(0),
+      () => {
+        this.homePanel = "difficulty";
+      },
       false,
       true,
-    );
-    this.button("start-1", "普通", 18, 266, 58, 48, () => this.game.start(1));
-    this.button("start-2", "困难", w - 76, 266, 58, 48, () =>
-      this.game.start(2),
     );
     if (this.game.resume)
       this.button("resume", "继续上次", 28, y + 80, w - 56, 40, () =>
         this.game.continueSaved(),
       );
+    this.trackObjects = [];
+    c.save();
+    try {
+      c.beginPath();
+      c.rect(0, h - 69, w, 54);
+      c.clip();
+      for (let i = 0; i < 5; i++) {
+        const x =
+            ((this.mascotTime * 0.035 + (i * (w + 120)) / 5) % (w + 120)) - 60,
+          y = h - 38,
+          r = 12;
+        this.trackObjects.push({ x, y, r });
+        if (i % 2 === 0) this.ball(i % 7, x, y, r);
+        else {
+          this.rect(x - 13, y - 12, 26, 23, i === 1 ? "#efad48" : "#66bba1", 6);
+          this.rect(x - 11, y - 12, 22, 5, "#ffffff66", 3);
+          c.fillStyle = "#4b6554";
+          for (const dx of [-7, 7]) {
+            c.beginPath();
+            c.arc(x + dx, y + 12, 4, 0, Math.PI * 2);
+            c.fill();
+          }
+        }
+      }
+    } finally {
+      c.restore();
+    }
     if (this.homePanel) {
       this.homeDialog();
       return;
