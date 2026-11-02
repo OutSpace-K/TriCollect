@@ -1,4 +1,4 @@
-export const VERSION = "0.1.11";
+export const VERSION = "0.1.12";
 export const DISPLAY_NAME = "转个“球”";
 export const RULE = "tricollect-4-fixedslots-front";
 export const CONFIG = Object.freeze({

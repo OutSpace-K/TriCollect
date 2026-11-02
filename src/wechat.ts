@@ -30,9 +30,9 @@ const ads = AD_UNIT
     )
   : new UnavailableAd();
 async function boot() {
-  ctx.fillStyle = "#18234f";
+  ctx.fillStyle = "#dbe6cf";
   ctx.fillRect(0, 0, width, height);
-  ctx.fillStyle = "#f5f7ff";
+  ctx.fillStyle = "#294d3c";
   ctx.font = "16px sans-serif";
   ctx.fillText("正在准备球仓…", 24, 80);
   const clock = await calibrateClock(() => perf.now());
@@ -127,7 +127,7 @@ async function boot() {
     pointer = null;
   });
   // Remove bootstrap text from the reserved system area before the first scene.
-  ctx.fillStyle = "#18234f";
+  ctx.fillStyle = "#dbe6cf";
   ctx.fillRect(0, 0, width, height);
   startFrames(
     requestAnimationFrame,
@@ -151,9 +151,9 @@ async function boot() {
 }
 void boot().catch((error) => {
   console.error("TriCollect startup failed", error);
-  ctx.fillStyle = "#18234f";
+  ctx.fillStyle = "#dbe6cf";
   ctx.fillRect(0, 0, width, height);
-  ctx.fillStyle = "#f5f7ff";
+  ctx.fillStyle = "#294d3c";
   ctx.font = "16px sans-serif";
   ctx.fillText("时钟无法正常运行，请重新打开游戏", 20, 100);
 });

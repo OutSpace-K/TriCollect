@@ -1,11 +1,11 @@
 {
   "project": "TriCollect",
   "displayName": "转个“球”",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "ruleVersion": "tricollect-4-fixedslots-front",
-  "baseCommit": "608fc1ce8d869d16ebee05c0da38daa7a94cdc28",
+  "baseCommit": "29ef84143f40ae39567b2f024a830f07a2c15fb6",
   "unitAndMockTests": {
-    "passed": 73,
+    "passed": 74,
     "failed": 0,
     "fullFinalRun": true
   },
@@ -17,18 +17,18 @@
     "errors": []
   },
   "misclick": "Single neutral 280ms local pulse for invalid chamber taps; no pick or time penalty; background/UI excluded; phase/view/session/valid-pick cancellation passed",
-  "display": "Arcade home hierarchy, compact time/progress HUD, independent tray, raised buttons and unified modal cards. Removed seed, tube numbers, repeated narration and prototype labels.",
-  "visual": "Actual Chromium before/after v0.1.10/v0.1.11 pixel inspection: home, active, three faces, turning, misclick, inner reveal, paused/blocked/expired/ad/success/failure; 320 and 390 widths. Not aesthetic acceptance.",
+  "display": "Home secondary modes flank central physical bottle/table hero; one prominent start below; resume below start if present; sound upper right. No new social/shop/collection functionality. Wood, enamel wells, matte sage background and physical buttons replace arcade neon.",
+  "visual": "Actual v0.1.11/v0.1.12 browser pixels inspected: home before/after, 320/390, active three faces, rotation, misclick, inner reveal, all modals and real E2E success. Not aesthetic acceptance.",
   "background": {
     "file": "assets/background.png",
-    "bytes": 96569,
-    "sha256": "7cf809e07190404c2d6962fe72a8e3e27d1467f5202366b3152b3a7fdbd8d757"
+    "bytes": 60987,
+    "sha256": "ccd3cf74ec5733c0232f094ae37b546bb593b054250c2f6b3b2067bb1ef7d5d4"
   },
   "audio": "Unchanged original 32s music; real HTMLAudio lifecycle passed; no human listening",
   "typecheck": "passed",
   "cleanBuild": "Clean npm ci/build/typecheck; all 12 dist files byte-identical",
   "scope": "Node, simulated wx and Chromium only; not actual WeChat Developer Tools or devices",
-  "publication": "Version 0.1.11 source, prebuilt game and validation records. No deployment.",
+  "publication": "Version 0.1.12 source, prebuilt game and validation records. No deployment.",
   "remaining": [
     "Actual WeChat import/device/performance",
     "Visual preference and playtest acceptance",
@@ -38,9 +38,10 @@
   ],
   "playBackground": {
     "file": "assets/play-background.png",
-    "bytes": 72457,
-    "sha256": "953922fbc962858d2f3ba0876a04d81562aa95498d39316c5ae992fef299a45a"
+    "bytes": 41492,
+    "sha256": "6bd6bf1ec98f5e02af23b41af2c9f577e1455fac5c2508d4eb1d333d8741467b"
   },
   "nativeCanvas": "Actual dist/wechat/game.js executed using Chromium Canvas and wx bridge at 320/390: capsule clearance, start/pause/resume/turn. Not actual WeChat.",
-  "safeArea": "Menu capsule bottom +8px, conservative fallback, bottom indicator clearance, inverse touch mapping. Home paint exception restores canvas state."
+  "safeArea": "Menu capsule bottom +8px, conservative fallback, bottom indicator clearance, inverse touch mapping. Home paint exception restores canvas state.",
+  "reference": "Homepage image search returned layout from m.51nacs.com/down/3918.html. Full-resolution image fetch timed out; executor proxy denied download with 403. No original image materialized, no bypass, no claim of latest official homepage."
 }

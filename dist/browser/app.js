@@ -855,7 +855,7 @@
       this.background = image;
       this.backgroundLoaded = true;
     }
-    text(t, x, y, size = 14, color = "#f5f7ff", align = "left") {
+    text(t, x, y, size = 14, color = "#284b40", align = "left") {
       const c = this.ctx;
       c.font = `${size >= 24 ? "600" : "400"} ${size}px sans-serif`;
       c.fillStyle = color;
@@ -876,14 +876,14 @@
     }
     button(id, label, x, y, w, h, act, disabled = false, accent = false) {
       const primary = accent || id === "hint" || id === "again";
-      const fill = disabled ? "#464a79" : primary ? "#ffdb39" : "#6554ed";
-      this.rect(x - 2, y - 2, w + 4, h + 10, "#111735", 16);
+      const fill = disabled ? "#b5bdb0" : primary ? "#f5a340" : "#278b71";
+      this.rect(x - 2, y - 2, w + 4, h + 10, "#355447", 16);
       this.rect(
         x,
         y + 5,
         w,
         h,
-        disabled ? "#303657" : primary ? "#b66a14" : "#342594",
+        disabled ? "#8a9587" : primary ? "#a95f27" : "#1b5749",
         14
       );
       this.rect(x, y, w, h, fill, 14);
@@ -892,7 +892,7 @@
         y + 3,
         w - 10,
         Math.min(10, h / 4),
-        disabled ? "#ffffff08" : "#ffffff38",
+        disabled ? "#ffffff08" : "#ffffff30",
         7
       );
       this.text(
@@ -900,7 +900,7 @@
         x + w / 2,
         y + h / 2 + 5,
         id.startsWith("rotate") ? 24 : 15,
-        disabled ? "#c0c4db" : primary ? "#242046" : "#ffffff",
+        disabled ? "#4f5c50" : primary ? "#3b2b1d" : "#ffffff",
         "center"
       );
       this.buttons.push({ id, x, y, w, h, act, disabled });
@@ -910,7 +910,7 @@
       c.save();
       try {
         c.globalAlpha = alpha;
-        c.fillStyle = "#73503530";
+        c.fillStyle = "#344b3550";
         c.beginPath();
         c.ellipse(
           x + r * 0.22,
@@ -940,7 +940,7 @@
         gradient.addColorStop(0.3, shade(0.08));
         gradient.addColorStop(0.5, PALETTE[type]);
         gradient.addColorStop(0.78, shade(-0.12));
-        gradient.addColorStop(1, shade(-0.52));
+        gradient.addColorStop(1, shade(-0.6));
         c.fillStyle = gradient;
         c.beginPath();
         c.arc(x, y, r, 0, Math.PI * 2);
@@ -1026,12 +1026,12 @@
         y,
         r
       );
-      shade.addColorStop(0, "#b9c4db");
-      shade.addColorStop(0.28, "#8390ae");
-      shade.addColorStop(0.72, "#556382");
-      shade.addColorStop(1, "#303d5d");
+      shade.addColorStop(0, "#c7ccbb");
+      shade.addColorStop(0.28, "#9da68f");
+      shade.addColorStop(0.72, "#707b65");
+      shade.addColorStop(1, "#414d3e");
       c.fillStyle = shade;
-      c.strokeStyle = "#6d80a9";
+      c.strokeStyle = "#84937b";
       c.lineWidth = 1.1;
       c.beginPath();
       c.arc(x, y, r, 0, Math.PI * 2);
@@ -1056,7 +1056,7 @@
     }
     transmittedBackdrop(x, y, w, h) {
       const c = this.ctx;
-      c.fillStyle = "#253469";
+      c.fillStyle = "#dbe6cf";
       c.fillRect(x, y, w, h);
       if (this.currentBackground) {
         const scale = Math.max(this.width / 600, this.height / 1040), left = (this.width - 600 * scale) / 2, top = (this.height - 1040 * scale) / 2;
@@ -1123,8 +1123,8 @@
       this.targets = [];
       c.clearRect(0, 0, w, h);
       const bg = c.createLinearGradient(0, 0, w, h);
-      bg.addColorStop(0, "#3932a2");
-      bg.addColorStop(1, "#101d49");
+      bg.addColorStop(0, "#e2ebd5");
+      bg.addColorStop(1, "#a8c6a6");
       c.fillStyle = bg;
       c.fillRect(0, 0, w, h);
       if (this.currentBackground) {
@@ -1150,23 +1150,23 @@
         this.home();
         return;
       }
-      this.rect(16, 16, 116, 51, "#111735", 16);
-      this.rect(19, 19, 110, 45, "#f2fbff", 13);
+      this.rect(16, 16, 116, 51, "#697d61", 16);
+      this.rect(19, 19, 110, 45, "#fffbed", 13);
       const secs = Math.ceil(g.state.remaining / 1e3);
       this.text(
         `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`,
         74,
         51,
         29,
-        g.state.remaining < 3e4 ? "#c72b51" : "#18234f",
+        g.state.remaining < 3e4 ? "#bd3b30" : "#294d3c",
         "center"
       );
       const total = PRESETS[g.state.preset].side * (PRESETS[g.state.preset].side + 1) / 2 * 5;
       const progress = g.board.cleared.length / total;
-      this.text(`\u6E05\u7A7A ${g.board.cleared.length}/${total}`, 20, 91, 13, "#ecf6ff");
-      this.rect(20, 101, w - 40, 9, "#101731", 5);
+      this.text(`\u6E05\u7A7A ${g.board.cleared.length}/${total}`, 20, 91, 13, "#294d3c");
+      this.rect(20, 101, w - 40, 9, "#a6b49a", 5);
       if (progress > 0)
-        this.rect(20, 101, Math.max(9, (w - 40) * progress), 9, "#42e6cb", 5);
+        this.rect(20, 101, Math.max(9, (w - 40) * progress), 9, "#278b71", 5);
       const hidden = ["paused", "ad", "expired", "blocked", "result"].includes(
         g.phase
       );
@@ -1189,14 +1189,24 @@
         },
         !["active", "resolving", "rotating"].includes(g.phase)
       );
-      this.rect(14, trayY - 8, w - 28, 60, "#101735", 17);
-      this.rect(17, trayY - 5, w - 34, 53, "#394887", 14);
+      this.rect(14, trayY - 1, w - 28, 63, "#314c3229", 17);
+      this.rect(14, trayY - 8, w - 28, 60, "#59735b", 17);
+      this.rect(17, trayY - 9, w - 34, 56, "#fdfcf0", 14);
+      this.rect(20, trayY - 6, w - 40, 5, "#ffffff", 3);
       const cell = (w - 44) / 7;
       for (let i = 0; i < 7; i++) {
-        this.rect(22 + i * cell, trayY, cell - 4, 43, "#15244f", 9);
+        const x = 22 + i * cell;
+        this.rect(x, trayY + 1, cell - 4, 43, "#ffffff", 13);
+        const well = c.createLinearGradient(x, trayY, x + cell, trayY + 42);
+        well.addColorStop(0, "#5e745e");
+        well.addColorStop(0.2, "#94a68a");
+        well.addColorStop(0.78, "#d4ddc1");
+        well.addColorStop(1, "#e6ecd6");
+        this.rect(x, trayY, cell - 4, 40, "#afbea0", 12);
+        c.fillStyle = well;
+        c.fill();
         const ball = g.board.tray[i];
-        if (ball)
-          this.ball(ball.type, 22 + i * cell + (cell - 4) / 2, trayY + 21, 15);
+        if (ball) this.ball(ball.type, x + (cell - 4) / 2, trayY + 21, 15);
       }
       const bw = (w - 65) / 4;
       this.button(
@@ -1250,7 +1260,7 @@
           w / 2,
           h - 16,
           11,
-          "#ffdf62",
+          "#8b3e26",
           "center"
         );
       if (g.phase === "intro" || g.phase === "ready") {
@@ -1259,7 +1269,7 @@
           Math.max(100, boardBottom - 103),
           w - 36,
           92,
-          "#18234f",
+          "#fffbed",
           18
         );
         this.text(
@@ -1267,7 +1277,7 @@
           w / 2,
           boardBottom - 73,
           13,
-          "#f5f7ff",
+          "#294d3c",
           "center"
         );
         this.button(
@@ -1304,7 +1314,7 @@
           top - 20,
           18,
           6,
-          i === view ? "#ffdc41" : "#6472b4",
+          i === view ? "#cf7835" : "#9bad90",
           3
         );
       }
@@ -1349,15 +1359,15 @@
           c.restore();
         }
       };
-      dish(19, "#080e3966");
-      dish(13, "#182459");
-      dish(4, "#54c6eb");
-      dish(3, "#344d91", 2.2);
+      dish(22, "#263e2933");
+      dish(14, "#805737");
+      dish(3, "#e0b273");
+      dish(1, "#b28b59", 3.5);
       const opening = Math.min(
         9,
         Math.max(4, radius * layout.zScale / layout.lane)
       );
-      c.fillStyle = "#7a60551c";
+      c.fillStyle = "#263b3244";
       for (const item of ordered) {
         c.beginPath();
         c.ellipse(
@@ -1379,12 +1389,12 @@
           c.clip();
           this.transmittedBackdrop(x - radius, ty, radius * 2, height);
           const glass = c.createLinearGradient(x - radius, 0, x + radius, 0);
-          glass.addColorStop(0, "#6a919b8c");
-          glass.addColorStop(0.09, "#f4ffffd9");
-          glass.addColorStop(0.19, "#e5fbff30");
+          glass.addColorStop(0, "#557a6677");
+          glass.addColorStop(0.09, "#ffffeed0");
+          glass.addColorStop(0.19, "#f5fff520");
           glass.addColorStop(0.65, "#ffffff08");
-          glass.addColorStop(0.85, "#a2d3dc30");
-          glass.addColorStop(1, "#647b8a88");
+          glass.addColorStop(0.85, "#aacdb822");
+          glass.addColorStop(1, "#54736177");
           c.fillStyle = glass;
           c.fillRect(x - radius, ty, radius * 2, height);
           c.strokeStyle = "#ffffffd9";
@@ -1407,7 +1417,7 @@
         } finally {
           c.restore();
         }
-        c.strokeStyle = "#8aa1a3aa";
+        c.strokeStyle = "#698571aa";
         c.lineWidth = 1;
         this.chamberPath(x, ty, y, radius);
         c.stroke();
@@ -1418,22 +1428,22 @@
           ty + opening
         );
         rim.addColorStop(0, "#f6ffff");
-        rim.addColorStop(0.22, "#d6ecec");
-        rim.addColorStop(0.6, "#91b3bc");
-        rim.addColorStop(1, "#5d7e8b");
+        rim.addColorStop(0.22, "#e4edda");
+        rim.addColorStop(0.6, "#b0c2ae");
+        rim.addColorStop(1, "#6f8b76");
         c.fillStyle = rim;
         c.beginPath();
         c.ellipse(x, ty + 4, radius * 0.98, opening, 0, 0, Math.PI * 2);
         c.fill();
-        c.fillStyle = "#b6d6dc88";
+        c.fillStyle = "#c4d8b977";
         c.fillRect(x - radius * 0.86, ty + 1, radius * 1.72, 7);
         c.fillStyle = rim;
         c.beginPath();
         c.ellipse(x, ty - 1, radius * 0.98, opening, 0, 0, Math.PI * 2);
         c.fill();
         const well = c.createLinearGradient(x, ty - opening, x, ty + opening);
-        well.addColorStop(0, "#557684");
-        well.addColorStop(0.5, "#9fb9bc");
+        well.addColorStop(0, "#4d6958");
+        well.addColorStop(0.5, "#a1b59a");
         well.addColorStop(1, "#e8f5e8");
         c.fillStyle = well;
         c.beginPath();
@@ -1454,8 +1464,8 @@
         c.stroke();
         const foot = c.createLinearGradient(x - radius, y - 7, x + radius, y + 4);
         foot.addColorStop(0, "#f7ffffc9");
-        foot.addColorStop(0.35, "#b6d3d577");
-        foot.addColorStop(1, "#73949caa");
+        foot.addColorStop(0.35, "#c9d9ba77");
+        foot.addColorStop(1, "#809b7eaa");
         c.fillStyle = foot;
         c.beginPath();
         c.ellipse(x, y - 2, radius, opening * 0.8, 0, 0, Math.PI * 2);
@@ -1582,22 +1592,22 @@
           c.fillStyle = "#8f6e8050";
           c.fillText(part.text, x + 2, y + 7);
           for (let depth = 4; depth >= 1; depth--) {
-            c.fillStyle = part.text === "\u7403" ? "#b64b15" : "#203591";
+            c.fillStyle = part.text === "\u7403" ? "#a35225" : "#27593e";
             c.fillText(part.text, x + depth * 0.35, y + depth);
           }
           c.lineWidth = 6 * scale;
-          c.strokeStyle = "#141d47";
+          c.strokeStyle = "#fff9df";
           c.strokeText(part.text, x, y);
           const shine = c.createLinearGradient(0, y - size, 0, y);
           if (part.text === "\u7403") {
             shine.addColorStop(0, "#ffffad");
-            shine.addColorStop(0.25, "#ffe33d");
+            shine.addColorStop(0.25, "#ffc64a");
             shine.addColorStop(0.53, "#ffa62b");
             shine.addColorStop(1, "#f66a2e");
           } else {
             shine.addColorStop(0, "#ffffff");
-            shine.addColorStop(0.35, "#7fffee");
-            shine.addColorStop(1, "#2cbadf");
+            shine.addColorStop(0.35, "#68ca75");
+            shine.addColorStop(1, "#20835c");
           }
           c.fillStyle = shine;
           c.fillText(part.text, x, y);
@@ -1609,18 +1619,26 @@
     home() {
       const w = this.width, h = this.height;
       this.homeTitle();
-      this.rect(w / 2 - 46, 159, 92, 5, "#35ead8", 3);
       const c = this.ctx;
       c.save();
       try {
         c.translate(w / 2, 264);
-        c.scale(1.24, 1.24);
+        c.scale(1.2, 1.2);
         c.translate(-w / 2, -264);
-        this.rect(w / 2 - 106, 331, 212, 15, "#111735", 12);
-        this.rect(w / 2 - 106, 327, 212, 9, "#42dce6", 7);
+        for (const [dy, rx, ry, color] of [
+          [19, 114, 27, "#263e2933"],
+          [10, 108, 31, "#805737"],
+          [0, 108, 31, "#dfb879"],
+          [-2, 99, 25, "#b99863"]
+        ]) {
+          c.beginPath();
+          c.ellipse(w / 2, 333 + dy, rx, ry, 0, 0, Math.PI * 2);
+          c.fillStyle = color;
+          c.fill();
+        }
         for (let i = 0; i < 3; i++) {
-          const x = w / 2 + (i - 1) * 61, top = 202 + Math.abs(i - 1) * 12, bottom = top + 112;
-          this.chamberPath(x, top, bottom, 23);
+          const x = w / 2 + (i - 1) * 44, top = 204 + Math.abs(i - 1) * 10, bottom = top + 112;
+          this.chamberPath(x, top, bottom, 20);
           const glass = c.createLinearGradient(x - 23, top, x + 23, bottom);
           glass.addColorStop(0, "#fffefecc");
           glass.addColorStop(0.22, "#c9f4f54d");
@@ -1633,15 +1651,15 @@
           c.stroke();
           for (let j = 0; j < 3; j++)
             this.ball((i * 2 + j) % 7, x, top + 22 + j * 32, 16);
-          c.fillStyle = "#bec9d5";
+          c.fillStyle = "#bdcdb0";
           c.beginPath();
           c.ellipse(x, bottom, 23, 4, 0, 0, Math.PI * 2);
           c.fill();
-          c.fillStyle = "#d3eaed";
+          c.fillStyle = "#e3ebd8";
           c.beginPath();
           c.ellipse(x, top, 22, 4, 0, 0, Math.PI * 2);
           c.fill();
-          c.fillStyle = "#91b1ba";
+          c.fillStyle = "#95ac90";
           c.beginPath();
           c.ellipse(x, top, 18, 2.3, 0, 0, Math.PI * 2);
           c.fill();
@@ -1654,7 +1672,7 @@
       } finally {
         c.restore();
       }
-      const y = Math.max(390, Math.min(h - 245, 460));
+      const y = Math.min(h - 180, 455);
       this.button(
         "start-0",
         "\u5F00\u59CB \xB7 \u521D\u89C1",
@@ -1666,22 +1684,14 @@
         false,
         true
       );
-      this.button(
-        "start-1",
-        "\u63A2\u7D22",
-        28,
-        y + 76,
-        (w - 70) / 2,
-        44,
-        () => this.game.start(1)
-      );
+      this.button("start-1", "\u63A2\u7D22", 18, 266, 58, 48, () => this.game.start(1));
       this.button(
         "start-2",
         "\u6DF1\u5165",
-        42 + (w - 70) / 2,
-        y + 76,
-        (w - 70) / 2,
-        44,
+        w - 76,
+        266,
+        58,
+        48,
         () => this.game.start(2)
       );
       if (this.game.resume)
@@ -1689,7 +1699,7 @@
           "resume",
           "\u7EE7\u7EED\u4E0A\u6B21",
           28,
-          y + 136,
+          y + 80,
           w - 56,
           40,
           () => this.game.continueSaved()
@@ -1708,30 +1718,30 @@
       const g = this.game, w = this.width, h = this.height;
       const won = g.phase === "result" && g.board.status === "won";
       const y = Math.max(142, h * 0.23), cardH = g.phase === "expired" ? 366 : 340;
-      this.ctx.fillStyle = "#080c2699";
+      this.ctx.fillStyle = "#263d3266";
       this.ctx.fillRect(0, 120, w, h - 120);
-      this.rect(20, y + 8, w - 40, cardH, "#090f2d", 26);
-      this.rect(18, y - 2, w - 36, cardH, "#7885ed", 26);
-      this.rect(22, y + 2, w - 44, cardH - 8, "#252b65", 22);
-      this.rect(w / 2 - 38, y - 30, 76, 64, won ? "#ffda3d" : "#44dded", 20);
+      this.rect(20, y + 8, w - 40, cardH, "#334c3540", 26);
+      this.rect(18, y - 2, w - 36, cardH, "#94764d", 26);
+      this.rect(22, y + 2, w - 44, cardH - 8, "#fffbed", 22);
+      this.rect(w / 2 - 38, y - 30, 76, 64, won ? "#f4b443" : "#9dcc9a", 20);
       this.text(
         won ? "\u2605" : g.phase === "paused" ? "\u2161" : "!",
         w / 2,
         y + 16,
         36,
-        "#18234f",
+        "#294d3c",
         "center"
       );
       const title = g.phase === "result" ? won ? "\u6F02\u4EAE\uFF01\u5168\u6E05\u7A7A" : "\u4E0B\u6B21\u518D\u6311\u6218" : g.phase === "blocked" ? "\u69FD\u4F4D\u6EE1\u4E86" : g.phase === "expired" ? "\u65F6\u95F4\u5230" : g.phase === "ad" ? "\u5E7F\u544A\u52A0\u8F7D\u4E2D" : "\u4F11\u606F\u4E00\u4E0B";
-      this.text(title, w / 2, y + 75, 27, "#ffffff", "center");
+      this.text(title, w / 2, y + 75, 27, "#294d3c", "center");
       if (g.phase === "result") {
-        this.text(String(g.board.score), w / 2, y + 124, 36, "#ffdf43", "center");
+        this.text(String(g.board.score), w / 2, y + 124, 36, "#be6425", "center");
         this.text(
           `\u6D88\u9664 ${g.board.cleared.length} \u9897`,
           w / 2,
           y + 149,
           13,
-          "#bacaf9",
+          "#5c7059",
           "center"
         );
       } else
@@ -1740,7 +1750,7 @@
           w / 2,
           y + 117,
           14,
-          "#ced9ff",
+          "#5c7059",
           "center"
         );
       if (g.phase === "ad") return;
@@ -1769,7 +1779,7 @@
           () => void g.extend(),
           !g.ads.available || g.state.extensions >= CONFIG.maxExtensions
         );
-        this.text(g.ads.label, w / 2, by - 2, 10, "#ced9ff", "center");
+        this.text(g.ads.label, w / 2, by - 2, 10, "#5c7059", "center");
         by += 8;
       }
       if (g.phase !== "result") add("end", "\u7ED3\u675F\u672C\u5C40", () => g.end());
@@ -1786,7 +1796,7 @@
           w / 2,
           Math.min(h - 20, by + 21),
           12,
-          "#ffdf62",
+          "#8b3e26",
           "center"
         );
     }

@@ -1,0 +1,21 @@
+
+added 11 packages in 4s
+
+> tricollect@0.1.12 build
+> node scripts/build.mjs
+
+Built native WeChat game + optional browser development preview. Real device verification pending.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice
+
+> tricollect@0.1.12 typecheck
+> tsc --noEmit
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

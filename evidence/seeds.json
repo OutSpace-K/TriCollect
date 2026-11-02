@@ -1,7 +1,7 @@
 {
   "rule": "tricollect-4-fixedslots-front",
   "verifiedSeeds": 300,
-  "totalMs": 26189.12,
+  "totalMs": 42958.92,
   "scope": "Pure reducer replay, no ads; not human timing or real device validation",
   "results": [
     {
@@ -12,7 +12,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42700,
       "score": 4420,
-      "ms": 90.6,
+      "ms": 226.88,
       "passed": true
     },
     {
@@ -23,7 +23,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42200,
       "score": 4420,
-      "ms": 61.11,
+      "ms": 106.53,
       "passed": true
     },
     {
@@ -34,7 +34,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42700,
       "score": 4420,
-      "ms": 67.3,
+      "ms": 152.12,
       "passed": true
     },
     {
@@ -45,7 +45,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41950,
       "score": 4420,
-      "ms": 51.44,
+      "ms": 75.14,
       "passed": true
     },
     {
@@ -56,7 +56,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42200,
       "score": 4420,
-      "ms": 48.51,
+      "ms": 186.18,
       "passed": true
     },
     {
@@ -67,7 +67,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40450,
       "score": 4420,
-      "ms": 47.1,
+      "ms": 97.03,
       "passed": true
     },
     {
@@ -78,7 +78,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 43200,
       "score": 4420,
-      "ms": 47.82,
+      "ms": 90.23,
       "passed": true
     },
     {
@@ -89,7 +89,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40950,
       "score": 4420,
-      "ms": 59.26,
+      "ms": 100.71,
       "passed": true
     },
     {
@@ -100,7 +100,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42450,
       "score": 4420,
-      "ms": 62.69,
+      "ms": 187.31,
       "passed": true
     },
     {
@@ -111,7 +111,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40950,
       "score": 4420,
-      "ms": 65.85,
+      "ms": 181.65,
       "passed": true
     },
     {
@@ -122,7 +122,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 37700,
       "score": 4420,
-      "ms": 55.92,
+      "ms": 243.35,
       "passed": true
     },
     {
@@ -133,7 +133,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39950,
       "score": 4420,
-      "ms": 120.63,
+      "ms": 239.8,
       "passed": true
     },
     {
@@ -144,7 +144,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42700,
       "score": 4420,
-      "ms": 83.15,
+      "ms": 278.63,
       "passed": true
     },
     {
@@ -155,7 +155,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 66.48,
+      "ms": 130.93,
       "passed": true
     },
     {
@@ -166,7 +166,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42200,
       "score": 4420,
-      "ms": 57.41,
+      "ms": 113.82,
       "passed": true
     },
     {
@@ -177,7 +177,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 44950,
       "score": 4420,
-      "ms": 51.53,
+      "ms": 147.04,
       "passed": true
     },
     {
@@ -188,7 +188,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40450,
       "score": 4420,
-      "ms": 46.34,
+      "ms": 270.8,
       "passed": true
     },
     {
@@ -199,7 +199,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41950,
       "score": 4420,
-      "ms": 56.73,
+      "ms": 257.63,
       "passed": true
     },
     {
@@ -210,7 +210,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40950,
       "score": 4420,
-      "ms": 51.15,
+      "ms": 133,
       "passed": true
     },
     {
@@ -221,7 +221,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41450,
       "score": 4420,
-      "ms": 55.89,
+      "ms": 169.5,
       "passed": true
     },
     {
@@ -232,7 +232,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42450,
       "score": 4420,
-      "ms": 42.74,
+      "ms": 215.27,
       "passed": true
     },
     {
@@ -243,7 +243,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 50.87,
+      "ms": 259.75,
       "passed": true
     },
     {
@@ -254,7 +254,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 43200,
       "score": 4420,
-      "ms": 160.03,
+      "ms": 234.89,
       "passed": true
     },
     {
@@ -265,7 +265,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 44200,
       "score": 4420,
-      "ms": 119.9,
+      "ms": 223.78,
       "passed": true
     },
     {
@@ -276,7 +276,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41200,
       "score": 4420,
-      "ms": 112.65,
+      "ms": 135.13,
       "passed": true
     },
     {
@@ -287,7 +287,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 38200,
       "score": 4420,
-      "ms": 58.71,
+      "ms": 106.66,
       "passed": true
     },
     {
@@ -298,7 +298,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40950,
       "score": 4420,
-      "ms": 98.21,
+      "ms": 155.27,
       "passed": true
     },
     {
@@ -309,7 +309,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39700,
       "score": 4420,
-      "ms": 105.21,
+      "ms": 176.56,
       "passed": true
     },
     {
@@ -320,7 +320,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39950,
       "score": 4420,
-      "ms": 107.13,
+      "ms": 109.56,
       "passed": true
     },
     {
@@ -331,7 +331,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41950,
       "score": 4420,
-      "ms": 43.88,
+      "ms": 149.56,
       "passed": true
     },
     {
@@ -342,7 +342,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42450,
       "score": 4420,
-      "ms": 71.79,
+      "ms": 202.04,
       "passed": true
     },
     {
@@ -353,7 +353,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40700,
       "score": 4420,
-      "ms": 71.01,
+      "ms": 105.5,
       "passed": true
     },
     {
@@ -364,7 +364,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 57.95,
+      "ms": 108.03,
       "passed": true
     },
     {
@@ -375,7 +375,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41450,
       "score": 4420,
-      "ms": 89.27,
+      "ms": 126.32,
       "passed": true
     },
     {
@@ -386,7 +386,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 61.53,
+      "ms": 113.65,
       "passed": true
     },
     {
@@ -397,7 +397,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42450,
       "score": 4420,
-      "ms": 38.22,
+      "ms": 95,
       "passed": true
     },
     {
@@ -408,7 +408,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41450,
       "score": 4420,
-      "ms": 59.72,
+      "ms": 118.63,
       "passed": true
     },
     {
@@ -419,7 +419,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39700,
       "score": 4420,
-      "ms": 36.49,
+      "ms": 119.8,
       "passed": true
     },
     {
@@ -430,7 +430,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42200,
       "score": 4420,
-      "ms": 58.92,
+      "ms": 130.36,
       "passed": true
     },
     {
@@ -441,7 +441,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40950,
       "score": 4420,
-      "ms": 56.86,
+      "ms": 198,
       "passed": true
     },
     {
@@ -452,7 +452,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41450,
       "score": 4420,
-      "ms": 53.14,
+      "ms": 123.99,
       "passed": true
     },
     {
@@ -463,7 +463,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41450,
       "score": 4420,
-      "ms": 44.67,
+      "ms": 127.24,
       "passed": true
     },
     {
@@ -474,7 +474,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40950,
       "score": 4420,
-      "ms": 72.05,
+      "ms": 149.3,
       "passed": true
     },
     {
@@ -485,7 +485,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41950,
       "score": 4420,
-      "ms": 37.09,
+      "ms": 122.46,
       "passed": true
     },
     {
@@ -496,7 +496,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41200,
       "score": 4420,
-      "ms": 65.01,
+      "ms": 103.79,
       "passed": true
     },
     {
@@ -507,7 +507,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 44950,
       "score": 4420,
-      "ms": 39.44,
+      "ms": 185.06,
       "passed": true
     },
     {
@@ -518,7 +518,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42700,
       "score": 4420,
-      "ms": 66.86,
+      "ms": 115.2,
       "passed": true
     },
     {
@@ -529,7 +529,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40450,
       "score": 4420,
-      "ms": 35.33,
+      "ms": 138.29,
       "passed": true
     },
     {
@@ -540,7 +540,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42700,
       "score": 4420,
-      "ms": 64.1,
+      "ms": 138.01,
       "passed": true
     },
     {
@@ -551,7 +551,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42700,
       "score": 4420,
-      "ms": 56.74,
+      "ms": 115.46,
       "passed": true
     },
     {
@@ -562,7 +562,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39700,
       "score": 4420,
-      "ms": 55.88,
+      "ms": 130.67,
       "passed": true
     },
     {
@@ -573,7 +573,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39950,
       "score": 4420,
-      "ms": 70.7,
+      "ms": 183.36,
       "passed": true
     },
     {
@@ -584,7 +584,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 38950,
       "score": 4420,
-      "ms": 58.76,
+      "ms": 144.88,
       "passed": true
     },
     {
@@ -595,7 +595,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40450,
       "score": 4420,
-      "ms": 59.06,
+      "ms": 146.86,
       "passed": true
     },
     {
@@ -606,7 +606,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42450,
       "score": 4420,
-      "ms": 75.6,
+      "ms": 111.62,
       "passed": true
     },
     {
@@ -617,7 +617,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41950,
       "score": 4420,
-      "ms": 57.93,
+      "ms": 127.22,
       "passed": true
     },
     {
@@ -628,7 +628,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40700,
       "score": 4420,
-      "ms": 66.22,
+      "ms": 175.05,
       "passed": true
     },
     {
@@ -639,7 +639,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39950,
       "score": 4420,
-      "ms": 51.53,
+      "ms": 99.88,
       "passed": true
     },
     {
@@ -650,7 +650,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42450,
       "score": 4420,
-      "ms": 52.58,
+      "ms": 102.21,
       "passed": true
     },
     {
@@ -661,7 +661,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40700,
       "score": 4420,
-      "ms": 50.42,
+      "ms": 99.41,
       "passed": true
     },
     {
@@ -672,7 +672,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 44200,
       "score": 4420,
-      "ms": 61.42,
+      "ms": 83.55,
       "passed": true
     },
     {
@@ -683,7 +683,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39950,
       "score": 4420,
-      "ms": 52.08,
+      "ms": 91.31,
       "passed": true
     },
     {
@@ -694,7 +694,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41450,
       "score": 4420,
-      "ms": 47.7,
+      "ms": 104.66,
       "passed": true
     },
     {
@@ -705,7 +705,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40700,
       "score": 4420,
-      "ms": 48.38,
+      "ms": 86.83,
       "passed": true
     },
     {
@@ -716,7 +716,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40200,
       "score": 4420,
-      "ms": 55.39,
+      "ms": 110.85,
       "passed": true
     },
     {
@@ -727,7 +727,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40700,
       "score": 4420,
-      "ms": 53.73,
+      "ms": 109.71,
       "passed": true
     },
     {
@@ -738,7 +738,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41450,
       "score": 4420,
-      "ms": 57.63,
+      "ms": 108.54,
       "passed": true
     },
     {
@@ -749,7 +749,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 43700,
       "score": 4420,
-      "ms": 53.65,
+      "ms": 119.52,
       "passed": true
     },
     {
@@ -760,7 +760,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42700,
       "score": 4420,
-      "ms": 51.86,
+      "ms": 143.59,
       "passed": true
     },
     {
@@ -771,7 +771,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 43450,
       "score": 4420,
-      "ms": 54.66,
+      "ms": 113.76,
       "passed": true
     },
     {
@@ -782,7 +782,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41950,
       "score": 4420,
-      "ms": 55.34,
+      "ms": 103.73,
       "passed": true
     },
     {
@@ -793,7 +793,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41200,
       "score": 4420,
-      "ms": 54.47,
+      "ms": 136.57,
       "passed": true
     },
     {
@@ -804,7 +804,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41950,
       "score": 4420,
-      "ms": 56.69,
+      "ms": 122.04,
       "passed": true
     },
     {
@@ -815,7 +815,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 43700,
       "score": 4420,
-      "ms": 63.36,
+      "ms": 143.72,
       "passed": true
     },
     {
@@ -826,7 +826,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 43200,
       "score": 4420,
-      "ms": 67.8,
+      "ms": 101.4,
       "passed": true
     },
     {
@@ -837,7 +837,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40200,
       "score": 4420,
-      "ms": 67.43,
+      "ms": 106.03,
       "passed": true
     },
     {
@@ -848,7 +848,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40950,
       "score": 4420,
-      "ms": 53.56,
+      "ms": 172.3,
       "passed": true
     },
     {
@@ -859,7 +859,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40700,
       "score": 4420,
-      "ms": 69.17,
+      "ms": 109.69,
       "passed": true
     },
     {
@@ -870,7 +870,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41450,
       "score": 4420,
-      "ms": 73.6,
+      "ms": 108.27,
       "passed": true
     },
     {
@@ -881,7 +881,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40700,
       "score": 4420,
-      "ms": 49.64,
+      "ms": 96.64,
       "passed": true
     },
     {
@@ -892,7 +892,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 43700,
       "score": 4420,
-      "ms": 74.91,
+      "ms": 120.48,
       "passed": true
     },
     {
@@ -903,7 +903,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 53.92,
+      "ms": 111.42,
       "passed": true
     },
     {
@@ -914,7 +914,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39950,
       "score": 4420,
-      "ms": 79.31,
+      "ms": 102.68,
       "passed": true
     },
     {
@@ -925,7 +925,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40950,
       "score": 4420,
-      "ms": 72.5,
+      "ms": 104.85,
       "passed": true
     },
     {
@@ -936,7 +936,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42200,
       "score": 4420,
-      "ms": 67.58,
+      "ms": 121.52,
       "passed": true
     },
     {
@@ -947,7 +947,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40200,
       "score": 4420,
-      "ms": 132.77,
+      "ms": 142.42,
       "passed": true
     },
     {
@@ -958,7 +958,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40950,
       "score": 4420,
-      "ms": 89.61,
+      "ms": 138.94,
       "passed": true
     },
     {
@@ -969,7 +969,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 43200,
       "score": 4420,
-      "ms": 36.7,
+      "ms": 281.13,
       "passed": true
     },
     {
@@ -980,7 +980,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 73.31,
+      "ms": 134.98,
       "passed": true
     },
     {
@@ -991,7 +991,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 44700,
       "score": 4420,
-      "ms": 79.28,
+      "ms": 182.63,
       "passed": true
     },
     {
@@ -1002,7 +1002,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 54.28,
+      "ms": 244.85,
       "passed": true
     },
     {
@@ -1013,7 +1013,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42950,
       "score": 4420,
-      "ms": 84.66,
+      "ms": 183.3,
       "passed": true
     },
     {
@@ -1024,7 +1024,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40200,
       "score": 4420,
-      "ms": 81.47,
+      "ms": 259.17,
       "passed": true
     },
     {
@@ -1035,7 +1035,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 39.29,
+      "ms": 265.42,
       "passed": true
     },
     {
@@ -1046,7 +1046,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40450,
       "score": 4420,
-      "ms": 66,
+      "ms": 104.06,
       "passed": true
     },
     {
@@ -1057,7 +1057,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 74.47,
+      "ms": 158.12,
       "passed": true
     },
     {
@@ -1068,7 +1068,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40450,
       "score": 4420,
-      "ms": 59.56,
+      "ms": 277.58,
       "passed": true
     },
     {
@@ -1079,7 +1079,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39700,
       "score": 4420,
-      "ms": 54.89,
+      "ms": 183.46,
       "passed": true
     },
     {
@@ -1090,7 +1090,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42700,
       "score": 4420,
-      "ms": 51.34,
+      "ms": 170.44,
       "passed": true
     },
     {
@@ -1101,7 +1101,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 43450,
       "score": 4420,
-      "ms": 66.32,
+      "ms": 334.81,
       "passed": true
     },
     {
@@ -1112,7 +1112,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41950,
       "score": 4420,
-      "ms": 76.55,
+      "ms": 179.75,
       "passed": true
     },
     {
@@ -1123,7 +1123,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40700,
       "score": 4420,
-      "ms": 44.08,
+      "ms": 110.73,
       "passed": true
     },
     {
@@ -1134,7 +1134,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39950,
       "score": 4420,
-      "ms": 64.54,
+      "ms": 297.09,
       "passed": true
     },
     {
@@ -1145,7 +1145,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 96.44,
+      "ms": 154.4,
       "passed": true
     },
     {
@@ -1156,7 +1156,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 43450,
       "score": 4420,
-      "ms": 48.51,
+      "ms": 99.47,
       "passed": true
     },
     {
@@ -1167,7 +1167,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 86.12,
+      "ms": 138.57,
       "passed": true
     },
     {
@@ -1178,7 +1178,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41200,
       "score": 4420,
-      "ms": 68.05,
+      "ms": 111.5,
       "passed": true
     },
     {
@@ -1189,7 +1189,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41200,
       "score": 4420,
-      "ms": 71.06,
+      "ms": 99.94,
       "passed": true
     },
     {
@@ -1200,7 +1200,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 44200,
       "score": 4420,
-      "ms": 47.31,
+      "ms": 103.72,
       "passed": true
     },
     {
@@ -1211,7 +1211,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40200,
       "score": 4420,
-      "ms": 56.21,
+      "ms": 112.18,
       "passed": true
     },
     {
@@ -1222,7 +1222,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40950,
       "score": 4420,
-      "ms": 47.49,
+      "ms": 112.09,
       "passed": true
     },
     {
@@ -1233,7 +1233,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40200,
       "score": 4420,
-      "ms": 77.08,
+      "ms": 108.84,
       "passed": true
     },
     {
@@ -1244,7 +1244,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42950,
       "score": 4420,
-      "ms": 38.63,
+      "ms": 93.42,
       "passed": true
     },
     {
@@ -1255,7 +1255,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42950,
       "score": 4420,
-      "ms": 63.59,
+      "ms": 98.53,
       "passed": true
     },
     {
@@ -1266,7 +1266,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 34.95,
+      "ms": 101.54,
       "passed": true
     },
     {
@@ -1277,7 +1277,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 43700,
       "score": 4420,
-      "ms": 71.04,
+      "ms": 104.67,
       "passed": true
     },
     {
@@ -1288,7 +1288,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39950,
       "score": 4420,
-      "ms": 37.25,
+      "ms": 104.72,
       "passed": true
     },
     {
@@ -1299,7 +1299,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40450,
       "score": 4420,
-      "ms": 61.72,
+      "ms": 109.7,
       "passed": true
     },
     {
@@ -1310,7 +1310,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 44450,
       "score": 4420,
-      "ms": 42.34,
+      "ms": 95.41,
       "passed": true
     },
     {
@@ -1321,7 +1321,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 43200,
       "score": 4420,
-      "ms": 81.07,
+      "ms": 94.33,
       "passed": true
     },
     {
@@ -1332,7 +1332,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40200,
       "score": 4420,
-      "ms": 73.11,
+      "ms": 104.89,
       "passed": true
     },
     {
@@ -1343,7 +1343,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40200,
       "score": 4420,
-      "ms": 38.89,
+      "ms": 156.53,
       "passed": true
     },
     {
@@ -1354,7 +1354,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39200,
       "score": 4420,
-      "ms": 73.29,
+      "ms": 133.33,
       "passed": true
     },
     {
@@ -1365,7 +1365,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41950,
       "score": 4420,
-      "ms": 68.24,
+      "ms": 89.03,
       "passed": true
     },
     {
@@ -1376,7 +1376,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42950,
       "score": 4420,
-      "ms": 43.49,
+      "ms": 98.32,
       "passed": true
     },
     {
@@ -1387,7 +1387,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 38950,
       "score": 4420,
-      "ms": 65.85,
+      "ms": 104.47,
       "passed": true
     },
     {
@@ -1398,7 +1398,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42200,
       "score": 4420,
-      "ms": 53.57,
+      "ms": 155.09,
       "passed": true
     },
     {
@@ -1409,7 +1409,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 43200,
       "score": 4420,
-      "ms": 72.61,
+      "ms": 103.73,
       "passed": true
     },
     {
@@ -1420,7 +1420,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 66.11,
+      "ms": 118.34,
       "passed": true
     },
     {
@@ -1431,7 +1431,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41200,
       "score": 4420,
-      "ms": 57.57,
+      "ms": 146.43,
       "passed": true
     },
     {
@@ -1442,7 +1442,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39950,
       "score": 4420,
-      "ms": 76.17,
+      "ms": 180.79,
       "passed": true
     },
     {
@@ -1453,7 +1453,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40950,
       "score": 4420,
-      "ms": 69.46,
+      "ms": 149.53,
       "passed": true
     },
     {
@@ -1464,7 +1464,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40200,
       "score": 4420,
-      "ms": 51.19,
+      "ms": 217.03,
       "passed": true
     },
     {
@@ -1475,7 +1475,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39450,
       "score": 4420,
-      "ms": 95.7,
+      "ms": 104.41,
       "passed": true
     },
     {
@@ -1486,7 +1486,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42200,
       "score": 4420,
-      "ms": 69.07,
+      "ms": 119.84,
       "passed": true
     },
     {
@@ -1497,7 +1497,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41200,
       "score": 4420,
-      "ms": 69.28,
+      "ms": 171.22,
       "passed": true
     },
     {
@@ -1508,7 +1508,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39200,
       "score": 4420,
-      "ms": 99.97,
+      "ms": 254.65,
       "passed": true
     },
     {
@@ -1519,7 +1519,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 43700,
       "score": 4420,
-      "ms": 62.66,
+      "ms": 155.51,
       "passed": true
     },
     {
@@ -1530,7 +1530,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41950,
       "score": 4420,
-      "ms": 74.59,
+      "ms": 111.31,
       "passed": true
     },
     {
@@ -1541,7 +1541,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40450,
       "score": 4420,
-      "ms": 58.38,
+      "ms": 94.14,
       "passed": true
     },
     {
@@ -1552,7 +1552,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 44450,
       "score": 4420,
-      "ms": 47.18,
+      "ms": 72.11,
       "passed": true
     },
     {
@@ -1563,7 +1563,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41950,
       "score": 4420,
-      "ms": 64.13,
+      "ms": 67.92,
       "passed": true
     },
     {
@@ -1574,7 +1574,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40950,
       "score": 4420,
-      "ms": 41.72,
+      "ms": 85.55,
       "passed": true
     },
     {
@@ -1585,7 +1585,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39950,
       "score": 4420,
-      "ms": 60.04,
+      "ms": 90.58,
       "passed": true
     },
     {
@@ -1596,7 +1596,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 59.81,
+      "ms": 82.96,
       "passed": true
     },
     {
@@ -1607,7 +1607,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42200,
       "score": 4420,
-      "ms": 65.8,
+      "ms": 82.43,
       "passed": true
     },
     {
@@ -1618,7 +1618,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42450,
       "score": 4420,
-      "ms": 60.03,
+      "ms": 68.14,
       "passed": true
     },
     {
@@ -1629,7 +1629,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41950,
       "score": 4420,
-      "ms": 66.53,
+      "ms": 89.57,
       "passed": true
     },
     {
@@ -1640,7 +1640,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41950,
       "score": 4420,
-      "ms": 62.33,
+      "ms": 151.11,
       "passed": true
     },
     {
@@ -1651,7 +1651,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41450,
       "score": 4420,
-      "ms": 41.84,
+      "ms": 124.36,
       "passed": true
     },
     {
@@ -1662,7 +1662,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41950,
       "score": 4420,
-      "ms": 54.26,
+      "ms": 85.89,
       "passed": true
     },
     {
@@ -1673,7 +1673,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 43200,
       "score": 4420,
-      "ms": 80.47,
+      "ms": 78.6,
       "passed": true
     },
     {
@@ -1684,7 +1684,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41450,
       "score": 4420,
-      "ms": 41.81,
+      "ms": 86.81,
       "passed": true
     },
     {
@@ -1695,7 +1695,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 71.98,
+      "ms": 84.3,
       "passed": true
     },
     {
@@ -1706,7 +1706,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40950,
       "score": 4420,
-      "ms": 59.78,
+      "ms": 85.67,
       "passed": true
     },
     {
@@ -1717,7 +1717,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40950,
       "score": 4420,
-      "ms": 66.02,
+      "ms": 90.27,
       "passed": true
     },
     {
@@ -1728,7 +1728,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40700,
       "score": 4420,
-      "ms": 69.12,
+      "ms": 79.73,
       "passed": true
     },
     {
@@ -1739,7 +1739,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41950,
       "score": 4420,
-      "ms": 105.15,
+      "ms": 76.76,
       "passed": true
     },
     {
@@ -1750,7 +1750,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 44200,
       "score": 4420,
-      "ms": 55.54,
+      "ms": 70.2,
       "passed": true
     },
     {
@@ -1761,7 +1761,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 38200,
       "score": 4420,
-      "ms": 68.01,
+      "ms": 66.47,
       "passed": true
     },
     {
@@ -1772,7 +1772,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 43700,
       "score": 4420,
-      "ms": 85.86,
+      "ms": 77.3,
       "passed": true
     },
     {
@@ -1783,7 +1783,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41450,
       "score": 4420,
-      "ms": 40.77,
+      "ms": 68,
       "passed": true
     },
     {
@@ -1794,7 +1794,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39450,
       "score": 4420,
-      "ms": 54.64,
+      "ms": 71.82,
       "passed": true
     },
     {
@@ -1805,7 +1805,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40700,
       "score": 4420,
-      "ms": 44.5,
+      "ms": 72.7,
       "passed": true
     },
     {
@@ -1816,7 +1816,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 43450,
       "score": 4420,
-      "ms": 60.03,
+      "ms": 88.12,
       "passed": true
     },
     {
@@ -1827,7 +1827,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42450,
       "score": 4420,
-      "ms": 33.29,
+      "ms": 74.76,
       "passed": true
     },
     {
@@ -1838,7 +1838,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42200,
       "score": 4420,
-      "ms": 76.03,
+      "ms": 66.24,
       "passed": true
     },
     {
@@ -1849,7 +1849,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40450,
       "score": 4420,
-      "ms": 35.15,
+      "ms": 79.43,
       "passed": true
     },
     {
@@ -1860,7 +1860,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41450,
       "score": 4420,
-      "ms": 78.5,
+      "ms": 81.79,
       "passed": true
     },
     {
@@ -1871,7 +1871,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41950,
       "score": 4420,
-      "ms": 75,
+      "ms": 74.83,
       "passed": true
     },
     {
@@ -1882,7 +1882,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41200,
       "score": 4420,
-      "ms": 44.61,
+      "ms": 70.8,
       "passed": true
     },
     {
@@ -1893,7 +1893,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 43450,
       "score": 4420,
-      "ms": 60.57,
+      "ms": 90.23,
       "passed": true
     },
     {
@@ -1904,7 +1904,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40700,
       "score": 4420,
-      "ms": 44.01,
+      "ms": 72.11,
       "passed": true
     },
     {
@@ -1915,7 +1915,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41200,
       "score": 4420,
-      "ms": 66.76,
+      "ms": 77.92,
       "passed": true
     },
     {
@@ -1926,7 +1926,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39200,
       "score": 4420,
-      "ms": 59.9,
+      "ms": 70.31,
       "passed": true
     },
     {
@@ -1937,7 +1937,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 66.89,
+      "ms": 81.87,
       "passed": true
     },
     {
@@ -1948,7 +1948,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40700,
       "score": 4420,
-      "ms": 69.66,
+      "ms": 83.47,
       "passed": true
     },
     {
@@ -1959,7 +1959,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39950,
       "score": 4420,
-      "ms": 70.36,
+      "ms": 93.35,
       "passed": true
     },
     {
@@ -1970,7 +1970,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 58.65,
+      "ms": 78.48,
       "passed": true
     },
     {
@@ -1981,7 +1981,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 57.95,
+      "ms": 73.31,
       "passed": true
     },
     {
@@ -1992,7 +1992,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 43200,
       "score": 4420,
-      "ms": 77.89,
+      "ms": 72.1,
       "passed": true
     },
     {
@@ -2003,7 +2003,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 44.94,
+      "ms": 75.06,
       "passed": true
     },
     {
@@ -2014,7 +2014,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 54.38,
+      "ms": 64.67,
       "passed": true
     },
     {
@@ -2025,7 +2025,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 43950,
       "score": 4420,
-      "ms": 42.47,
+      "ms": 58.1,
       "passed": true
     },
     {
@@ -2036,7 +2036,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42450,
       "score": 4420,
-      "ms": 61.89,
+      "ms": 78.91,
       "passed": true
     },
     {
@@ -2047,7 +2047,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41450,
       "score": 4420,
-      "ms": 50.26,
+      "ms": 84.02,
       "passed": true
     },
     {
@@ -2058,7 +2058,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40700,
       "score": 4420,
-      "ms": 56.54,
+      "ms": 95.87,
       "passed": true
     },
     {
@@ -2069,7 +2069,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41450,
       "score": 4420,
-      "ms": 50.03,
+      "ms": 69.57,
       "passed": true
     },
     {
@@ -2080,7 +2080,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39200,
       "score": 4420,
-      "ms": 62.66,
+      "ms": 78.41,
       "passed": true
     },
     {
@@ -2091,7 +2091,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40700,
       "score": 4420,
-      "ms": 77.67,
+      "ms": 59.71,
       "passed": true
     },
     {
@@ -2102,7 +2102,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40450,
       "score": 4420,
-      "ms": 38.67,
+      "ms": 72.18,
       "passed": true
     },
     {
@@ -2113,7 +2113,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42950,
       "score": 4420,
-      "ms": 56.22,
+      "ms": 59.76,
       "passed": true
     },
     {
@@ -2124,7 +2124,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41450,
       "score": 4420,
-      "ms": 46.41,
+      "ms": 62.44,
       "passed": true
     },
     {
@@ -2135,7 +2135,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 64.4,
+      "ms": 82.67,
       "passed": true
     },
     {
@@ -2146,7 +2146,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 41700,
       "score": 4420,
-      "ms": 50.43,
+      "ms": 79.23,
       "passed": true
     },
     {
@@ -2157,7 +2157,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39450,
       "score": 4420,
-      "ms": 82.45,
+      "ms": 71.81,
       "passed": true
     },
     {
@@ -2168,7 +2168,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40950,
       "score": 4420,
-      "ms": 70.86,
+      "ms": 71.96,
       "passed": true
     },
     {
@@ -2179,7 +2179,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 42200,
       "score": 4420,
-      "ms": 37.71,
+      "ms": 85.31,
       "passed": true
     },
     {
@@ -2190,7 +2190,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 39700,
       "score": 4420,
-      "ms": 49.45,
+      "ms": 69.07,
       "passed": true
     },
     {
@@ -2201,7 +2201,7 @@
       "activeBudgetMsPerPick": 2857.14,
       "animationOnlyWallMs": 40950,
       "score": 4420,
-      "ms": 42.53,
+      "ms": 68.52,
       "passed": true
     },
     {
@@ -2212,7 +2212,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71200,
       "score": 7220,
-      "ms": 113.99,
+      "ms": 229.12,
       "passed": true
     },
     {
@@ -2223,7 +2223,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 72450,
       "score": 7220,
-      "ms": 145.36,
+      "ms": 250,
       "passed": true
     },
     {
@@ -2234,7 +2234,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 73700,
       "score": 7220,
-      "ms": 166.57,
+      "ms": 251.18,
       "passed": true
     },
     {
@@ -2245,7 +2245,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71950,
       "score": 7220,
-      "ms": 113.16,
+      "ms": 123.32,
       "passed": true
     },
     {
@@ -2256,7 +2256,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 72200,
       "score": 7220,
-      "ms": 133.72,
+      "ms": 122.76,
       "passed": true
     },
     {
@@ -2267,7 +2267,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71950,
       "score": 7220,
-      "ms": 133.4,
+      "ms": 144.96,
       "passed": true
     },
     {
@@ -2278,7 +2278,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 70700,
       "score": 7220,
-      "ms": 128.08,
+      "ms": 260.06,
       "passed": true
     },
     {
@@ -2289,7 +2289,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 70200,
       "score": 7220,
-      "ms": 127.01,
+      "ms": 220.48,
       "passed": true
     },
     {
@@ -2300,7 +2300,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 72950,
       "score": 7220,
-      "ms": 127.31,
+      "ms": 203.13,
       "passed": true
     },
     {
@@ -2311,7 +2311,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 72450,
       "score": 7220,
-      "ms": 135.24,
+      "ms": 237.64,
       "passed": true
     },
     {
@@ -2322,7 +2322,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 75200,
       "score": 7220,
-      "ms": 147.76,
+      "ms": 227.94,
       "passed": true
     },
     {
@@ -2333,7 +2333,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 73450,
       "score": 7220,
-      "ms": 133.19,
+      "ms": 203.53,
       "passed": true
     },
     {
@@ -2344,7 +2344,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 72700,
       "score": 7220,
-      "ms": 128.44,
+      "ms": 172.43,
       "passed": true
     },
     {
@@ -2355,7 +2355,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 73450,
       "score": 7220,
-      "ms": 139.56,
+      "ms": 203.78,
       "passed": true
     },
     {
@@ -2366,7 +2366,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71200,
       "score": 7220,
-      "ms": 120.13,
+      "ms": 194.82,
       "passed": true
     },
     {
@@ -2377,7 +2377,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 70450,
       "score": 7220,
-      "ms": 131.19,
+      "ms": 228.32,
       "passed": true
     },
     {
@@ -2388,7 +2388,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 66950,
       "score": 7220,
-      "ms": 129.19,
+      "ms": 186.43,
       "passed": true
     },
     {
@@ -2399,7 +2399,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 74200,
       "score": 7220,
-      "ms": 129.36,
+      "ms": 105.44,
       "passed": true
     },
     {
@@ -2410,7 +2410,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71200,
       "score": 7220,
-      "ms": 142.24,
+      "ms": 147.38,
       "passed": true
     },
     {
@@ -2421,7 +2421,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 73200,
       "score": 7220,
-      "ms": 124.05,
+      "ms": 104.55,
       "passed": true
     },
     {
@@ -2432,7 +2432,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 73450,
       "score": 7220,
-      "ms": 114.05,
+      "ms": 111.56,
       "passed": true
     },
     {
@@ -2443,7 +2443,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 68450,
       "score": 7220,
-      "ms": 122.61,
+      "ms": 97.22,
       "passed": true
     },
     {
@@ -2454,7 +2454,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 74950,
       "score": 7220,
-      "ms": 111.29,
+      "ms": 135.49,
       "passed": true
     },
     {
@@ -2465,7 +2465,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 73200,
       "score": 7220,
-      "ms": 133.55,
+      "ms": 123.92,
       "passed": true
     },
     {
@@ -2476,7 +2476,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 66950,
       "score": 7220,
-      "ms": 121.18,
+      "ms": 114.97,
       "passed": true
     },
     {
@@ -2487,7 +2487,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71200,
       "score": 7220,
-      "ms": 130.09,
+      "ms": 359.67,
       "passed": true
     },
     {
@@ -2498,7 +2498,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 69700,
       "score": 7220,
-      "ms": 129.23,
+      "ms": 121.05,
       "passed": true
     },
     {
@@ -2509,7 +2509,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71200,
       "score": 7220,
-      "ms": 114.33,
+      "ms": 119.59,
       "passed": true
     },
     {
@@ -2520,7 +2520,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 74700,
       "score": 7220,
-      "ms": 121.59,
+      "ms": 112.28,
       "passed": true
     },
     {
@@ -2531,7 +2531,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 73700,
       "score": 7220,
-      "ms": 138.64,
+      "ms": 123.7,
       "passed": true
     },
     {
@@ -2542,7 +2542,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 72700,
       "score": 7220,
-      "ms": 117.85,
+      "ms": 103.71,
       "passed": true
     },
     {
@@ -2553,7 +2553,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71950,
       "score": 7220,
-      "ms": 119.66,
+      "ms": 97.54,
       "passed": true
     },
     {
@@ -2564,7 +2564,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 70700,
       "score": 7220,
-      "ms": 121.91,
+      "ms": 123.85,
       "passed": true
     },
     {
@@ -2575,7 +2575,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 72700,
       "score": 7220,
-      "ms": 132.84,
+      "ms": 120.57,
       "passed": true
     },
     {
@@ -2586,7 +2586,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 72200,
       "score": 7220,
-      "ms": 131.96,
+      "ms": 116.79,
       "passed": true
     },
     {
@@ -2597,7 +2597,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 69950,
       "score": 7220,
-      "ms": 119.26,
+      "ms": 124.82,
       "passed": true
     },
     {
@@ -2608,7 +2608,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 73950,
       "score": 7220,
-      "ms": 115.57,
+      "ms": 117.85,
       "passed": true
     },
     {
@@ -2619,7 +2619,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71200,
       "score": 7220,
-      "ms": 106.67,
+      "ms": 107.36,
       "passed": true
     },
     {
@@ -2630,7 +2630,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 73700,
       "score": 7220,
-      "ms": 113.46,
+      "ms": 116.72,
       "passed": true
     },
     {
@@ -2641,7 +2641,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 69700,
       "score": 7220,
-      "ms": 119.64,
+      "ms": 105.19,
       "passed": true
     },
     {
@@ -2652,7 +2652,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 74450,
       "score": 7220,
-      "ms": 117.48,
+      "ms": 107.66,
       "passed": true
     },
     {
@@ -2663,7 +2663,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71950,
       "score": 7220,
-      "ms": 119.71,
+      "ms": 160.46,
       "passed": true
     },
     {
@@ -2674,7 +2674,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71950,
       "score": 7220,
-      "ms": 120.81,
+      "ms": 115.4,
       "passed": true
     },
     {
@@ -2685,7 +2685,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 69950,
       "score": 7220,
-      "ms": 135.69,
+      "ms": 113.4,
       "passed": true
     },
     {
@@ -2696,7 +2696,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 73700,
       "score": 7220,
-      "ms": 128.23,
+      "ms": 109.19,
       "passed": true
     },
     {
@@ -2707,7 +2707,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71450,
       "score": 7220,
-      "ms": 113.78,
+      "ms": 134.59,
       "passed": true
     },
     {
@@ -2718,7 +2718,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 70450,
       "score": 7220,
-      "ms": 140.05,
+      "ms": 153.85,
       "passed": true
     },
     {
@@ -2729,7 +2729,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 72450,
       "score": 7220,
-      "ms": 123.77,
+      "ms": 110.01,
       "passed": true
     },
     {
@@ -2740,7 +2740,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 67950,
       "score": 7220,
-      "ms": 119.65,
+      "ms": 113.63,
       "passed": true
     },
     {
@@ -2751,7 +2751,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 72200,
       "score": 7220,
-      "ms": 117.18,
+      "ms": 133.27,
       "passed": true
     },
     {
@@ -2762,7 +2762,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 69450,
       "score": 7220,
-      "ms": 123.97,
+      "ms": 112.2,
       "passed": true
     },
     {
@@ -2773,7 +2773,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 69950,
       "score": 7220,
-      "ms": 122.68,
+      "ms": 126.12,
       "passed": true
     },
     {
@@ -2784,7 +2784,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71700,
       "score": 7220,
-      "ms": 127.36,
+      "ms": 148.02,
       "passed": true
     },
     {
@@ -2795,7 +2795,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 69450,
       "score": 7220,
-      "ms": 115.1,
+      "ms": 119.41,
       "passed": true
     },
     {
@@ -2806,7 +2806,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 72700,
       "score": 7220,
-      "ms": 123.08,
+      "ms": 132.96,
       "passed": true
     },
     {
@@ -2817,7 +2817,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 70450,
       "score": 7220,
-      "ms": 109.89,
+      "ms": 119.59,
       "passed": true
     },
     {
@@ -2828,7 +2828,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 72450,
       "score": 7220,
-      "ms": 117.22,
+      "ms": 152.81,
       "passed": true
     },
     {
@@ -2839,7 +2839,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71200,
       "score": 7220,
-      "ms": 119.12,
+      "ms": 216.12,
       "passed": true
     },
     {
@@ -2850,7 +2850,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 72700,
       "score": 7220,
-      "ms": 129.23,
+      "ms": 235.19,
       "passed": true
     },
     {
@@ -2861,7 +2861,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 68950,
       "score": 7220,
-      "ms": 127.37,
+      "ms": 212.78,
       "passed": true
     },
     {
@@ -2872,7 +2872,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71950,
       "score": 7220,
-      "ms": 127.58,
+      "ms": 208.18,
       "passed": true
     },
     {
@@ -2883,7 +2883,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 69200,
       "score": 7220,
-      "ms": 116.45,
+      "ms": 214.85,
       "passed": true
     },
     {
@@ -2894,7 +2894,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 72950,
       "score": 7220,
-      "ms": 121.56,
+      "ms": 223.61,
       "passed": true
     },
     {
@@ -2905,7 +2905,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71200,
       "score": 7220,
-      "ms": 117.53,
+      "ms": 209.79,
       "passed": true
     },
     {
@@ -2916,7 +2916,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 70700,
       "score": 7220,
-      "ms": 130.86,
+      "ms": 228.87,
       "passed": true
     },
     {
@@ -2927,7 +2927,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71700,
       "score": 7220,
-      "ms": 215.22,
+      "ms": 193.77,
       "passed": true
     },
     {
@@ -2938,7 +2938,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 68950,
       "score": 7220,
-      "ms": 144.55,
+      "ms": 221.07,
       "passed": true
     },
     {
@@ -2949,7 +2949,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 67700,
       "score": 7220,
-      "ms": 269.79,
+      "ms": 225.29,
       "passed": true
     },
     {
@@ -2960,7 +2960,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 74200,
       "score": 7220,
-      "ms": 190.73,
+      "ms": 204.69,
       "passed": true
     },
     {
@@ -2971,7 +2971,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 74200,
       "score": 7220,
-      "ms": 359.45,
+      "ms": 197.72,
       "passed": true
     },
     {
@@ -2982,7 +2982,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 72950,
       "score": 7220,
-      "ms": 208.57,
+      "ms": 203.48,
       "passed": true
     },
     {
@@ -2993,7 +2993,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 73700,
       "score": 7220,
-      "ms": 140.92,
+      "ms": 199.49,
       "passed": true
     },
     {
@@ -3004,7 +3004,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 69200,
       "score": 7220,
-      "ms": 129.03,
+      "ms": 196.67,
       "passed": true
     },
     {
@@ -3015,7 +3015,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 73200,
       "score": 7220,
-      "ms": 452.26,
+      "ms": 196.59,
       "passed": true
     },
     {
@@ -3026,7 +3026,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 68700,
       "score": 7220,
-      "ms": 132.72,
+      "ms": 222.94,
       "passed": true
     },
     {
@@ -3037,7 +3037,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 74700,
       "score": 7220,
-      "ms": 139.61,
+      "ms": 206.49,
       "passed": true
     },
     {
@@ -3048,7 +3048,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 72950,
       "score": 7220,
-      "ms": 121.2,
+      "ms": 220.04,
       "passed": true
     },
     {
@@ -3059,7 +3059,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 73450,
       "score": 7220,
-      "ms": 122.55,
+      "ms": 192.51,
       "passed": true
     },
     {
@@ -3070,7 +3070,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 75450,
       "score": 7220,
-      "ms": 147.09,
+      "ms": 211.25,
       "passed": true
     },
     {
@@ -3081,7 +3081,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 73200,
       "score": 7220,
-      "ms": 132.27,
+      "ms": 227.96,
       "passed": true
     },
     {
@@ -3092,7 +3092,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 68450,
       "score": 7220,
-      "ms": 159.19,
+      "ms": 212.09,
       "passed": true
     },
     {
@@ -3103,7 +3103,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 73200,
       "score": 7220,
-      "ms": 117.22,
+      "ms": 223.16,
       "passed": true
     },
     {
@@ -3114,7 +3114,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 70450,
       "score": 7220,
-      "ms": 128.63,
+      "ms": 201.36,
       "passed": true
     },
     {
@@ -3125,7 +3125,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 72950,
       "score": 7220,
-      "ms": 138.1,
+      "ms": 201.49,
       "passed": true
     },
     {
@@ -3136,7 +3136,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71700,
       "score": 7220,
-      "ms": 134.71,
+      "ms": 208.36,
       "passed": true
     },
     {
@@ -3147,7 +3147,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 69700,
       "score": 7220,
-      "ms": 120.25,
+      "ms": 226.28,
       "passed": true
     },
     {
@@ -3158,7 +3158,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 70450,
       "score": 7220,
-      "ms": 113.7,
+      "ms": 214.36,
       "passed": true
     },
     {
@@ -3169,7 +3169,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 70450,
       "score": 7220,
-      "ms": 143.88,
+      "ms": 199.16,
       "passed": true
     },
     {
@@ -3180,7 +3180,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 74200,
       "score": 7220,
-      "ms": 110.97,
+      "ms": 206.89,
       "passed": true
     },
     {
@@ -3191,7 +3191,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 74700,
       "score": 7220,
-      "ms": 121.78,
+      "ms": 210.16,
       "passed": true
     },
     {
@@ -3202,7 +3202,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 72700,
       "score": 7220,
-      "ms": 123.45,
+      "ms": 204.2,
       "passed": true
     },
     {
@@ -3213,7 +3213,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71700,
       "score": 7220,
-      "ms": 121.22,
+      "ms": 207.51,
       "passed": true
     },
     {
@@ -3224,7 +3224,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71950,
       "score": 7220,
-      "ms": 159.48,
+      "ms": 212.18,
       "passed": true
     },
     {
@@ -3235,7 +3235,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 68700,
       "score": 7220,
-      "ms": 111.68,
+      "ms": 226.87,
       "passed": true
     },
     {
@@ -3246,7 +3246,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 73450,
       "score": 7220,
-      "ms": 116.05,
+      "ms": 217.27,
       "passed": true
     },
     {
@@ -3257,7 +3257,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 74950,
       "score": 7220,
-      "ms": 168.33,
+      "ms": 210.36,
       "passed": true
     },
     {
@@ -3268,7 +3268,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71200,
       "score": 7220,
-      "ms": 129.16,
+      "ms": 233.55,
       "passed": true
     },
     {
@@ -3279,7 +3279,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 71200,
       "score": 7220,
-      "ms": 143.57,
+      "ms": 321.06,
       "passed": true
     },
     {
@@ -3290,7 +3290,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 68700,
       "score": 7220,
-      "ms": 130.3,
+      "ms": 450.04,
       "passed": true
     },
     {
@@ -3301,7 +3301,7 @@
       "activeBudgetMsPerPick": 1666.67,
       "animationOnlyWallMs": 68700,
       "score": 7220,
-      "ms": 119.98,
+      "ms": 219.64,
       "passed": true
     }
   ]
