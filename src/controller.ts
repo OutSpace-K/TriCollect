@@ -1,6 +1,7 @@
 import { commitTerminal, drainTerminal } from "./platform/terminal";
 import { readRecords } from "./platform/records";
 import { CONFIG, RULE, PRESETS } from "./config";
+import { nextSeed } from "./core/seed";
 import { createLevel } from "./core/generation";
 import {
   type Board,
@@ -45,11 +46,13 @@ export class Controller {
   private after: Phase = "active";
   private lastCheckpoint = 0;
   private terminalDurable = false;
+  private recentHomeSeeds = new Set<number>();
   constructor(
     public now: () => number,
     private store: Store,
     public ads: AdService,
     private playSound: () => void = () => {},
+    private seedEntropy: () => number = Math.random,
   ) {
     this.state = this.fresh(0, PRESETS[0].seed);
     const drained = drainTerminal(store);
@@ -155,7 +158,10 @@ export class Controller {
       /* Guide remains optional if storage is unavailable. */
     }
   }
-  start(preset = 0, seed?: number) {
+  startRandom(preset = 0) {
+    this.start(preset, undefined, true);
+  }
+  start(preset = 0, seed?: number, randomize = false) {
     if (this.phase === "ad") return;
     if (this.state.phase === "result" && this.state.started) {
       this.checkpoint();
@@ -176,8 +182,39 @@ export class Controller {
       this.message = "终局存档或战绩保存失败，新局暂未开始";
       return;
     }
+    let fresh: Saved | undefined;
+    if (randomize) {
+      const excluded = new Set(
+        [this.state.seed, this.resume?.seed, saved?.seed].filter(
+          (v): v is number => v !== undefined,
+        ),
+      );
+      for (const previous of this.recentHomeSeeds) excluded.add(previous);
+      // A generator fallback must not quietly restart the immediately previous seed.
+      for (let attempt = 0; attempt < 8 && !fresh; attempt++) {
+        const candidate = nextSeed(excluded, this.seedEntropy);
+        try {
+          const generated = this.fresh(preset, candidate);
+          if (!excluded.has(generated.seed)) fresh = generated;
+        } catch {
+          /* Keep the current round intact if generation cannot recover. */
+        }
+        excluded.add(candidate);
+      }
+      if (!fresh) {
+        this.message = "新局生成失败，原局已保留，请重试";
+        return;
+      }
+    } else fresh = this.fresh(preset, seed ?? PRESETS[preset].seed);
     this.terminalDurable = false;
-    this.state = this.fresh(preset, seed ?? PRESETS[preset].seed);
+    this.state = fresh;
+    if (randomize) {
+      this.recentHomeSeeds.add(fresh.seed);
+      if (this.recentHomeSeeds.size > 256)
+        this.recentHomeSeeds.delete(
+          this.recentHomeSeeds.values().next().value!,
+        );
+    }
     this.resume = null;
     this.pendingTurns = 0;
     this.phase = "intro";

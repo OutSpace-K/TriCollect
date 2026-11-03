@@ -1350,9 +1350,14 @@ export class Scene {
       green.addColorStop(0, "#e5ffba");
       green.addColorStop(0.4, "#8fe26d");
       green.addColorStop(1, "#30a87e");
-      paint(zhuan, 20, "#548c69", 5);
-      paint(zhuan, 19, "#fff9df");
-      paint(zhuan, 13, green);
+      const coral = c.createLinearGradient(0, 0, 0, 64);
+      coral.addColorStop(0, "#ffb1ba");
+      coral.addColorStop(0.42, "#ee527e");
+      coral.addColorStop(1, "#b51c58");
+      // Slimmer strokes reopen the counters; coral separates 转 from green 个.
+      paint(zhuan, 17, "#873c62", 4);
+      paint(zhuan, 16, "#fff9df");
+      paint(zhuan, 10.5, coral);
       // Rounded cream rim and soft highlights give original strokes a jelly finish.
       paint(
         [
@@ -1366,7 +1371,7 @@ export class Scene {
           ],
         ],
         1.5,
-        "#c6ffcb",
+        "#ffe8ef",
       );
       c.save();
       try {
@@ -1768,7 +1773,7 @@ export class Scene {
             if (this.game.resume) this.homePanel = "replace";
             else {
               this.homePanel = null;
-              this.game.start(i);
+              this.game.startRandom(i);
             }
           },
           false,
@@ -1802,7 +1807,7 @@ export class Scene {
         52,
         () => {
           this.homePanel = null;
-          this.game.start(this.selectedDifficulty);
+          this.game.startRandom(this.selectedDifficulty);
         },
         false,
         true,
@@ -2052,7 +2057,7 @@ export class Scene {
       this.homeDialog();
       return;
     }
-    if (this.game.message.includes("存档"))
+    if (/存档|新局生成失败/.test(this.game.message))
       this.text(
         this.fit(this.game.message, 24),
         w / 2,

@@ -22,7 +22,7 @@ try {
     p.on("pageerror", (e) => errors.push(String(e)));
     await p.goto("http://127.0.0.1:4187");
     await p.waitForFunction(() => tri?.scene.playBackgroundLoaded);
-    await p.screenshot({ path: `evidence/v019-home-${width}.png` });
+    await p.screenshot({ path: `evidence/v020-home-${width}.png` });
     const click = async (id) => {
       await p.waitForFunction(
         (id) => tri.scene.buttons.some((b) => b.id === id && !b.disabled),
@@ -46,7 +46,7 @@ try {
     await click("begin");
     await p.evaluate(() => {
       const g = tri.game,
-        l = tri.createLevel(0);
+        l = tri.createLevel(0, g.state.seed);
       g.state.view = l.views[0];
       g.pick(l.witness[0]);
     });
@@ -67,7 +67,7 @@ try {
     await p.reload();
     await click("resume");
     await click("continue");
-    await p.screenshot({ path: `evidence/v019-pocket-${width}.png` });
+    await p.screenshot({ path: `evidence/v020-pocket-${width}.png` });
     for (const b of await p.evaluate(() => tri.scene.buttons))
       assert.ok(
         b.x >= 0 &&
@@ -92,7 +92,7 @@ try {
     await p.close();
   }
   await writeFile(
-    "evidence/v0.1.19-lift-browser.json",
+    "evidence/v0.1.20-lift-browser.json",
     JSON.stringify(
       { platform: "Chromium only; no real ads or device", reports },
       null,

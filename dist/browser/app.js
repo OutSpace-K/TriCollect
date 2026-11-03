@@ -592,6 +592,18 @@
     }
   }
 
+  // src/core/seed.ts
+  function nextSeed(excluded, entropy = Math.random) {
+    let value = NaN;
+    try {
+      value = entropy();
+    } catch {
+    }
+    let seed = Number.isFinite(value) && value >= 0 && value < 1 ? Math.floor(value * 4294967296) >>> 0 : Date.now() >>> 0;
+    while (excluded.has(seed)) seed = seed + 1 >>> 0;
+    return seed;
+  }
+
   // src/core/solver.ts
   function solve(initial, now, maxNodes = CONFIG.searchNodes, maxMs = CONFIG.searchMs, firstVisible) {
     const start2 = now();
@@ -632,11 +644,12 @@
   // src/controller.ts
   var Controller = class {
     constructor(now, store, ads2, playSound = () => {
-    }) {
+    }, seedEntropy = Math.random) {
       this.now = now;
       this.store = store;
       this.ads = ads2;
       this.playSound = playSound;
+      this.seedEntropy = seedEntropy;
       __publicField(this, "phase", "home");
       __publicField(this, "state");
       __publicField(this, "message", "\u65CB\u8F6C\u7403\u4ED3 \xB7 \u6536\u96C6\u4E09\u540C \xB7 \u63ED\u5F00\u5185\u5C42");
@@ -655,6 +668,7 @@
       __publicField(this, "after", "active");
       __publicField(this, "lastCheckpoint", 0);
       __publicField(this, "terminalDurable", false);
+      __publicField(this, "recentHomeSeeds", /* @__PURE__ */ new Set());
       this.state = this.fresh(0, PRESETS[0].seed);
       const drained = drainTerminal(store);
       const loaded = restore(store);
@@ -738,7 +752,10 @@
       } catch {
       }
     }
-    start(preset = 0, seed) {
+    startRandom(preset = 0) {
+      this.start(preset, void 0, true);
+    }
+    start(preset = 0, seed, randomize = false) {
       if (this.phase === "ad") return;
       if (this.state.phase === "result" && this.state.started) {
         this.checkpoint();
@@ -753,8 +770,37 @@
         this.message = "\u7EC8\u5C40\u5B58\u6863\u6216\u6218\u7EE9\u4FDD\u5B58\u5931\u8D25\uFF0C\u65B0\u5C40\u6682\u672A\u5F00\u59CB";
         return;
       }
+      let fresh;
+      if (randomize) {
+        const excluded = new Set(
+          [this.state.seed, this.resume?.seed, saved?.seed].filter(
+            (v) => v !== void 0
+          )
+        );
+        for (const previous of this.recentHomeSeeds) excluded.add(previous);
+        for (let attempt = 0; attempt < 8 && !fresh; attempt++) {
+          const candidate = nextSeed(excluded, this.seedEntropy);
+          try {
+            const generated = this.fresh(preset, candidate);
+            if (!excluded.has(generated.seed)) fresh = generated;
+          } catch {
+          }
+          excluded.add(candidate);
+        }
+        if (!fresh) {
+          this.message = "\u65B0\u5C40\u751F\u6210\u5931\u8D25\uFF0C\u539F\u5C40\u5DF2\u4FDD\u7559\uFF0C\u8BF7\u91CD\u8BD5";
+          return;
+        }
+      } else fresh = this.fresh(preset, seed ?? PRESETS[preset].seed);
       this.terminalDurable = false;
-      this.state = this.fresh(preset, seed ?? PRESETS[preset].seed);
+      this.state = fresh;
+      if (randomize) {
+        this.recentHomeSeeds.add(fresh.seed);
+        if (this.recentHomeSeeds.size > 256)
+          this.recentHomeSeeds.delete(
+            this.recentHomeSeeds.values().next().value
+          );
+      }
       this.resume = null;
       this.pendingTurns = 0;
       this.phase = "intro";
@@ -2314,9 +2360,13 @@
         green.addColorStop(0, "#e5ffba");
         green.addColorStop(0.4, "#8fe26d");
         green.addColorStop(1, "#30a87e");
-        paint(zhuan, 20, "#548c69", 5);
-        paint(zhuan, 19, "#fff9df");
-        paint(zhuan, 13, green);
+        const coral = c.createLinearGradient(0, 0, 0, 64);
+        coral.addColorStop(0, "#ffb1ba");
+        coral.addColorStop(0.42, "#ee527e");
+        coral.addColorStop(1, "#b51c58");
+        paint(zhuan, 17, "#873c62", 4);
+        paint(zhuan, 16, "#fff9df");
+        paint(zhuan, 10.5, coral);
         paint(
           [
             [
@@ -2329,7 +2379,7 @@
             ]
           ],
           1.5,
-          "#c6ffcb"
+          "#ffe8ef"
         );
         c.save();
         try {
@@ -2701,7 +2751,7 @@
               if (this.game.resume) this.homePanel = "replace";
               else {
                 this.homePanel = null;
-                this.game.start(i);
+                this.game.startRandom(i);
               }
             },
             false,
@@ -2735,7 +2785,7 @@
           52,
           () => {
             this.homePanel = null;
-            this.game.start(this.selectedDifficulty);
+            this.game.startRandom(this.selectedDifficulty);
           },
           false,
           true
@@ -2965,7 +3015,7 @@
         this.homeDialog();
         return;
       }
-      if (this.game.message.includes("\u5B58\u6863"))
+      if (/存档|新局生成失败/.test(this.game.message))
         this.text(
           this.fit(this.game.message, 24),
           w / 2,

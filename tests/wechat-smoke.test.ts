@@ -383,7 +383,7 @@ for (const units of [1, 1000])
           (3 - ((rotation + 1) % 3)) % 3,
         );
       }
-      const level = createLevel(preset);
+      const level = createLevel(preset, decode(r.storage.get(SAVE_KEY)!)!.seed);
       for (let step = 0; step < level.witness.length; step++) {
         const index = level.board.tubes.findIndex(
           (t) => t.id === level.witness[step],
@@ -514,7 +514,7 @@ for (const units of [1, 1000])
       secondPickAccepted: true,
     });
     writeFileSync(
-      "evidence/v0.1.18-animation-wallclock.json",
+      "evidence/v0.1.20-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -558,7 +558,7 @@ for (const units of [1, 1000])
       });
     }
     writeFileSync(
-      "evidence/v0.1.18-animation-wallclock.json",
+      "evidence/v0.1.20-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -601,7 +601,7 @@ for (const units of [1, 1000])
       frozenRotationPauseMs: interrupted,
     });
     writeFileSync(
-      "evidence/v0.1.18-animation-wallclock.json",
+      "evidence/v0.1.20-animation-wallclock.json",
       JSON.stringify(
         {
           scope:

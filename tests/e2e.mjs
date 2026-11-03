@@ -158,7 +158,7 @@ try {
       );
     }
     const witness = await page.evaluate(
-      (p) => window.tri.createLevel(p).witness,
+      (p) => window.tri.createLevel(p, window.tri.game.state.seed).witness,
       preset,
     );
     for (let step = 0; step < witness.length; step++) {
