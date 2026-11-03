@@ -116,6 +116,10 @@ export class Scene {
   renderedFace = 0;
   capStates: { id: string; closed: boolean; x: number; y: number }[] = [];
   titleAngle = 0;
+  readonly homeGroupOffset = 16;
+  private get trayTop() {
+    return this.height - 119;
+  }
   targets: { id: string; x: number; y: number; r: number }[] = [];
   private bodies: {
     id: string;
@@ -514,8 +518,8 @@ export class Scene {
       this.overlay();
       return;
     }
-    const trayY = h - 179,
-      boardBottom = trayY - 48;
+    const trayY = this.trayTop,
+      boardBottom = trayY - 92;
     this.drawBoard(147, boardBottom);
     this.drawMisclick();
     this.button(
@@ -605,43 +609,50 @@ export class Scene {
     );
     if (/失败|中断|预算|暂无|后续解|请先/.test(g.message))
       this.text(
-        this.fit(g.message, Math.floor((w - 40) / 11)),
-        w / 2,
-        trayY - 20,
+        this.fit(
+          g.message,
+          Math.floor((w - (g.board.pocket?.length ? 200 : 124)) / 11),
+        ),
+        w - 22,
+        trayY - 44,
         11,
         "#713e28",
-        "center",
+        "right",
       );
     if (g.board.pocket?.length) {
       this.button(
         "return-ball",
         "免费放回",
-        w / 2 - 70,
-        h - 64,
+        22,
+        trayY - 76,
         140,
         44,
         () => g.returnBall(),
         g.locked,
+        false,
+        g.locked && !transientLock,
       );
-      this.ball(g.board.pocket[0].type, w / 2 - 46, h - 39, 12);
+      this.ball(g.board.pocket[0].type, 46, trayY - 51, 12);
     } else {
       this.button(
         "lift-ball",
         "",
-        w / 2 - 32,
-        h - 64,
+        22,
+        trayY - 76,
         64,
         44,
         () => this.openTool(),
         !["active", "blocked"].includes(g.phase),
+        false,
+        !["active", "blocked"].includes(g.phase) && !transientLock,
       );
-      this.drawTool(w / 2, h - 45);
+      this.drawTool(54, trayY - 57);
       this.text(
         g.state.rewards.some((r) => r.kind === "lift" && r.redeemed)
           ? "已使用"
           : "寄存",
-        w / 2,
-        h - 19,
+        54,
+        trayY - 31,
         10,
         "#fff",
         "center",
@@ -1284,7 +1295,7 @@ export class Scene {
         this.ball(
           ball.type,
           from.x + (w / 2 - from.x) * a,
-          sy + (this.height - 122 - sy) * a,
+          sy + (this.trayTop + 21 - sy) * a,
           ballRadius,
         );
       }
@@ -1447,20 +1458,16 @@ export class Scene {
     };
     c.save();
     try {
-      c.translate(this.width / 2 - 132 * scale, 84);
+      c.translate(this.width / 2 - 132 * scale, 84 + this.homeGroupOffset);
       c.scale(scale, scale);
-      const green = c.createLinearGradient(0, 0, 0, 64);
-      green.addColorStop(0, "#e5ffba");
-      green.addColorStop(0.4, "#8fe26d");
-      green.addColorStop(1, "#30a87e");
-      const coral = c.createLinearGradient(0, 0, 0, 64);
-      coral.addColorStop(0, "#ffb1ba");
-      coral.addColorStop(0.42, "#ee527e");
-      coral.addColorStop(1, "#b51c58");
-      // Slimmer strokes reopen the counters; coral separates 转 from green 个.
-      paint(zhuan, 12, "#873c62", 3);
-      paint(zhuan, 12, "#fff9df");
-      paint(zhuan, 8.5, coral);
+      // Shared warm candy material: one soft shadow, a crisp rim and sparse glints.
+      const candy = c.createLinearGradient(0, 0, 0, 76);
+      candy.addColorStop(0, "#fff6b4");
+      candy.addColorStop(0.42, "#ffda68");
+      candy.addColorStop(1, "#f5ae3e");
+      paint(zhuan, 13, "#84614666", 3);
+      paint(zhuan, 13, "#76512e");
+      paint(zhuan, 9.5, candy);
       paint(
         [
           [
@@ -1473,17 +1480,16 @@ export class Scene {
           ],
         ],
         1.5,
-        "#ffe8ef",
+        "#fffbed",
       );
       c.save();
       try {
-        c.translate(101, 0);
-        // Project around the vertical stem. Even at the edge, the stem remains vertical.
-        // Solid extrusion follows the same yaw projection as the front strokes.
-        for (let depth = -4; depth <= -1; depth++)
-          paint(ge, 11, depth < -5 ? "#174937" : "#247350", 2, true, depth);
-        paint(ge, 17, "#fff9df", 0, true, 0);
-        paint(ge, 12, green, 0, true, 0);
+        c.translate(101, 6);
+        // Preserve the vertical-axis flip with shallow extrusion, never a flat spin.
+        for (let depth = -2; depth <= -1; depth++)
+          paint(ge, 13, "#9b713e", 2, true, depth);
+        paint(ge, 15, "#76512e", 0, true, 0);
+        paint(ge, 11, candy, 0, true, 0);
         paint(
           [
             [
@@ -1496,7 +1502,7 @@ export class Scene {
             ],
           ],
           1.7,
-          "#eaffcb",
+          "#fffbed",
           0,
           true,
           0.6,
@@ -1506,14 +1512,11 @@ export class Scene {
       }
       c.save();
       try {
-        c.translate(197, 0);
-        const gold = c.createLinearGradient(0, 0, 65, 62);
-        gold.addColorStop(0, "#ffe282");
-        gold.addColorStop(0.45, "#ffb62b");
-        gold.addColorStop(1, "#dc6819");
-        paint(qiu, 15, "#c18c49", 4);
-        paint(qiu, 15, "#fff9df");
-        paint(qiu, 10, gold);
+        c.translate(197, 4);
+        c.scale(1, 1.08);
+        paint(qiu, 13, "#84614666", 3);
+        paint(qiu, 13, "#76512e");
+        paint(qiu, 9, candy);
         paint(
           [
             [
@@ -1526,7 +1529,7 @@ export class Scene {
             ],
           ],
           1.5,
-          "#fff4ba",
+          "#fffbed",
         );
       } finally {
         c.restore();
@@ -2025,6 +2028,7 @@ export class Scene {
     const c = this.ctx;
     c.save();
     try {
+      c.translate(0, this.homeGroupOffset);
       c.translate(w / 2, 264);
       c.scale(1.2, 1.2);
       c.translate(-w / 2, -264);
@@ -2079,7 +2083,7 @@ export class Scene {
       c.restore();
     }
     const mx = w / 2,
-      my = 400 + Math.sin(this.mascotTime / 650) * 5;
+      my = 400 + this.homeGroupOffset + Math.sin(this.mascotTime / 650) * 5;
     this.ball(3, mx, my, 23);
     for (const dx of [-7, 7]) {
       c.fillStyle = "#fff";
@@ -2099,7 +2103,7 @@ export class Scene {
       c.arc(mx + dx + 1, my - 2, 2.5, 0, Math.PI * 2);
       c.fill();
     }
-    const y = Math.min(h - 230, 435);
+    const y = Math.min(h - 230, 435) + this.homeGroupOffset;
     this.button(
       "start-menu",
       "开始游戏",
@@ -2121,7 +2125,8 @@ export class Scene {
     c.save();
     try {
       c.beginPath();
-      c.rect(0, h - 112, w, 106);
+      const compactTrack = !!this.game.resume && h < 720;
+      c.rect(0, h - (compactTrack ? 96 : 112), w, compactTrack ? 90 : 106);
       c.clip();
       const phases = [0.03, 0.23, 0.47, 0.73, 0.53],
         lanes = [0, 1, 2, 1, 0];
@@ -2138,7 +2143,7 @@ export class Scene {
             70,
           y =
             h -
-            [87, 52, 24][lanes[i]] -
+            (compactTrack ? [60, 38, 18] : [87, 52, 24])[lanes[i]] -
             Math.abs(Math.sin(this.mascotTime / 330 + i)) * 5,
           r = [23, 20, 21, 19, 17][i];
         this.trackObjects.push({ x, y, r });

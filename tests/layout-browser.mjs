@@ -89,10 +89,27 @@ try {
       pages.push(name);
       if (screenshot)
         await p.screenshot({
-          path: `evidence/v021-layout-${width}x${height}-${name}.png`,
+          path: `evidence/v022-layout-${width}x${height}-${name}.png`,
         });
     };
     await audit("home");
+    assert.equal(
+      await p.evaluate(
+        () => tri.scene.buttons.find((b) => b.id === "start-menu").y,
+      ),
+      Math.min(Math.max(height, 660) - 230, 435) + 16,
+    );
+    for (const time of [1800, 2322, 2600, 2878, 3400]) {
+      await p.evaluate((time) => {
+        tri.scene.setForeground(false);
+        tri.scene.mascotTime = time;
+        tri.scene.render();
+      }, time);
+      await p.screenshot({
+        path: `evidence/v022-title-${width}x${height}-${time}.png`,
+      });
+    }
+    await p.evaluate(() => tri.scene.setForeground(true));
     await click("start-menu");
     await audit("difficulty");
     const back = await p.evaluate(
@@ -141,6 +158,11 @@ try {
     await audit("ready");
     await click("begin");
     await audit("active");
+    const tool = await p.evaluate(() =>
+      tri.scene.buttons.find((b) => b.id === "lift-ball"),
+    );
+    assert.equal(tool.x, 22);
+    assert.ok(tool.y + tool.h < Math.max(height, 660) - 119 - 9);
     await click("lift-ball");
     await audit("tool-empty");
     await click("tool-close");
@@ -219,7 +241,7 @@ try {
     await p.close();
   }
   await writeFile(
-    "evidence/v0.1.21-layout.json",
+    "evidence/v0.1.22-layout.json",
     JSON.stringify({ reports }, null, 2),
   );
   console.log(reports);

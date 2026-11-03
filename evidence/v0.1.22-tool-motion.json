@@ -1,0 +1,18 @@
+{
+  "reports": [
+    {
+      "width": 320,
+      "height": 568,
+      "toolPixelsUnchangedDuringPickAndTurn": true,
+      "heldBallPixelsUnchanged": true,
+      "lockedClicksIgnored": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "toolPixelsUnchangedDuringPickAndTurn": true,
+      "heldBallPixelsUnchanged": true,
+      "lockedClicksIgnored": true
+    }
+  ]
+}

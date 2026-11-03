@@ -1294,6 +1294,7 @@
       __publicField(this, "renderedFace", 0);
       __publicField(this, "capStates", []);
       __publicField(this, "titleAngle", 0);
+      __publicField(this, "homeGroupOffset", 16);
       __publicField(this, "targets", []);
       __publicField(this, "bodies", []);
     }
@@ -1330,6 +1331,9 @@
     setBackground(image) {
       this.background = image;
       this.backgroundLoaded = true;
+    }
+    get trayTop() {
+      return this.height - 119;
     }
     text(t, x, y, size = 14, color = "#284b40", align = "left") {
       const c = this.ctx;
@@ -1583,7 +1587,7 @@
       }
     }
     render() {
-      var _a;
+      var _a, _b;
       const c = this.ctx, g = this.game, w = this.width, h = this.height;
       if (this.misclickFeedback && (g.phase !== "active" || this.misclickFeedback.session !== g.state.session || this.misclickFeedback.view !== g.state.view))
         this.misclickFeedback = null;
@@ -1662,7 +1666,7 @@
         this.overlay();
         return;
       }
-      const trayY = h - 179, boardBottom = trayY - 48;
+      const trayY = this.trayTop, boardBottom = trayY - 92;
       this.drawBoard(147, boardBottom);
       this.drawMisclick();
       this.button(
@@ -1752,41 +1756,48 @@
       );
       if (/失败|中断|预算|暂无|后续解|请先/.test(g.message))
         this.text(
-          this.fit(g.message, Math.floor((w - 40) / 11)),
-          w / 2,
-          trayY - 20,
+          this.fit(
+            g.message,
+            Math.floor((w - (((_a = g.board.pocket) == null ? void 0 : _a.length) ? 200 : 124)) / 11)
+          ),
+          w - 22,
+          trayY - 44,
           11,
           "#713e28",
-          "center"
+          "right"
         );
-      if ((_a = g.board.pocket) == null ? void 0 : _a.length) {
+      if ((_b = g.board.pocket) == null ? void 0 : _b.length) {
         this.button(
           "return-ball",
           "\u514D\u8D39\u653E\u56DE",
-          w / 2 - 70,
-          h - 64,
+          22,
+          trayY - 76,
           140,
           44,
           () => g.returnBall(),
-          g.locked
+          g.locked,
+          false,
+          g.locked && !transientLock
         );
-        this.ball(g.board.pocket[0].type, w / 2 - 46, h - 39, 12);
+        this.ball(g.board.pocket[0].type, 46, trayY - 51, 12);
       } else {
         this.button(
           "lift-ball",
           "",
-          w / 2 - 32,
-          h - 64,
+          22,
+          trayY - 76,
           64,
           44,
           () => this.openTool(),
-          !["active", "blocked"].includes(g.phase)
+          !["active", "blocked"].includes(g.phase),
+          false,
+          !["active", "blocked"].includes(g.phase) && !transientLock
         );
-        this.drawTool(w / 2, h - 45);
+        this.drawTool(54, trayY - 57);
         this.text(
           g.state.rewards.some((r) => r.kind === "lift" && r.redeemed) ? "\u5DF2\u4F7F\u7528" : "\u5BC4\u5B58",
-          w / 2,
-          h - 19,
+          54,
+          trayY - 31,
           10,
           "#fff",
           "center"
@@ -2380,7 +2391,7 @@
           this.ball(
             ball.type,
             from.x + (w / 2 - from.x) * a,
-            sy + (this.height - 122 - sy) * a,
+            sy + (this.trayTop + 21 - sy) * a,
             ballRadius
           );
         }
@@ -2522,19 +2533,15 @@
       };
       c.save();
       try {
-        c.translate(this.width / 2 - 132 * scale, 84);
+        c.translate(this.width / 2 - 132 * scale, 84 + this.homeGroupOffset);
         c.scale(scale, scale);
-        const green = c.createLinearGradient(0, 0, 0, 64);
-        green.addColorStop(0, "#e5ffba");
-        green.addColorStop(0.4, "#8fe26d");
-        green.addColorStop(1, "#30a87e");
-        const coral = c.createLinearGradient(0, 0, 0, 64);
-        coral.addColorStop(0, "#ffb1ba");
-        coral.addColorStop(0.42, "#ee527e");
-        coral.addColorStop(1, "#b51c58");
-        paint(zhuan, 12, "#873c62", 3);
-        paint(zhuan, 12, "#fff9df");
-        paint(zhuan, 8.5, coral);
+        const candy = c.createLinearGradient(0, 0, 0, 76);
+        candy.addColorStop(0, "#fff6b4");
+        candy.addColorStop(0.42, "#ffda68");
+        candy.addColorStop(1, "#f5ae3e");
+        paint(zhuan, 13, "#84614666", 3);
+        paint(zhuan, 13, "#76512e");
+        paint(zhuan, 9.5, candy);
         paint(
           [
             [
@@ -2547,15 +2554,15 @@
             ]
           ],
           1.5,
-          "#ffe8ef"
+          "#fffbed"
         );
         c.save();
         try {
-          c.translate(101, 0);
-          for (let depth = -4; depth <= -1; depth++)
-            paint(ge, 11, depth < -5 ? "#174937" : "#247350", 2, true, depth);
-          paint(ge, 17, "#fff9df", 0, true, 0);
-          paint(ge, 12, green, 0, true, 0);
+          c.translate(101, 6);
+          for (let depth = -2; depth <= -1; depth++)
+            paint(ge, 13, "#9b713e", 2, true, depth);
+          paint(ge, 15, "#76512e", 0, true, 0);
+          paint(ge, 11, candy, 0, true, 0);
           paint(
             [
               [
@@ -2568,7 +2575,7 @@
               ]
             ],
             1.7,
-            "#eaffcb",
+            "#fffbed",
             0,
             true,
             0.6
@@ -2578,14 +2585,11 @@
         }
         c.save();
         try {
-          c.translate(197, 0);
-          const gold = c.createLinearGradient(0, 0, 65, 62);
-          gold.addColorStop(0, "#ffe282");
-          gold.addColorStop(0.45, "#ffb62b");
-          gold.addColorStop(1, "#dc6819");
-          paint(qiu, 15, "#c18c49", 4);
-          paint(qiu, 15, "#fff9df");
-          paint(qiu, 10, gold);
+          c.translate(197, 4);
+          c.scale(1, 1.08);
+          paint(qiu, 13, "#84614666", 3);
+          paint(qiu, 13, "#76512e");
+          paint(qiu, 9, candy);
           paint(
             [
               [
@@ -2598,7 +2602,7 @@
               ]
             ],
             1.5,
-            "#fff4ba"
+            "#fffbed"
           );
         } finally {
           c.restore();
@@ -3062,6 +3066,7 @@
       const c = this.ctx;
       c.save();
       try {
+        c.translate(0, this.homeGroupOffset);
         c.translate(w / 2, 264);
         c.scale(1.2, 1.2);
         c.translate(-w / 2, -264);
@@ -3112,7 +3117,7 @@
       } finally {
         c.restore();
       }
-      const mx = w / 2, my = 400 + Math.sin(this.mascotTime / 650) * 5;
+      const mx = w / 2, my = 400 + this.homeGroupOffset + Math.sin(this.mascotTime / 650) * 5;
       this.ball(3, mx, my, 23);
       for (const dx of [-7, 7]) {
         c.fillStyle = "#fff";
@@ -3132,7 +3137,7 @@
         c.arc(mx + dx + 1, my - 2, 2.5, 0, Math.PI * 2);
         c.fill();
       }
-      const y = Math.min(h - 230, 435);
+      const y = Math.min(h - 230, 435) + this.homeGroupOffset;
       this.button(
         "start-menu",
         "\u5F00\u59CB\u6E38\u620F",
@@ -3160,11 +3165,12 @@
       c.save();
       try {
         c.beginPath();
-        c.rect(0, h - 112, w, 106);
+        const compactTrack = !!this.game.resume && h < 720;
+        c.rect(0, h - (compactTrack ? 96 : 112), w, compactTrack ? 90 : 106);
         c.clip();
         const phases = [0.03, 0.23, 0.47, 0.73, 0.53], lanes = [0, 1, 2, 1, 0];
         for (let i = 0; i < phases.length; i++) {
-          const speed = [0.027, -0.046, 0.017, -0.046, 0.027][i], sway = [8, 12, 0, -12, -8][i] * Math.sin(this.mascotTime / 2e3 + i), x = ((this.mascotTime * speed + sway + phases[i] * (w + 140)) % (w + 140) + (w + 140)) % (w + 140) - 70, y2 = h - [87, 52, 24][lanes[i]] - Math.abs(Math.sin(this.mascotTime / 330 + i)) * 5, r = [23, 20, 21, 19, 17][i];
+          const speed = [0.027, -0.046, 0.017, -0.046, 0.027][i], sway = [8, 12, 0, -12, -8][i] * Math.sin(this.mascotTime / 2e3 + i), x = ((this.mascotTime * speed + sway + phases[i] * (w + 140)) % (w + 140) + (w + 140)) % (w + 140) - 70, y2 = h - (compactTrack ? [60, 38, 18] : [87, 52, 24])[lanes[i]] - Math.abs(Math.sin(this.mascotTime / 330 + i)) * 5, r = [23, 20, 21, 19, 17][i];
           this.trackObjects.push({ x, y: y2, r });
           c.save();
           try {

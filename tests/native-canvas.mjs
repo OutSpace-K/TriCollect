@@ -91,7 +91,7 @@ try {
       await p.waitForTimeout(40);
     }
     await p.screenshot({
-      path: `evidence/v021-current-native-${width}x${height}-home.png`,
+      path: `evidence/v022-current-native-${width}x${height}-home.png`,
     });
     await click("开始游戏");
     await click("简单");
@@ -107,19 +107,19 @@ try {
     for (const b of buttons)
       assert.ok(b.y > 64 && b.y < height - 24, JSON.stringify(b));
     await p.screenshot({
-      path: `evidence/v021-current-native-${width}x${height}-active.png`,
+      path: `evidence/v022-current-native-${width}x${height}-active.png`,
     });
     await click("寄存");
     assert.ok(
       await p.evaluate(() => labels.some((l) => l.s.includes("广告暂不可用"))),
     );
     await p.screenshot({
-      path: `evidence/v021-current-native-${width}x${height}-tool.png`,
+      path: `evidence/v022-current-native-${width}x${height}-tool.png`,
     });
     await click("知道了");
     await click("暂停");
     await p.screenshot({
-      path: `evidence/v021-current-native-${width}x${height}-pause.png`,
+      path: `evidence/v022-current-native-${width}x${height}-pause.png`,
     });
     await click("继续游戏");
     await click("→");
@@ -134,7 +134,7 @@ try {
     await p.close();
   }
   await writeFile(
-    "evidence/v0.1.21-native-canvas.json",
+    "evidence/v0.1.22-native-canvas.json",
     JSON.stringify(
       {
         platform:

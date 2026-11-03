@@ -1,0 +1,21 @@
+{
+  "platform": "Chromium only; no real ads or device",
+  "reports": [
+    {
+      "width": 320,
+      "cancelPreservesBoard": true,
+      "completedMockOnly": true,
+      "reloadPreservesPocket": true,
+      "freeReturnAndSingleUndo": true,
+      "errors": []
+    },
+    {
+      "width": 390,
+      "cancelPreservesBoard": true,
+      "completedMockOnly": true,
+      "reloadPreservesPocket": true,
+      "freeReturnAndSingleUndo": true,
+      "errors": []
+    }
+  ]
+}

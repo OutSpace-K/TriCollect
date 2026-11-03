@@ -214,7 +214,7 @@ async function boot(
         saved.board.side,
         390,
         147,
-        748 - 227,
+        748 - 211,
         (saved.view * Math.PI * 2) / 3,
         Math.max(...saved.board.tubes.map((t) => t.capacity)),
       );
@@ -514,7 +514,7 @@ for (const units of [1, 1000])
       secondPickAccepted: true,
     });
     writeFileSync(
-      "evidence/v0.1.21-animation-wallclock.json",
+      "evidence/v0.1.22-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -558,7 +558,7 @@ for (const units of [1, 1000])
       });
     }
     writeFileSync(
-      "evidence/v0.1.21-animation-wallclock.json",
+      "evidence/v0.1.22-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -601,7 +601,7 @@ for (const units of [1, 1000])
       frozenRotationPauseMs: interrupted,
     });
     writeFileSync(
-      "evidence/v0.1.21-animation-wallclock.json",
+      "evidence/v0.1.22-animation-wallclock.json",
       JSON.stringify(
         {
           scope:

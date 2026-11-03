@@ -243,7 +243,13 @@ test("transient controls retain color while input lock and real unavailable undo
   x.scene.render();
   const seq = x.game.state.sequence,
     view = x.game.state.view;
-  for (const id of ["rotate-left", "rotate-right", "undo", "hint"]) {
+  for (const id of [
+    "rotate-left",
+    "rotate-right",
+    "undo",
+    "hint",
+    "lift-ball",
+  ]) {
     const b = x.scene.buttons.find((b) => b.id === id)!;
     assert.equal(b.disabled, true);
     assert.equal(b.dimmed, false);
@@ -345,4 +351,44 @@ test("new title and toy drawing restore transforms after paint exceptions", () =
       assert.equal(depth, 0, `${method} leaked a transform at paint ${failAt}`);
     }
   }
+});
+
+test("held-ball control stays above tray and visually steady through pick/turn locks without accepting input", async () => {
+  const x = setup();
+  const top = x.scene.targets[0];
+  x.scene.tap(top.x, top.y);
+  x.advance(250);
+  x.game.ads = {
+    available: true,
+    label: "test",
+    request: async () => "completed",
+  };
+  await x.game.liftBall();
+  x.game.begin();
+  x.scene.render();
+  const next = x.scene.targets[0];
+  x.scene.tap(next.x, next.y);
+  x.scene.render();
+  for (const phase of ["resolving", "rotating"]) {
+    if (phase === "rotating") {
+      x.advance(250);
+      x.game.rotate(1);
+      x.scene.render();
+    }
+    const b = x.scene.buttons.find((b) => b.id === "return-ball")!;
+    assert.equal(b.x, 22);
+    assert.ok(b.y + b.h < x.scene.height - 119 - 9);
+    assert.equal(b.disabled, true);
+    assert.equal(b.dimmed, false);
+    const before = JSON.stringify(x.game.board),
+      seq = x.game.state.sequence;
+    x.scene.tap(b.x + b.w / 2, b.y + b.h / 2);
+    assert.equal(JSON.stringify(x.game.board), before);
+    assert.equal(x.game.state.sequence, seq);
+  }
+  x.advance(250);
+  assert.equal(
+    x.scene.buttons.find((b) => b.id === "return-ball")!.disabled,
+    false,
+  );
 });

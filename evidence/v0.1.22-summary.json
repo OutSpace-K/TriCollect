@@ -1,0 +1,76 @@
+{
+  "version": "0.1.22",
+  "baseline": "1a13cc7c1a5298ae24ad2bd39a233cb55465c3fe",
+  "fullSuite": {
+    "passed": 115,
+    "failed": 0,
+    "skipped": 0
+  },
+  "randomEntrySeedSamples": 300,
+  "liftSeedSamples": 300,
+  "browser": {
+    "directPicks": 447,
+    "fallbackPicks": 0,
+    "allTiersWonWithoutAds": true,
+    "viewports": [
+      [
+        320,
+        568
+      ],
+      [
+        320,
+        660
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "pageStatesPerViewport": 22,
+    "titleAnimationTimesMs": [
+      1800,
+      2322,
+      2600,
+      2878,
+      3400
+    ]
+  },
+  "toolMotion": {
+    "pixelEqualityAcrossPickAndTurn": true,
+    "lockedClicksIgnored": true,
+    "viewports": [
+      [
+        320,
+        568
+      ],
+      [
+        390,
+        844
+      ]
+    ]
+  },
+  "assets": {
+    "method": "ImageGen edits of own background assets, resampled to runtime dimensions",
+    "pixels": [
+      600,
+      1040
+    ],
+    "provenance": "assets/background-provenance.json"
+  },
+  "checks": [
+    "build",
+    "typecheck",
+    "format:check",
+    "git diff --check",
+    "native canvas mock",
+    "audio browser",
+    "lift browser",
+    "showroom"
+  ],
+  "limitations": [
+    "No actual WeChat/phone or real advertisement test",
+    "No human audio listening acceptance",
+    "Native canvas uses a simulated wx bridge"
+  ],
+  "notModified": "BlindBox"
+}
