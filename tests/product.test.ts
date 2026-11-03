@@ -66,16 +66,11 @@ test("three-step guide blocks underlying actions and persists acknowledgement wi
   s.render();
   const before = JSON.stringify(g.board),
     remaining = g.state.remaining;
-  tap("guide-open");
+  assert.ok(!s.buttons.some((b) => b.id === "guide-open"));
   advance(20000);
   assert.equal(g.state.remaining, remaining);
   assert.equal(g.phase, "ready");
-  assert.equal(s.targets.length, 0);
-  assert.ok(!s.buttons.some((b) => b.id === "begin"));
-  s.tap(100, 300);
   assert.equal(JSON.stringify(g.board), before);
-  tap("home-dialog-close");
-  assert.equal(s.guideOpen, false);
   tap("begin");
   assert.equal(g.phase, "active");
 });

@@ -12,6 +12,8 @@ export type Board = {
   tubes: Tube[];
   tray: Ball[];
   cleared: Ball[];
+  /** One ball held outside the seven slots; absent in legacy saves. */
+  pocket?: Ball[];
   score: number;
   status: "playing" | "blocked" | "won";
   applied: string[];
@@ -105,6 +107,49 @@ export function take(b: Board, tubeId: string, actionId: string): Board {
     n.score += CONFIG.matchScore;
   }
   if (!t.balls.length) n.score += CONFIG.tubeScore;
+  if (
+    n.tubes.every((t) => !t.balls.length) &&
+    !n.tray.length &&
+    !n.pocket?.length
+  ) {
+    n.status = "won";
+    n.score += CONFIG.winScore;
+  } else if (n.tray.length >= CONFIG.capacity) n.status = "blocked";
+  n.applied.push(actionId);
+  return n;
+}
+/** Rewarded lift preserves identities and triples; return is always free. */
+export function lift(b: Board, actionId: string): Board {
+  if (
+    b.status === "won" ||
+    !b.tray.length ||
+    b.pocket?.length ||
+    b.applied.includes(actionId)
+  )
+    return b;
+  const n = clone(b);
+  n.pocket = [n.tray.pop()!];
+  n.status = "playing";
+  n.applied.push(actionId);
+  return n;
+}
+export const RETURN_POCKET = "@return-pocket";
+export function returnPocket(b: Board, actionId: string): Board {
+  if (
+    b.status !== "playing" ||
+    !b.pocket?.length ||
+    b.applied.includes(actionId)
+  )
+    return b;
+  const n = clone(b),
+    ball = n.pocket!.pop()!;
+  n.tray.push(ball);
+  const group = n.tray.filter((x) => x.type === ball.type);
+  if (group.length === CONFIG.match) {
+    n.cleared.push(...group);
+    n.tray = n.tray.filter((x) => x.type !== ball.type);
+    n.score += CONFIG.matchScore;
+  }
   if (n.tubes.every((t) => !t.balls.length) && !n.tray.length) {
     n.status = "won";
     n.score += CONFIG.winScore;
@@ -146,7 +191,12 @@ export function invariant(b: Board, expected: number): boolean {
     )
   )
     return false;
-  const all = [...b.tubes.flatMap((t) => t.balls), ...b.tray, ...b.cleared];
+  const all = [
+    ...b.tubes.flatMap((t) => t.balls),
+    ...b.tray,
+    ...b.cleared,
+    ...(b.pocket ?? []),
+  ];
   if (
     all.length !== expected ||
     new Set(all.map((x) => x.id)).size !== all.length ||
@@ -160,6 +210,8 @@ export function invariant(b: Board, expected: number): boolean {
   )
     return false;
   if (
+    (b.pocket !== undefined &&
+      (!Array.isArray(b.pocket) || b.pocket.length > 1)) ||
     b.tray.length > CONFIG.capacity ||
     new Set(b.applied).size !== b.applied.length ||
     b.applied.some((x) => typeof x !== "string")
@@ -171,7 +223,10 @@ export function invariant(b: Board, expected: number): boolean {
       b.cleared.filter((x) => x.type === type).length % 3 !== 0
     )
       return false;
-  const won = b.tubes.every((t) => !t.balls.length) && !b.tray.length;
+  const won =
+    b.tubes.every((t) => !t.balls.length) &&
+    !b.tray.length &&
+    !b.pocket?.length;
   const expectedStatus = won
     ? "won"
     : b.tray.length === CONFIG.capacity
@@ -190,7 +245,8 @@ export function replay(initial: Board, path: string[]): Board {
   for (let i = 0; i < path.length; i++) {
     let id = `replay-${i}`;
     while (b.applied.includes(id)) id += "-";
-    const n = take(b, path[i], id);
+    const n =
+      path[i] === RETURN_POCKET ? returnPocket(b, id) : take(b, path[i], id);
     if (n === b) throw Error(`Illegal witness step ${i}`);
     b = n;
   }

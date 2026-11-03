@@ -214,7 +214,7 @@ async function boot(
         saved.board.side,
         390,
         147,
-        748 - 173,
+        748 - 191,
         (saved.view * Math.PI * 2) / 3,
         Math.max(...saved.board.tubes.map((t) => t.capacity)),
       );

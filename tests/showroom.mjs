@@ -28,7 +28,7 @@ try {
       await p.mouse.click(b.x + b.w / 2, b.y + b.h / 2);
       await p.waitForTimeout(30);
     };
-    await p.screenshot({ path: `evidence/v018-showroom-home-${width}.png` });
+    await p.screenshot({ path: `evidence/v019-showroom-home-${width}.png` });
     await click("help");
     for (let step = 0; step < 3; step++) {
       const state = await p.evaluate(() => ({
@@ -45,7 +45,7 @@ try {
           b.x >= 0 && b.y >= 0 && b.x + b.w <= width && b.y + b.h + 8 <= height,
         );
       await p.screenshot({
-        path: `evidence/v018-showroom-guide-${width}-${step}.png`,
+        path: `evidence/v019-showroom-guide-${width}-${step}.png`,
       });
       await click("guide-next");
     }
@@ -55,44 +55,45 @@ try {
     assert.equal(await p.evaluate(() => tri.game.guideSeen), true);
     await click("start-menu");
     await p.screenshot({
-      path: `evidence/v018-showroom-difficulty-${width}.png`,
+      path: `evidence/v019-showroom-difficulty-${width}.png`,
     });
     await click("start-1");
     await p.evaluate(() => {
       tri.game.skipIntro();
       tri.scene.render();
     });
-    await click("guide-open");
-    await p.waitForTimeout(400);
-    assert.equal(await p.evaluate(() => tri.game.phase), "ready");
-    assert.equal(await p.evaluate(() => tri.game.state.remaining), 300000);
-    await click("home-dialog-close");
+    assert.equal(
+      await p.evaluate(() =>
+        tri.scene.buttons.some((b) => b.id === "guide-open"),
+      ),
+      false,
+    );
     await click("begin");
-    await p.screenshot({ path: `evidence/v018-showroom-play-${width}.png` });
+    await p.screenshot({ path: `evidence/v019-showroom-play-${width}.png` });
     await p.evaluate(() => {
       tri.game.phase = "result";
       tri.game.board.status = "won";
       tri.game.board.score = 1234;
       tri.scene.render();
     });
-    await p.screenshot({ path: `evidence/v018-showroom-win-${width}.png` });
+    await p.screenshot({ path: `evidence/v019-showroom-win-${width}.png` });
     await p.waitForFunction(() => tri.scene.celebrationMs === 2600);
     assert.equal(await p.evaluate(() => tri.game.board.score), 1234);
     await p.screenshot({
-      path: `evidence/v018-showroom-win-settled-${width}.png`,
+      path: `evidence/v019-showroom-win-settled-${width}.png`,
     });
     reports.push({
       width,
       guideThreeSteps: true,
       guidePersistence: true,
-      readyGuideNoTimeCharge: true,
+      readyHelpRemovedAndNoTimeCharge: true,
       confettiFinite: true,
       noFakeReward: true,
     });
     await p.close();
   }
   await writeFile(
-    "evidence/v0.1.18-showroom.json",
+    "evidence/v0.1.19-showroom.json",
     JSON.stringify(
       { platform: "Actual Chromium pixels and input, not WeChat", reports },
       null,

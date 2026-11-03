@@ -1,5 +1,12 @@
 import { CONFIG } from "../config";
-import { type Board, available, take, replay } from "./rules";
+import {
+  type Board,
+  available,
+  take,
+  replay,
+  returnPocket,
+  RETURN_POCKET,
+} from "./rules";
 export type Solution =
   | { status: "safe"; path: string[]; nodes: number }
   | { status: "unknown" | "dead"; nodes: number };
@@ -24,7 +31,7 @@ export function solve(
     const k =
       b.tubes.map((t) => t.balls.length).join(",") +
       "|" +
-      b.tray
+      [...b.tray, ...(b.pocket ?? []).map((x) => ({ ...x, type: x.type + 10 }))]
         .map((x) => x.type)
         .sort()
         .join(",");
@@ -41,8 +48,13 @@ export function solve(
           ).length;
         return count(c) - count(a);
       });
+    if (b.pocket?.length) ids.unshift(RETURN_POCKET);
     for (const id of ids) {
-      const path = dfs(take(b, id, `solver-${nodes}-${id}`));
+      const path = dfs(
+        id === RETURN_POCKET
+          ? returnPocket(b, `solver-${nodes}-${id}`)
+          : take(b, id, `solver-${nodes}-${id}`),
+      );
       if (path) return [id, ...path];
       if (exhausted) return null;
     }

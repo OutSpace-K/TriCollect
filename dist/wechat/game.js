@@ -240,6 +240,7 @@
     return new Set([0, 1, 2].flatMap((v) => [...faceVisible(b, v)]));
   }
   function take(b, tubeId, actionId) {
+    var _a;
     if (b.status !== "playing" || b.applied.includes(actionId) || !available(b).has(tubeId))
       return b;
     const n = clone(b), t = n.tubes.find((t2) => t2.id === tubeId);
@@ -252,7 +253,37 @@
       n.score += CONFIG.matchScore;
     }
     if (!t.balls.length) n.score += CONFIG.tubeScore;
-    if (n.tubes.every((t2) => !t2.balls.length) && !n.tray.length) {
+    if (n.tubes.every((t2) => !t2.balls.length) && !n.tray.length && !((_a = n.pocket) == null ? void 0 : _a.length)) {
+      n.status = "won";
+      n.score += CONFIG.winScore;
+    } else if (n.tray.length >= CONFIG.capacity) n.status = "blocked";
+    n.applied.push(actionId);
+    return n;
+  }
+  function lift(b, actionId) {
+    var _a;
+    if (b.status === "won" || !b.tray.length || ((_a = b.pocket) == null ? void 0 : _a.length) || b.applied.includes(actionId))
+      return b;
+    const n = clone(b);
+    n.pocket = [n.tray.pop()];
+    n.status = "playing";
+    n.applied.push(actionId);
+    return n;
+  }
+  var RETURN_POCKET = "@return-pocket";
+  function returnPocket(b, actionId) {
+    var _a;
+    if (b.status !== "playing" || !((_a = b.pocket) == null ? void 0 : _a.length) || b.applied.includes(actionId))
+      return b;
+    const n = clone(b), ball = n.pocket.pop();
+    n.tray.push(ball);
+    const group = n.tray.filter((x) => x.type === ball.type);
+    if (group.length === CONFIG.match) {
+      n.cleared.push(...group);
+      n.tray = n.tray.filter((x) => x.type !== ball.type);
+      n.score += CONFIG.matchScore;
+    }
+    if (n.tubes.every((t) => !t.balls.length) && !n.tray.length) {
       n.status = "won";
       n.score += CONFIG.winScore;
     } else if (n.tray.length >= CONFIG.capacity) n.status = "blocked";
@@ -260,6 +291,7 @@
     return n;
   }
   function invariant(b, expected) {
+    var _a, _b;
     if (!b || !Number.isInteger(b.side) || b.side < 4 || b.side > 8 || !Array.isArray(b.tubes) || !Array.isArray(b.tray) || !Array.isArray(b.cleared) || !Array.isArray(b.applied))
       return false;
     if (b.tubes.length !== b.side * (b.side + 1) / 2 || new Set(b.tubes.map((t) => t.id)).size !== b.tubes.length)
@@ -268,17 +300,22 @@
       (t) => !Number.isInteger(t.q) || !Number.isInteger(t.r) || t.q < 0 || t.r < 0 || t.q + t.r >= b.side || t.id !== key(t.q, t.r) || !Array.isArray(t.balls) || !Number.isInteger(t.capacity) || t.capacity < 1 || t.capacity > 8 || t.balls.length > t.capacity
     ))
       return false;
-    const all = [...b.tubes.flatMap((t) => t.balls), ...b.tray, ...b.cleared];
+    const all = [
+      ...b.tubes.flatMap((t) => t.balls),
+      ...b.tray,
+      ...b.cleared,
+      ...(_a = b.pocket) != null ? _a : []
+    ];
     if (all.length !== expected || new Set(all.map((x) => x.id)).size !== all.length || all.some(
       (x) => typeof x.id !== "string" || !Number.isInteger(x.type) || x.type < 0 || x.type > 6
     ))
       return false;
-    if (b.tray.length > CONFIG.capacity || new Set(b.applied).size !== b.applied.length || b.applied.some((x) => typeof x !== "string"))
+    if (b.pocket !== void 0 && (!Array.isArray(b.pocket) || b.pocket.length > 1) || b.tray.length > CONFIG.capacity || new Set(b.applied).size !== b.applied.length || b.applied.some((x) => typeof x !== "string"))
       return false;
     for (let type = 0; type < 7; type++)
       if (b.tray.filter((x) => x.type === type).length >= 3 || b.cleared.filter((x) => x.type === type).length % 3 !== 0)
         return false;
-    const won = b.tubes.every((t) => !t.balls.length) && !b.tray.length;
+    const won = b.tubes.every((t) => !t.balls.length) && !b.tray.length && !((_b = b.pocket) == null ? void 0 : _b.length);
     const expectedStatus = won ? "won" : b.tray.length === CONFIG.capacity ? "blocked" : "playing";
     return b.status === expectedStatus && b.score === b.cleared.length / 3 * CONFIG.matchScore + b.tubes.filter((t) => !t.balls.length).length * CONFIG.tubeScore + (won ? CONFIG.winScore : 0);
   }
@@ -287,7 +324,7 @@
     for (let i = 0; i < path.length; i++) {
       let id = `replay-${i}`;
       while (b.applied.includes(id)) id += "-";
-      const n = take(b, path[i], id);
+      const n = path[i] === RETURN_POCKET ? returnPocket(b, id) : take(b, path[i], id);
       if (n === b) throw Error(`Illegal witness step ${i}`);
       b = n;
     }
@@ -411,27 +448,33 @@
       if (!Number.isInteger(s.sequence) || s.sequence < 0 || !Number.isInteger(s.view) || s.view < 0 || s.view > 2 || typeof s.sound !== "boolean" || s.started !== void 0 && typeof s.started !== "boolean" || s.finishedAt !== void 0 && (!Number.isFinite(s.finishedAt) || s.finishedAt < 0) || !["ready", "paused", "blocked", "expired", "result"].includes(s.phase))
         return false;
       if (!Array.isArray(s.rewards) || new Set(s.rewards.map((r) => r.id)).size !== s.rewards.length || s.rewards.some(
-        (r) => r.session !== s.session || typeof r.id !== "string" || !["requested", "completed", "cancelled", "failed"].includes(
+        (r) => r.kind !== void 0 && !["extend", "lift"].includes(r.kind) || r.session !== s.session || typeof r.id !== "string" || !["requested", "completed", "cancelled", "failed"].includes(
           r.state
         ) || typeof r.redeemed !== "boolean" || r.redeemed !== (r.state === "completed")
       ))
         return false;
-      if (s.rewards.filter((r) => r.redeemed).length !== s.extensions)
+      if (s.rewards.filter((r) => r.redeemed && r.kind !== "lift").length !== s.extensions || s.rewards.filter((r) => r.redeemed && r.kind === "lift").length > 1)
         return false;
       const original = originalFor(s.preset, s.seed), all = original.tubes.flatMap((t) => t.balls), identities = new Map(all.map((b) => [b.id, b.type]));
-      const check = (b) => invariant(b, all.length) && b.side === original.side && [...b.tubes.flatMap((t) => t.balls), ...b.tray, ...b.cleared].every(
-        (b2) => identities.get(b2.id) === b2.type
-      ) && b.tubes.every(
-        (t) => {
-          var _a;
-          return t.capacity === ((_a = original.tubes.find((x) => x.id === t.id)) == null ? void 0 : _a.capacity) && t.balls.every(
-            (b2, i) => {
-              var _a2, _b;
-              return ((_b = (_a2 = original.tubes.find((x) => x.id === t.id)) == null ? void 0 : _a2.balls[i]) == null ? void 0 : _b.id) === b2.id;
-            }
-          );
-        }
-      );
+      const check = (b) => {
+        var _a, _b;
+        return invariant(b, all.length) && (!((_a = b.pocket) == null ? void 0 : _a.length) || s.rewards.some((r) => r.kind === "lift" && r.redeemed)) && b.side === original.side && [
+          ...b.tubes.flatMap((t) => t.balls),
+          ...b.tray,
+          ...b.cleared,
+          ...(_b = b.pocket) != null ? _b : []
+        ].every((b2) => identities.get(b2.id) === b2.type) && b.tubes.every(
+          (t) => {
+            var _a2;
+            return t.capacity === ((_a2 = original.tubes.find((x) => x.id === t.id)) == null ? void 0 : _a2.capacity) && t.balls.every(
+              (b2, i) => {
+                var _a3, _b2;
+                return ((_b2 = (_a3 = original.tubes.find((x) => x.id === t.id)) == null ? void 0 : _a3.balls[i]) == null ? void 0 : _b2.id) === b2.id;
+              }
+            );
+          }
+        );
+      };
       return check(s.board) && Array.isArray(s.history) && s.history.length <= all.length && s.history.every(check);
     } catch (e) {
       return false;
@@ -618,13 +661,14 @@
     let nodes = 0, exhausted = false;
     const seen = /* @__PURE__ */ new Set();
     function dfs(b, first = false) {
+      var _a, _b;
       if (b.status === "won") return [];
       if (b.status === "blocked") return null;
       if (++nodes > maxNodes || now() - start >= maxMs) {
         exhausted = true;
         return null;
       }
-      const k = b.tubes.map((t) => t.balls.length).join(",") + "|" + b.tray.map((x) => x.type).sort().join(",");
+      const k = b.tubes.map((t) => t.balls.length).join(",") + "|" + [...b.tray, ...((_a = b.pocket) != null ? _a : []).map((x) => ({ ...x, type: x.type + 10 }))].map((x) => x.type).sort().join(",");
       if (seen.has(k)) return null;
       seen.add(k);
       const ids = [...available(b)].filter((id) => !first || !firstVisible || firstVisible.has(id)).sort((a, c) => {
@@ -633,8 +677,11 @@
         ).length;
         return count(c) - count(a);
       });
+      if ((_b = b.pocket) == null ? void 0 : _b.length) ids.unshift(RETURN_POCKET);
       for (const id of ids) {
-        const path2 = dfs(take(b, id, `solver-${nodes}-${id}`));
+        const path2 = dfs(
+          id === RETURN_POCKET ? returnPocket(b, `solver-${nodes}-${id}`) : take(b, id, `solver-${nodes}-${id}`)
+        );
         if (path2) return [id, ...path2];
         if (exhausted) return null;
       }
@@ -757,6 +804,7 @@
       }
     }
     start(preset = 0, seed) {
+      if (this.phase === "ad") return;
       if (this.state.phase === "result" && this.state.started) {
         this.checkpoint();
         if (!this.terminalDurable) return;
@@ -960,7 +1008,7 @@
       if (this.phase !== "active") return;
       if (result.status === "safe") this.state.hintsUsed++;
       this.hint = result.status === "safe" ? result.path[0] : null;
-      this.message = result.status === "safe" ? "\u5F53\u524D\u9762\u4EAE\u6846\u7BA1\u4F4D\u6709\u5DF2\u9A8C\u8BC1\u7684\u540E\u7EED\u89E3" : result.status === "unknown" ? "\u9884\u7B97\u5185\u5C1A\u672A\u786E\u5B9A\uFF0C\u53EF\u5C1D\u8BD5\u64A4\u9500\u6216\u7EE7\u7EED\u89C2\u5BDF" : "\u5F53\u524D\u9762\u6682\u65E0\u53EF\u9760\u8DEF\u7EBF\uFF0C\u53EF\u65CB\u8F6C\u540E\u518D\u63D0\u793A";
+      this.message = result.status === "safe" ? this.hint === RETURN_POCKET ? "\u8BF7\u5148\u514D\u8D39\u653E\u56DE\u5BC4\u5B58\u7403" : "\u5F53\u524D\u9762\u4EAE\u6846\u7BA1\u4F4D\u6709\u5DF2\u9A8C\u8BC1\u7684\u540E\u7EED\u89E3" : result.status === "unknown" ? "\u9884\u7B97\u5185\u5C1A\u672A\u786E\u5B9A\uFF0C\u53EF\u5C1D\u8BD5\u64A4\u9500\u6216\u7EE7\u7EED\u89C2\u5BDF" : "\u5F53\u524D\u9762\u6682\u65E0\u53EF\u9760\u8DEF\u7EBF\uFF0C\u53EF\u65CB\u8F6C\u540E\u518D\u63D0\u793A";
     }
     end() {
       if (this.phase === "ad" || this.phase === "home") return;
@@ -994,6 +1042,50 @@
       }
       this.checkpoint();
     }
+    get canLift() {
+      var _a;
+      return ["active", "blocked"].includes(this.phase) && this.board.tray.length > 0 && !((_a = this.board.pocket) == null ? void 0 : _a.length) && !this.state.rewards.some((r) => r.kind === "lift" && r.redeemed);
+    }
+    async liftBall() {
+      this.tick();
+      if (!this.canLift || !this.ads.available) return;
+      const session = this.state.session, id = `${session}:reward:${++this.state.sequence}`;
+      this.state.rewards.push({
+        id,
+        session,
+        kind: "lift",
+        state: "requested",
+        redeemed: false
+      });
+      this.phase = "ad";
+      this.message = "\u5B8C\u6574\u89C2\u770B\u540E\u79FB\u51FA\u672B\u7403\uFF1B\u4E4B\u540E\u53EF\u514D\u8D39\u653E\u56DE\uFF0C\u6BCF\u5C40\u4E00\u6B21";
+      this.checkpoint();
+      let outcome;
+      try {
+        outcome = await this.ads.request();
+      } catch (e) {
+        outcome = "failed";
+      }
+      this.reward(session, id, outcome);
+    }
+    returnBall() {
+      this.tick();
+      if (this.phase !== "active") return;
+      const before = this.board;
+      const after = returnPocket(
+        before,
+        `${this.state.session}:${++this.state.sequence}`
+      );
+      if (before === after) return;
+      this.state.history.push(clone(before));
+      this.state.undoAvailable = true;
+      this.state.board = after;
+      this.phase = after.status === "won" ? "result" : after.status === "blocked" ? "blocked" : "active";
+      this.last = this.now();
+      this.hint = null;
+      this.message = "\u5BC4\u5B58\u7403\u5DF2\u514D\u8D39\u653E\u56DE";
+      this.checkpoint();
+    }
     async extend() {
       this.tick();
       if (this.phase !== "expired" || this.state.extensions >= CONFIG.maxExtensions || !this.ads.available)
@@ -1021,6 +1113,23 @@
       if (session !== this.state.session || this.phase !== "ad" || !r || r.state !== "requested")
         return;
       r.state = outcome;
+      if (r.kind === "lift") {
+        if (outcome === "completed") {
+          const after = lift(this.board, id);
+          if (after === this.board) {
+            r.state = "failed";
+          } else {
+            r.redeemed = true;
+            this.state.board = after;
+            this.state.history = [];
+            this.state.undoAvailable = false;
+          }
+        }
+        this.phase = this.board.status === "blocked" ? "blocked" : "paused";
+        this.message = r.redeemed ? "\u672B\u7403\u5DF2\u5BC4\u5B58\uFF0C\u7EE7\u7EED\u540E\u53EF\u514D\u8D39\u653E\u56DE" : outcome === "cancelled" ? "\u672A\u5B8C\u6210\u89C2\u770B\uFF0C\u6CA1\u6709\u53D1\u653E\u5956\u52B1" : "\u5E7F\u544A\u5931\u8D25\uFF0C\u539F\u5C40\u5DF2\u4FDD\u7559";
+        this.checkpoint();
+        return;
+      }
       if (outcome === "completed" && !r.redeemed) {
         r.redeemed = true;
         this.state.extensions++;
@@ -1419,6 +1528,7 @@
       }
     }
     render() {
+      var _a;
       const c = this.ctx, g = this.game, w = this.width, h = this.height;
       if (this.misclickFeedback && (g.phase !== "active" || this.misclickFeedback.session !== g.state.session || this.misclickFeedback.view !== g.state.view))
         this.misclickFeedback = null;
@@ -1491,7 +1601,7 @@
         this.overlay();
         return;
       }
-      const trayY = h - 143, boardBottom = trayY - 30;
+      const trayY = h - 143, boardBottom = trayY - 48;
       this.drawBoard(147, boardBottom);
       this.drawMisclick();
       this.button(
@@ -1579,16 +1689,40 @@
         false,
         g.locked && !transientLock
       );
-      const notice = /失败|中断|预算|暂无/.test(g.message) ? g.message.includes("\u9884\u7B97") ? "\u6682\u672A\u627E\u5230\u63D0\u793A\uFF0C\u8BD5\u8BD5\u8F6C\u9762" : g.message.includes("\u6682\u65E0") ? "\u6362\u4E00\u9762\u518D\u8BD5\u8BD5" : g.message : "";
-      if (notice)
+      if (/失败|中断|预算|暂无|后续解|请先/.test(g.message))
         this.text(
-          this.fit(notice, Math.floor((w - 40) / 11)),
+          this.fit(g.message, Math.floor((w - 40) / 11)),
           w / 2,
-          h - 16,
+          trayY - 20,
           11,
-          "#8b3e26",
+          "#713e28",
           "center"
         );
+      if ((_a = g.board.pocket) == null ? void 0 : _a.length) {
+        this.ball(g.board.pocket[0].type, 35, h - 23, 12);
+        this.button(
+          "return-ball",
+          "\u514D\u8D39\u653E\u56DE\u5BC4\u5B58\u7403",
+          57,
+          h - 40,
+          w - 79,
+          30,
+          () => g.returnBall(),
+          g.locked
+        );
+      } else {
+        const used = g.state.rewards.some((r) => r.kind === "lift" && r.redeemed);
+        this.button(
+          "lift-ball",
+          used ? "\u672C\u5C40\u79FB\u51FA\u5DF2\u4F7F\u7528" : g.ads.available ? "\u770B\u5E7F\u544A \xB7 \u79FB\u51FA\u672B\u7403\uFF08\u53EF\u514D\u8D39\u653E\u56DE\uFF09" : g.ads.label,
+          22,
+          h - 40,
+          w - 44,
+          30,
+          () => void g.liftBall(),
+          !g.canLift || !g.ads.available
+        );
+      }
       if (g.phase === "intro" || g.phase === "ready") {
         this.rect(
           18,
@@ -1611,23 +1745,11 @@
           g.phase === "intro" ? "\u8DF3\u8FC7\u5F00\u573A" : "\u5F00\u59CB \xB7 05:00",
           32,
           boardBottom - 58,
-          w - 148,
+          w - 64,
           42,
           () => g.phase === "intro" ? g.skipIntro() : g.begin(),
           false,
           true
-        );
-        this.button(
-          "guide-open",
-          g.guideSeen ? "\u73A9\u6CD5" : "\u65B0\u624B",
-          w - 104,
-          boardBottom - 58,
-          72,
-          42,
-          () => {
-            this.guideOpen = true;
-            this.guideStep = 0;
-          }
         );
       }
       if (this.guideOpen && ["intro", "ready"].includes(g.phase))
@@ -2258,12 +2380,12 @@
         c.translate(this.width / 2 - 128 * scale, 88);
         c.scale(scale, scale);
         const green = c.createLinearGradient(0, 0, 0, 64);
-        green.addColorStop(0, "#73dda0");
-        green.addColorStop(0.4, "#249b6d");
-        green.addColorStop(1, "#09684e");
-        paint(zhuan, 13.5, "#131d1a", 3);
-        paint(zhuan, 13.5, "#101814");
-        paint(zhuan, 9.5, green);
+        green.addColorStop(0, "#e5ffba");
+        green.addColorStop(0.4, "#8fe26d");
+        green.addColorStop(1, "#30a87e");
+        paint(zhuan, 20, "#548c69", 5);
+        paint(zhuan, 19, "#fff9df");
+        paint(zhuan, 13, green);
         paint(
           [
             [
@@ -2283,8 +2405,8 @@
           c.translate(92, 0);
           for (let depth = -8; depth <= -1; depth++)
             paint(ge, 11, depth < -5 ? "#174937" : "#247350", 2, true, depth);
-          paint(ge, 12, "#183f32", 0, true, 0);
-          paint(ge, 9, green, 0, true, 0);
+          paint(ge, 20, "#fff9df", 0, true, 0);
+          paint(ge, 14, green, 0, true, 0);
           paint(
             [
               [
@@ -2312,8 +2434,9 @@
           gold.addColorStop(0, "#ffe282");
           gold.addColorStop(0.45, "#ffb62b");
           gold.addColorStop(1, "#dc6819");
-          paint(qiu, 8, "#9b5625", 3);
-          paint(qiu, 8, gold);
+          paint(qiu, 15, "#c18c49", 4);
+          paint(qiu, 15, "#fff9df");
+          paint(qiu, 10, gold);
           paint(
             [
               [
@@ -2892,12 +3015,13 @@
         c.clip();
         const phases = [0.03, 0.23, 0.47, 0.73, 0.53], lanes = [0, 1, 2, 1, 0];
         for (let i = 0; i < phases.length; i++) {
-          const speed = [0.027, -0.046, 0.017, -0.046, 0.027][i], sway = [8, 12, 0, -12, -8][i] * Math.sin(this.mascotTime / 2e3 + i), x = ((this.mascotTime * speed + sway + phases[i] * (w + 140)) % (w + 140) + (w + 140)) % (w + 140) - 70, y2 = h - [90, 52, 20][lanes[i]], r = [16, 13, 14, 12, 10][i];
+          const speed = [0.027, -0.046, 0.017, -0.046, 0.027][i], sway = [8, 12, 0, -12, -8][i] * Math.sin(this.mascotTime / 2e3 + i), x = ((this.mascotTime * speed + sway + phases[i] * (w + 140)) % (w + 140) + (w + 140)) % (w + 140) - 70, y2 = h - [87, 52, 24][lanes[i]] - Math.abs(Math.sin(this.mascotTime / 330 + i)) * 5, r = [23, 20, 21, 19, 17][i];
           this.trackObjects.push({ x, y: y2, r });
           c.save();
           try {
             c.translate(x, y2);
-            c.scale(speed < 0 ? -1 : 1, 1);
+            const squash = Math.sin(this.mascotTime / 330 + i) * 0.09;
+            c.scale((speed < 0 ? -1 : 1) * (1 + squash), 1 - squash);
             this.trackToy(i, 0, 0, r);
           } finally {
             c.restore();
@@ -2923,7 +3047,7 @@
     overlay() {
       const g = this.game, w = this.width, h = this.height;
       const won = g.phase === "result" && g.board.status === "won";
-      const y = Math.max(142, h * 0.23), cardH = g.phase === "expired" ? 366 : 340;
+      const y = Math.max(142, h * 0.23), cardH = ["expired", "blocked"].includes(g.phase) ? 400 : 340;
       this.ctx.fillStyle = "#163e6488";
       this.ctx.fillRect(0, 120, w, h - 120);
       if (won) this.celebration();
@@ -2984,6 +3108,13 @@
       if (g.phase === "paused") add("continue", "\u7EE7\u7EED\u6E38\u620F", () => g.begin());
       if (g.phase === "blocked")
         add("undo-blocked", "\u64A4\u9500\u4E00\u6B65", () => g.undo(), !g.canUndo);
+      if (g.phase === "blocked")
+        add(
+          "lift-blocked",
+          g.ads.available ? "\u770B\u5E7F\u544A \xB7 \u79FB\u51FA\u672B\u7403" : g.ads.label,
+          () => void g.liftBall(),
+          !g.canLift || !g.ads.available
+        );
       if (g.phase === "expired") {
         add(
           "extend",

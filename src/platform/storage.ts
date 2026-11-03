@@ -10,6 +10,7 @@ export type Reward = {
   session: string;
   state: "requested" | "completed" | "cancelled" | "failed";
   redeemed: boolean;
+  kind?: "extend" | "lift";
 };
 export type Saved = {
   schema: 1;
@@ -98,6 +99,7 @@ export function valid(s: Saved): boolean {
       new Set(s.rewards.map((r) => r.id)).size !== s.rewards.length ||
       s.rewards.some(
         (r) =>
+          (r.kind !== undefined && !["extend", "lift"].includes(r.kind)) ||
           r.session !== s.session ||
           typeof r.id !== "string" ||
           !["requested", "completed", "cancelled", "failed"].includes(
@@ -108,17 +110,26 @@ export function valid(s: Saved): boolean {
       )
     )
       return false;
-    if (s.rewards.filter((r) => r.redeemed).length !== s.extensions)
+    if (
+      s.rewards.filter((r) => r.redeemed && r.kind !== "lift").length !==
+        s.extensions ||
+      s.rewards.filter((r) => r.redeemed && r.kind === "lift").length > 1
+    )
       return false;
     const original = originalFor(s.preset, s.seed),
       all = original.tubes.flatMap((t) => t.balls),
       identities = new Map(all.map((b) => [b.id, b.type]));
     const check = (b: Board) =>
       invariant(b, all.length) &&
+      (!b.pocket?.length ||
+        s.rewards.some((r) => r.kind === "lift" && r.redeemed)) &&
       b.side === original.side &&
-      [...b.tubes.flatMap((t) => t.balls), ...b.tray, ...b.cleared].every(
-        (b) => identities.get(b.id) === b.type,
-      ) &&
+      [
+        ...b.tubes.flatMap((t) => t.balls),
+        ...b.tray,
+        ...b.cleared,
+        ...(b.pocket ?? []),
+      ].every((b) => identities.get(b.id) === b.type) &&
       b.tubes.every(
         (t) =>
           t.capacity === original.tubes.find((x) => x.id === t.id)?.capacity &&

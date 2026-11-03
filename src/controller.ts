@@ -2,7 +2,15 @@ import { commitTerminal, drainTerminal } from "./platform/terminal";
 import { readRecords } from "./platform/records";
 import { CONFIG, RULE, PRESETS } from "./config";
 import { createLevel } from "./core/generation";
-import { type Board, take, clone, faceVisible } from "./core/rules";
+import {
+  type Board,
+  take,
+  clone,
+  faceVisible,
+  lift,
+  returnPocket,
+  RETURN_POCKET,
+} from "./core/rules";
 import { solve } from "./core/solver";
 import { save, restore, type Saved, type Store } from "./platform/storage";
 import type { AdService } from "./platform/ads";
@@ -148,6 +156,7 @@ export class Controller {
     }
   }
   start(preset = 0, seed?: number) {
+    if (this.phase === "ad") return;
     if (this.state.phase === "result" && this.state.started) {
       this.checkpoint();
       if (!this.terminalDurable) return;
@@ -384,7 +393,9 @@ export class Controller {
     this.hint = result.status === "safe" ? result.path[0] : null;
     this.message =
       result.status === "safe"
-        ? "当前面亮框管位有已验证的后续解"
+        ? this.hint === RETURN_POCKET
+          ? "请先免费放回寄存球"
+          : "当前面亮框管位有已验证的后续解"
         : result.status === "unknown"
           ? "预算内尚未确定，可尝试撤销或继续观察"
           : "当前面暂无可靠路线，可旋转后再提示";
@@ -418,6 +429,60 @@ export class Controller {
     try {
       this.store.set("tricollect.sound.v1", this.state.sound ? "on" : "off");
     } catch {}
+    this.checkpoint();
+  }
+  get canLift() {
+    return (
+      ["active", "blocked"].includes(this.phase) &&
+      this.board.tray.length > 0 &&
+      !this.board.pocket?.length &&
+      !this.state.rewards.some((r) => r.kind === "lift" && r.redeemed)
+    );
+  }
+  async liftBall() {
+    this.tick();
+    if (!this.canLift || !this.ads.available) return;
+    const session = this.state.session,
+      id = `${session}:reward:${++this.state.sequence}`;
+    this.state.rewards.push({
+      id,
+      session,
+      kind: "lift",
+      state: "requested",
+      redeemed: false,
+    });
+    this.phase = "ad";
+    this.message = "完整观看后移出末球；之后可免费放回，每局一次";
+    this.checkpoint();
+    let outcome: "completed" | "cancelled" | "failed";
+    try {
+      outcome = await this.ads.request();
+    } catch {
+      outcome = "failed";
+    }
+    this.reward(session, id, outcome);
+  }
+  returnBall() {
+    this.tick();
+    if (this.phase !== "active") return;
+    const before = this.board;
+    const after = returnPocket(
+      before,
+      `${this.state.session}:${++this.state.sequence}`,
+    );
+    if (before === after) return;
+    this.state.history.push(clone(before));
+    this.state.undoAvailable = true;
+    this.state.board = after;
+    this.phase =
+      after.status === "won"
+        ? "result"
+        : after.status === "blocked"
+          ? "blocked"
+          : "active";
+    this.last = this.now();
+    this.hint = null;
+    this.message = "寄存球已免费放回";
     this.checkpoint();
   }
   async extend() {
@@ -461,6 +526,28 @@ export class Controller {
     )
       return;
     r.state = outcome;
+    if (r.kind === "lift") {
+      if (outcome === "completed") {
+        const after = lift(this.board, id);
+        if (after === this.board) {
+          r.state = "failed";
+        } else {
+          r.redeemed = true;
+          this.state.board = after;
+          // Do not let a pre-reward undo erase the held ball or duplicate its reward.
+          this.state.history = [];
+          this.state.undoAvailable = false;
+        }
+      }
+      this.phase = this.board.status === "blocked" ? "blocked" : "paused";
+      this.message = r.redeemed
+        ? "末球已寄存，继续后可免费放回"
+        : outcome === "cancelled"
+          ? "未完成观看，没有发放奖励"
+          : "广告失败，原局已保留";
+      this.checkpoint();
+      return;
+    }
     if (outcome === "completed" && !r.redeemed) {
       r.redeemed = true;
       this.state.extensions++;

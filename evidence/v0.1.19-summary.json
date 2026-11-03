@@ -1,0 +1,36 @@
+{
+  "baseline": "3669e21b2bd648c6ad1f15b5a12bc0f5587da948",
+  "version": "0.1.19",
+  "fullSuite": {
+    "passed": 107,
+    "failed": 0
+  },
+  "additionalTargetedRun": {
+    "passed": 5,
+    "failed": 0,
+    "note": "Includes four tests in full suite plus one newly added blocked-tray regression"
+  },
+  "liftSeeds": 300,
+  "originalSeeds": 300,
+  "browser": {
+    "directPicks": 447,
+    "fallbackPicks": 0,
+    "allThreeTiersWonWithoutAds": true,
+    "widths": [
+      320,
+      390
+    ]
+  },
+  "checks": [
+    "build",
+    "typecheck",
+    "format:check",
+    "git diff --check"
+  ],
+  "limitations": [
+    "No WeChat device/developer-tool acceptance",
+    "No real rewarded ad configured or tested",
+    "Git push is not WeChat release"
+  ],
+  "notModified": "BlindBox"
+}

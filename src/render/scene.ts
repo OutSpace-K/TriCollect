@@ -503,7 +503,7 @@ export class Scene {
       return;
     }
     const trayY = h - 143,
-      boardBottom = trayY - 30;
+      boardBottom = trayY - 48;
     this.drawBoard(147, boardBottom);
     this.drawMisclick();
     this.button(
@@ -591,23 +591,44 @@ export class Scene {
       false,
       g.locked && !transientLock,
     );
-    // Routine rule narration is omitted. Only actionable failures/hint status remain.
-    const notice = /失败|中断|预算|暂无/.test(g.message)
-      ? g.message.includes("预算")
-        ? "暂未找到提示，试试转面"
-        : g.message.includes("暂无")
-          ? "换一面再试试"
-          : g.message
-      : "";
-    if (notice)
+    if (/失败|中断|预算|暂无|后续解|请先/.test(g.message))
       this.text(
-        this.fit(notice, Math.floor((w - 40) / 11)),
+        this.fit(g.message, Math.floor((w - 40) / 11)),
         w / 2,
-        h - 16,
+        trayY - 20,
         11,
-        "#8b3e26",
+        "#713e28",
         "center",
       );
+    if (g.board.pocket?.length) {
+      this.ball(g.board.pocket[0].type, 35, h - 23, 12);
+      this.button(
+        "return-ball",
+        "免费放回寄存球",
+        57,
+        h - 40,
+        w - 79,
+        30,
+        () => g.returnBall(),
+        g.locked,
+      );
+    } else {
+      const used = g.state.rewards.some((r) => r.kind === "lift" && r.redeemed);
+      this.button(
+        "lift-ball",
+        used
+          ? "本局移出已使用"
+          : g.ads.available
+            ? "看广告 · 移出末球（可免费放回）"
+            : g.ads.label,
+        22,
+        h - 40,
+        w - 44,
+        30,
+        () => void g.liftBall(),
+        !g.canLift || !g.ads.available,
+      );
+    }
     if (g.phase === "intro" || g.phase === "ready") {
       this.rect(
         18,
@@ -630,23 +651,11 @@ export class Scene {
         g.phase === "intro" ? "跳过开场" : "开始 · 05:00",
         32,
         boardBottom - 58,
-        w - 148,
+        w - 64,
         42,
         () => (g.phase === "intro" ? g.skipIntro() : g.begin()),
         false,
         true,
-      );
-      this.button(
-        "guide-open",
-        g.guideSeen ? "玩法" : "新手",
-        w - 104,
-        boardBottom - 58,
-        72,
-        42,
-        () => {
-          this.guideOpen = true;
-          this.guideStep = 0;
-        },
       );
     }
     if (this.guideOpen && ["intro", "ready"].includes(g.phase))
@@ -1338,13 +1347,13 @@ export class Scene {
       c.translate(this.width / 2 - 128 * scale, 88);
       c.scale(scale, scale);
       const green = c.createLinearGradient(0, 0, 0, 64);
-      green.addColorStop(0, "#73dda0");
-      green.addColorStop(0.4, "#249b6d");
-      green.addColorStop(1, "#09684e");
-      paint(zhuan, 13.5, "#131d1a", 3);
-      paint(zhuan, 13.5, "#101814");
-      paint(zhuan, 9.5, green);
-      // Small chisel facets are part of the heavy custom lettering, not a font outline.
+      green.addColorStop(0, "#e5ffba");
+      green.addColorStop(0.4, "#8fe26d");
+      green.addColorStop(1, "#30a87e");
+      paint(zhuan, 20, "#548c69", 5);
+      paint(zhuan, 19, "#fff9df");
+      paint(zhuan, 13, green);
+      // Rounded cream rim and soft highlights give original strokes a jelly finish.
       paint(
         [
           [
@@ -1366,8 +1375,8 @@ export class Scene {
         // Solid extrusion follows the same yaw projection as the front strokes.
         for (let depth = -8; depth <= -1; depth++)
           paint(ge, 11, depth < -5 ? "#174937" : "#247350", 2, true, depth);
-        paint(ge, 12, "#183f32", 0, true, 0);
-        paint(ge, 9, green, 0, true, 0);
+        paint(ge, 20, "#fff9df", 0, true, 0);
+        paint(ge, 14, green, 0, true, 0);
         paint(
           [
             [
@@ -1395,8 +1404,9 @@ export class Scene {
         gold.addColorStop(0, "#ffe282");
         gold.addColorStop(0.45, "#ffb62b");
         gold.addColorStop(1, "#dc6819");
-        paint(qiu, 8, "#9b5625", 3);
-        paint(qiu, 8, gold);
+        paint(qiu, 15, "#c18c49", 4);
+        paint(qiu, 15, "#fff9df");
+        paint(qiu, 10, gold);
         paint(
           [
             [
@@ -2019,13 +2029,17 @@ export class Scene {
               (w + 140)) %
               (w + 140)) -
             70,
-          y = h - [90, 52, 20][lanes[i]],
-          r = [16, 13, 14, 12, 10][i];
+          y =
+            h -
+            [87, 52, 24][lanes[i]] -
+            Math.abs(Math.sin(this.mascotTime / 330 + i)) * 5,
+          r = [23, 20, 21, 19, 17][i];
         this.trackObjects.push({ x, y, r });
         c.save();
         try {
           c.translate(x, y);
-          c.scale(speed < 0 ? -1 : 1, 1);
+          const squash = Math.sin(this.mascotTime / 330 + i) * 0.09;
+          c.scale((speed < 0 ? -1 : 1) * (1 + squash), 1 - squash);
           this.trackToy(i, 0, 0, r);
         } finally {
           c.restore();
@@ -2054,7 +2068,7 @@ export class Scene {
       h = this.height;
     const won = g.phase === "result" && g.board.status === "won";
     const y = Math.max(142, h * 0.23),
-      cardH = g.phase === "expired" ? 366 : 340;
+      cardH = ["expired", "blocked"].includes(g.phase) ? 400 : 340;
     this.ctx.fillStyle = "#163e6488";
     this.ctx.fillRect(0, 120, w, h - 120);
     if (won) this.celebration();
@@ -2137,6 +2151,13 @@ export class Scene {
     if (g.phase === "paused") add("continue", "继续游戏", () => g.begin());
     if (g.phase === "blocked")
       add("undo-blocked", "撤销一步", () => g.undo(), !g.canUndo);
+    if (g.phase === "blocked")
+      add(
+        "lift-blocked",
+        g.ads.available ? "看广告 · 移出末球" : g.ads.label,
+        () => void g.liftBall(),
+        !g.canLift || !g.ads.available,
+      );
     if (g.phase === "expired") {
       add(
         "extend",

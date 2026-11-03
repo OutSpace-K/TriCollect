@@ -1,0 +1,18 @@
+✔ lift cancelled/failed/unconfigured keeps exact board, time and retry eligibility (216.542872ms)
+✔ completed lift is once-only, session fenced, restart durable and free return undoable (61.440065ms)
+✔ restart while requested fails pending reward without moving a ball (50.675428ms)
+✔ 300 seeded rounds across three tiers preserve identities and finish with held ball (16562.972757ms)
+✔ full tray lift reopens play; immediate free return can block and single undo restores pocket (40.182906ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 17180.164266
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

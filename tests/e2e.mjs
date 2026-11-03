@@ -86,7 +86,7 @@ try {
       ),
       false,
     );
-    assert.equal(await page.evaluate(() => window.tri.scene.buttons.length), 6);
+    assert.equal(await page.evaluate(() => window.tri.scene.buttons.length), 7);
     if (preset === 0) {
       const before = await page.evaluate(() => ({
         time: performance.now(),
