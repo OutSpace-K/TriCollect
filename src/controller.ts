@@ -133,6 +133,20 @@ export class Controller {
   get locked() {
     return this.phase !== "active";
   }
+  get guideSeen() {
+    try {
+      return this.store.get("tricollect.guide.v1") === "seen";
+    } catch {
+      return false;
+    }
+  }
+  acknowledgeGuide() {
+    try {
+      this.store.set("tricollect.guide.v1", "seen");
+    } catch {
+      /* Guide remains optional if storage is unavailable. */
+    }
+  }
   start(preset = 0, seed?: number) {
     if (this.state.phase === "result" && this.state.started) {
       this.checkpoint();

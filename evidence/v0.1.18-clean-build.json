@@ -1,0 +1,22 @@
+{
+  "version": "0.1.18",
+  "install": "npm ci --offline --cache /workspace/tricollect-npm-cache",
+  "typecheck": "passed",
+  "build": "passed",
+  "distFiles": 12,
+  "byteIdentical": true,
+  "files": {
+    "dist/browser/app.js": "f0d6ee24bbdc97a24a6db6c42928c155cae2110c0e03bd6fbbf39428b0fe421b",
+    "dist/browser/assets/ambience.wav": "2d4377e6cd099a471e3733440959eb3ff2594ae1f693545503686cf7c234a85b",
+    "dist/browser/assets/background.png": "410fe0d5622376044c5677b59714a20fccf0afdd5939126a9eb33f1ab49b7563",
+    "dist/browser/assets/play-background.png": "f133490d5299f50ad93e4808976cc8665f3e99eeedb4e9872e6fa5600c343157",
+    "dist/browser/index.html": "495ec184a99f50a33ae8494e6520b8835cb81d75b54795c4d8b155ae9dab9391",
+    "dist/wechat/assets/ambience.wav": "2d4377e6cd099a471e3733440959eb3ff2594ae1f693545503686cf7c234a85b",
+    "dist/wechat/assets/background.png": "410fe0d5622376044c5677b59714a20fccf0afdd5939126a9eb33f1ab49b7563",
+    "dist/wechat/assets/play-background.png": "f133490d5299f50ad93e4808976cc8665f3e99eeedb4e9872e6fa5600c343157",
+    "dist/wechat/assets/tap.wav": "7af0df43ab397200ce0a9b6a1dc05460533b31fd6421ebefa0952f084a605e40",
+    "dist/wechat/game.js": "77c9a264074e12de0ba4128cad002cc14106e391a09fb9343aea5da85ad340ed",
+    "dist/wechat/game.json": "f2040d390a83be5efb7da7501d21a0ae05a2e79feb0e243c3cebf16c214f849f",
+    "dist/wechat/project.config.json": "89da9a9e2f117016b66e63c2a1cf331dcea44465d9312b96f0350099036f1f06"
+  }
+}

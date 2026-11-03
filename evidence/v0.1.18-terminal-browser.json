@@ -1,0 +1,30 @@
+{
+  "platform": "Actual browser bundle in Chromium, not WeChat",
+  "results": [
+    {
+      "failures": [
+        "tricollect.save.v1"
+      ],
+      "restarts": 3,
+      "recordCount": 1,
+      "resumable": false
+    },
+    {
+      "failures": [
+        "tricollect.records.v1"
+      ],
+      "restarts": 3,
+      "recordCount": 1,
+      "resumable": false
+    },
+    {
+      "failures": [
+        "tricollect.save.v1",
+        "tricollect.records.v1"
+      ],
+      "restarts": 3,
+      "recordCount": 1,
+      "resumable": false
+    }
+  ]
+}

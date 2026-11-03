@@ -57,8 +57,21 @@ export class WeChatAd implements AdService {
 }
 export class UnavailableAd implements AdService {
   available = false;
-  label = "广告未配置";
+  constructor(public label = "广告未配置") {}
   request() {
     return Promise.resolve<AdOutcome>("failed");
+  }
+}
+
+/** Optional monetization must never prevent the single-player game from booting. */
+export function createAdService(
+  unit: string,
+  create: (unit: string) => Video,
+): AdService {
+  if (!unit.trim()) return new UnavailableAd();
+  try {
+    return new WeChatAd(create(unit));
+  } catch {
+    return new UnavailableAd("广告暂不可用");
   }
 }

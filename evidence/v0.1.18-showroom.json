@@ -1,0 +1,21 @@
+{
+  "platform": "Actual Chromium pixels and input, not WeChat",
+  "reports": [
+    {
+      "width": 320,
+      "guideThreeSteps": true,
+      "guidePersistence": true,
+      "readyGuideNoTimeCharge": true,
+      "confettiFinite": true,
+      "noFakeReward": true
+    },
+    {
+      "width": 390,
+      "guideThreeSteps": true,
+      "guidePersistence": true,
+      "readyGuideNoTimeCharge": true,
+      "confettiFinite": true,
+      "noFakeReward": true
+    }
+  ]
+}

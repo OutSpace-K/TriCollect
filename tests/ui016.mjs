@@ -27,7 +27,7 @@ try {
       tri.scene.render();
     });
     await p.screenshot({
-      path: `evidence/v017-current-title-${width}-rest.png`,
+      path: `evidence/v018-current-title-${width}-rest.png`,
     });
     const scale = Math.min(1.05, (width - 40) / 272),
       left = width / 2 - 128 * scale;
@@ -45,7 +45,7 @@ try {
         0.001,
     );
     await p.screenshot({
-      path: `evidence/v017-current-title-${width}-half-turn.png`,
+      path: `evidence/v018-current-title-${width}-half-turn.png`,
     });
     const firstAfter = await p.screenshot({
       clip: { x: left - 6, y: 79, width: 88 * scale, height: 90 },
@@ -60,7 +60,7 @@ try {
       Math.abs(Math.cos(await p.evaluate(() => tri.scene.titleAngle))) < 0.001,
     );
     await p.screenshot({
-      path: `evidence/v017-current-title-${width}-edge.png`,
+      path: `evidence/v018-current-title-${width}-edge.png`,
     });
     const track = await p.evaluate(() => tri.scene.trackObjects);
     assert.ok(new Set(track.map((t) => t.y)).size >= 3);
@@ -72,12 +72,30 @@ try {
     });
     const speeds = moved.map((p, i) =>
       Number(
-        (((p.x - track[i].x + width + 140) % (width + 140)) / 32).toFixed(3),
+        (
+          (((p.x - track[i].x + (width + 140) * 1.5) % (width + 140)) -
+            (width + 140) / 2) /
+          32
+        ).toFixed(3),
       ),
     );
     assert.equal(new Set(speeds).size, 5);
-    assert.ok(speeds.every((v) => v > 0 && v < 0.06));
+    assert.ok(speeds.every((v) => Math.abs(v) > 0 && Math.abs(v) < 0.06));
 
+    assert.ok(speeds.some((v) => v < 0) && speeds.some((v) => v > 0));
+    assert.ok(
+      Math.max(...track.map((t) => t.y)) - Math.min(...track.map((t) => t.y)) >=
+        70,
+    );
+    for (const pose of [0, 4000, 11000, 22000, 32000]) {
+      await p.evaluate((time) => {
+        tri.scene.mascotTime = time;
+        tri.scene.render();
+      }, pose);
+      await p.screenshot({
+        path: `evidence/v018-current-track-${width}-${pose}.png`,
+      });
+    }
     await p.evaluate(() => {
       tri.game.start(1);
       tri.game.skipIntro();
@@ -94,7 +112,7 @@ try {
       for (const c of report.caps)
         assert.equal(c.closed, !report.open.includes(c.id));
       await p.screenshot({
-        path: `evidence/v017-current-caps-${width}-face${view}.png`,
+        path: `evidence/v018-current-caps-${width}-face${view}.png`,
       });
     }
     // First pick arms undo; second pick must preserve the entire control-strip pixels.
@@ -141,7 +159,7 @@ try {
     assert.deepEqual(locked.caps, caps);
     const during = await p.screenshot({ clip: control });
     assert.deepEqual(during, before, "control strip flashes on transient lock");
-    await p.screenshot({ path: `evidence/v017-current-pick-${width}.png` });
+    await p.screenshot({ path: `evidence/v018-current-pick-${width}.png` });
     await p.evaluate(() => {
       window.t += 250;
       tri.game.tick();
@@ -161,7 +179,7 @@ try {
       mid.caps.some((c) => !c.closed),
       "rotation must not close every cap due to input lock",
     );
-    await p.screenshot({ path: `evidence/v017-current-rotation-${width}.png` });
+    await p.screenshot({ path: `evidence/v018-current-rotation-${width}.png` });
     // Isolated geometry reveal, not a generated-win claim.
     const reveal = await p.evaluate(() => {
       const g = tri.game;
@@ -177,7 +195,7 @@ try {
     });
     assert.ok(reveal.visible.includes("1,1"));
     assert.equal(reveal.caps.find((c) => c.id === "1,1").closed, false);
-    await p.screenshot({ path: `evidence/v017-current-reveal-${width}.png` });
+    await p.screenshot({ path: `evidence/v018-current-reveal-${width}.png` });
     reports.push({
       width,
       verticalAxisFlip: true,
@@ -192,7 +210,7 @@ try {
     await p.close();
   }
   await writeFile(
-    "evidence/v0.1.17-ui.json",
+    "evidence/v0.1.18-ui.json",
     JSON.stringify(
       { platform: "Actual Chromium pixels/input, not WeChat", reports },
       null,

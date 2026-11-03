@@ -38,22 +38,38 @@ try {
       tri.scene.render();
     });
     await page.screenshot({
-      path: `evidence/v017-current-home-title-${width}-0.png`,
+      path: `evidence/v018-current-home-title-${width}-0.png`,
     });
     const animation = await page.evaluate(() => {
-      const s = tri.scene;
+      const s = tri.scene,
+        pageWidth = s.width;
       let prev = s.trackObjects.map((o) => o.x),
         wraps = 0;
       for (let i = 0; i < 2000; i++) {
         window.decorTime += 16;
         s.render();
-        const next = s.trackObjects.map((o) => o.x);
+        const objects = s.trackObjects;
+        for (let a = 0; a < objects.length; a++)
+          for (let b = a + 1; b < objects.length; b++) {
+            if (
+              objects[a].y === objects[b].y &&
+              Math.abs(objects[a].x - objects[b].x) < 48
+            )
+              throw Error("same-lane toys overlap");
+          }
+        const next = objects.map((o) => o.x);
         for (let j = 0; j < next.length; j++) {
-          if (next[j] < prev[j]) {
-            if (!(prev[j] > s.width + 12 && next[j] < -12))
+          const delta = next[j] - prev[j];
+          if (Math.abs(delta) > pageWidth / 2) {
+            if (
+              !(
+                (prev[j] > s.width + 12 && next[j] < -12) ||
+                (next[j] > s.width + 12 && prev[j] < -12)
+              )
+            )
               throw Error("visible seam");
             wraps++;
-          } else if (next[j] - prev[j] > 1) throw Error("speed jump");
+          } else if (Math.abs(delta) > 1) throw Error("speed jump");
         }
         prev = next;
       }
@@ -72,11 +88,11 @@ try {
     assert.ok(animation.wraps >= 5);
     assert.equal(animation.resumeDelta, 16);
     await page.screenshot({
-      path: `evidence/v017-current-home-title-${width}-moving.png`,
+      path: `evidence/v018-current-home-title-${width}-moving.png`,
     });
     await click("start-menu");
     await page.screenshot({
-      path: `evidence/v017-current-difficulty-${width}.png`,
+      path: `evidence/v018-current-difficulty-${width}.png`,
     });
     const tiers = await page.evaluate(() =>
       tri.scene.buttons.filter((b) => /^start-[012]$/.test(b.id)),
@@ -98,10 +114,20 @@ try {
       tri.scene.render();
       return localStorage.getItem("tricollect.save.v1");
     });
+    const resumeBounds = await page.evaluate(() =>
+      tri.scene.buttons.find((b) => b.id === "resume"),
+    );
+    assert.ok(
+      resumeBounds.y + resumeBounds.h <= height - 110,
+      "resume overlaps upper toy lane",
+    );
+    await page.screenshot({
+      path: `evidence/v018-current-resume-${width}.png`,
+    });
     await click("start-menu");
     await click("start-2");
     await page.screenshot({
-      path: `evidence/v017-current-confirm-${width}.png`,
+      path: `evidence/v018-current-confirm-${width}.png`,
     });
     assert.equal(
       await page.evaluate(() => localStorage.getItem("tricollect.save.v1")),
@@ -144,7 +170,7 @@ try {
     await page.close();
   }
   await writeFile(
-    "evidence/v0.1.17-home-qa.json",
+    "evidence/v0.1.18-home-qa.json",
     JSON.stringify(
       { platform: "Chromium actual pixels and input, not WeChat", reports },
       null,

@@ -1,0 +1,11 @@
+{
+  "version": "0.1.18",
+  "commitBase": "8580ca7615cb3598a4c0d9d85e06d03f3db36d14",
+  "command": "npm test (tsx --test --test-concurrency=1 tests/*.test.ts)",
+  "total": 103,
+  "passed": 103,
+  "failed": 0,
+  "skipped": 0,
+  "durationMs": 110967.895727,
+  "finalCode": true
+}

@@ -4,7 +4,7 @@ import { calibrateClock } from "./platform/clock";
 import { startFrames } from "./platform/frame";
 import { Controller } from "./controller";
 import { Scene } from "./render/scene";
-import { WeChatAd, UnavailableAd, type Video } from "./platform/ads";
+import { createAdService, type Video } from "./platform/ads";
 declare const AD_UNIT: string;
 const canvas = wx.createCanvas();
 const info = wx.getWindowInfo();
@@ -24,11 +24,10 @@ const music = new Music(() => {
   player.volume = 0.22;
   return player;
 });
-const ads = AD_UNIT
-  ? new WeChatAd(
-      wx.createRewardedVideoAd({ adUnitId: AD_UNIT }) as unknown as Video,
-    )
-  : new UnavailableAd();
+const ads = createAdService(
+  AD_UNIT,
+  (unit) => wx.createRewardedVideoAd({ adUnitId: unit }) as unknown as Video,
+);
 async function boot() {
   ctx.fillStyle = "#dbe6cf";
   ctx.fillRect(0, 0, width, height);

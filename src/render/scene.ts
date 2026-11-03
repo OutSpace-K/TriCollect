@@ -16,6 +16,11 @@ export class Scene {
   buttons: Button[] = [];
   homePanel: "records" | "help" | "difficulty" | "replace" | null = null;
   recordPage = 0;
+  guideOpen = false;
+  guideStep = 0;
+  celebrationMs = 0;
+  private celebrationSession = "";
+  private celebrationLast: number | null = null;
   private mascotTime = 0;
   private foreground = true;
   private decorationLast: number | null = null;
@@ -27,6 +32,7 @@ export class Scene {
   setForeground(value: boolean) {
     this.foreground = value;
     this.decorationLast = null;
+    this.celebrationLast = null;
   }
   private animateHome() {
     try {
@@ -170,14 +176,14 @@ export class Scene {
     dimmed = disabled,
   ) {
     const primary = accent || id === "hint" || id === "again";
-    const fill = dimmed ? "#b5bdb0" : primary ? "#f5a340" : "#278b71";
-    this.rect(x - 2, y - 2, w + 4, h + 10, "#355447", 16);
+    const fill = dimmed ? "#bdc9c9" : primary ? "#ffcf48" : "#258cae";
+    this.rect(x - 2, y - 2, w + 4, h + 10, "#244b68", 16);
     this.rect(
       x,
       y + 5,
       w,
       h,
-      dimmed ? "#8a9587" : primary ? "#a95f27" : "#1b5749",
+      dimmed ? "#889ca5" : primary ? "#c7812e" : "#175b7a",
       14,
     );
     this.rect(x, y, w, h, fill, 14);
@@ -441,8 +447,8 @@ export class Scene {
     this.targets = [];
     c.clearRect(0, 0, w, h);
     const bg = c.createLinearGradient(0, 0, w, h);
-    bg.addColorStop(0, "#e2ebd5");
-    bg.addColorStop(1, "#a8c6a6");
+    bg.addColorStop(0, "#fff0c8");
+    bg.addColorStop(1, "#afdae2");
     c.fillStyle = bg;
     c.fillRect(0, 0, w, h);
     if (this.currentBackground) {
@@ -470,7 +476,7 @@ export class Scene {
     }
     this.homePanel = null;
     this.decorationLast = null;
-    this.rect(16, 16, 116, 51, "#697d61", 16);
+    this.rect(16, 16, 116, 51, "#355b75", 16);
     this.rect(19, 19, 110, 45, "#fffbed", 13);
     const secs = Math.ceil(g.state.remaining / 1000);
     this.text(
@@ -478,15 +484,17 @@ export class Scene {
       74,
       51,
       29,
-      g.state.remaining < 30000 ? "#bd3b30" : "#294d3c",
+      g.state.remaining < 30000 ? "#bd3b30" : "#29495e",
       "center",
     );
+    this.rect(14, 74, w - 28, 40, "#fff8deee", 12);
     const total = g.board.tubes.reduce((n, t) => n + t.capacity, 0);
     const progress = g.board.cleared.length / total;
-    this.text(`清空 ${g.board.cleared.length}/${total}`, 20, 91, 13, "#294d3c");
-    this.rect(20, 101, w - 40, 9, "#a6b49a", 5);
+    this.text(`清空 ${g.board.cleared.length}/${total}`, 20, 91, 13, "#29495e");
+    this.text(PRESETS[g.state.preset].name, w - 20, 91, 13, "#29495e", "right");
+    this.rect(20, 101, w - 40, 9, "#698fa5", 5);
     if (progress > 0)
-      this.rect(20, 101, Math.max(9, (w - 40) * progress), 9, "#278b71", 5);
+      this.rect(20, 101, Math.max(9, (w - 40) * progress), 9, "#258cae", 5);
     const hidden = ["paused", "ad", "expired", "blocked", "result"].includes(
       g.phase,
     );
@@ -511,7 +519,7 @@ export class Scene {
       !["active", "resolving", "rotating"].includes(g.phase),
     );
     this.rect(14, trayY - 1, w - 28, 63, "#314c3229", 17);
-    this.rect(14, trayY - 8, w - 28, 60, "#59735b", 17);
+    this.rect(14, trayY - 8, w - 28, 60, "#355f78", 17);
     this.rect(17, trayY - 9, w - 34, 56, "#fdfcf0", 14);
     this.rect(20, trayY - 6, w - 40, 5, "#ffffff", 3);
     const cell = (w - 44) / 7;
@@ -519,11 +527,11 @@ export class Scene {
       const x = 22 + i * cell;
       this.rect(x, trayY + 1, cell - 4, 43, "#ffffff", 13);
       const well = c.createLinearGradient(x, trayY, x + cell, trayY + 42);
-      well.addColorStop(0, "#5e745e");
-      well.addColorStop(0.2, "#94a68a");
-      well.addColorStop(0.78, "#d4ddc1");
-      well.addColorStop(1, "#e6ecd6");
-      this.rect(x, trayY, cell - 4, 40, "#afbea0", 12);
+      well.addColorStop(0, "#567b91");
+      well.addColorStop(0.2, "#9ac1cd");
+      well.addColorStop(0.78, "#dcece7");
+      well.addColorStop(1, "#edf7e9");
+      this.rect(x, trayY, cell - 4, 40, "#adced2", 12);
       c.fillStyle = well;
       c.fill();
       const ball = g.board.tray[i];
@@ -614,21 +622,36 @@ export class Scene {
         w / 2,
         boardBottom - 73,
         13,
-        "#294d3c",
+        "#29495e",
         "center",
       );
       this.button(
         "begin",
         g.phase === "intro" ? "跳过开场" : "开始 · 05:00",
-        w / 2 - 90,
+        32,
         boardBottom - 58,
-        180,
+        w - 148,
         42,
         () => (g.phase === "intro" ? g.skipIntro() : g.begin()),
         false,
         true,
       );
+      this.button(
+        "guide-open",
+        g.guideSeen ? "玩法" : "新手",
+        w - 104,
+        boardBottom - 58,
+        72,
+        42,
+        () => {
+          this.guideOpen = true;
+          this.guideStep = 0;
+        },
+      );
     }
+    if (this.guideOpen && ["intro", "ready"].includes(g.phase))
+      this.guideOverlay();
+    else this.guideOpen = false;
   }
   private fit(t: string, n: number) {
     return t.length > n ? t.slice(0, n - 1) + "…" : t;
@@ -725,9 +748,9 @@ export class Scene {
       }
     };
     dish(27, "#263e2940");
-    dish(18, "#805737");
-    dish(3, "#e0b273");
-    dish(1, "#b28b59", 3.5);
+    dish(18, "#2d6a87");
+    dish(3, "#eaf5dc");
+    dish(1, "#8ec9cf", 3.5);
     const opening = Math.min(
       9,
       Math.max(4, (radius * layout.zScale) / layout.lane),
@@ -1046,41 +1069,55 @@ export class Scene {
         try {
           this.chamberPath(x, ty, y, radius);
           c.clip();
-          const frost = c.createLinearGradient(x - radius, 0, x + radius, 0);
-          frost.addColorStop(0, "#bba9d4");
-          frost.addColorStop(0.18, "#fff2e0");
-          frost.addColorStop(0.48, "#ead8e7");
-          frost.addColorStop(1, "#a6a5cb");
-          c.fillStyle = frost;
+          // An opaque amber fluted sleeve, independent of hidden ball types.
+          const sleeve = c.createLinearGradient(x - radius, 0, x + radius, 0);
+          sleeve.addColorStop(0, "#a85f29");
+          sleeve.addColorStop(0.14, "#e8b15b");
+          sleeve.addColorStop(0.32, "#ffe6a3");
+          sleeve.addColorStop(0.62, "#f2c675");
+          sleeve.addColorStop(1, "#b97836");
+          c.fillStyle = sleeve;
           c.fillRect(x - radius, frostTop, radius * 2, y - frostTop + 4);
-          for (let i = 0; i < first; i++) {
-            c.fillStyle = "#ffffff28";
+          // Fine molded ribs and a rounded lip replace the repeated ghost-ball circles.
+          for (let rib = -3; rib <= 3; rib++) {
+            const px = x + rib * radius * 0.23;
+            c.strokeStyle = rib < 0 ? "#fff4c777" : "#9b5b2438";
+            c.lineWidth = 1;
             c.beginPath();
-            c.ellipse(
-              x,
-              y - ballRadius - 6 - i * step,
-              ballRadius * 0.68,
-              ballRadius * 0.7,
-              0,
-              0,
-              Math.PI * 2,
+            c.moveTo(px, frostTop + 5);
+            c.quadraticCurveTo(
+              px + radius * 0.05,
+              (frostTop + y) / 2,
+              px,
+              y - 9,
             );
-            c.fill();
+            c.stroke();
           }
-          c.strokeStyle = "#edfff5a0";
-          c.lineWidth = 1.1;
+          c.fillStyle = "#b87939";
           c.beginPath();
-          c.moveTo(x - radius, frostTop);
-          c.quadraticCurveTo(x, frostTop + 3, x + radius, frostTop);
-          c.stroke();
-          c.strokeStyle = "#ffffff4d";
-          c.lineWidth = radius * 0.07;
+          c.ellipse(x, frostTop + 2, radius, 3.5, 0, 0, Math.PI * 2);
+          c.fill();
+          c.strokeStyle = "#fff2bd";
+          c.lineWidth = 1.4;
           c.beginPath();
-          c.moveTo(x - radius * 0.66, frostTop + 4);
-          c.lineTo(x - radius * 0.66, y - 9);
+          c.ellipse(
+            x,
+            frostTop + 1,
+            radius * 0.96,
+            2.8,
+            0,
+            Math.PI,
+            Math.PI * 2,
+          );
           c.stroke();
-          c.fillStyle = "#f4d480aa";
-          c.fillRect(x - radius, y - 10, radius * 2, 3);
+          c.strokeStyle = "#fff8db99";
+          c.lineWidth = radius * 0.09;
+          c.beginPath();
+          c.moveTo(x - radius * 0.58, frostTop + 8);
+          c.lineTo(x - radius * 0.58, y - 12);
+          c.stroke();
+          c.fillStyle = "#fff3bc90";
+          c.fillRect(x - radius, y - 9, radius * 2, 2);
         } finally {
           c.restore();
         }
@@ -1304,7 +1341,8 @@ export class Scene {
       green.addColorStop(0, "#73dda0");
       green.addColorStop(0.4, "#249b6d");
       green.addColorStop(1, "#09684e");
-      paint(zhuan, 9.5, "#28513f", 4);
+      paint(zhuan, 13.5, "#131d1a", 3);
+      paint(zhuan, 13.5, "#101814");
       paint(zhuan, 9.5, green);
       // Small chisel facets are part of the heavy custom lettering, not a font outline.
       paint(
@@ -1325,8 +1363,28 @@ export class Scene {
       try {
         c.translate(92, 0);
         // Project around the vertical stem. Even at the edge, the stem remains vertical.
-        paint(ge, 10, "#165444", 3, true, -4);
-        paint(ge, 10, green, 0, true, 0);
+        // Solid extrusion follows the same yaw projection as the front strokes.
+        for (let depth = -8; depth <= -1; depth++)
+          paint(ge, 11, depth < -5 ? "#174937" : "#247350", 2, true, depth);
+        paint(ge, 12, "#183f32", 0, true, 0);
+        paint(ge, 9, green, 0, true, 0);
+        paint(
+          [
+            [
+              [29, 2],
+              [7, 25],
+            ],
+            [
+              [29, 22],
+              [29, 51],
+            ],
+          ],
+          1.7,
+          "#c3ffc9",
+          0,
+          true,
+          0.6,
+        );
       } finally {
         c.restore();
       }
@@ -1538,14 +1596,139 @@ export class Scene {
       c.restore();
     }
   }
+  private closeGuide() {
+    this.guideOpen = false;
+    if (this.homePanel === "help") this.homePanel = null;
+    this.game.acknowledgeGuide();
+  }
+  private guideOverlay() {
+    const c = this.ctx,
+      w = this.width,
+      h = this.height,
+      top = Math.max(74, (h - 440) / 2);
+    this.buttons = [];
+    this.targets = [];
+    c.fillStyle = "#173e6599";
+    c.fillRect(0, 0, w, h);
+    this.rect(17, top, w - 34, 435, "#254e6b", 25);
+    this.rect(22, top + 5, w - 44, 423, "#fff9e8", 21);
+    this.text("怎么玩", w / 2, top + 43, 25, "#29495e", "center");
+    const labels = ["只取正面最上球", "三颗同色，自动消除", "转一面，逐层揭开"];
+    this.text(labels[this.guideStep], w / 2, top + 84, 19, "#29495e", "center");
+    const cx = w / 2,
+      cy = top + 175;
+    if (this.guideStep === 0) {
+      this.rect(cx - 29, cy - 59, 58, 130, "#b8e3df", 18);
+      this.rect(cx - 25, cy - 55, 50, 122, "#ecf6ea", 15);
+      for (let j = 0; j < 3; j++) this.ball(j, cx, cy - 31 + j * 36, 17);
+      this.text("←", cx + 63, cy - 23, 32, "#e4803f", "center");
+    } else if (this.guideStep === 1) {
+      this.rect(cx - 102, cy - 27, 204, 61, "#c2dddd", 18);
+      for (let j = 0; j < 3; j++) this.ball(4, cx + (j - 1) * 58, cy + 3, 23);
+      this.text("★", cx, cy + 77, 33, "#e8a931", "center");
+    } else {
+      for (let i = 0; i < 3; i++) {
+        this.rect(
+          cx - 64 + i * 43,
+          cy - 35 + Math.abs(i - 1) * 10,
+          37,
+          92,
+          "#b4dadd",
+          12,
+        );
+        this.ball(i, cx - 46 + i * 43, cy - 13 + Math.abs(i - 1) * 10, 15);
+      }
+      this.text("←", cx - 96, cy + 16, 29, "#258cae", "center");
+      this.text("→", cx + 96, cy + 16, 29, "#258cae", "center");
+    }
+    const captions = [
+      "盖着的管暂时不能取",
+      "暂存槽只有七格，留点空位",
+      "旋转免费 · 撤销一步 · 提示免费",
+    ];
+    this.text(captions[this.guideStep], cx, top + 280, 12, "#587183", "center");
+    for (let i = 0; i < 3; i++)
+      this.rect(
+        cx - 26 + i * 20,
+        top + 298,
+        12,
+        5,
+        i === this.guideStep ? "#ecac34" : "#c2d7dc",
+        3,
+      );
+    this.button(
+      "guide-next",
+      this.guideStep === 2 ? "我会了" : "下一步",
+      42,
+      top + 327,
+      w - 84,
+      45,
+      () => {
+        if (this.guideStep === 2) this.closeGuide();
+        else this.guideStep++;
+      },
+      false,
+      true,
+    );
+    this.button(
+      "home-dialog-close",
+      "返回",
+      w / 2 - 38,
+      top + 384,
+      76,
+      28,
+      () => this.closeGuide(),
+    );
+  }
+  private celebration() {
+    const c = this.ctx,
+      g = this.game;
+    if (this.celebrationSession !== g.state.session) {
+      this.celebrationSession = g.state.session;
+      this.celebrationMs = 0;
+      this.celebrationLast = null;
+    }
+    try {
+      const now = g.now();
+      if (this.foreground && this.celebrationLast !== null)
+        this.celebrationMs = Math.min(
+          2600,
+          this.celebrationMs +
+            Math.max(0, Math.min(64, now - this.celebrationLast)),
+        );
+      this.celebrationLast = now;
+    } catch {
+      this.celebrationLast = null;
+    }
+    if (this.celebrationMs >= 2600) return;
+    c.save();
+    try {
+      c.globalAlpha = Math.min(1, (2600 - this.celebrationMs) / 600);
+      for (let i = 0; i < 32; i++) {
+        const t = this.celebrationMs / 1000,
+          x = ((i * 83 + 29) % this.width) + Math.sin(t * 3 + i) * 18,
+          y = ((i * 47) % 220) - 100 + t * (90 + (i % 5) * 15);
+        c.fillStyle = ["#ffd249", "#f38877", "#69d4d4", "#a997e6"][i % 4];
+        c.fillRect(x, y, 4 + (i % 3) * 2, 5 + (i % 4) * 2);
+      }
+    } finally {
+      c.restore();
+    }
+  }
   private homeDialog() {
     const w = this.width,
       h = this.height,
       c = this.ctx;
     this.buttons = [];
-    c.fillStyle = "#233c4288";
+    c.fillStyle = "#153c6288";
     c.fillRect(0, 0, w, h);
-    this.rect(14, 76, w - 28, h - 128, "#fff9e8", 22);
+    if (this.homePanel === "help") {
+      this.guideOverlay();
+      return;
+    }
+    this.rect(12, 74, w - 24, h - 122, "#274e6d", 24);
+    this.rect(17, 79, w - 34, h - 133, "#fff9e8", 20);
+    this.rect(30, 90, w - 60, 40, "#e3eff0", 13);
     this.text(
       this.homePanel === "records"
         ? "本机战绩"
@@ -1557,7 +1740,7 @@ export class Scene {
       w / 2,
       116,
       25,
-      "#294d3c",
+      "#29495e",
       "center",
     );
     if (this.homePanel === "difficulty") {
@@ -1597,7 +1780,7 @@ export class Scene {
         w / 2,
         226,
         17,
-        "#294d3c",
+        "#29495e",
         "center",
       );
       this.button(
@@ -1645,7 +1828,7 @@ export class Scene {
             38,
             y + 24,
             16,
-            "#294d3c",
+            "#29495e",
           );
           this.text(
             `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`,
@@ -1694,7 +1877,7 @@ export class Scene {
         "普通 126颗 / 6类 / 5–7层",
         "困难 216颗 / 7类 / 5–7层",
       ].forEach((t, i) =>
-        this.text(t, w / 2, 182 + i * 40, 14, "#294d3c", "center"),
+        this.text(t, w / 2, 182 + i * 40, 14, "#29495e", "center"),
       );
     }
     this.button(
@@ -1719,6 +1902,7 @@ export class Scene {
     });
     this.button("help", "玩法", 88, 18, 60, 34, () => {
       this.homePanel = "help";
+      this.guideStep = 0;
     });
 
     const c = this.ctx;
@@ -1730,9 +1914,9 @@ export class Scene {
       // An elliptical toy display table carries the hero instead of a glowing platform.
       for (const [dy, rx, ry, color] of [
         [19, 114, 27, "#263e2933"],
-        [10, 108, 31, "#805737"],
-        [0, 108, 31, "#dfb879"],
-        [-2, 99, 25, "#b99863"],
+        [10, 108, 31, "#2d6a87"],
+        [0, 108, 31, "#eaf5dc"],
+        [-2, 99, 25, "#8ec9cf"],
       ] as const) {
         c.beginPath();
         c.ellipse(w / 2, 333 + dy, rx, ry, 0, 0, Math.PI * 2);
@@ -1798,7 +1982,7 @@ export class Scene {
       c.arc(mx + dx + 1, my - 2, 2.5, 0, Math.PI * 2);
       c.fill();
     }
-    const y = Math.min(h - 180, 455);
+    const y = Math.min(h - 230, 435);
     this.button(
       "start-menu",
       "开始游戏",
@@ -1820,19 +2004,32 @@ export class Scene {
     c.save();
     try {
       c.beginPath();
-      c.rect(0, h - 77, w, 65);
+      c.rect(0, h - 112, w, 106);
       c.clip();
-      const phases = [0.03, 0.23, 0.47, 0.69, 0.91],
-        lanes = [0, 2, 1, 0, 2];
+      const phases = [0.03, 0.23, 0.47, 0.73, 0.53],
+        lanes = [0, 1, 2, 1, 0];
       for (let i = 0; i < phases.length; i++) {
-        const speed = [0.023, 0.041, 0.017, 0.052, 0.031][i],
+        const speed = [0.027, -0.046, 0.017, -0.046, 0.027][i],
+          // Same-lane pairs keep half a loop of headway. Small independent speed
+          // variations add motion without letting them stack into one silhouette.
+          sway = [8, 12, 0, -12, -8][i] * Math.sin(this.mascotTime / 2000 + i),
           x =
-            ((this.mascotTime * speed + phases[i] * (w + 140)) % (w + 140)) -
+            ((((this.mascotTime * speed + sway + phases[i] * (w + 140)) %
+              (w + 140)) +
+              (w + 140)) %
+              (w + 140)) -
             70,
-          y = h - [36, 45, 52][lanes[i]],
-          r = [17, 14, 16, 13, 12][i];
+          y = h - [90, 52, 20][lanes[i]],
+          r = [16, 13, 14, 12, 10][i];
         this.trackObjects.push({ x, y, r });
-        this.trackToy(i, x, y, r);
+        c.save();
+        try {
+          c.translate(x, y);
+          c.scale(speed < 0 ? -1 : 1, 1);
+          this.trackToy(i, 0, 0, r);
+        } finally {
+          c.restore();
+        }
       }
     } finally {
       c.restore();
@@ -1858,18 +2055,24 @@ export class Scene {
     const won = g.phase === "result" && g.board.status === "won";
     const y = Math.max(142, h * 0.23),
       cardH = g.phase === "expired" ? 366 : 340;
-    this.ctx.fillStyle = "#263d3266";
+    this.ctx.fillStyle = "#163e6488";
     this.ctx.fillRect(0, 120, w, h - 120);
-    this.rect(20, y + 8, w - 40, cardH, "#334c3540", 26);
-    this.rect(18, y - 2, w - 36, cardH, "#94764d", 26);
+    if (won) this.celebration();
+    else {
+      this.celebrationMs = 0;
+      this.celebrationLast = null;
+      this.celebrationSession = "";
+    }
+    this.rect(20, y + 8, w - 40, cardH, "#233f5a50", 26);
+    this.rect(18, y - 2, w - 36, cardH, "#294f70", 26);
     this.rect(22, y + 2, w - 44, cardH - 8, "#fffbed", 22);
-    this.rect(w / 2 - 38, y - 30, 76, 64, won ? "#f4b443" : "#9dcc9a", 20);
+    this.rect(w / 2 - 38, y - 30, 76, 64, won ? "#ffce49" : "#a7dce5", 20);
     this.text(
       won ? "★" : g.phase === "paused" ? "Ⅱ" : "!",
       w / 2,
       y + 16,
       36,
-      "#294d3c",
+      "#29495e",
       "center",
     );
     const title =
@@ -1884,7 +2087,7 @@ export class Scene {
             : g.phase === "ad"
               ? "广告加载中"
               : "休息一下";
-    this.text(title, w / 2, y + 75, 27, "#294d3c", "center");
+    this.text(title, w / 2, y + 75, 27, "#29495e", "center");
     if (g.phase === "result") {
       this.text(String(g.board.score), w / 2, y + 124, 36, "#be6425", "center");
       this.text(
@@ -1937,11 +2140,11 @@ export class Scene {
     if (g.phase === "expired") {
       add(
         "extend",
-        g.ads.available ? "看广告 +30秒" : "广告未配置",
+        g.ads.available ? "看广告 +30秒" : g.ads.label,
         () => void g.extend(),
         !g.ads.available || g.state.extensions >= CONFIG.maxExtensions,
       );
-      this.text(g.ads.label, w / 2, by - 2, 10, "#5c7059", "center");
+      this.text(g.ads.label, w / 2, y + 151, 11, "#5c7059", "center");
       by += 8;
     }
     if (g.phase !== "result") add("end", "结束本局", () => g.end());

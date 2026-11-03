@@ -68,14 +68,14 @@ try {
       if (["paused", "blocked", "expired", "ad", "won", "lost"].includes(mode))
         assert.equal(report.targets, 0);
       await p.screenshot({
-        path: `evidence/v017-current-${width}-${mode}.png`,
+        path: `evidence/v018-current-${width}-${mode}.png`,
       });
       reports.push({ mode, width, ...report });
     }
     await p.close();
   }
   await writeFile(
-    "evidence/v0.1.17-screens.json",
+    "evidence/v0.1.18-screens.json",
     JSON.stringify(
       {
         platform:
