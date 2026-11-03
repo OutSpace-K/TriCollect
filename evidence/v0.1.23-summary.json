@@ -1,0 +1,105 @@
+{
+  "version": "0.1.23",
+  "baseline": "ecbe4de99a872d08f21ab9ba028fcf96ddc3438b",
+  "scope": [
+    "original rounded thick-outline title skeleton",
+    "records return below heading, empty/full/last-page",
+    "content-anchored difficulty/replace exits",
+    "62 logical px return/close targets"
+  ],
+  "fullTests": {
+    "passed": 115,
+    "failed": 0,
+    "randomEntrySeeds": 300,
+    "pocketSeeds": 300
+  },
+  "screens": [
+    [
+      320,
+      568
+    ],
+    [
+      320,
+      660
+    ],
+    [
+      390,
+      844
+    ]
+  ],
+  "pageStatesPerScreen": 23,
+  "titleFrameTimesMs": [
+    1800,
+    2322,
+    2600,
+    2878,
+    3400
+  ],
+  "exitChecks": {
+    "browserPhysicalHeightMinPx": 44,
+    "browserBottomMarginMinPx": 32,
+    "nativeShortestExitHeightPx": 44.339393939393936,
+    "nativeRecordsCounts": [
+      0,
+      30
+    ],
+    "nativeTouchOffsetsPx": [
+      -16,
+      16
+    ],
+    "browserLastRecordPage": 7
+  },
+  "regressions": [
+    "layout and actual clicks",
+    "wx bridge touch/capsule/safe area",
+    "ad/pocket/reload/free return/single undo",
+    "stable tool pixels while locked",
+    "home autoplay restriction/gesture recovery/mute/lifecycle",
+    "showroom guide and confetti"
+  ],
+  "limitations": [
+    "No real WeChat or phone testing",
+    "No real rewarded ad unit",
+    "No human listening check",
+    "Incomplete won fixture only checks layout; real victory exit verified in E2E",
+    "PNG screenshots remain local under repository ignore rules"
+  ],
+  "buildSha256": {
+    "dist/browser/app.js": "4d0912454811356820b52aea763a849d044a773fb1a0af867813d0b016e3411c",
+    "dist/wechat/game.js": "45a1d47ddff7f65a06d53ba3f13c0fd033adf9c3be97f49effaf686dc7579f44"
+  },
+  "e2e": {
+    "passed": true,
+    "platform": "Chromium only; not WeChat device",
+    "directPicks": 447,
+    "fallbackPicks": 0,
+    "results": [
+      {
+        "check": "browser real 10-second clock",
+        "elapsedMs": 10014.700000000186,
+        "chargedMs": 10039.200000000186
+      },
+      "12 consecutive 250ms pointer rotations completed without lock",
+      "one-frame exception recovered; pause/home/reload regression preserved",
+      {
+        "preset": 0,
+        "picks": 105,
+        "wonWithoutAds": true,
+        "remainingMs": 280836.8999999976
+      },
+      {
+        "preset": 1,
+        "picks": 126,
+        "wonWithoutAds": true,
+        "remainingMs": 292326.89999998827
+      },
+      {
+        "preset": 2,
+        "picks": 216,
+        "wonWithoutAds": true,
+        "remainingMs": 279220.0999999875
+      }
+    ],
+    "errors": []
+  }
+}

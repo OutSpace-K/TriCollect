@@ -1355,7 +1355,10 @@
       c.fill();
     }
     button(id, label, x, y, w, h, act, disabled = false, accent = false, dimmed = disabled) {
-      h = Math.max(52, h);
+      h = Math.max(
+        ["home-dialog-close", "tool-close", "home"].includes(id) ? 62 : 52,
+        h
+      );
       const primary = accent || id === "hint" || id === "again";
       const fill = dimmed ? "#bdc9c9" : primary ? "#ffcf48" : "#258cae";
       this.rect(x, y, w, h, "#244b68", 14);
@@ -2398,107 +2401,107 @@
       }
     }
     homeTitle() {
-      const c = this.ctx, scale = Math.min(1.05, (this.width - 40) / 272);
+      const c = this.ctx, scale = Math.min(1, (this.width - 32) / 316);
       const cycle = this.mascotTime % 9e3;
       const t = Math.max(0, Math.min(1, (cycle - 1800) / 1600));
       this.titleAngle = cycle >= 1800 && cycle < 3400 ? t * t * (3 - 2 * t) * Math.PI * 2 : 0;
       const zhuan = [
         [
           [1, 14],
-          [14, 12, 29, 14]
+          [15, 11, 29, 14]
         ],
         [
-          [17, 0],
-          [12, 20, 3, 34],
-          [14, 35, 29, 34]
+          [18, 0],
+          [12, 23, 3, 40],
+          [16, 42, 30, 40]
         ],
         [
-          [0, 51],
-          [16, 49, 31, 50]
+          [0, 66],
+          [16, 63, 31, 65]
         ],
         [
-          [18, 25],
-          [19, 47, 17, 70]
+          [18, 31],
+          [19, 60, 17, 85]
         ],
         [
-          [43, 14],
-          [62, 12, 81, 14]
+          [46, 14],
+          [63, 11, 79, 14]
         ],
         [
-          [41, 33],
-          [61, 31, 83, 32]
+          [44, 40],
+          [62, 37, 81, 40]
         ],
         [
-          [63, 0],
-          [59, 25, 52, 48],
-          [63, 48, 80, 48],
-          [72, 57, 63, 61]
+          [64, 0],
+          [61, 27, 51, 62],
+          [65, 65, 79, 62],
+          [74, 67, 69, 71]
         ],
         [
-          [53, 64],
-          [60, 67, 67, 72]
+          [48, 78],
+          [55, 82, 62, 86]
         ]
       ];
       const ge = [
         [
-          [31, 3],
-          [23, 23, 3, 33]
+          [31, 5],
+          [23, 27, 3, 39]
         ],
         [
-          [31, 3],
-          [41, 24, 61, 33]
+          [31, 5],
+          [42, 27, 61, 39]
         ],
         [
-          [31, 30],
-          [31, 48, 31, 68]
+          [31, 42],
+          [31, 63, 31, 84]
         ]
       ];
       const qiu = [
         [
-          [10, 11],
-          [16, 3, 28, 4]
+          [8, 15],
+          [18, 5, 29, 9]
         ],
         [
-          [4, 31],
-          [12, 27, 27, 28]
+          [2, 43],
+          [15, 37, 28, 40]
         ],
         [
-          [10, 53],
-          [18, 61, 28, 58]
+          [8, 70],
+          [20, 81, 32, 74]
         ],
         [
-          [18, 9],
-          [3, 30, 18, 55]
+          [19, 12],
+          [4, 42, 20, 73]
         ],
         [
-          [30, 15],
-          [45, 7, 61, 17]
+          [36, 21],
+          [55, 11, 72, 24]
         ],
         [
-          [39, 2],
-          [49, 31, 40, 60],
-          [35, 65, 30, 60]
+          [48, 3],
+          [59, 43, 49, 80],
+          [43, 87, 37, 80]
         ],
         [
-          [53, 5],
-          [58, 8]
+          [66, 7],
+          [70, 10]
         ],
         [
-          [29, 25],
-          [35, 31]
+          [34, 35],
+          [39, 41]
         ],
         [
-          [34, 39],
-          [28, 48, 21, 49]
+          [40, 54],
+          [35, 60, 31, 62]
         ],
         [
-          [65, 26],
-          [62, 36, 53, 38]
+          [78, 36],
+          [74, 47, 66, 49]
         ],
         [
-          [47, 35],
-          [58, 41, 62, 51],
-          [56, 59, 48, 60]
+          [56, 49],
+          [70, 57, 75, 69],
+          [69, 79, 59, 81]
         ]
       ];
       const paint = (paths, width2, color, dy = 0, yaw = false, depth = 0) => {
@@ -2533,15 +2536,16 @@
       };
       c.save();
       try {
-        c.translate(this.width / 2 - 132 * scale, 84 + this.homeGroupOffset);
+        c.translate(this.width / 2 - 146 * scale, 84 + this.homeGroupOffset);
         c.scale(scale, scale);
-        const candy = c.createLinearGradient(0, 0, 0, 76);
+        const candy = c.createLinearGradient(0, 0, 0, 90);
         candy.addColorStop(0, "#fff6b4");
         candy.addColorStop(0.42, "#ffda68");
         candy.addColorStop(1, "#f5ae3e");
-        paint(zhuan, 13, "#84614666", 3);
-        paint(zhuan, 13, "#76512e");
-        paint(zhuan, 9.5, candy);
+        paint(zhuan, 23, "#84614655", 3);
+        paint(zhuan, 22, "#fff5ce");
+        paint(zhuan, 19, "#62422b");
+        paint(zhuan, 12.5, candy);
         paint(
           [
             [
@@ -2558,20 +2562,21 @@
         );
         c.save();
         try {
-          c.translate(101, 6);
+          c.translate(110, 6);
           for (let depth = -2; depth <= -1; depth++)
-            paint(ge, 13, "#9b713e", 2, true, depth);
-          paint(ge, 15, "#76512e", 0, true, 0);
-          paint(ge, 11, candy, 0, true, 0);
+            paint(ge, 24, "#9b713e", 2, true, depth);
+          paint(ge, 27, "#fff5ce", 0, true, 0);
+          paint(ge, 24, "#62422b", 0, true, 0);
+          paint(ge, 17, candy, 0, true, 0);
           paint(
             [
               [
-                [29, 8],
-                [20, 24, 8, 30]
+                [29, 10],
+                [21, 28, 9, 35]
               ],
               [
-                [29, 34],
-                [29, 47, 29, 61]
+                [29, 47],
+                [29, 62, 29, 75]
               ]
             ],
             1.7,
@@ -2585,20 +2590,20 @@
         }
         c.save();
         try {
-          c.translate(197, 4);
-          c.scale(1, 1.08);
-          paint(qiu, 13, "#84614666", 3);
-          paint(qiu, 13, "#76512e");
-          paint(qiu, 9, candy);
+          c.translate(215, 4);
+          paint(qiu, 22, "#84614655", 3);
+          paint(qiu, 21, "#fff5ce");
+          paint(qiu, 18, "#62422b");
+          paint(qiu, 11.5, candy);
           paint(
             [
               [
-                [11, 9],
-                [17, 3, 26, 4]
+                [10, 13],
+                [18, 7, 26, 8]
               ],
               [
-                [31, 13],
-                [45, 6, 59, 16]
+                [38, 19],
+                [54, 13, 67, 21]
               ]
             ],
             1.5,
@@ -2788,8 +2793,8 @@
       this.targets = [];
       c.fillStyle = "#173e6599";
       c.fillRect(0, 0, w, h);
-      this.rect(17, top, w - 34, 450, "#254e6b", 25);
-      this.rect(22, top + 5, w - 44, 438, "#fff9e8", 21);
+      this.rect(17, top, w - 34, 466, "#254e6b", 25);
+      this.rect(22, top + 5, w - 44, 454, "#fff9e8", 21);
       this.text("\u600E\u4E48\u73A9", w / 2, top + 43, 25, "#29495e", "center");
       const labels = ["\u53EA\u53D6\u6B63\u9762\u6700\u4E0A\u7403", "\u4E09\u9897\u540C\u8272\uFF0C\u81EA\u52A8\u6D88\u9664", "\u8F6C\u4E00\u9762\uFF0C\u9010\u5C42\u63ED\u5F00"];
       this.text(labels[this.guideStep], w / 2, top + 84, 19, "#29495e", "center");
@@ -2969,7 +2974,7 @@
       } else if (this.homePanel === "records") {
         const records = this.game.records, pages = Math.max(1, Math.ceil(records.entries.length / 4));
         this.recordPage = Math.min(this.recordPage, pages - 1);
-        this.text("\u4EC5\u672C\u673A \xB7 \u6700\u8FD130\u5C40", w / 2, 145, 12, "#617366", "center");
+        this.text("\u4EC5\u672C\u673A \xB7 \u6700\u8FD130\u5C40", w - 30, 179, 12, "#617366", "right");
         if (!records.available)
           this.text("\u8BB0\u5F55\u6682\u65F6\u65E0\u6CD5\u8BFB\u53D6", w / 2, 208, 16, "#8b3e26", "center");
         else if (!records.entries.length)
@@ -2982,7 +2987,7 @@
             "center"
           );
         records.entries.slice(this.recordPage * 4, this.recordPage * 4 + 4).forEach((r, i) => {
-          const y = 182 + i * 78, date = new Date(r.endedAt);
+          const y = 214 + i * 78, date = new Date(r.endedAt);
           this.rect(26, y, w - 52, 66, "#e6edda", 12);
           this.text(
             `${r.difficulty} \xB7 ${r.outcome === "won" ? "\u901A\u5173" : "\u672A\u901A\u5173"}`,
@@ -3012,7 +3017,7 @@
             "records-prev",
             "\u4E0A\u4E00\u9875",
             28,
-            h - 158,
+            536,
             100,
             36,
             () => this.recordPage--,
@@ -3022,7 +3027,7 @@
             "records-next",
             "\u4E0B\u4E00\u9875",
             w - 128,
-            h - 158,
+            536,
             100,
             36,
             () => this.recordPage++,
@@ -3045,8 +3050,8 @@
         "home-dialog-close",
         "\u8FD4\u56DE",
         28,
-        this.homePanel === "difficulty" ? h - 128 : h - 100,
-        w - 56,
+        this.homePanel === "records" ? 142 : Math.min(h - 128, 460),
+        this.homePanel === "records" ? 96 : w - 56,
         40,
         () => this.homePanel = null
       );

@@ -71,6 +71,16 @@ try {
           `${name} ${b.id} bounds`,
         );
         assert.ok(b.h >= 52, `${name} ${b.id} target`);
+        if (["home-dialog-close", "tool-close", "home"].includes(b.id)) {
+          assert.ok(
+            (b.h * s.canvas.h) / s.h >= 44,
+            `${name} physical exit target`,
+          );
+          assert.ok(
+            ((s.h - b.y - b.h) * s.canvas.h) / s.h >= 32,
+            `${name} exit bottom breathing room`,
+          );
+        }
       }
       for (let i = 0; i < s.buttons.length; i++)
         for (let j = i + 1; j < s.buttons.length; j++) {
@@ -89,7 +99,7 @@ try {
       pages.push(name);
       if (screenshot)
         await p.screenshot({
-          path: `evidence/v022-layout-${width}x${height}-${name}.png`,
+          path: `evidence/v023-layout-${width}x${height}-${name}.png`,
         });
     };
     await audit("home");
@@ -106,7 +116,7 @@ try {
         tri.scene.render();
       }, time);
       await p.screenshot({
-        path: `evidence/v022-title-${width}x${height}-${time}.png`,
+        path: `evidence/v023-title-${width}x${height}-${time}.png`,
       });
     }
     await p.evaluate(() => tri.scene.setForeground(true));
@@ -115,15 +125,27 @@ try {
     const back = await p.evaluate(
       () => tri.scene.buttons.find((b) => b.id === "home-dialog-close").y,
     );
-    assert.equal(back, await p.evaluate(() => tri.scene.height - 128));
+    assert.equal(
+      back,
+      await p.evaluate(() => Math.min(tri.scene.height - 128, 460)),
+    );
     await click("home-dialog-close");
     await click("help");
     for (let i = 0; i < 3; i++) {
       await audit(`help-${i}`);
       await click("guide-next");
     }
+    await click("help");
+    await click("home-dialog-close");
+    assert.equal(await p.evaluate(() => tri.scene.homePanel), null);
     await click("records");
     await audit("records-empty");
+    assert.equal(
+      await p.evaluate(
+        () => tri.scene.buttons.find((b) => b.id === "home-dialog-close").y,
+      ),
+      142,
+    );
     await click("home-dialog-close");
     // Synthetic record rows exercise pagination layout, not real achievements.
     await p.evaluate(() =>
@@ -131,7 +153,7 @@ try {
         "tricollect.records.v1",
         JSON.stringify({
           schema: 1,
-          entries: Array.from({ length: 5 }, (_, i) => ({
+          entries: Array.from({ length: 30 }, (_, i) => ({
             session: `layout-${i}`,
             endedAt: Date.now(),
             preset: 0,
@@ -151,6 +173,14 @@ try {
     await click("records-next");
     await audit("records-next");
     await click("records-prev");
+    for (let page = 1; page < 8; page++) await click("records-next");
+    await audit("records-last");
+    assert.equal(await p.evaluate(() => tri.scene.recordPage), 7);
+    assert.ok(
+      await p.evaluate(
+        () => tri.scene.buttons.find((b) => b.id === "records-next").disabled,
+      ),
+    );
     await click("home-dialog-close");
     await click("start-menu");
     await click("start-0");
@@ -223,12 +253,19 @@ try {
         tri.scene.render();
       }, phase);
       await audit(phase);
+      if (phase !== "ad") {
+        await click("home");
+        assert.equal(await p.evaluate(() => tri.game.phase), "home");
+      }
     }
     await p.evaluate(() => {
+      tri.game.phase = "result";
       tri.game.board.status = "won";
       tri.scene.render();
     });
     await audit("won");
+    // This intentionally incomplete victory fixture is not persistable; real
+    // victory return/home behavior is exercised by e2e.mjs after solving.
     assert.deepEqual(errors, []);
     reports.push({
       width,
@@ -241,7 +278,7 @@ try {
     await p.close();
   }
   await writeFile(
-    "evidence/v0.1.22-layout.json",
+    "evidence/v0.1.23-layout.json",
     JSON.stringify({ reports }, null, 2),
   );
   console.log(reports);

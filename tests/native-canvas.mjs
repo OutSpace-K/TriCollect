@@ -45,6 +45,7 @@ try {
         clear(...a);
       };
       const storage = new Map();
+      window.nativeStorage = storage;
       window.handlers = {};
       window.wx = {
         createCanvas: () => canvas,
@@ -91,8 +92,50 @@ try {
       await p.waitForTimeout(40);
     }
     await p.screenshot({
-      path: `evidence/v022-current-native-${width}x${height}-home.png`,
+      path: `evidence/v023-current-native-${width}x${height}-home.png`,
     });
+    // Exercise exits with real touch dispatch, including all 30 stored records.
+    for (const count of [0, 30]) {
+      await p.evaluate(
+        (count) =>
+          nativeStorage.set(
+            "tricollect.records.v1",
+            JSON.stringify({
+              schema: 1,
+              entries: Array.from({ length: count }, (_, i) => ({
+                session: `native-${i}`,
+                endedAt: Date.now(),
+                preset: 0,
+                difficulty: "简单",
+                outcome: "lost",
+                score: 0,
+                cleared: 0,
+                total: 105,
+                elapsedMs: 1000,
+                addedMs: 0,
+              })),
+            }),
+          ),
+        count,
+      );
+      for (const dy of [-16, 16]) {
+        await click("战绩");
+        const back = await p.evaluate(() => labels.find((l) => l.s === "返回"));
+        assert.ok(
+          back.y > 100 && back.y < height / 2,
+          "records exit stays in upper reachable area",
+        );
+        await p.screenshot({
+          path: `evidence/v023-native-records-${width}x${height}-${count}.png`,
+        });
+        await p.mouse.click(back.x, back.y + dy);
+        await p.waitForTimeout(40);
+        assert.ok(
+          await p.evaluate(() => labels.some((l) => l.s === "开始游戏")),
+          "exit edge touch hit",
+        );
+      }
+    }
     await click("开始游戏");
     await click("简单");
     await click("跳过开场");
@@ -107,19 +150,19 @@ try {
     for (const b of buttons)
       assert.ok(b.y > 64 && b.y < height - 24, JSON.stringify(b));
     await p.screenshot({
-      path: `evidence/v022-current-native-${width}x${height}-active.png`,
+      path: `evidence/v023-current-native-${width}x${height}-active.png`,
     });
     await click("寄存");
     assert.ok(
       await p.evaluate(() => labels.some((l) => l.s.includes("广告暂不可用"))),
     );
     await p.screenshot({
-      path: `evidence/v022-current-native-${width}x${height}-tool.png`,
+      path: `evidence/v023-current-native-${width}x${height}-tool.png`,
     });
     await click("知道了");
     await click("暂停");
     await p.screenshot({
-      path: `evidence/v022-current-native-${width}x${height}-pause.png`,
+      path: `evidence/v023-current-native-${width}x${height}-pause.png`,
     });
     await click("继续游戏");
     await click("→");
@@ -134,7 +177,7 @@ try {
     await p.close();
   }
   await writeFile(
-    "evidence/v0.1.22-native-canvas.json",
+    "evidence/v0.1.23-native-canvas.json",
     JSON.stringify(
       {
         platform:
