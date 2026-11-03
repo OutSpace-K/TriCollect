@@ -116,6 +116,7 @@ async function boot() {
   });
   wx.onHide(() => {
     scene.setForeground(false);
+    music.setForeground(false);
     pointer = null;
     music.suspend();
     game.hide();
@@ -125,6 +126,7 @@ async function boot() {
   });
   wx.onShow(() => {
     scene.setForeground(true);
+    music.setForeground(true);
     pointer = null;
   });
   // Remove bootstrap text from the reserved system area before the first scene.

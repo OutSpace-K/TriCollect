@@ -64,31 +64,38 @@ for (const file of ["background.png", "play-background.png"]) {
     /* Image capability failure must not stop play. */
   }
 }
+let displayFactor = 1;
 function resize() {
   const w = Math.min(innerWidth, 500),
-    h = Math.max(innerHeight, 660),
+    h = Math.max(innerHeight, 1),
     dpr = Math.min(devicePixelRatio, 2);
   canvas.style.width = w + "px";
   canvas.style.height = h + "px";
   canvas.width = w * dpr;
   canvas.height = h * dpr;
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  scene.width = w;
-  scene.height = h;
+  displayFactor = Math.min(1, h / 660);
+  ctx.setTransform(dpr * displayFactor, 0, 0, dpr * displayFactor, 0, 0);
+  scene.width = w / displayFactor;
+  scene.height = h / displayFactor;
 }
 resize();
+music.setForeground(!document.hidden);
 addEventListener("resize", resize);
 document.addEventListener("visibilitychange", () => {
   scene.setForeground(!document.hidden);
+  music.setForeground(!document.hidden);
   if (document.hidden) {
     music.suspend();
     game.hide();
   }
 });
-addEventListener("pageshow", () => scene.setForeground(true));
+addEventListener("pageshow", () => {
+  scene.setForeground(true);
+  music.setForeground(!document.hidden);
+});
 addEventListener("pagehide", () => {
   scene.setForeground(false);
-  music.suspend();
+  music.setForeground(false);
   game.hide();
 });
 let start: { x: number; y: number } | null = null;
@@ -103,7 +110,8 @@ canvas.addEventListener("pointerup", (e) => {
   start = null;
   if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy))
     game.rotate(dx > 0 ? 1 : -1);
-  else if (Math.hypot(dx, dy) < 15) scene.tap(e.offsetX, e.offsetY);
+  else if (Math.hypot(dx, dy) < 15)
+    scene.tap(e.offsetX / displayFactor, e.offsetY / displayFactor);
   music.gesture(game.state.sound, game.phase);
 });
 startFrames(

@@ -53,7 +53,12 @@ async function click(id) {
 try {
   await page.goto("http://127.0.0.1:4175");
   await page.waitForFunction(() => window.tri);
-  assert.equal(await page.evaluate(() => players.length), 0);
+  await page.waitForFunction(() => players.length === 1);
+  const initialPaused = await page.evaluate(() => players[0].paused);
+  await click("help");
+  await page.waitForFunction(() => players[0]?.currentTime > 0.05);
+  assert.equal(await page.evaluate(() => tri.game.phase), "home");
+  await click("home-dialog-close");
   await click("start-0");
   await page.waitForFunction(() => players[0]?.currentTime > 0.05);
   const metadata = await page.evaluate(() => ({
@@ -90,7 +95,7 @@ try {
     await click("begin");
     await click("pause");
     await click("home");
-    assert.ok(await page.evaluate(() => players[0].paused));
+    assert.ok(await page.evaluate(() => !players[0].paused));
     await click("start-0");
   }
   assert.equal(await page.evaluate(() => players.length), 1);
@@ -107,15 +112,16 @@ try {
   await click("extend");
   assert.ok(await page.evaluate(() => players[0].paused));
   await writeFile(
-    "evidence/v0.1.18-audio-browser.json",
+    "evidence/v0.1.21-audio-browser.json",
     JSON.stringify(
       {
         passed: true,
         scope:
           "Real HTMLAudioElement decoding/playback in headless Chromium; no human listening or WeChat device",
         metadata,
+        initialPaused,
         checks: [
-          "no autoplay before gesture",
+          "home autoplay attempted; first home gesture allows playback",
           "32s loop wraps",
           "pause and resume",
           "mute preference after reload",

@@ -15,8 +15,11 @@ const browser = await chromium.launch({
 const source = await readFile("dist/wechat/game.js", "utf8"),
   reports = [];
 try {
-  for (const width of [320, 390]) {
-    const height = width === 320 ? 660 : 844;
+  for (const [width, height] of [
+    [320, 568],
+    [320, 660],
+    [390, 844],
+  ]) {
     const p = await browser.newPage({ viewport: { width, height } });
     await p.route("**/native", (r) =>
       r.fulfill({
@@ -88,7 +91,7 @@ try {
       await p.waitForTimeout(40);
     }
     await p.screenshot({
-      path: `evidence/v018-current-native-${width}-home.png`,
+      path: `evidence/v021-current-native-${width}x${height}-home.png`,
     });
     await click("开始游戏");
     await click("简单");
@@ -104,11 +107,19 @@ try {
     for (const b of buttons)
       assert.ok(b.y > 64 && b.y < height - 24, JSON.stringify(b));
     await p.screenshot({
-      path: `evidence/v018-current-native-${width}-active.png`,
+      path: `evidence/v021-current-native-${width}x${height}-active.png`,
     });
+    await click("寄存");
+    assert.ok(
+      await p.evaluate(() => labels.some((l) => l.s.includes("广告暂不可用"))),
+    );
+    await p.screenshot({
+      path: `evidence/v021-current-native-${width}x${height}-tool.png`,
+    });
+    await click("知道了");
     await click("暂停");
     await p.screenshot({
-      path: `evidence/v018-current-native-${width}-pause.png`,
+      path: `evidence/v021-current-native-${width}x${height}-pause.png`,
     });
     await click("继续游戏");
     await click("→");
@@ -123,7 +134,7 @@ try {
     await p.close();
   }
   await writeFile(
-    "evidence/v0.1.18-native-canvas.json",
+    "evidence/v0.1.21-native-canvas.json",
     JSON.stringify(
       {
         platform:

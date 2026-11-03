@@ -1,4 +1,4 @@
-/** One reusable loop, unlocked only by a user gesture. Audio faults never escape. */
+/** One loop: try foreground autoplay, retry a rejected attempt only on a gesture. */
 export interface MusicPlayer {
   play(): void | Promise<unknown>;
   pause(): void;
@@ -6,20 +6,22 @@ export interface MusicPlayer {
 }
 export class Music {
   private player?: MusicPlayer;
-  private unlocked = false;
+  private foreground = true;
   private playing = false;
   private failed = false;
   private attempt = 0;
   constructor(private create: () => MusicPlayer) {}
   gesture(enabled: boolean, phase: string) {
-    this.unlocked = true;
+    this.failed = false;
     this.update(enabled, phase);
   }
   update(enabled: boolean, phase: string) {
     const wanted =
       enabled &&
-      this.unlocked &&
-      ["intro", "ready", "active", "resolving", "rotating"].includes(phase);
+      this.foreground &&
+      ["home", "intro", "ready", "active", "resolving", "rotating"].includes(
+        phase,
+      );
     if (!wanted || this.failed) {
       this.suspend();
       return;
@@ -41,6 +43,10 @@ export class Music {
     } catch {
       this.fail();
     }
+  }
+  setForeground(value: boolean) {
+    this.foreground = value;
+    if (!value) this.suspend();
   }
   suspend() {
     if (!this.playing) return;

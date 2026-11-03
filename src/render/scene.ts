@@ -16,6 +16,7 @@ export class Scene {
   buttons: Button[] = [];
   homePanel: "records" | "help" | "difficulty" | "replace" | null = null;
   recordPage = 0;
+  toolDialog: { session: string; resume: boolean } | null = null;
   guideOpen = false;
   guideStep = 0;
   celebrationMs = 0;
@@ -175,25 +176,26 @@ export class Scene {
     accent = false,
     dimmed = disabled,
   ) {
+    h = Math.max(52, h);
     const primary = accent || id === "hint" || id === "again";
     const fill = dimmed ? "#bdc9c9" : primary ? "#ffcf48" : "#258cae";
-    this.rect(x - 2, y - 2, w + 4, h + 10, "#244b68", 16);
+    this.rect(x, y, w, h, "#244b68", 14);
     this.rect(
-      x,
-      y + 5,
-      w,
-      h,
+      x + 2,
+      y + 4,
+      w - 4,
+      h - 6,
       dimmed ? "#889ca5" : primary ? "#c7812e" : "#175b7a",
-      14,
+      12,
     );
-    this.rect(x, y, w, h, fill, 14);
+    this.rect(x + 2, y + 2, w - 4, h - 8, fill, 12);
     this.rect(
-      x + 5,
-      y + 3,
-      w - 10,
-      Math.min(10, h / 4),
+      x + 6,
+      y + 4,
+      w - 12,
+      Math.min(8, h / 5),
       dimmed ? "#ffffff08" : "#ffffff30",
-      7,
+      6,
     );
     this.text(
       label,
@@ -470,6 +472,16 @@ export class Scene {
       34,
       () => g.toggleSound(),
     );
+    if (
+      this.toolDialog &&
+      (this.toolDialog.session !== g.state.session ||
+        !["paused", "blocked"].includes(g.phase))
+    )
+      this.toolDialog = null;
+    if (this.toolDialog) {
+      this.toolOverlay();
+      return;
+    }
     if (g.phase === "home") {
       this.home();
       return;
@@ -502,7 +514,7 @@ export class Scene {
       this.overlay();
       return;
     }
-    const trayY = h - 143,
+    const trayY = h - 179,
       boardBottom = trayY - 48;
     this.drawBoard(147, boardBottom);
     this.drawMisclick();
@@ -601,32 +613,38 @@ export class Scene {
         "center",
       );
     if (g.board.pocket?.length) {
-      this.ball(g.board.pocket[0].type, 35, h - 23, 12);
       this.button(
         "return-ball",
-        "免费放回寄存球",
-        57,
-        h - 40,
-        w - 79,
-        30,
+        "免费放回",
+        w / 2 - 70,
+        h - 64,
+        140,
+        44,
         () => g.returnBall(),
         g.locked,
       );
+      this.ball(g.board.pocket[0].type, w / 2 - 46, h - 39, 12);
     } else {
-      const used = g.state.rewards.some((r) => r.kind === "lift" && r.redeemed);
       this.button(
         "lift-ball",
-        used
-          ? "本局移出已使用"
-          : g.ads.available
-            ? "看广告 · 移出末球（可免费放回）"
-            : g.ads.label,
-        22,
-        h - 40,
-        w - 44,
-        30,
-        () => void g.liftBall(),
-        !g.canLift || !g.ads.available,
+        "",
+        w / 2 - 32,
+        h - 64,
+        64,
+        44,
+        () => this.openTool(),
+        !["active", "blocked"].includes(g.phase),
+      );
+      this.drawTool(w / 2, h - 45);
+      this.text(
+        g.state.rewards.some((r) => r.kind === "lift" && r.redeemed)
+          ? "已使用"
+          : "寄存",
+        w / 2,
+        h - 19,
+        10,
+        "#fff",
+        "center",
       );
     }
     if (g.phase === "intro" || g.phase === "ready") {
@@ -661,6 +679,89 @@ export class Scene {
     if (this.guideOpen && ["intro", "ready"].includes(g.phase))
       this.guideOverlay();
     else this.guideOpen = false;
+  }
+  private drawTool(x: number, y: number) {
+    const c = this.ctx;
+    this.rect(x - 13, y - 4, 26, 14, "#d1f4f1", 6);
+    this.ball(3, x, y - 5, 8);
+    c.strokeStyle = "#fff8c9";
+    c.lineWidth = 2;
+    c.lineCap = "round";
+    c.lineJoin = "round";
+    c.beginPath();
+    c.moveTo(x + 17, y + 4);
+    c.lineTo(x + 17, y - 11);
+    c.lineTo(x + 13, y - 7);
+    c.moveTo(x + 17, y - 11);
+    c.lineTo(x + 21, y - 7);
+    c.stroke();
+  }
+  private openTool() {
+    const g = this.game;
+    g.tick();
+    if (!["active", "blocked"].includes(g.phase)) return;
+    const resume = g.phase === "active";
+    if (resume) g.pause();
+    this.toolDialog = { session: g.state.session, resume };
+  }
+  private closeTool() {
+    const resume = this.toolDialog?.resume;
+    this.toolDialog = null;
+    if (resume) this.game.begin();
+  }
+  private toolOverlay() {
+    const g = this.game,
+      w = this.width,
+      h = this.height,
+      y = Math.max(90, (h - 330) / 2);
+    this.buttons = [];
+    this.targets = [];
+    this.bodies = [];
+    this.ctx.fillStyle = "#173e6599";
+    this.ctx.fillRect(0, 0, w, h);
+    this.rect(18, y, w - 36, 330, "#294f70", 24);
+    this.rect(22, y + 4, w - 44, 322, "#fffbed", 20);
+    this.drawTool(w / 2, y + 38);
+    this.text("寄存泡泡", w / 2, y + 83, 24, "#29495e", "center");
+    const used = g.state.rewards.some((r) => r.kind === "lift" && r.redeemed);
+    const allowed = !used && !g.board.pocket?.length && g.board.tray.length > 0;
+    const lines = used
+      ? ["本局已使用一次", "寄存球放回后也不会重复发放"]
+      : !g.ads.available
+        ? ["广告暂不可用，本次无法使用", "不会扣除次数，仍可免费撤销或继续"]
+        : !g.board.tray.length
+          ? ["先把一颗球放入暂存槽", "再使用道具腾出一格"]
+          : ["完整观看广告，移出暂存槽末球", "每局一次 · 之后可免费放回"];
+    lines.forEach((line, i) =>
+      this.text(line, w / 2, y + 123 + i * 25, 13, "#4e6877", "center"),
+    );
+    const canRequest = allowed && g.ads.available;
+    if (canRequest) {
+      this.text(g.ads.label, w / 2, y + 181, 11, "#617366", "center");
+      this.button(
+        "tool-confirm",
+        "看广告使用",
+        40,
+        y + 201,
+        w - 80,
+        44,
+        () => {
+          this.closeTool();
+          void g.liftBall();
+        },
+        false,
+        true,
+      );
+    }
+    this.button(
+      "tool-close",
+      canRequest ? "暂不使用" : "知道了",
+      40,
+      y + 263,
+      w - 80,
+      44,
+      () => this.closeTool(),
+    );
   }
   private fit(t: string, n: number) {
     return t.length > n ? t.slice(0, n - 1) + "…" : t;
@@ -1198,55 +1299,57 @@ export class Scene {
       cycle >= 1800 && cycle < 3400 ? t * t * (3 - 2 * t) * Math.PI * 2 : 0;
     // Each entry is a real stroke; there is no enclosing circle or font backing plate.
     type Stroke = number[][];
+    // Original open-counter glyphs: 18px row spacing exceeds the 12px rim.
+    // Curved terminals are playful without letting adjacent strokes merge.
     const zhuan: Stroke[] = [
       [
-        [1, 12],
-        [24, 10],
+        [1, 14],
+        [14, 12, 29, 14],
       ],
       [
-        [12, 2],
-        [4, 31],
-        [23, 29],
+        [17, 0],
+        [12, 20, 3, 34],
+        [14, 35, 29, 34],
       ],
       [
-        [1, 45],
-        [24, 41],
+        [0, 51],
+        [16, 49, 31, 50],
       ],
       [
-        [15, 21],
-        [13, 62],
+        [18, 25],
+        [19, 47, 17, 70],
       ],
       [
-        [39, 10],
-        [68, 8],
+        [43, 14],
+        [62, 12, 81, 14],
       ],
       [
-        [37, 24],
-        [72, 21],
+        [41, 33],
+        [61, 31, 83, 32],
       ],
       [
-        [52, 0],
-        [45, 34],
-        [68, 32],
-        [56, 48],
+        [63, 0],
+        [59, 25, 52, 48],
+        [63, 48, 80, 48],
+        [72, 57, 63, 61],
       ],
       [
-        [43, 43],
-        [64, 60],
+        [53, 64],
+        [60, 67, 67, 72],
       ],
     ];
     const ge: Stroke[] = [
       [
-        [31, 0],
-        [5, 26],
+        [31, 3],
+        [23, 23, 3, 33],
       ],
       [
-        [31, 0],
-        [57, 26],
+        [31, 3],
+        [41, 24, 61, 33],
       ],
       [
-        [31, 20],
-        [31, 55],
+        [31, 30],
+        [31, 48, 31, 68],
       ],
     ];
     // Bowed 王 and 求 strokes form the sphere silhouette themselves, with open counters.
@@ -1344,7 +1447,7 @@ export class Scene {
     };
     c.save();
     try {
-      c.translate(this.width / 2 - 128 * scale, 88);
+      c.translate(this.width / 2 - 132 * scale, 84);
       c.scale(scale, scale);
       const green = c.createLinearGradient(0, 0, 0, 64);
       green.addColorStop(0, "#e5ffba");
@@ -1355,19 +1458,18 @@ export class Scene {
       coral.addColorStop(0.42, "#ee527e");
       coral.addColorStop(1, "#b51c58");
       // Slimmer strokes reopen the counters; coral separates 转 from green 个.
-      paint(zhuan, 17, "#873c62", 4);
-      paint(zhuan, 16, "#fff9df");
-      paint(zhuan, 10.5, coral);
-      // Rounded cream rim and soft highlights give original strokes a jelly finish.
+      paint(zhuan, 12, "#873c62", 3);
+      paint(zhuan, 12, "#fff9df");
+      paint(zhuan, 8.5, coral);
       paint(
         [
           [
-            [4, 10],
-            [26, 8],
+            [5, 12],
+            [15, 11, 25, 12],
           ],
           [
-            [37, 8],
-            [62, 6],
+            [47, 12],
+            [60, 11, 75, 12],
           ],
         ],
         1.5,
@@ -1375,26 +1477,26 @@ export class Scene {
       );
       c.save();
       try {
-        c.translate(92, 0);
+        c.translate(101, 0);
         // Project around the vertical stem. Even at the edge, the stem remains vertical.
         // Solid extrusion follows the same yaw projection as the front strokes.
-        for (let depth = -8; depth <= -1; depth++)
+        for (let depth = -4; depth <= -1; depth++)
           paint(ge, 11, depth < -5 ? "#174937" : "#247350", 2, true, depth);
-        paint(ge, 20, "#fff9df", 0, true, 0);
-        paint(ge, 14, green, 0, true, 0);
+        paint(ge, 17, "#fff9df", 0, true, 0);
+        paint(ge, 12, green, 0, true, 0);
         paint(
           [
             [
-              [29, 2],
-              [7, 25],
+              [29, 8],
+              [20, 24, 8, 30],
             ],
             [
-              [29, 22],
-              [29, 51],
+              [29, 34],
+              [29, 47, 29, 61],
             ],
           ],
           1.7,
-          "#c3ffc9",
+          "#eaffcb",
           0,
           true,
           0.6,
@@ -1404,7 +1506,7 @@ export class Scene {
       }
       c.save();
       try {
-        c.translate(184, 0);
+        c.translate(197, 0);
         const gold = c.createLinearGradient(0, 0, 65, 62);
         gold.addColorStop(0, "#ffe282");
         gold.addColorStop(0.45, "#ffb62b");
@@ -1620,13 +1722,13 @@ export class Scene {
     const c = this.ctx,
       w = this.width,
       h = this.height,
-      top = Math.max(74, (h - 440) / 2);
+      top = Math.max(74, (h - 454) / 2);
     this.buttons = [];
     this.targets = [];
     c.fillStyle = "#173e6599";
     c.fillRect(0, 0, w, h);
-    this.rect(17, top, w - 34, 435, "#254e6b", 25);
-    this.rect(22, top + 5, w - 44, 423, "#fff9e8", 21);
+    this.rect(17, top, w - 34, 450, "#254e6b", 25);
+    this.rect(22, top + 5, w - 44, 438, "#fff9e8", 21);
     this.text("怎么玩", w / 2, top + 43, 25, "#29495e", "center");
     const labels = ["只取正面最上球", "三颗同色，自动消除", "转一面，逐层揭开"];
     this.text(labels[this.guideStep], w / 2, top + 84, 19, "#29495e", "center");
@@ -1689,7 +1791,7 @@ export class Scene {
       "home-dialog-close",
       "返回",
       w / 2 - 38,
-      top + 384,
+      top + 390,
       76,
       28,
       () => this.closeGuide(),
@@ -1866,7 +1968,7 @@ export class Scene {
           "records-prev",
           "上一页",
           28,
-          h - 151,
+          h - 158,
           100,
           36,
           () => this.recordPage--,
@@ -1876,7 +1978,7 @@ export class Scene {
           "records-next",
           "下一页",
           w - 128,
-          h - 151,
+          h - 158,
           100,
           36,
           () => this.recordPage++,
@@ -1899,7 +2001,7 @@ export class Scene {
       "home-dialog-close",
       "返回",
       28,
-      h - 100,
+      this.homePanel === "difficulty" ? h - 128 : h - 100,
       w - 56,
       40,
       () => (this.homePanel = null),
@@ -2004,7 +2106,7 @@ export class Scene {
       28,
       y,
       w - 56,
-      58,
+      this.game.resume ? 54 : 58,
       () => {
         this.homePanel = "difficulty";
       },
@@ -2012,7 +2114,7 @@ export class Scene {
       true,
     );
     if (this.game.resume)
-      this.button("resume", "继续上次", 28, y + 80, w - 56, 40, () =>
+      this.button("resume", "继续上次", 28, y + 64, w - 56, 40, () =>
         this.game.continueSaved(),
       );
     this.trackObjects = [];
@@ -2073,7 +2175,7 @@ export class Scene {
       h = this.height;
     const won = g.phase === "result" && g.board.status === "won";
     const y = Math.max(142, h * 0.23),
-      cardH = ["expired", "blocked"].includes(g.phase) ? 400 : 340;
+      cardH = ["expired", "blocked"].includes(g.phase) ? 436 : 368;
     this.ctx.fillStyle = "#163e6488";
     this.ctx.fillRect(0, 120, w, h - 120);
     if (won) this.celebration();
@@ -2151,18 +2253,13 @@ export class Scene {
         disabled,
         ["continue", "again", "undo-blocked"].includes(id),
       );
-      by += 55;
+      by += 64;
     };
     if (g.phase === "paused") add("continue", "继续游戏", () => g.begin());
     if (g.phase === "blocked")
       add("undo-blocked", "撤销一步", () => g.undo(), !g.canUndo);
     if (g.phase === "blocked")
-      add(
-        "lift-blocked",
-        g.ads.available ? "看广告 · 移出末球" : g.ads.label,
-        () => void g.liftBall(),
-        !g.canLift || !g.ads.available,
-      );
+      add("lift-blocked", "寄存道具", () => this.openTool(), false);
     if (g.phase === "expired") {
       add(
         "extend",

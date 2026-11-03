@@ -1,0 +1,53 @@
+{
+  "version": "0.1.21",
+  "baseline": "f2afab6395227c5433c88f2ee80794eaed457032",
+  "fullSuite": {
+    "passed": 114,
+    "failed": 0,
+    "skipped": 0
+  },
+  "randomEntrySeedSamples": 300,
+  "liftSeedSamples": 300,
+  "browser": {
+    "directPicks": 447,
+    "fallbackPicks": 0,
+    "allTiersWonWithoutAds": true,
+    "viewports": [
+      [
+        320,
+        568
+      ],
+      [
+        320,
+        660
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "pageStatesPerViewport": 22,
+    "overlappingButtons": 0,
+    "errors": []
+  },
+  "audio": {
+    "homeAutoplayAttempted": true,
+    "observedInitialAutoplayBlocked": true,
+    "homeGesturePlaybackPassed": true,
+    "singlePlayerMuteBackgroundAdChecksPassed": true,
+    "humanListening": false
+  },
+  "nativeCanvas": "Actual built WeChat JS in Chromium wx mock bridge at three sizes, not real WeChat",
+  "checks": [
+    "build",
+    "typecheck",
+    "format:check",
+    "git diff --check"
+  ],
+  "limitations": [
+    "No actual WeChat Developer Tools or phone test",
+    "No real rewarded advertisement test",
+    "No human audio quality acceptance"
+  ],
+  "notModified": "BlindBox"
+}

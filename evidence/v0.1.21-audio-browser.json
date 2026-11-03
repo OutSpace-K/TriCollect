@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "scope": "Real HTMLAudioElement decoding/playback in headless Chromium; no human listening or WeChat device",
+  "metadata": {
+    "duration": 32,
+    "volume": 0.22,
+    "loop": true
+  },
+  "initialPaused": true,
+  "checks": [
+    "home autoplay attempted; first home gesture allows playback",
+    "32s loop wraps",
+    "pause and resume",
+    "mute preference after reload",
+    "single reusable player over repeated rounds",
+    "mock ad stays quiet"
+  ]
+}

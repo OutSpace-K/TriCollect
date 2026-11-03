@@ -214,7 +214,7 @@ async function boot(
         saved.board.side,
         390,
         147,
-        748 - 191,
+        748 - 227,
         (saved.view * Math.PI * 2) / 3,
         Math.max(...saved.board.tubes.map((t) => t.capacity)),
       );
@@ -514,7 +514,7 @@ for (const units of [1, 1000])
       secondPickAccepted: true,
     });
     writeFileSync(
-      "evidence/v0.1.20-animation-wallclock.json",
+      "evidence/v0.1.21-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -558,7 +558,7 @@ for (const units of [1, 1000])
       });
     }
     writeFileSync(
-      "evidence/v0.1.20-animation-wallclock.json",
+      "evidence/v0.1.21-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -601,7 +601,7 @@ for (const units of [1, 1000])
       frozenRotationPauseMs: interrupted,
     });
     writeFileSync(
-      "evidence/v0.1.20-animation-wallclock.json",
+      "evidence/v0.1.21-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -614,9 +614,9 @@ for (const units of [1, 1000])
     );
   });
 
-test("native music starts on touch, pauses on hide and reuses one loop across rounds", async () => {
+test("native music attempts home autoplay, pauses on hide and reuses one loop across rounds", async () => {
   const r = await boot();
-  assert.equal(r.audioPlayers.length, 0);
+  assert.equal(r.audioPlayers.length, 1);
   beginRuntime(r);
   const music = r.audioPlayers.find((p) => p.src.endsWith("ambience.wav"))!;
   assert.ok(music);

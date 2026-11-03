@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { viewport } from "../src/platform/viewport";
 test("native capsule and home indicator remain outside all game coordinates at narrow and tall sizes", () => {
-  for (const height of [660, 844, 932])
+  for (const height of [568, 660, 844, 932])
     for (const menu of [64, 88, undefined, NaN]) {
       const v = viewport(height, 24, height - 24, menu);
       if (menu !== undefined && Number.isFinite(menu)) assert.ok(v.top > menu);
