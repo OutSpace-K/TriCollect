@@ -99,7 +99,7 @@ try {
       pages.push(name);
       if (screenshot)
         await p.screenshot({
-          path: `evidence/v023-layout-${width}x${height}-${name}.png`,
+          path: `evidence/v024-layout-${width}x${height}-${name}.png`,
         });
     };
     await audit("home");
@@ -116,7 +116,7 @@ try {
         tri.scene.render();
       }, time);
       await p.screenshot({
-        path: `evidence/v023-title-${width}x${height}-${time}.png`,
+        path: `evidence/v024-title-${width}x${height}-${time}.png`,
       });
     }
     await p.evaluate(() => tri.scene.setForeground(true));
@@ -144,7 +144,7 @@ try {
       await p.evaluate(
         () => tri.scene.buttons.find((b) => b.id === "home-dialog-close").y,
       ),
-      142,
+      await p.evaluate(() => tri.scene.height - 140),
     );
     await click("home-dialog-close");
     // Synthetic record rows exercise pagination layout, not real achievements.
@@ -278,7 +278,7 @@ try {
     await p.close();
   }
   await writeFile(
-    "evidence/v0.1.23-layout.json",
+    "evidence/v0.1.24-layout.json",
     JSON.stringify({ reports }, null, 2),
   );
   console.log(reports);

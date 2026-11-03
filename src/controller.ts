@@ -86,6 +86,7 @@ export class Controller {
     const level = createLevel(preset, seed);
     return {
       schema: 1,
+      generation: 2,
       rule: RULE,
       session: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
       seed: level.seed,

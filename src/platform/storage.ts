@@ -14,6 +14,8 @@ export type Reward = {
 };
 export type Saved = {
   schema: 1;
+  /** Missing means the original generator, retained for existing saves. */
+  generation?: 1 | 2;
   rule: string;
   session: string;
   seed: number;
@@ -43,11 +45,11 @@ export function hash(text: string): string {
   return (h >>> 0).toString(16);
 }
 const originals = new Map<string, Board>();
-function originalFor(preset: number, seed: number) {
-  const key = `${preset}:${seed}`;
+function originalFor(preset: number, seed: number, generation: 1 | 2) {
+  const key = `${generation}:${preset}:${seed}`;
   if (!originals.has(key)) {
     if (originals.size >= 32) originals.delete(originals.keys().next().value!);
-    originals.set(key, createLevel(preset, seed).board);
+    originals.set(key, createLevel(preset, seed, generation).board);
   }
   return originals.get(key)!;
 }
@@ -56,6 +58,9 @@ export function valid(s: Saved): boolean {
   try {
     if (
       s.schema !== 1 ||
+      (s.generation !== undefined &&
+        s.generation !== 1 &&
+        s.generation !== 2) ||
       s.rule !== RULE ||
       typeof s.session !== "string" ||
       !Number.isInteger(s.seed) ||
@@ -116,7 +121,7 @@ export function valid(s: Saved): boolean {
       s.rewards.filter((r) => r.redeemed && r.kind === "lift").length > 1
     )
       return false;
-    const original = originalFor(s.preset, s.seed),
+    const original = originalFor(s.preset, s.seed, s.generation ?? 1),
       all = original.tubes.flatMap((t) => t.balls),
       identities = new Map(all.map((b) => [b.id, b.type]));
     const check = (b: Board) =>

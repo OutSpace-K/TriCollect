@@ -13,6 +13,11 @@ export type MatchRecord = {
   total: number;
   elapsedMs: number;
   addedMs: number;
+  /** Optional for compatibility; absent legacy entries are not experiment data. */
+  generation?: 1 | 2;
+  hintsUsed?: number;
+  undosUsed?: number;
+  rewardedAds?: number;
 };
 export type RecordRead = {
   entries: MatchRecord[];
@@ -44,6 +49,12 @@ function parse(raw: string | null): MatchRecord[] | null {
           !["won", "lost"].includes(r.outcome) ||
           ![r.score, r.cleared, r.total, r.elapsedMs, r.addedMs].every(
             (n) => Number.isFinite(n) && n >= 0,
+          ) ||
+          (r.generation !== undefined &&
+            r.generation !== 1 &&
+            r.generation !== 2) ||
+          [r.hintsUsed, r.undosUsed, r.rewardedAds].some(
+            (n) => n !== undefined && (!Number.isInteger(n) || n < 0),
           ) ||
           r.total < 1 ||
           r.cleared > r.total ||
@@ -98,6 +109,10 @@ export function appendResult(
     total: s.board.tubes.reduce((n, t) => n + t.capacity, 0),
     elapsedMs: Math.max(0, CONFIG.baseMs + s.added - s.remaining),
     addedMs: s.added,
+    generation: s.generation ?? 1,
+    hintsUsed: s.hintsUsed,
+    undosUsed: s.undosUsed,
+    rewardedAds: s.rewards.filter((r) => r.redeemed).length,
   };
   const payload = JSON.stringify({
     schema: 1,
@@ -115,4 +130,25 @@ export function appendResult(
   } catch {
     return false;
   }
+}
+
+/** Descriptive local sample only: not a population win-rate or a difficulty guarantee. */
+export function hardSample(entries: MatchRecord[]) {
+  const eligible = entries.filter(
+    (r) =>
+      r.preset === 2 &&
+      r.generation === 2 &&
+      r.rewardedAds === 0 &&
+      r.addedMs === 0 &&
+      r.hintsUsed !== undefined &&
+      r.undosUsed !== undefined,
+  );
+  const wins = eligible.filter((r) => r.outcome === "won").length;
+  return {
+    completed: eligible.length,
+    wins,
+    rate: eligible.length ? wins / eligible.length : null,
+    excluded: entries.length - eligible.length,
+    limit: RECORD_LIMIT,
+  };
 }

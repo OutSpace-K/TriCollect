@@ -149,6 +149,7 @@
       height: 5,
       heights: [5],
       groups: 1,
+      challengeGroups: 1,
       types: 5,
       seed: 104729
     },
@@ -159,6 +160,7 @@
       height: 7,
       heights: [5, 6, 7],
       groups: 2,
+      challengeGroups: 3,
       types: 6,
       seed: 130363
     },
@@ -169,6 +171,7 @@
       height: 7,
       heights: [5, 6, 7],
       groups: 3,
+      challengeGroups: 4,
       types: 7,
       seed: 155921
     }
@@ -348,8 +351,8 @@
       return ((t ^ t >>> 14) >>> 0) / 4294967296;
     };
   }
-  function generate(p, seed) {
-    var _a, _b, _c, _d, _e;
+  function generate(p, seed, revision = 2) {
+    var _a, _b, _c, _d, _e, _f;
     const rnd = random(seed), tubes = [];
     for (let q = 0; q < p.side; q++)
       for (let r = 0; r < p.side - q; r++)
@@ -388,7 +391,7 @@
     }
     if (order.length % 3) throw Error("Total must be divisible by three");
     const types = [];
-    const groups = (_e = p.groups) != null ? _e : 2;
+    const groups = (_f = (_e = revision === 2 ? p.challengeGroups : p.groups) != null ? _e : p.groups) != null ? _f : 2;
     for (let g = 0; g < order.length / 3; g += groups) {
       const window = [];
       for (let k = 0; k < groups && g + k < order.length / 3; k++)
@@ -397,7 +400,25 @@
         const j = Math.floor(rnd() * (i + 1));
         [window[i], window[j]] = [window[j], window[i]];
       }
-      types.push(...window);
+      if (groups <= 3) types.push(...window);
+      else {
+        const waiting = /* @__PURE__ */ new Map();
+        const emit = (type) => {
+          var _a2;
+          window.splice(window.indexOf(type), 1);
+          waiting.set(type, (((_a2 = waiting.get(type)) != null ? _a2 : 0) + 1) % 3);
+          types.push(type);
+        };
+        for (const type of new Set(window)) emit(type);
+        while (window.length) {
+          const size = [...waiting.values()].reduce((a, b2) => a + b2, 0);
+          const choices = [...new Set(window)].filter(
+            (type) => size < 6 || waiting.get(type) === 2
+          );
+          if (!choices.length) throw Error("No safe assignment");
+          emit(choices[Math.floor(rnd() * choices.length)]);
+        }
+      }
     }
     order.forEach(
       (o, i) => b.tubes.find((t) => t.id === o.tube).balls[o.index].type = types[i]
@@ -414,13 +435,13 @@
       fallback: false
     };
   }
-  function createLevel(index, seed) {
+  function createLevel(index, seed, revision = 2) {
     var _a;
     const p = (_a = PRESETS[index]) != null ? _a : PRESETS[0];
     try {
-      return generate(p, seed != null ? seed : p.seed);
+      return generate(p, seed != null ? seed : p.seed, revision);
     } catch (e) {
-      const level = generate(p, p.seed);
+      const level = generate(p, p.seed, revision);
       return { ...level, fallback: true };
     }
   }
@@ -434,18 +455,19 @@
     return (h >>> 0).toString(16);
   }
   var originals = /* @__PURE__ */ new Map();
-  function originalFor(preset, seed) {
-    const key2 = `${preset}:${seed}`;
+  function originalFor(preset, seed, generation) {
+    const key2 = `${generation}:${preset}:${seed}`;
     if (!originals.has(key2)) {
       if (originals.size >= 32) originals.delete(originals.keys().next().value);
-      originals.set(key2, createLevel(preset, seed).board);
+      originals.set(key2, createLevel(preset, seed, generation).board);
     }
     return originals.get(key2);
   }
   var lastStored = /* @__PURE__ */ new WeakMap();
   function valid(s) {
+    var _a;
     try {
-      if (s.schema !== 1 || s.rule !== RULE || typeof s.session !== "string" || !Number.isInteger(s.seed) || !Number.isInteger(s.preset) || !PRESETS[s.preset])
+      if (s.schema !== 1 || s.generation !== void 0 && s.generation !== 1 && s.generation !== 2 || s.rule !== RULE || typeof s.session !== "string" || !Number.isInteger(s.seed) || !Number.isInteger(s.preset) || !PRESETS[s.preset])
         return false;
       if (!Number.isFinite(s.remaining) || s.remaining < 0 || s.remaining > CONFIG.baseMs + CONFIG.extraMs * CONFIG.maxExtensions || !Number.isInteger(s.extensions) || s.extensions < 0 || s.extensions > CONFIG.maxExtensions || s.added !== s.extensions * CONFIG.extraMs)
         return false;
@@ -461,21 +483,21 @@
         return false;
       if (s.rewards.filter((r) => r.redeemed && r.kind !== "lift").length !== s.extensions || s.rewards.filter((r) => r.redeemed && r.kind === "lift").length > 1)
         return false;
-      const original = originalFor(s.preset, s.seed), all = original.tubes.flatMap((t) => t.balls), identities = new Map(all.map((b) => [b.id, b.type]));
+      const original = originalFor(s.preset, s.seed, (_a = s.generation) != null ? _a : 1), all = original.tubes.flatMap((t) => t.balls), identities = new Map(all.map((b) => [b.id, b.type]));
       const check = (b) => {
-        var _a, _b;
-        return invariant(b, all.length) && (!((_a = b.pocket) == null ? void 0 : _a.length) || s.rewards.some((r) => r.kind === "lift" && r.redeemed)) && b.side === original.side && [
+        var _a2, _b;
+        return invariant(b, all.length) && (!((_a2 = b.pocket) == null ? void 0 : _a2.length) || s.rewards.some((r) => r.kind === "lift" && r.redeemed)) && b.side === original.side && [
           ...b.tubes.flatMap((t) => t.balls),
           ...b.tray,
           ...b.cleared,
           ...(_b = b.pocket) != null ? _b : []
         ].every((b2) => identities.get(b2.id) === b2.type) && b.tubes.every(
           (t) => {
-            var _a2;
-            return t.capacity === ((_a2 = original.tubes.find((x) => x.id === t.id)) == null ? void 0 : _a2.capacity) && t.balls.every(
+            var _a3;
+            return t.capacity === ((_a3 = original.tubes.find((x) => x.id === t.id)) == null ? void 0 : _a3.capacity) && t.balls.every(
               (b2, i) => {
-                var _a3, _b2;
-                return ((_b2 = (_a3 = original.tubes.find((x) => x.id === t.id)) == null ? void 0 : _a3.balls[i]) == null ? void 0 : _b2.id) === b2.id;
+                var _a4, _b2;
+                return ((_b2 = (_a4 = original.tubes.find((x) => x.id === t.id)) == null ? void 0 : _a4.balls[i]) == null ? void 0 : _b2.id) === b2.id;
               }
             );
           }
@@ -546,6 +568,8 @@
       if (new Set(a.map((r) => r.session)).size !== a.length || a.some(
         (r) => typeof r.session !== "string" || !r.session || !Number.isFinite(r.endedAt) || r.endedAt < 0 || !Number.isInteger(r.preset) || !PRESETS[r.preset] || typeof r.difficulty !== "string" || !["won", "lost"].includes(r.outcome) || ![r.score, r.cleared, r.total, r.elapsedMs, r.addedMs].every(
           (n) => Number.isFinite(n) && n >= 0
+        ) || r.generation !== void 0 && r.generation !== 1 && r.generation !== 2 || [r.hintsUsed, r.undosUsed, r.rewardedAds].some(
+          (n) => n !== void 0 && (!Number.isInteger(n) || n < 0)
         ) || r.total < 1 || r.cleared > r.total || r.elapsedMs > CONFIG.baseMs + CONFIG.extraMs * CONFIG.maxExtensions
       ))
         return null;
@@ -570,6 +594,7 @@
     }
   }
   function appendResult(store, s, correctVictory = false) {
+    var _a;
     if (!s.started || s.phase !== "result" || s.finishedAt === void 0)
       return true;
     const loaded = readRecords(store);
@@ -587,7 +612,11 @@
       cleared: s.board.cleared.length,
       total: s.board.tubes.reduce((n, t) => n + t.capacity, 0),
       elapsedMs: Math.max(0, CONFIG.baseMs + s.added - s.remaining),
-      addedMs: s.added
+      addedMs: s.added,
+      generation: (_a = s.generation) != null ? _a : 1,
+      hintsUsed: s.hintsUsed,
+      undosUsed: s.undosUsed,
+      rewardedAds: s.rewards.filter((r) => r.redeemed).length
     };
     const payload = JSON.stringify({
       schema: 1,
@@ -758,6 +787,7 @@
       const level = createLevel(preset, seed);
       return {
         schema: 1,
+        generation: 2,
         rule: RULE,
         session: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
         seed: level.seed,
@@ -2401,107 +2431,107 @@
       }
     }
     homeTitle() {
-      const c = this.ctx, scale = Math.min(1, (this.width - 32) / 316);
+      const c = this.ctx, scale = Math.min(1, (this.width - 32) / 342);
       const cycle = this.mascotTime % 9e3;
       const t = Math.max(0, Math.min(1, (cycle - 1800) / 1600));
       this.titleAngle = cycle >= 1800 && cycle < 3400 ? t * t * (3 - 2 * t) * Math.PI * 2 : 0;
       const zhuan = [
         [
-          [1, 14],
-          [15, 11, 29, 14]
+          [0, 12],
+          [16, 10, 34, 12]
         ],
         [
           [18, 0],
-          [12, 23, 3, 40],
-          [16, 42, 30, 40]
+          [10, 20, 6, 34],
+          [20, 36, 34, 34]
         ],
         [
-          [0, 66],
-          [16, 63, 31, 65]
+          [0, 58],
+          [17, 56, 35, 58]
         ],
         [
-          [18, 31],
-          [19, 60, 17, 85]
+          [19, 28],
+          [20, 53, 19, 78]
         ],
         [
-          [46, 14],
-          [63, 11, 79, 14]
+          [53, 12],
+          [73, 10, 93, 12]
         ],
         [
-          [44, 40],
-          [62, 37, 81, 40]
+          [51, 35],
+          [72, 33, 96, 35]
         ],
         [
-          [64, 0],
-          [61, 27, 51, 62],
-          [65, 65, 79, 62],
-          [74, 67, 69, 71]
+          [74, 0],
+          [68, 29, 59, 55],
+          [75, 57, 94, 55],
+          [89, 61, 82, 66]
         ],
         [
-          [48, 78],
-          [55, 82, 62, 86]
+          [63, 70],
+          [69, 75, 76, 78]
         ]
       ];
       const ge = [
         [
-          [31, 5],
-          [23, 27, 3, 39]
+          [31, 4],
+          [23, 22, 1, 33]
         ],
         [
-          [31, 5],
-          [42, 27, 61, 39]
+          [31, 4],
+          [43, 22, 64, 33]
         ],
         [
-          [31, 42],
-          [31, 63, 31, 84]
+          [31, 37],
+          [31, 55, 31, 72]
         ]
       ];
       const qiu = [
         [
-          [8, 15],
-          [18, 5, 29, 9]
+          [5, 14],
+          [14, 8, 24, 10]
         ],
         [
-          [2, 43],
-          [15, 37, 28, 40]
+          [0, 39],
+          [12, 36, 24, 38]
         ],
         [
-          [8, 70],
-          [20, 81, 32, 74]
+          [5, 63],
+          [15, 71, 25, 66]
         ],
         [
-          [19, 12],
-          [4, 42, 20, 73]
+          [15, 12],
+          [8, 39, 16, 65]
         ],
         [
-          [36, 21],
-          [55, 11, 72, 24]
+          [43, 18],
+          [65, 10, 87, 18]
         ],
         [
-          [48, 3],
-          [59, 43, 49, 80],
-          [43, 87, 37, 80]
+          [63, 0],
+          [68, 39, 64, 74],
+          [61, 81, 54, 77]
         ],
         [
-          [66, 7],
-          [70, 10]
+          [85, -2],
+          [89, 1]
         ],
         [
-          [34, 35],
-          [39, 41]
+          [45, 31],
+          [49, 36]
         ],
         [
-          [40, 54],
-          [35, 60, 31, 62]
+          [51, 49],
+          [48, 56, 42, 62]
         ],
         [
-          [78, 36],
-          [74, 47, 66, 49]
+          [91, 32],
+          [87, 39, 79, 43]
         ],
         [
-          [56, 49],
-          [70, 57, 75, 69],
-          [69, 79, 59, 81]
+          [68, 47],
+          [79, 54, 92, 64],
+          [88, 72, 82, 76]
         ]
       ];
       const paint = (paths, width2, color, dy = 0, yaw = false, depth = 0) => {
@@ -2536,47 +2566,49 @@
       };
       c.save();
       try {
-        c.translate(this.width / 2 - 146 * scale, 84 + this.homeGroupOffset);
+        c.translate(this.width / 2 - 159 * scale, 94 + this.homeGroupOffset);
         c.scale(scale, scale);
-        const candy = c.createLinearGradient(0, 0, 0, 90);
-        candy.addColorStop(0, "#fff6b4");
-        candy.addColorStop(0.42, "#ffda68");
-        candy.addColorStop(1, "#f5ae3e");
-        paint(zhuan, 23, "#84614655", 3);
-        paint(zhuan, 22, "#fff5ce");
-        paint(zhuan, 19, "#62422b");
-        paint(zhuan, 12.5, candy);
+        const jelly = (light, base) => {
+          const gradient = c.createLinearGradient(0, 0, 0, 82);
+          gradient.addColorStop(0, light);
+          gradient.addColorStop(1, base);
+          return gradient;
+        };
+        paint(zhuan, 25, "#244a6340", 3);
+        paint(zhuan, 24, "#fffbee");
+        paint(zhuan, 21, "#254a62");
+        paint(zhuan, 13, jelly("#ffd2c8", "#ff8c8c"));
         paint(
           [
             [
-              [5, 12],
-              [15, 11, 25, 12]
+              [3, 10],
+              [17, 8, 30, 10]
             ],
             [
-              [47, 12],
-              [60, 11, 75, 12]
+              [56, 10],
+              [73, 8, 89, 10]
             ]
           ],
-          1.5,
-          "#fffbed"
+          1.8,
+          "#fff5ee"
         );
         c.save();
         try {
-          c.translate(110, 6);
+          c.translate(124, 4);
           for (let depth = -2; depth <= -1; depth++)
-            paint(ge, 24, "#9b713e", 2, true, depth);
-          paint(ge, 27, "#fff5ce", 0, true, 0);
-          paint(ge, 24, "#62422b", 0, true, 0);
-          paint(ge, 17, candy, 0, true, 0);
+            paint(ge, 24, "#244a6340", 2, true, depth);
+          paint(ge, 28, "#fffbee", 0, true, 0);
+          paint(ge, 25, "#254a62", 0, true, 0);
+          paint(ge, 17, jelly("#d5fff1", "#67d6ba"), 0, true, 0);
           paint(
             [
               [
-                [29, 10],
-                [21, 28, 9, 35]
+                [29, 9],
+                [21, 22, 9, 28]
               ],
               [
-                [29, 47],
-                [29, 62, 29, 75]
+                [29, 43],
+                [29, 56, 29, 65]
               ]
             ],
             1.7,
@@ -2590,20 +2622,20 @@
         }
         c.save();
         try {
-          c.translate(215, 4);
-          paint(qiu, 22, "#84614655", 3);
-          paint(qiu, 21, "#fff5ce");
-          paint(qiu, 18, "#62422b");
-          paint(qiu, 11.5, candy);
+          c.translate(224, 0);
+          paint(qiu, 21.5, "#244a6340", 3);
+          paint(qiu, 20.5, "#fffbee");
+          paint(qiu, 17.5, "#254a62");
+          paint(qiu, 11, jelly("#fff0ab", "#ffc45c"));
           paint(
             [
               [
-                [10, 13],
-                [18, 7, 26, 8]
+                [7, 12],
+                [15, 8, 21, 9]
               ],
               [
-                [38, 19],
-                [54, 13, 67, 21]
+                [46, 16],
+                [65, 10, 83, 16]
               ]
             ],
             1.5,
@@ -2974,7 +3006,7 @@
       } else if (this.homePanel === "records") {
         const records = this.game.records, pages = Math.max(1, Math.ceil(records.entries.length / 4));
         this.recordPage = Math.min(this.recordPage, pages - 1);
-        this.text("\u4EC5\u672C\u673A \xB7 \u6700\u8FD130\u5C40", w - 30, 179, 12, "#617366", "right");
+        this.text("\u4EC5\u672C\u673A \xB7 \u6700\u8FD130\u5C40", w / 2, 145, 12, "#617366", "center");
         if (!records.available)
           this.text("\u8BB0\u5F55\u6682\u65F6\u65E0\u6CD5\u8BFB\u53D6", w / 2, 208, 16, "#8b3e26", "center");
         else if (!records.entries.length)
@@ -2987,8 +3019,8 @@
             "center"
           );
         records.entries.slice(this.recordPage * 4, this.recordPage * 4 + 4).forEach((r, i) => {
-          const y = 214 + i * 78, date = new Date(r.endedAt);
-          this.rect(26, y, w - 52, 66, "#e6edda", 12);
+          const y = 170 + i * 70, date = new Date(r.endedAt);
+          this.rect(26, y, w - 52, 62, "#e6edda", 12);
           this.text(
             `${r.difficulty} \xB7 ${r.outcome === "won" ? "\u901A\u5173" : "\u672A\u901A\u5173"}`,
             38,
@@ -3017,7 +3049,7 @@
             "records-prev",
             "\u4E0A\u4E00\u9875",
             28,
-            536,
+            h - 206,
             100,
             36,
             () => this.recordPage--,
@@ -3027,7 +3059,7 @@
             "records-next",
             "\u4E0B\u4E00\u9875",
             w - 128,
-            536,
+            h - 206,
             100,
             36,
             () => this.recordPage++,
@@ -3050,8 +3082,8 @@
         "home-dialog-close",
         "\u8FD4\u56DE",
         28,
-        this.homePanel === "records" ? 142 : Math.min(h - 128, 460),
-        this.homePanel === "records" ? 96 : w - 56,
+        this.homePanel === "records" ? h - 140 : Math.min(h - 128, 460),
+        w - 56,
         40,
         () => this.homePanel = null
       );

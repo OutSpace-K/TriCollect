@@ -1,4 +1,4 @@
-export const VERSION = "0.1.23";
+export const VERSION = "0.1.24";
 export const DISPLAY_NAME = "转个“球”";
 export const RULE = "tricollect-5-variable-height";
 export const CONFIG = Object.freeze({
@@ -24,6 +24,7 @@ export const PRESETS = [
     height: 5,
     heights: [5],
     groups: 1,
+    challengeGroups: 1,
     types: 5,
     seed: 104729,
   },
@@ -34,6 +35,7 @@ export const PRESETS = [
     height: 7,
     heights: [5, 6, 7],
     groups: 2,
+    challengeGroups: 3,
     types: 6,
     seed: 130363,
   },
@@ -44,6 +46,7 @@ export const PRESETS = [
     height: 7,
     heights: [5, 6, 7],
     groups: 3,
+    challengeGroups: 4,
     types: 7,
     seed: 155921,
   },
@@ -55,6 +58,7 @@ export type Preset = {
   height: number;
   heights?: readonly number[];
   groups?: number;
+  challengeGroups?: number;
   types: number;
   seed: number;
 };

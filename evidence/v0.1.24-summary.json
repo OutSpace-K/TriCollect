@@ -1,0 +1,132 @@
+{
+  "version": "0.1.24",
+  "baseline": "df162a434077e7aa7f47cc9ec275a25d1558cf4e",
+  "scope": [
+    "bottom records return raised 40 logical px from original",
+    "new compact bubble glyph geometry and coral/mint/gold palette",
+    "normal 3 groups and hard 4 safe interleaved groups",
+    "versioned generation preserving old saves",
+    "local-only result assistance metadata and trial design"
+  ],
+  "screens": [
+    [
+      320,
+      568
+    ],
+    [
+      320,
+      660
+    ],
+    [
+      390,
+      844
+    ]
+  ],
+  "pageStatesPerScreen": 23,
+  "titleFrameTimesMs": [
+    1800,
+    2322,
+    2600,
+    2878,
+    3400
+  ],
+  "difficultyMetrics": [
+    {
+      "preset": 0,
+      "legacyMeanTray": 1,
+      "newMeanTray": 1,
+      "maxPendingColors": 1
+    },
+    {
+      "preset": 1,
+      "legacyMeanTray": 1.7549999999999997,
+      "newMeanTray": 2.494761904761905,
+      "maxPendingColors": 3
+    },
+    {
+      "preset": 2,
+      "legacyMeanTray": 2.4815277777777776,
+      "newMeanTray": 3.0488888888888903,
+      "maxPendingColors": 4
+    }
+  ],
+  "newDifficultyLayoutsVerified": 300,
+  "humanHardWinRate": {
+    "target": 0.3,
+    "measured": null,
+    "humanSampleSize": 0,
+    "allGeneratedLayoutsRequireSolution": true
+  },
+  "compatibility": {
+    "legacySeed": 789,
+    "frozenHashes": [
+      "d22f7d4",
+      "f39022b6",
+      "e5758a97"
+    ],
+    "legacyResumeAndUndo": true
+  },
+  "limits": [
+    "No real WeChat/phone",
+    "No real rewarded ads",
+    "No human listening",
+    "No human difficulty trial",
+    "Local last 30 completed records are not a representative population sample"
+  ],
+  "buildSha256": {
+    "dist/browser/app.js": "71bad616413b9b7490b7b78a916338999a82749221d9ec73f00c2e75f5be4943",
+    "dist/wechat/game.js": "d1ac5428645a5b5e3d936f0f3c219f461b9d2971e2910e8dd358a5c271f737d2"
+  },
+  "fullTests": {
+    "passed": 118,
+    "failed": 0,
+    "newDifficultySeeds": 300,
+    "randomEntrySeeds": 300,
+    "pocketSeeds": 300
+  },
+  "finalChecksPassed": [
+    "build",
+    "typecheck",
+    "format",
+    "layout23states3sizes",
+    "nativeMock",
+    "liftAdPersistence",
+    "toolMotion",
+    "audio",
+    "showroom"
+  ],
+  "e2e": {
+    "passed": true,
+    "platform": "Chromium only; not WeChat device",
+    "directPicks": 447,
+    "fallbackPicks": 0,
+    "results": [
+      {
+        "check": "browser real 10-second clock",
+        "elapsedMs": 10026.800000000745,
+        "chargedMs": 10032.200000000186
+      },
+      "12 consecutive 250ms pointer rotations completed without lock",
+      "one-frame exception recovered; pause/home/reload regression preserved",
+      {
+        "preset": 0,
+        "picks": 105,
+        "wonWithoutAds": true,
+        "remainingMs": 279695.59999999683
+      },
+      {
+        "preset": 1,
+        "picks": 126,
+        "wonWithoutAds": true,
+        "remainingMs": 291454.3999999985
+      },
+      {
+        "preset": 2,
+        "picks": 216,
+        "wonWithoutAds": true,
+        "remainingMs": 276339.8999999836
+      }
+    ],
+    "errors": []
+  }
+}

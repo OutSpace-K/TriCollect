@@ -1306,114 +1306,112 @@ export class Scene {
   }
   private homeTitle() {
     const c = this.ctx,
-      scale = Math.min(1, (this.width - 32) / 316);
+      scale = Math.min(1, (this.width - 32) / 342);
     const cycle = this.mascotTime % 9000;
     const t = Math.max(0, Math.min(1, (cycle - 1800) / 1600));
     this.titleAngle =
       cycle >= 1800 && cycle < 3400 ? t * t * (3 - 2 * t) * Math.PI * 2 : 0;
     // Each entry is a real stroke; there is no enclosing circle or font backing plate.
     type Stroke = number[][];
-    // A new broad-letter skeleton, not a dilation of the narrow previous title.
-    // 26px row spacing keeps counters open with the heavy 19px dark stroke.
+    // Wide, compact bubble lettering. Keep the radicals separated at small sizes.
     const zhuan: Stroke[] = [
       [
-        [1, 14],
-        [15, 11, 29, 14],
+        [0, 12],
+        [16, 10, 34, 12],
       ],
       [
         [18, 0],
-        [12, 23, 3, 40],
-        [16, 42, 30, 40],
+        [10, 20, 6, 34],
+        [20, 36, 34, 34],
       ],
       [
-        [0, 66],
-        [16, 63, 31, 65],
+        [0, 58],
+        [17, 56, 35, 58],
       ],
       [
-        [18, 31],
-        [19, 60, 17, 85],
+        [19, 28],
+        [20, 53, 19, 78],
       ],
       [
-        [46, 14],
-        [63, 11, 79, 14],
+        [53, 12],
+        [73, 10, 93, 12],
       ],
       [
-        [44, 40],
-        [62, 37, 81, 40],
+        [51, 35],
+        [72, 33, 96, 35],
       ],
       [
-        [64, 0],
-        [61, 27, 51, 62],
-        [65, 65, 79, 62],
-        [74, 67, 69, 71],
+        [74, 0],
+        [68, 29, 59, 55],
+        [75, 57, 94, 55],
+        [89, 61, 82, 66],
       ],
       [
-        [48, 78],
-        [55, 82, 62, 86],
+        [63, 70],
+        [69, 75, 76, 78],
       ],
     ];
     const ge: Stroke[] = [
       [
-        [31, 5],
-        [23, 27, 3, 39],
+        [31, 4],
+        [23, 22, 1, 33],
       ],
       [
-        [31, 5],
-        [42, 27, 61, 39],
+        [31, 4],
+        [43, 22, 64, 33],
       ],
       [
-        [31, 42],
-        [31, 63, 31, 84],
+        [31, 37],
+        [31, 55, 31, 72],
       ],
     ];
-    // Wider 王/求 spacing makes room for a thick rim while their curved strokes
-    // still describe a sphere: there is no enclosing circle behind the character.
+    // The two radicals stay legible; their curved extremities make the round silhouette.
     const qiu: Stroke[] = [
       [
-        [8, 15],
-        [18, 5, 29, 9],
+        [5, 14],
+        [14, 8, 24, 10],
       ],
       [
-        [2, 43],
-        [15, 37, 28, 40],
+        [0, 39],
+        [12, 36, 24, 38],
       ],
       [
-        [8, 70],
-        [20, 81, 32, 74],
+        [5, 63],
+        [15, 71, 25, 66],
       ],
       [
-        [19, 12],
-        [4, 42, 20, 73],
+        [15, 12],
+        [8, 39, 16, 65],
       ],
       [
-        [36, 21],
-        [55, 11, 72, 24],
+        [43, 18],
+        [65, 10, 87, 18],
       ],
       [
-        [48, 3],
-        [59, 43, 49, 80],
-        [43, 87, 37, 80],
+        [63, 0],
+        [68, 39, 64, 74],
+        [61, 81, 54, 77],
       ],
       [
-        [66, 7],
-        [70, 10],
+        [85, -2],
+        [89, 1],
       ],
       [
-        [34, 35],
-        [39, 41],
+        [45, 31],
+        [49, 36],
       ],
       [
-        [40, 54],
-        [35, 60, 31, 62],
+        [51, 49],
+        [48, 56, 42, 62],
       ],
       [
-        [78, 36],
-        [74, 47, 66, 49],
+        [91, 32],
+        [87, 39, 79, 43],
       ],
       [
-        [56, 49],
-        [70, 57, 75, 69],
-        [69, 79, 59, 81],
+        [68, 47],
+        [79, 54, 92, 64],
+        [88, 72, 82, 76],
       ],
     ];
     const paint = (
@@ -1462,49 +1460,51 @@ export class Scene {
     };
     c.save();
     try {
-      c.translate(this.width / 2 - 146 * scale, 84 + this.homeGroupOffset);
+      c.translate(this.width / 2 - 159 * scale, 94 + this.homeGroupOffset);
       c.scale(scale, scale);
-      // Shared warm candy material: one soft shadow, a crisp rim and sparse glints.
-      const candy = c.createLinearGradient(0, 0, 0, 90);
-      candy.addColorStop(0, "#fff6b4");
-      candy.addColorStop(0.42, "#ffda68");
-      candy.addColorStop(1, "#f5ae3e");
-      paint(zhuan, 23, "#84614655", 3);
-      paint(zhuan, 22, "#fff5ce");
-      paint(zhuan, 19, "#62422b");
-      paint(zhuan, 12.5, candy);
+      // One crisp navy outline, soft pastel body and restrained highlights.
+      const jelly = (light: string, base: string) => {
+        const gradient = c.createLinearGradient(0, 0, 0, 82);
+        gradient.addColorStop(0, light);
+        gradient.addColorStop(1, base);
+        return gradient;
+      };
+      paint(zhuan, 25, "#244a6340", 3);
+      paint(zhuan, 24, "#fffbee");
+      paint(zhuan, 21, "#254a62");
+      paint(zhuan, 13, jelly("#ffd2c8", "#ff8c8c"));
       paint(
         [
           [
-            [5, 12],
-            [15, 11, 25, 12],
+            [3, 10],
+            [17, 8, 30, 10],
           ],
           [
-            [47, 12],
-            [60, 11, 75, 12],
+            [56, 10],
+            [73, 8, 89, 10],
           ],
         ],
-        1.5,
-        "#fffbed",
+        1.8,
+        "#fff5ee",
       );
       c.save();
       try {
-        c.translate(110, 6);
+        c.translate(124, 4);
         // Preserve the vertical-axis flip with shallow extrusion, never a flat spin.
         for (let depth = -2; depth <= -1; depth++)
-          paint(ge, 24, "#9b713e", 2, true, depth);
-        paint(ge, 27, "#fff5ce", 0, true, 0);
-        paint(ge, 24, "#62422b", 0, true, 0);
-        paint(ge, 17, candy, 0, true, 0);
+          paint(ge, 24, "#244a6340", 2, true, depth);
+        paint(ge, 28, "#fffbee", 0, true, 0);
+        paint(ge, 25, "#254a62", 0, true, 0);
+        paint(ge, 17, jelly("#d5fff1", "#67d6ba"), 0, true, 0);
         paint(
           [
             [
-              [29, 10],
-              [21, 28, 9, 35],
+              [29, 9],
+              [21, 22, 9, 28],
             ],
             [
-              [29, 47],
-              [29, 62, 29, 75],
+              [29, 43],
+              [29, 56, 29, 65],
             ],
           ],
           1.7,
@@ -1518,20 +1518,20 @@ export class Scene {
       }
       c.save();
       try {
-        c.translate(215, 4);
-        paint(qiu, 22, "#84614655", 3);
-        paint(qiu, 21, "#fff5ce");
-        paint(qiu, 18, "#62422b");
-        paint(qiu, 11.5, candy);
+        c.translate(224, 0);
+        paint(qiu, 21.5, "#244a6340", 3);
+        paint(qiu, 20.5, "#fffbee");
+        paint(qiu, 17.5, "#254a62");
+        paint(qiu, 11, jelly("#fff0ab", "#ffc45c"));
         paint(
           [
             [
-              [10, 13],
-              [18, 7, 26, 8],
+              [7, 12],
+              [15, 8, 21, 9],
             ],
             [
-              [38, 19],
-              [54, 13, 67, 21],
+              [46, 16],
+              [65, 10, 83, 16],
             ],
           ],
           1.5,
@@ -1931,7 +1931,7 @@ export class Scene {
       const records = this.game.records,
         pages = Math.max(1, Math.ceil(records.entries.length / 4));
       this.recordPage = Math.min(this.recordPage, pages - 1);
-      this.text("仅本机 · 最近30局", w - 30, 179, 12, "#617366", "right");
+      this.text("仅本机 · 最近30局", w / 2, 145, 12, "#617366", "center");
       if (!records.available)
         this.text("记录暂时无法读取", w / 2, 208, 16, "#8b3e26", "center");
       else if (!records.entries.length)
@@ -1946,9 +1946,9 @@ export class Scene {
       records.entries
         .slice(this.recordPage * 4, this.recordPage * 4 + 4)
         .forEach((r, i) => {
-          const y = 214 + i * 78,
+          const y = 170 + i * 70,
             date = new Date(r.endedAt);
-          this.rect(26, y, w - 52, 66, "#e6edda", 12);
+          this.rect(26, y, w - 52, 62, "#e6edda", 12);
           this.text(
             `${r.difficulty} · ${r.outcome === "won" ? "通关" : "未通关"}`,
             38,
@@ -1977,7 +1977,7 @@ export class Scene {
           "records-prev",
           "上一页",
           28,
-          536,
+          h - 206,
           100,
           36,
           () => this.recordPage--,
@@ -1987,7 +1987,7 @@ export class Scene {
           "records-next",
           "下一页",
           w - 128,
-          536,
+          h - 206,
           100,
           36,
           () => this.recordPage++,
@@ -2010,8 +2010,8 @@ export class Scene {
       "home-dialog-close",
       "返回",
       28,
-      this.homePanel === "records" ? 142 : Math.min(h - 128, 460),
-      this.homePanel === "records" ? 96 : w - 56,
+      this.homePanel === "records" ? h - 140 : Math.min(h - 128, 460),
+      w - 56,
       40,
       () => (this.homePanel = null),
     );

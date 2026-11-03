@@ -26,7 +26,7 @@ export type Level = {
   preset: string;
   fallback: boolean;
 };
-export function generate(p: Preset, seed: number): Level {
+export function generate(p: Preset, seed: number, revision: 1 | 2 = 2): Level {
   const rnd = random(seed),
     tubes: Tube[] = [];
   for (let q = 0; q < p.side; q++)
@@ -67,11 +67,12 @@ export function generate(p: Preset, seed: number): Level {
     });
     t.balls.pop();
   }
-  // Difficulty controls simultaneous groups; at most 2 per group can wait.
-  // 1/2/3 groups cap the witness tray at 2/4/6, below the 7-slot failure.
+  // Revision 1 reproduces existing saved boards exactly. Revision 2 keeps
+  // easy unchanged, raises normal to 3 groups, and safely interleaves 4 in hard.
   if (order.length % 3) throw Error("Total must be divisible by three");
   const types: number[] = [];
-  const groups = p.groups ?? 2;
+  const groups =
+    (revision === 2 ? p.challengeGroups : p.groups) ?? p.groups ?? 2;
   for (let g = 0; g < order.length / 3; g += groups) {
     const window: number[] = [];
     for (let k = 0; k < groups && g + k < order.length / 3; k++)
@@ -80,7 +81,27 @@ export function generate(p: Preset, seed: number): Level {
       const j = Math.floor(rnd() * (i + 1));
       [window[i], window[j]] = [window[j], window[i]];
     }
-    types.push(...window);
+    if (groups <= 3) types.push(...window);
+    else {
+      // Four concurrent colors increase planning pressure without changing geometry.
+      // Draw only moves that leave at most six waiting balls. With <=4 colors,
+      // six waiting balls necessarily contain a pair that can be completed.
+      const waiting = new Map<number, number>();
+      const emit = (type: number) => {
+        window.splice(window.indexOf(type), 1);
+        waiting.set(type, ((waiting.get(type) ?? 0) + 1) % 3);
+        types.push(type);
+      };
+      for (const type of new Set(window)) emit(type);
+      while (window.length) {
+        const size = [...waiting.values()].reduce((a, b) => a + b, 0);
+        const choices = [...new Set(window)].filter(
+          (type) => size < 6 || waiting.get(type) === 2,
+        );
+        if (!choices.length) throw Error("No safe assignment");
+        emit(choices[Math.floor(rnd() * choices.length)]);
+      }
+    }
   }
   order.forEach(
     (o, i) =>
@@ -99,12 +120,16 @@ export function generate(p: Preset, seed: number): Level {
     fallback: false,
   };
 }
-export function createLevel(index: number, seed?: number): Level {
+export function createLevel(
+  index: number,
+  seed?: number,
+  revision: 1 | 2 = 2,
+): Level {
   const p = PRESETS[index] ?? PRESETS[0];
   try {
-    return generate(p, seed ?? p.seed);
+    return generate(p, seed ?? p.seed, revision);
   } catch {
-    const level = generate(p, p.seed);
+    const level = generate(p, p.seed, revision);
     return { ...level, fallback: true };
   }
 }
