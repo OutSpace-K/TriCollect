@@ -10,36 +10,66 @@
       this.create = create;
       __publicField(this, "player");
       __publicField(this, "foreground", true);
+      __publicField(this, "interrupted", false);
+      __publicField(this, "wanted", false);
       __publicField(this, "playing", false);
+      __publicField(this, "pending", false);
       __publicField(this, "failed", false);
       __publicField(this, "attempt", 0);
     }
     gesture(enabled, phase) {
+      if (this.pending) this.suspend();
       this.failed = false;
       this.update(enabled, phase);
     }
     update(enabled, phase) {
-      const wanted = enabled && this.foreground && ["home", "intro", "ready", "active", "resolving", "rotating"].includes(
+      this.wanted = enabled && this.foreground && !this.interrupted && ["home", "intro", "ready", "active", "resolving", "rotating"].includes(
         phase
       );
-      if (!wanted || this.failed) {
+      if (!this.wanted || this.failed) {
         this.suspend();
         return;
       }
-      if (this.playing) return;
+      if (this.playing || this.pending) return;
       try {
         if (!this.player) {
           this.player = this.create();
           this.player.onError?.(() => this.fail());
+          this.player.onPlay?.(() => {
+            if (!this.wanted || this.failed || !this.pending && !this.playing) {
+              this.pausePlayer();
+              return;
+            }
+            this.pending = false;
+            this.playing = true;
+          });
+          const stopped = () => {
+            if (!this.playing || this.player?.paused === false) return;
+            this.playing = false;
+            this.failed = true;
+          };
+          this.player.onPause?.(stopped);
+          this.player.onStop?.(stopped);
         }
         if (this.failed) return;
-        this.playing = true;
+        this.pending = true;
         const attempt = ++this.attempt;
         const result = this.player.play();
-        if (result && typeof result.then === "function")
-          void result.catch(() => {
-            if (this.playing && attempt === this.attempt) this.fail();
-          });
+        if (result && typeof result.then === "function") {
+          void result.then(
+            () => {
+              if (attempt !== this.attempt) return;
+              this.pending = false;
+              this.playing = true;
+            },
+            () => {
+              if (attempt === this.attempt) this.fail();
+            }
+          );
+        } else if (!this.player.onPlay) {
+          this.pending = false;
+          this.playing = true;
+        }
       } catch {
         this.fail();
       }
@@ -48,10 +78,20 @@
       this.foreground = value;
       if (!value) this.suspend();
     }
+    setInterrupted(value) {
+      this.interrupted = value;
+      if (value) this.suspend();
+      else this.failed = false;
+    }
     suspend() {
-      if (!this.playing) return;
+      this.wanted = false;
+      if (!this.playing && !this.pending) return;
       this.playing = false;
+      this.pending = false;
       this.attempt++;
+      this.pausePlayer();
+    }
+    pausePlayer() {
       try {
         this.player?.pause();
       } catch {
@@ -62,6 +102,13 @@
       this.suspend();
     }
   };
+
+  // src/platform/gesture.ts
+  function gesture(dx, dy) {
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy))
+      return dx > 0 ? "right" : "left";
+    return Math.hypot(dx, dy) <= 18 ? "tap" : null;
+  }
 
   // src/platform/frame.ts
   function startFrames(schedule, work, onError) {
@@ -1194,13 +1241,13 @@
   }
   function projection(side, width, top, bottom, angle, maxCapacity = 5) {
     const edge = side - 1;
-    const lane = (width - 32) / (2 * edge / Math.sqrt(3) + 1), radius = lane / 2;
+    const lane = (width - 20) / (2 * edge / Math.sqrt(3) + 1), radius = lane / 2;
     const originalDepth = Math.min(108, edge * 18, (bottom - top) * 0.24);
-    const depthSpace = originalDepth * 0.8;
+    const depthSpace = originalDepth * 0.52;
     const zScale = depthSpace / (edge * Math.sqrt(3) / 2), extent = depthSpace * 2 / 3;
-    const maxHeight = Math.min(260, bottom - top - 52 - depthSpace * 4 / 3);
+    const maxHeight = Math.min(300, bottom - top - 52 - depthSpace * 4 / 3);
     const ballRadius = Math.min(
-      radius * 0.88,
+      radius * 0.92,
       (maxHeight - 20) / (maxCapacity * 2)
     ), step = ballRadius * 2, height = step * maxCapacity + 20;
     const axis = {
@@ -1216,11 +1263,12 @@
 
   // src/render/scene.ts
   var Scene = class {
-    constructor(ctx2, game2, width, height) {
+    constructor(ctx2, game2, width, height, displayScale = 1) {
       this.ctx = ctx2;
       this.game = game2;
       this.width = width;
       this.height = height;
+      this.displayScale = displayScale;
       __publicField(this, "buttons", []);
       __publicField(this, "homePanel", null);
       __publicField(this, "recordPage", 0);
@@ -1628,7 +1676,7 @@
         return;
       }
       const trayY = this.trayTop, boardBottom = trayY - 92;
-      this.drawBoard(147, boardBottom);
+      this.drawBoard(133, boardBottom);
       this.drawMisclick();
       this.button(
         "pause",
@@ -2326,7 +2374,7 @@
           topY
         });
         if (!front) continue;
-        const hitRadius = Math.min(radius * 0.87, step * 0.49);
+        const hitRadius = Math.max(ballRadius + 5, 22 / this.displayScale);
         if (g.hint === t.id)
           this.text(
             "\u2726",
@@ -2336,7 +2384,13 @@
             "#3849b2",
             "center"
           );
-        this.targets.push({ id: t.id, x, y: topY, r: hitRadius });
+        this.targets.push({
+          id: t.id,
+          x,
+          y: topY,
+          r: hitRadius,
+          visualRadius: ballRadius
+        });
       }
       if (g.phase === "resolving") {
         const prev = g.state.history.at(-1), t = prev?.tubes.find(
@@ -3262,7 +3316,16 @@
         return;
       }
       if (this.game.locked) return;
-      const target = [...this.targets].reverse().find((t) => Math.hypot(x - t.x, y - t.y) <= t.r);
+      const nearest = [...this.targets].sort(
+        (a, b) => Math.hypot(x - a.x, y - a.y) - Math.hypot(x - b.x, y - b.y)
+      );
+      const direct = nearest.find(
+        (t) => Math.hypot(x - t.x, y - t.y) <= t.visualRadius
+      );
+      const blocked = !direct && [...this.ballPositions, ...this.ghostPositions].some(
+        (b) => Math.hypot(x - b.x, y - b.y) <= b.r
+      );
+      const target = direct ?? (!blocked ? nearest.find((t) => Math.hypot(x - t.x, y - t.y) <= t.r) : void 0);
       if (target) {
         this.misclickFeedback = null;
         this.game.pick(target.id);
@@ -3361,6 +3424,7 @@
     canvas.width = w * dpr;
     canvas.height = h * dpr;
     displayFactor = Math.min(1, h / 660);
+    scene.displayScale = displayFactor;
     ctx.setTransform(dpr * displayFactor, 0, 0, dpr * displayFactor, 0, 0);
     scene.width = w / displayFactor;
     scene.height = h / displayFactor;
@@ -3392,11 +3456,11 @@
   canvas.addEventListener("pointercancel", () => start = null);
   canvas.addEventListener("pointerup", (e) => {
     if (!start) return;
-    const dx = e.offsetX - start.x, dy = e.offsetY - start.y;
+    const action = gesture(e.offsetX - start.x, e.offsetY - start.y);
     start = null;
-    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy))
-      game.rotate(dx > 0 ? 1 : -1);
-    else if (Math.hypot(dx, dy) < 15)
+    if (action === "right" || action === "left")
+      game.rotate(action === "right" ? 1 : -1);
+    else if (action === "tap")
       scene.tap(e.offsetX / displayFactor, e.offsetY / displayFactor);
     music.gesture(game.state.sound, game.phase);
   });

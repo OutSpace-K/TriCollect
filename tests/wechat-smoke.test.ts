@@ -13,6 +13,7 @@ async function boot(
   live = false,
   initiallyFrozen = false,
   brokenImage = false,
+  blockFirstAutoplay = false,
 ) {
   const images: string[] = [];
   let backgroundDraws = 0;
@@ -88,6 +89,7 @@ async function boot(
       },
     },
   );
+  const audioOptions: WechatMinigame.SetInnerAudioOption[] = [];
   const audioPlayers: {
     src: string;
     loop: boolean;
@@ -95,6 +97,12 @@ async function boot(
     plays: number;
     pauses: number;
     playing: boolean;
+    paused: boolean;
+    obeyMuteSwitch: boolean;
+    emit: (event: string) => void;
+    onPlay: (f: () => void) => void;
+    onPause: (f: () => void) => void;
+    onStop: (f: () => void) => void;
     play: () => void;
     pause: () => void;
     stop: () => void;
@@ -132,7 +140,14 @@ async function boot(
     getPerformance: () => ({
       now: () => frozenRaw ?? rawMs() * unitsPerMs,
     }),
+    setInnerAudioOption: (option: WechatMinigame.SetInnerAudioOption) => {
+      audioOptions.push(option);
+    },
     createInnerAudioContext: () => {
+      const listeners: Record<string, (() => void)[]> = {};
+      const on = (event: string, callback: () => void) => {
+        (listeners[event] ??= []).push(callback);
+      };
       const player = {
         src: "",
         loop: false,
@@ -140,19 +155,39 @@ async function boot(
         plays: 0,
         pauses: 0,
         playing: false,
+        paused: true,
+        obeyMuteSwitch: true,
+        emit(event: string) {
+          if (event === "play") {
+            this.playing = true;
+            this.paused = false;
+          } else if (
+            event === "pause" ||
+            event === "stop" ||
+            event === "error"
+          ) {
+            this.playing = false;
+            this.paused = true;
+          }
+          for (const callback of listeners[event] ?? []) callback();
+        },
         play() {
           if (brokenAudio) throw Error("injected audio failure");
           this.plays++;
-          this.playing = true;
+          if (blockFirstAutoplay && this.loop && this.plays === 1) return;
+          this.emit("play");
         },
         pause() {
           this.pauses++;
-          this.playing = false;
+          this.emit("pause");
         },
         stop() {
-          this.playing = false;
+          this.emit("stop");
         },
-        onError: noop,
+        onError: (f: () => void) => on("error", f),
+        onPlay: (f: () => void) => on("play", f),
+        onPause: (f: () => void) => on("pause", f),
+        onStop: (f: () => void) => on("stop", f),
       };
       audioPlayers.push(player);
       return player;
@@ -162,6 +197,8 @@ async function boot(
     onTouchStart: (f: Function) => (handlers.start = f),
     onTouchEnd: (f: Function) => (handlers.end = f),
     onTouchCancel: (f: Function) => (handlers.cancel = f),
+    onAudioInterruptionBegin: (f: Function) => (handlers.interruptionBegin = f),
+    onAudioInterruptionEnd: (f: Function) => (handlers.interruptionEnd = f),
     onHide: (f: Function) => (handlers.hide = f),
     onShow: (f: Function) => (handlers.show = f),
   };
@@ -213,7 +250,7 @@ async function boot(
       const layout = projection(
         saved.board.side,
         390,
-        147,
+        133,
         748 - 211,
         (saved.view * Math.PI * 2) / 3,
         Math.max(...saved.board.tubes.map((t) => t.capacity)),
@@ -272,6 +309,9 @@ async function boot(
       render();
     },
     audioPlayers,
+    audioOptions,
+    interruptAudio: () => handlers.interruptionBegin(),
+    endAudioInterruption: () => handlers.interruptionEnd(),
     canvasDepth: () => saveDepth,
     failNextRender: (text?: string) => {
       failRender = text ?? true;
@@ -514,7 +554,7 @@ for (const units of [1, 1000])
       secondPickAccepted: true,
     });
     writeFileSync(
-      "evidence/v0.1.24-animation-wallclock.json",
+      "evidence/v0.1.25-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -558,7 +598,7 @@ for (const units of [1, 1000])
       });
     }
     writeFileSync(
-      "evidence/v0.1.24-animation-wallclock.json",
+      "evidence/v0.1.25-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -601,7 +641,7 @@ for (const units of [1, 1000])
       frozenRotationPauseMs: interrupted,
     });
     writeFileSync(
-      "evidence/v0.1.24-animation-wallclock.json",
+      "evidence/v0.1.25-animation-wallclock.json",
       JSON.stringify(
         {
           scope:
@@ -679,4 +719,73 @@ test("native home hero restores canvas state after a paint fault", async () => {
   r.tap("返回首页", true);
   assert.ok(r.labels.some((l) => l.s.includes("开始游戏")));
   assert.equal(r.canvasDepth(), 0);
+});
+
+test("native audio configures silent-switch compatibility and retries blocked autoplay on first touch", async () => {
+  const r = await boot(new Map(), 1000, false, false, false, false, true);
+  assert.equal(r.audioOptions.length, 1);
+  assert.equal(r.audioOptions[0].obeyMuteSwitch, false);
+  const music = r.audioPlayers[0];
+  assert.equal(music.obeyMuteSwitch, false);
+  assert.equal(music.plays, 1);
+  assert.equal(music.playing, false);
+  for (let i = 0; i < 20; i++) r.render();
+  assert.equal(music.plays, 1);
+  r.tap("开始游戏", true);
+  assert.equal(music.plays, 2);
+  assert.equal(music.playing, true);
+  for (let i = 0; i < 20; i++) r.render();
+  assert.equal(music.plays, 2);
+});
+
+test("native audio interruption, mute and hidden lifecycle gate native play events", async () => {
+  const r = await boot();
+  beginRuntime(r);
+  const music = r.audioPlayers[0];
+  r.interruptAudio();
+  assert.equal(music.playing, false);
+  const before = music.plays;
+  for (let i = 0; i < 20; i++) r.render();
+  assert.equal(music.plays, before);
+  music.emit("play");
+  assert.equal(music.playing, false, "late play during interruption is paused");
+  r.endAudioInterruption();
+  r.render();
+  assert.equal(music.plays, before + 1);
+  assert.equal(music.playing, true);
+
+  r.interruptAudio();
+  r.tap("声音开", true);
+  r.endAudioInterruption();
+  r.render();
+  assert.equal(music.playing, false, "interruption end respects game mute");
+  assert.equal(decode(r.storage.get(SAVE_KEY)!)!.sound, false);
+  music.emit("play");
+  assert.equal(music.playing, false, "late play after mute is paused");
+  r.hide();
+  r.show();
+  assert.equal(music.playing, false);
+  r.tap("继续游戏");
+  assert.equal(music.playing, false);
+  r.tap("静音", true);
+  assert.equal(music.playing, true);
+
+  r.interruptAudio();
+  r.hide();
+  r.endAudioInterruption();
+  const hiddenPlays = music.plays;
+  r.render();
+  assert.equal(music.plays, hiddenPlays);
+  music.emit("play");
+  assert.equal(music.playing, false, "late play while hidden is paused");
+  r.show();
+  assert.equal(music.playing, false, "show retains the game's paused phase");
+  r.tap("继续游戏");
+  assert.equal(music.playing, true);
+
+  r.tap("暂停", true);
+  r.interruptAudio();
+  r.endAudioInterruption();
+  r.render();
+  assert.equal(music.playing, false, "interruption end never bypasses pause");
 });

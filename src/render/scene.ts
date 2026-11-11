@@ -120,7 +120,13 @@ export class Scene {
   private get trayTop() {
     return this.height - 119;
   }
-  targets: { id: string; x: number; y: number; r: number }[] = [];
+  targets: {
+    id: string;
+    x: number;
+    y: number;
+    r: number;
+    visualRadius: number;
+  }[] = [];
   private bodies: {
     id: string;
     x: number;
@@ -134,6 +140,7 @@ export class Scene {
     public game: Controller,
     public width: number,
     public height: number,
+    public displayScale = 1,
   ) {}
   private text(
     t: string,
@@ -523,7 +530,7 @@ export class Scene {
     }
     const trayY = this.trayTop,
       boardBottom = trayY - 92;
-    this.drawBoard(147, boardBottom);
+    this.drawBoard(133, boardBottom);
     this.drawMisclick();
     this.button(
       "pause",
@@ -1270,7 +1277,9 @@ export class Scene {
         topY,
       });
       if (!front) continue;
-      const hitRadius = Math.min(radius * 0.87, step * 0.49);
+      // Physical-pixel touch tolerance must survive short-screen scaling.
+      // The resolver below excludes non-top balls and chooses the nearest top.
+      const hitRadius = Math.max(ballRadius + 5, 22 / this.displayScale);
       if (g.hint === t.id)
         this.text(
           "✦",
@@ -1280,7 +1289,13 @@ export class Scene {
           "#3849b2",
           "center",
         );
-      this.targets.push({ id: t.id, x, y: topY, r: hitRadius });
+      this.targets.push({
+        id: t.id,
+        x,
+        y: topY,
+        r: hitRadius,
+        visualRadius: ballRadius,
+      });
     }
     if (g.phase === "resolving") {
       const prev = g.state.history.at(-1),
@@ -2306,9 +2321,24 @@ export class Scene {
       return;
     }
     if (this.game.locked) return;
-    const target = [...this.targets]
-      .reverse()
-      .find((t) => Math.hypot(x - t.x, y - t.y) <= t.r);
+    const nearest = [...this.targets].sort(
+      (a, b) => Math.hypot(x - a.x, y - a.y) - Math.hypot(x - b.x, y - b.y),
+    );
+    // A visible top ball always wins. Enlarged halos must never turn a tap on
+    // a lower/hidden ball into a different pick, or favor paint order in overlaps.
+    const direct = nearest.find(
+      (t) => Math.hypot(x - t.x, y - t.y) <= t.visualRadius,
+    );
+    const blocked =
+      !direct &&
+      [...this.ballPositions, ...this.ghostPositions].some(
+        (b) => Math.hypot(x - b.x, y - b.y) <= b.r,
+      );
+    const target =
+      direct ??
+      (!blocked
+        ? nearest.find((t) => Math.hypot(x - t.x, y - t.y) <= t.r)
+        : undefined);
     if (target) {
       this.misclickFeedback = null;
       this.game.pick(target.id);

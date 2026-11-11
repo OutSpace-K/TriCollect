@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { Controller } from "../src/controller";
 import { Scene } from "../src/render/scene";
 import { CONFIG, DISPLAY_NAME } from "../src/config";
-function setup() {
+function setup(preset = 0, width = 390, height = 844, scale = 1) {
   let time = 0,
     arc = false;
   const labels: string[] = [];
@@ -49,10 +49,10 @@ function setup() {
     },
     { available: false, label: "none", request: async () => "failed" },
   );
-  game.start();
+  game.start(preset);
   game.skipIntro();
   game.begin();
-  const scene = new Scene(ctx, game, 390, 844);
+  const scene = new Scene(ctx, game, width, height, scale);
   scene.render();
   return {
     scene,
@@ -391,4 +391,71 @@ test("held-ball control stays above tray and visually steady through pick/turn l
     x.scene.buttons.find((b) => b.id === "return-ball")!.disabled,
     false,
   );
+});
+
+test("phone-sized touch halos accept near misses without stealing lower or hidden balls", () => {
+  for (const preset of [0, 1, 2]) {
+    const scale = 472 / 660;
+    const x = setup(preset, 320 / scale, 660, scale);
+    for (const t of x.scene.targets) {
+      assert.ok(t.r * scale >= 22);
+      assert.ok(t.r > t.visualRadius);
+    }
+    const target = x.scene.targets[0];
+    const lower = x.scene.ballPositions.find(
+      (b) => b.tube === target.id && b.y > target.y,
+    )!;
+    const hidden = x.scene.ghostPositions.find((b) => b.tube === target.id)!;
+    for (const b of [lower, hidden]) {
+      x.scene.tap(b.x, b.y);
+      assert.equal(x.game.state.history.length, 0);
+    }
+    const near = x.scene.targets
+      .flatMap((t) =>
+        Array.from({ length: 24 }, (_, i) => ({
+          target: t,
+          x: t.x + Math.cos((i * Math.PI) / 12) * (t.visualRadius + 3),
+          y: t.y + Math.sin((i * Math.PI) / 12) * (t.visualRadius + 3),
+        })),
+      )
+      .find(
+        (p) =>
+          ![...x.scene.ballPositions, ...x.scene.ghostPositions].some(
+            (b) => Math.hypot(p.x - b.x, p.y - b.y) <= b.r,
+          ),
+      );
+    assert.ok(
+      near,
+      "there must be usable tolerance outside the painted spheres",
+    );
+    x.scene.tap(near.x, near.y);
+    assert.equal(x.game.state.history.length, 1);
+    assert.equal(
+      x.game.state.history[0].tubes.find((t) => t.id === near.target.id)!.balls
+        .length - 1,
+      x.game.board.tubes.find((t) => t.id === near.target.id)!.balls.length,
+    );
+    x.scene.tap(near.x, near.y);
+    assert.equal(x.game.state.history.length, 1, "repeat tap stays locked");
+  }
+});
+
+test("overlapping touch halos choose the nearest legal top rather than paint order", () => {
+  for (const reverse of [false, true]) {
+    const x = setup();
+    const [a, b] = x.scene.targets;
+    x.scene.targets = [
+      { ...a, x: 40, y: 250, r: 26, visualRadius: 8 },
+      { ...b, x: 80, y: 250, r: 26, visualRadius: 8 },
+    ];
+    if (reverse) x.scene.targets.reverse();
+    x.scene.ballPositions = [];
+    x.scene.ghostPositions = [];
+    const before = x.game.board.tubes.find((t) => t.id === b.id)!.balls.length;
+    x.scene.tap(62, 260);
+    assert.equal(
+      x.game.board.tubes.find((t) => t.id === b.id)!.balls.length,
+      before - 1,
+    );
+  }
 });

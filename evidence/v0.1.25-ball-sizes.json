@@ -1,0 +1,86 @@
+{
+  "scope": "Calculated CSS-pixel geometry with a simulated 72px top inset and 24px bottom inset; not real-device measurements. Touch radius can be larger; non-top balls clip the tolerance area.",
+  "results": [
+    {
+      "width": 320,
+      "height": 568,
+      "preset": 0,
+      "oldDiameterPx": 21.84,
+      "newDiameterPx": 27.38,
+      "increasePercent": 25.4,
+      "touchDiameterPx": 44
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "preset": 1,
+      "oldDiameterPx": 15.6,
+      "newDiameterPx": 19.56,
+      "increasePercent": 25.4,
+      "touchDiameterPx": 44
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "preset": 2,
+      "oldDiameterPx": 15.6,
+      "newDiameterPx": 19.56,
+      "increasePercent": 25.4,
+      "touchDiameterPx": 44
+    },
+    {
+      "width": 375,
+      "height": 667,
+      "preset": 0,
+      "oldDiameterPx": 26.42,
+      "newDiameterPx": 33.12,
+      "increasePercent": 25.4,
+      "touchDiameterPx": 44
+    },
+    {
+      "width": 375,
+      "height": 667,
+      "preset": 1,
+      "oldDiameterPx": 18.87,
+      "newDiameterPx": 23.66,
+      "increasePercent": 25.4,
+      "touchDiameterPx": 44
+    },
+    {
+      "width": 375,
+      "height": 667,
+      "preset": 2,
+      "oldDiameterPx": 18.87,
+      "newDiameterPx": 23.66,
+      "increasePercent": 25.4,
+      "touchDiameterPx": 44
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "preset": 0,
+      "oldDiameterPx": 44.4,
+      "newDiameterPx": 50.25,
+      "increasePercent": 13.2,
+      "touchDiameterPx": 44
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "preset": 1,
+      "oldDiameterPx": 31.71,
+      "newDiameterPx": 38.51,
+      "increasePercent": 21.4,
+      "touchDiameterPx": 44
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "preset": 2,
+      "oldDiameterPx": 31.17,
+      "newDiameterPx": 37.48,
+      "increasePercent": 20.3,
+      "touchDiameterPx": 44
+    }
+  ]
+}

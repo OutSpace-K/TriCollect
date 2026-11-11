@@ -19,43 +19,81 @@
     };
   }
 
+  // src/platform/gesture.ts
+  function gesture(dx, dy) {
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy))
+      return dx > 0 ? "right" : "left";
+    return Math.hypot(dx, dy) <= 18 ? "tap" : null;
+  }
+
   // src/platform/music.ts
   var Music = class {
     constructor(create) {
       this.create = create;
       __publicField(this, "player");
       __publicField(this, "foreground", true);
+      __publicField(this, "interrupted", false);
+      __publicField(this, "wanted", false);
       __publicField(this, "playing", false);
+      __publicField(this, "pending", false);
       __publicField(this, "failed", false);
       __publicField(this, "attempt", 0);
     }
     gesture(enabled, phase) {
+      if (this.pending) this.suspend();
       this.failed = false;
       this.update(enabled, phase);
     }
     update(enabled, phase) {
-      var _a, _b;
-      const wanted = enabled && this.foreground && ["home", "intro", "ready", "active", "resolving", "rotating"].includes(
+      var _a3, _b, _c, _d, _e, _f, _g, _h;
+      this.wanted = enabled && this.foreground && !this.interrupted && ["home", "intro", "ready", "active", "resolving", "rotating"].includes(
         phase
       );
-      if (!wanted || this.failed) {
+      if (!this.wanted || this.failed) {
         this.suspend();
         return;
       }
-      if (this.playing) return;
+      if (this.playing || this.pending) return;
       try {
         if (!this.player) {
           this.player = this.create();
-          (_b = (_a = this.player).onError) == null ? void 0 : _b.call(_a, () => this.fail());
+          (_b = (_a3 = this.player).onError) == null ? void 0 : _b.call(_a3, () => this.fail());
+          (_d = (_c = this.player).onPlay) == null ? void 0 : _d.call(_c, () => {
+            if (!this.wanted || this.failed || !this.pending && !this.playing) {
+              this.pausePlayer();
+              return;
+            }
+            this.pending = false;
+            this.playing = true;
+          });
+          const stopped = () => {
+            var _a4;
+            if (!this.playing || ((_a4 = this.player) == null ? void 0 : _a4.paused) === false) return;
+            this.playing = false;
+            this.failed = true;
+          };
+          (_f = (_e = this.player).onPause) == null ? void 0 : _f.call(_e, stopped);
+          (_h = (_g = this.player).onStop) == null ? void 0 : _h.call(_g, stopped);
         }
         if (this.failed) return;
-        this.playing = true;
+        this.pending = true;
         const attempt = ++this.attempt;
         const result = this.player.play();
-        if (result && typeof result.then === "function")
-          void result.catch(() => {
-            if (this.playing && attempt === this.attempt) this.fail();
-          });
+        if (result && typeof result.then === "function") {
+          void result.then(
+            () => {
+              if (attempt !== this.attempt) return;
+              this.pending = false;
+              this.playing = true;
+            },
+            () => {
+              if (attempt === this.attempt) this.fail();
+            }
+          );
+        } else if (!this.player.onPlay) {
+          this.pending = false;
+          this.playing = true;
+        }
       } catch (e) {
         this.fail();
       }
@@ -64,13 +102,23 @@
       this.foreground = value;
       if (!value) this.suspend();
     }
+    setInterrupted(value) {
+      this.interrupted = value;
+      if (value) this.suspend();
+      else this.failed = false;
+    }
     suspend() {
-      var _a;
-      if (!this.playing) return;
+      this.wanted = false;
+      if (!this.playing && !this.pending) return;
       this.playing = false;
+      this.pending = false;
       this.attempt++;
+      this.pausePlayer();
+    }
+    pausePlayer() {
+      var _a3;
       try {
-        (_a = this.player) == null ? void 0 : _a.pause();
+        (_a3 = this.player) == null ? void 0 : _a3.pause();
       } catch (e) {
       }
     }
@@ -79,6 +127,30 @@
       this.suspend();
     }
   };
+
+  // src/platform/wechat-audio.ts
+  function configureWechatAudio(api) {
+    var _a3;
+    try {
+      (_a3 = api.setInnerAudioOption) == null ? void 0 : _a3.call(api, {
+        obeyMuteSwitch: false,
+        fail: (error) => console.warn("TriCollect audio options unavailable", error)
+      });
+    } catch (error) {
+      console.warn("TriCollect audio options unavailable", error);
+    }
+  }
+  function createWechatPlayer(api, src, loop = false, volume = 1) {
+    const player = api.createInnerAudioContext();
+    player.obeyMuteSwitch = false;
+    player.loop = loop;
+    player.volume = volume;
+    player.onError(
+      (error) => console.warn("TriCollect audio unavailable", error)
+    );
+    player.src = src;
+    return player;
+  }
 
   // src/platform/clock.ts
   async function calibrateClock(raw, wall = () => Date.now(), wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))) {
@@ -249,7 +321,7 @@
     return new Set([0, 1, 2].flatMap((v) => [...faceVisible(b, v)]));
   }
   function take(b, tubeId, actionId) {
-    var _a;
+    var _a3;
     if (b.status !== "playing" || b.applied.includes(actionId) || !available(b).has(tubeId))
       return b;
     const n = clone(b), t = n.tubes.find((t2) => t2.id === tubeId);
@@ -262,7 +334,7 @@
       n.score += CONFIG.matchScore;
     }
     if (!t.balls.length) n.score += CONFIG.tubeScore;
-    if (n.tubes.every((t2) => !t2.balls.length) && !n.tray.length && !((_a = n.pocket) == null ? void 0 : _a.length)) {
+    if (n.tubes.every((t2) => !t2.balls.length) && !n.tray.length && !((_a3 = n.pocket) == null ? void 0 : _a3.length)) {
       n.status = "won";
       n.score += CONFIG.winScore;
     } else if (n.tray.length >= CONFIG.capacity) n.status = "blocked";
@@ -270,8 +342,8 @@
     return n;
   }
   function lift(b, actionId) {
-    var _a;
-    if (b.status === "won" || !b.tray.length || ((_a = b.pocket) == null ? void 0 : _a.length) || b.applied.includes(actionId))
+    var _a3;
+    if (b.status === "won" || !b.tray.length || ((_a3 = b.pocket) == null ? void 0 : _a3.length) || b.applied.includes(actionId))
       return b;
     const n = clone(b);
     n.pocket = [n.tray.pop()];
@@ -281,8 +353,8 @@
   }
   var RETURN_POCKET = "@return-pocket";
   function returnPocket(b, actionId) {
-    var _a;
-    if (b.status !== "playing" || !((_a = b.pocket) == null ? void 0 : _a.length) || b.applied.includes(actionId))
+    var _a3;
+    if (b.status !== "playing" || !((_a3 = b.pocket) == null ? void 0 : _a3.length) || b.applied.includes(actionId))
       return b;
     const n = clone(b), ball = n.pocket.pop();
     n.tray.push(ball);
@@ -300,7 +372,7 @@
     return n;
   }
   function invariant(b, expected) {
-    var _a, _b;
+    var _a3, _b;
     if (!b || !Number.isInteger(b.side) || b.side < 4 || b.side > 8 || !Array.isArray(b.tubes) || !Array.isArray(b.tray) || !Array.isArray(b.cleared) || !Array.isArray(b.applied))
       return false;
     if (b.tubes.length !== b.side * (b.side + 1) / 2 || new Set(b.tubes.map((t) => t.id)).size !== b.tubes.length)
@@ -313,7 +385,7 @@
       ...b.tubes.flatMap((t) => t.balls),
       ...b.tray,
       ...b.cleared,
-      ...(_a = b.pocket) != null ? _a : []
+      ...(_a3 = b.pocket) != null ? _a3 : []
     ];
     if (all.length !== expected || new Set(all.map((x) => x.id)).size !== all.length || all.some(
       (x) => typeof x.id !== "string" || !Number.isInteger(x.type) || x.type < 0 || x.type > 6
@@ -352,7 +424,7 @@
     };
   }
   function generate(p, seed, revision = 2) {
-    var _a, _b, _c, _d, _e, _f;
+    var _a3, _b, _c, _d, _e, _f;
     const rnd = random(seed), tubes = [];
     for (let q = 0; q < p.side; q++)
       for (let r = 0; r < p.side - q; r++)
@@ -360,7 +432,7 @@
           id: key(q, r),
           q,
           r,
-          capacity: (_b = (_a = p.heights) == null ? void 0 : _a[tubes.length % p.heights.length]) != null ? _b : p.height,
+          capacity: (_b = (_a3 = p.heights) == null ? void 0 : _a3[tubes.length % p.heights.length]) != null ? _b : p.height,
           balls: Array.from(
             { length: (_d = (_c = p.heights) == null ? void 0 : _c[tubes.length % p.heights.length]) != null ? _d : p.height },
             (_, i) => ({
@@ -404,9 +476,9 @@
       else {
         const waiting = /* @__PURE__ */ new Map();
         const emit = (type) => {
-          var _a2;
+          var _a4;
           window.splice(window.indexOf(type), 1);
-          waiting.set(type, (((_a2 = waiting.get(type)) != null ? _a2 : 0) + 1) % 3);
+          waiting.set(type, (((_a4 = waiting.get(type)) != null ? _a4 : 0) + 1) % 3);
           types.push(type);
         };
         for (const type of new Set(window)) emit(type);
@@ -436,8 +508,8 @@
     };
   }
   function createLevel(index, seed, revision = 2) {
-    var _a;
-    const p = (_a = PRESETS[index]) != null ? _a : PRESETS[0];
+    var _a3;
+    const p = (_a3 = PRESETS[index]) != null ? _a3 : PRESETS[0];
     try {
       return generate(p, seed != null ? seed : p.seed, revision);
     } catch (e) {
@@ -465,7 +537,7 @@
   }
   var lastStored = /* @__PURE__ */ new WeakMap();
   function valid(s) {
-    var _a;
+    var _a3;
     try {
       if (s.schema !== 1 || s.generation !== void 0 && s.generation !== 1 && s.generation !== 2 || s.rule !== RULE || typeof s.session !== "string" || !Number.isInteger(s.seed) || !Number.isInteger(s.preset) || !PRESETS[s.preset])
         return false;
@@ -483,21 +555,21 @@
         return false;
       if (s.rewards.filter((r) => r.redeemed && r.kind !== "lift").length !== s.extensions || s.rewards.filter((r) => r.redeemed && r.kind === "lift").length > 1)
         return false;
-      const original = originalFor(s.preset, s.seed, (_a = s.generation) != null ? _a : 1), all = original.tubes.flatMap((t) => t.balls), identities = new Map(all.map((b) => [b.id, b.type]));
+      const original = originalFor(s.preset, s.seed, (_a3 = s.generation) != null ? _a3 : 1), all = original.tubes.flatMap((t) => t.balls), identities = new Map(all.map((b) => [b.id, b.type]));
       const check = (b) => {
-        var _a2, _b;
-        return invariant(b, all.length) && (!((_a2 = b.pocket) == null ? void 0 : _a2.length) || s.rewards.some((r) => r.kind === "lift" && r.redeemed)) && b.side === original.side && [
+        var _a4, _b;
+        return invariant(b, all.length) && (!((_a4 = b.pocket) == null ? void 0 : _a4.length) || s.rewards.some((r) => r.kind === "lift" && r.redeemed)) && b.side === original.side && [
           ...b.tubes.flatMap((t) => t.balls),
           ...b.tray,
           ...b.cleared,
           ...(_b = b.pocket) != null ? _b : []
         ].every((b2) => identities.get(b2.id) === b2.type) && b.tubes.every(
           (t) => {
-            var _a3;
-            return t.capacity === ((_a3 = original.tubes.find((x) => x.id === t.id)) == null ? void 0 : _a3.capacity) && t.balls.every(
+            var _a5;
+            return t.capacity === ((_a5 = original.tubes.find((x) => x.id === t.id)) == null ? void 0 : _a5.capacity) && t.balls.every(
               (b2, i) => {
-                var _a4, _b2;
-                return ((_b2 = (_a4 = original.tubes.find((x) => x.id === t.id)) == null ? void 0 : _a4.balls[i]) == null ? void 0 : _b2.id) === b2.id;
+                var _a6, _b2;
+                return ((_b2 = (_a6 = original.tubes.find((x) => x.id === t.id)) == null ? void 0 : _a6.balls[i]) == null ? void 0 : _b2.id) === b2.id;
               }
             );
           }
@@ -594,7 +666,7 @@
     }
   }
   function appendResult(store, s, correctVictory = false) {
-    var _a;
+    var _a3;
     if (!s.started || s.phase !== "result" || s.finishedAt === void 0)
       return true;
     const loaded = readRecords(store);
@@ -613,7 +685,7 @@
       total: s.board.tubes.reduce((n, t) => n + t.capacity, 0),
       elapsedMs: Math.max(0, CONFIG.baseMs + s.added - s.remaining),
       addedMs: s.added,
-      generation: (_a = s.generation) != null ? _a : 1,
+      generation: (_a3 = s.generation) != null ? _a3 : 1,
       hintsUsed: s.hintsUsed,
       undosUsed: s.undosUsed,
       rewardedAds: s.rewards.filter((r) => r.redeemed).length
@@ -708,14 +780,14 @@
     let nodes = 0, exhausted = false;
     const seen = /* @__PURE__ */ new Set();
     function dfs(b, first = false) {
-      var _a, _b;
+      var _a3, _b;
       if (b.status === "won") return [];
       if (b.status === "blocked") return null;
       if (++nodes > maxNodes || now() - start >= maxMs) {
         exhausted = true;
         return null;
       }
-      const k = b.tubes.map((t) => t.balls.length).join(",") + "|" + [...b.tray, ...((_a = b.pocket) != null ? _a : []).map((x) => ({ ...x, type: x.type + 10 }))].map((x) => x.type).sort().join(",");
+      const k = b.tubes.map((t) => t.balls.length).join(",") + "|" + [...b.tray, ...((_a3 = b.pocket) != null ? _a3 : []).map((x) => ({ ...x, type: x.type + 10 }))].map((x) => x.type).sort().join(",");
       if (seen.has(k)) return null;
       seen.add(k);
       const ids = [...available(b)].filter((id) => !first || !firstVisible || firstVisible.has(id)).sort((a, c) => {
@@ -768,7 +840,7 @@
       __publicField(this, "lastCheckpoint", 0);
       __publicField(this, "terminalDurable", false);
       __publicField(this, "recentHomeSeeds", /* @__PURE__ */ new Set());
-      var _a;
+      var _a3;
       this.state = this.fresh(0, PRESETS[0].seed);
       const drained = drainTerminal(store);
       const loaded = restore(store);
@@ -778,7 +850,7 @@
       if (loaded.message) this.message = loaded.message;
       if (!drained || !records.available)
         this.message = "\u7EC8\u5C40\u5B58\u6863\u6216\u6218\u7EE9\u4FDD\u5B58\u5931\u8D25\uFF0C\u8BF7\u7A0D\u540E\u91CD\u8BD5";
-      if (((_a = loaded.save) == null ? void 0 : _a.phase) === "result" && loaded.save.started && loaded.save.finishedAt !== void 0) {
+      if (((_a3 = loaded.save) == null ? void 0 : _a3.phase) === "result" && loaded.save.started && loaded.save.finishedAt !== void 0) {
         const result = commitTerminal(store, loaded.save);
         if (!result.complete) this.message = "\u7EC8\u5C40\u5B58\u6863\u6216\u6218\u7EE9\u4FDD\u5B58\u5931\u8D25\uFF0C\u8BF7\u7A0D\u540E\u91CD\u8BD5";
       }
@@ -857,7 +929,7 @@
       this.start(preset, void 0, true);
     }
     start(preset = 0, seed, randomize = false) {
-      var _a;
+      var _a3;
       if (this.phase === "ad") return;
       if (this.state.phase === "result" && this.state.started) {
         this.checkpoint();
@@ -875,7 +947,7 @@
       let fresh;
       if (randomize) {
         const excluded = new Set(
-          [this.state.seed, (_a = this.resume) == null ? void 0 : _a.seed, saved == null ? void 0 : saved.seed].filter(
+          [this.state.seed, (_a3 = this.resume) == null ? void 0 : _a3.seed, saved == null ? void 0 : saved.seed].filter(
             (v) => v !== void 0
           )
         );
@@ -1126,8 +1198,8 @@
       this.checkpoint();
     }
     get canLift() {
-      var _a;
-      return ["active", "blocked"].includes(this.phase) && this.board.tray.length > 0 && !((_a = this.board.pocket) == null ? void 0 : _a.length) && !this.state.rewards.some((r) => r.kind === "lift" && r.redeemed);
+      var _a3;
+      return ["active", "blocked"].includes(this.phase) && this.board.tray.length > 0 && !((_a3 = this.board.pocket) == null ? void 0 : _a3.length) && !this.state.rewards.some((r) => r.kind === "lift" && r.redeemed);
     }
     async liftBall() {
       this.tick();
@@ -1227,11 +1299,11 @@
       this.checkpoint();
     }
     checkpoint() {
-      var _a, _b;
+      var _a3, _b;
       if (this.phase === "home") return;
       this.state.phase = this.phase === "result" || this.board.status === "won" ? "result" : this.board.status === "blocked" ? "blocked" : this.state.remaining <= 0 ? "expired" : this.phase === "ready" || this.phase === "intro" ? "ready" : "paused";
       if (this.state.phase === "result" && this.state.started)
-        (_b = (_a = this.state).finishedAt) != null ? _b : _a.finishedAt = Date.now();
+        (_b = (_a3 = this.state).finishedAt) != null ? _b : _a3.finishedAt = Date.now();
       if (this.state.phase === "result" && this.state.started) {
         const result = commitTerminal(this.store, this.state);
         this.terminalDurable = result.durable;
@@ -1264,13 +1336,13 @@
   }
   function projection(side, width2, top, bottom, angle, maxCapacity = 5) {
     const edge = side - 1;
-    const lane = (width2 - 32) / (2 * edge / Math.sqrt(3) + 1), radius = lane / 2;
+    const lane = (width2 - 20) / (2 * edge / Math.sqrt(3) + 1), radius = lane / 2;
     const originalDepth = Math.min(108, edge * 18, (bottom - top) * 0.24);
-    const depthSpace = originalDepth * 0.8;
+    const depthSpace = originalDepth * 0.52;
     const zScale = depthSpace / (edge * Math.sqrt(3) / 2), extent = depthSpace * 2 / 3;
-    const maxHeight = Math.min(260, bottom - top - 52 - depthSpace * 4 / 3);
+    const maxHeight = Math.min(300, bottom - top - 52 - depthSpace * 4 / 3);
     const ballRadius = Math.min(
-      radius * 0.88,
+      radius * 0.92,
       (maxHeight - 20) / (maxCapacity * 2)
     ), step = ballRadius * 2, height2 = step * maxCapacity + 20;
     const axis = {
@@ -1286,11 +1358,12 @@
 
   // src/render/scene.ts
   var Scene = class {
-    constructor(ctx2, game, width2, height2) {
+    constructor(ctx2, game, width2, height2, displayScale = 1) {
       this.ctx = ctx2;
       this.game = game;
       this.width = width2;
       this.height = height2;
+      this.displayScale = displayScale;
       __publicField(this, "buttons", []);
       __publicField(this, "homePanel", null);
       __publicField(this, "recordPage", 0);
@@ -1351,8 +1424,8 @@
       return this.game.phase === "home" ? this.background ? "home" : "fallback" : this.playBackground ? "play" : this.background ? "home" : "fallback";
     }
     get currentBackground() {
-      var _a;
-      return this.game.phase === "home" ? this.background : (_a = this.playBackground) != null ? _a : this.background;
+      var _a3;
+      return this.game.phase === "home" ? this.background : (_a3 = this.playBackground) != null ? _a3 : this.background;
     }
     setPlayBackground(image) {
       this.playBackground = image;
@@ -1620,7 +1693,7 @@
       }
     }
     render() {
-      var _a, _b;
+      var _a3, _b;
       const c = this.ctx, g = this.game, w = this.width, h = this.height;
       if (this.misclickFeedback && (g.phase !== "active" || this.misclickFeedback.session !== g.state.session || this.misclickFeedback.view !== g.state.view))
         this.misclickFeedback = null;
@@ -1700,7 +1773,7 @@
         return;
       }
       const trayY = this.trayTop, boardBottom = trayY - 92;
-      this.drawBoard(147, boardBottom);
+      this.drawBoard(133, boardBottom);
       this.drawMisclick();
       this.button(
         "pause",
@@ -1791,7 +1864,7 @@
         this.text(
           this.fit(
             g.message,
-            Math.floor((w - (((_a = g.board.pocket) == null ? void 0 : _a.length) ? 200 : 124)) / 11)
+            Math.floor((w - (((_a3 = g.board.pocket) == null ? void 0 : _a3.length) ? 200 : 124)) / 11)
           ),
           w - 22,
           trayY - 44,
@@ -1894,13 +1967,13 @@
       this.toolDialog = { session: g.state.session, resume };
     }
     closeTool() {
-      var _a;
-      const resume = (_a = this.toolDialog) == null ? void 0 : _a.resume;
+      var _a3;
+      const resume = (_a3 = this.toolDialog) == null ? void 0 : _a3.resume;
       this.toolDialog = null;
       if (resume) this.game.begin();
     }
     toolOverlay() {
-      var _a;
+      var _a3;
       const g = this.game, w = this.width, h = this.height, y = Math.max(90, (h - 330) / 2);
       this.buttons = [];
       this.targets = [];
@@ -1912,7 +1985,7 @@
       this.drawTool(w / 2, y + 38);
       this.text("\u5BC4\u5B58\u6CE1\u6CE1", w / 2, y + 83, 24, "#29495e", "center");
       const used = g.state.rewards.some((r) => r.kind === "lift" && r.redeemed);
-      const allowed = !used && !((_a = g.board.pocket) == null ? void 0 : _a.length) && g.board.tray.length > 0;
+      const allowed = !used && !((_a3 = g.board.pocket) == null ? void 0 : _a3.length) && g.board.tray.length > 0;
       const lines = used ? ["\u672C\u5C40\u5DF2\u4F7F\u7528\u4E00\u6B21", "\u5BC4\u5B58\u7403\u653E\u56DE\u540E\u4E5F\u4E0D\u4F1A\u91CD\u590D\u53D1\u653E"] : !g.ads.available ? ["\u5E7F\u544A\u6682\u4E0D\u53EF\u7528\uFF0C\u672C\u6B21\u65E0\u6CD5\u4F7F\u7528", "\u4E0D\u4F1A\u6263\u9664\u6B21\u6570\uFF0C\u4ECD\u53EF\u514D\u8D39\u64A4\u9500\u6216\u7EE7\u7EED"] : !g.board.tray.length ? ["\u5148\u628A\u4E00\u9897\u7403\u653E\u5165\u6682\u5B58\u69FD", "\u518D\u4F7F\u7528\u9053\u5177\u817E\u51FA\u4E00\u683C"] : ["\u5B8C\u6574\u89C2\u770B\u5E7F\u544A\uFF0C\u79FB\u51FA\u6682\u5B58\u69FD\u672B\u7403", "\u6BCF\u5C40\u4E00\u6B21 \xB7 \u4E4B\u540E\u53EF\u514D\u8D39\u653E\u56DE"];
       lines.forEach(
         (line, i) => this.text(line, w / 2, y + 123 + i * 25, 13, "#4e6877", "center")
@@ -1949,7 +2022,7 @@
       return t.length > n ? t.slice(0, n - 1) + "\u2026" : t;
     }
     drawBoard(top, bottom) {
-      var _a;
+      var _a3;
       const c = this.ctx, g = this.game, w = this.width, n = g.board.side;
       const view = g.presentationView, face = FACES[view], turning = g.phase === "rotating", p = g.turnProgress;
       const ease = p * p * (3 - 2 * p);
@@ -2283,7 +2356,7 @@
             rx: radius * 0.98,
             ry: opening
           });
-        const previous = g.phase === "resolving" ? (_a = g.state.history.at(-1)) == null ? void 0 : _a.tubes.find((old) => old.id === t.id) : void 0;
+        const previous = g.phase === "resolving" ? (_a3 = g.state.history.at(-1)) == null ? void 0 : _a3.tubes.find((old) => old.id === t.id) : void 0;
         const visibleCountBase = previous && previous.balls.length > t.balls.length ? previous.balls.length : t.balls.length;
         const first = Math.max(0, visibleCountBase - 3), shown = t.balls.slice(first);
         if (front)
@@ -2401,7 +2474,7 @@
           topY
         });
         if (!front) continue;
-        const hitRadius = Math.min(radius * 0.87, step * 0.49);
+        const hitRadius = Math.max(ballRadius + 5, 22 / this.displayScale);
         if (g.hint === t.id)
           this.text(
             "\u2726",
@@ -2411,7 +2484,13 @@
             "#3849b2",
             "center"
           );
-        this.targets.push({ id: t.id, x, y: topY, r: hitRadius });
+        this.targets.push({
+          id: t.id,
+          x,
+          y: topY,
+          r: hitRadius,
+          visualRadius: ballRadius
+        });
       }
       if (g.phase === "resolving") {
         const prev = g.state.history.at(-1), t = prev == null ? void 0 : prev.tubes.find(
@@ -3337,7 +3416,16 @@
         return;
       }
       if (this.game.locked) return;
-      const target = [...this.targets].reverse().find((t) => Math.hypot(x - t.x, y - t.y) <= t.r);
+      const nearest = [...this.targets].sort(
+        (a, b) => Math.hypot(x - a.x, y - a.y) - Math.hypot(x - b.x, y - b.y)
+      );
+      const direct = nearest.find(
+        (t) => Math.hypot(x - t.x, y - t.y) <= t.visualRadius
+      );
+      const blocked = !direct && [...this.ballPositions, ...this.ghostPositions].some(
+        (b) => Math.hypot(x - b.x, y - b.y) <= b.r
+      );
+      const target = direct != null ? direct : !blocked ? nearest.find((t) => Math.hypot(x - t.x, y - t.y) <= t.r) : void 0;
       if (target) {
         this.misclickFeedback = null;
         this.game.pick(target.id);
@@ -3427,19 +3515,31 @@
   ctx.scale(dpr, dpr);
   var perf = wx.getPerformance();
   var audio;
-  var music = new Music(() => {
-    const player = wx.createInnerAudioContext();
-    player.src = "assets/ambience.wav";
-    player.loop = true;
-    player.volume = 0.22;
-    return player;
+  configureWechatAudio(wx);
+  var music = new Music(
+    () => createWechatPlayer(wx, "assets/ambience.wav", true, 0.22)
+  );
+  var audioInterrupted = false;
+  var _a;
+  (_a = wx.onAudioInterruptionBegin) == null ? void 0 : _a.call(wx, () => {
+    audioInterrupted = true;
+    music.setInterrupted(true);
+    try {
+      audio == null ? void 0 : audio.stop();
+    } catch (e) {
+    }
+  });
+  var _a2;
+  (_a2 = wx.onAudioInterruptionEnd) == null ? void 0 : _a2.call(wx, () => {
+    audioInterrupted = false;
+    music.setInterrupted(false);
   });
   var ads = createAdService(
     "",
     (unit) => wx.createRewardedVideoAd({ adUnitId: unit })
   );
   async function boot() {
-    var _a, _b, _c;
+    var _a3, _b, _c;
     ctx.fillStyle = "#dbe6cf";
     ctx.fillRect(0, 0, width, height);
     ctx.fillStyle = "#294d3c";
@@ -3469,19 +3569,15 @@
         }
       },
       () => {
-        if (!audio) {
-          audio = wx.createInnerAudioContext();
-          audio.src = "assets/tap.wav";
-          audio.onError(() => {
-          });
-        }
+        if (audioInterrupted) return;
+        audio != null ? audio : audio = createWechatPlayer(wx, "assets/tap.wav");
         audio.stop();
         audio.play();
       }
     );
     let menuBottom;
     try {
-      menuBottom = (_a = wx.getMenuButtonBoundingClientRect) == null ? void 0 : _a.call(wx).bottom;
+      menuBottom = (_a3 = wx.getMenuButtonBoundingClientRect) == null ? void 0 : _a3.call(wx).bottom;
     } catch (e) {
     }
     const { top, bottom, logicalHeight, factor } = viewport(
@@ -3490,7 +3586,7 @@
       (_c = info.safeArea) == null ? void 0 : _c.bottom,
       menuBottom
     );
-    const scene = new Scene(ctx, game, width / factor, logicalHeight);
+    const scene = new Scene(ctx, game, width / factor, logicalHeight, factor);
     for (const file of ["background.png", "play-background.png"]) {
       try {
         const image = wx.createImage();
@@ -3504,17 +3600,17 @@
     let pointer = null;
     wx.onTouchStart((e) => {
       const t = e.touches[0];
-      if (t) pointer = { x: t.clientX / factor, y: (t.clientY - top) / factor };
+      pointer = e.touches.length === 1 && t ? { x: t.clientX, y: t.clientY } : null;
     });
     wx.onTouchCancel(() => pointer = null);
     wx.onTouchEnd((e) => {
       const t = e.changedTouches[0];
       if (!pointer || !t) return;
-      const x = t.clientX / factor, y = (t.clientY - top) / factor, dx = x - pointer.x, dy = y - pointer.y;
+      const x = t.clientX / factor, y = (t.clientY - top) / factor, action = gesture(t.clientX - pointer.x, t.clientY - pointer.y);
       pointer = null;
-      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy))
-        game.rotate(dx > 0 ? 1 : -1);
-      else if (Math.hypot(dx, dy) < 15) scene.tap(x, y);
+      if (action === "right" || action === "left")
+        game.rotate(action === "right" ? 1 : -1);
+      else if (action === "tap") scene.tap(x, y);
       music.gesture(game.state.sound, game.phase);
     });
     wx.onHide(() => {

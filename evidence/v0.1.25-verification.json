@@ -1,0 +1,33 @@
+{
+  "version": "0.1.25",
+  "scope": "Cloud automated and offscreen checks only; not WeChat DevTools/device or listening validation.",
+  "unitIntegrationTests": {
+    "command": "node --import tsx --test --test-concurrency=1 tests/*.test.ts",
+    "passed": 130,
+    "failed": 0,
+    "skipped": 0
+  },
+  "seedWitnesses": {
+    "command": "node --import tsx scripts/verify-seeds.ts",
+    "passed": 300,
+    "presets": 3
+  },
+  "typecheck": "passed",
+  "build": "passed",
+  "format": "passed",
+  "diffWhitespace": "passed",
+  "browserTests": "not run successfully: Chromium launch failed with host Unix socket EPERM, including elevated attempt",
+  "offscreenReview": {
+    "frames": 456,
+    "nonTopHiddenInputs": 29031,
+    "topAndEdgeInputs": 15340,
+    "issues": 0
+  },
+  "nativeDevice": "not tested",
+  "deployment": "not uploaded to WeChat",
+  "artifacts": {
+    "dist/wechat/game.js": "04c8fe9afb73f571f16b0297b183974a0a25d7c9d55eac99eec8f3022b314554",
+    "dist/wechat/assets/ambience.wav": "2d4377e6cd099a471e3733440959eb3ff2594ae1f693545503686cf7c234a85b",
+    "dist/wechat/assets/tap.wav": "7af0df43ab397200ce0a9b6a1dc05460533b31fd6421ebefa0952f084a605e40"
+  }
+}

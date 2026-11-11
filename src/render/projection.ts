@@ -23,15 +23,17 @@ export function projection(
 ) {
   const edge = side - 1;
   // Reserve the complete circumcircle so intermediate angles never crop the bundle.
-  const lane = (width - 32) / ((2 * edge) / Math.sqrt(3) + 1),
+  const lane = (width - 20) / ((2 * edge) / Math.sqrt(3) + 1),
     radius = lane / 2;
   const originalDepth = Math.min(108, edge * 18, (bottom - top) * 0.24);
-  const depthSpace = originalDepth * 0.8;
+  // On short phones, spend more of the board on the seven physical ball slots
+  // rather than empty perspective depth. Keep one fixed scale for the whole run.
+  const depthSpace = originalDepth * 0.52;
   const zScale = depthSpace / ((edge * Math.sqrt(3)) / 2),
     extent = (depthSpace * 2) / 3;
-  const maxHeight = Math.min(260, bottom - top - 52 - (depthSpace * 4) / 3);
+  const maxHeight = Math.min(300, bottom - top - 52 - (depthSpace * 4) / 3);
   const ballRadius = Math.min(
-      radius * 0.88,
+      radius * 0.92,
       (maxHeight - 20) / (maxCapacity * 2),
     ),
     step = ballRadius * 2,

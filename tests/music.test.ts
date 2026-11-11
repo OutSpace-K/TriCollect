@@ -147,3 +147,106 @@ test("player creation failure can recover on a later gesture without frame retri
   assert.equal(attempts, 2);
   assert.equal(plays, 1);
 });
+
+function nativeMusic() {
+  const listeners: Record<string, () => void> = {};
+  let plays = 0,
+    pauses = 0,
+    paused = true;
+  const music = new Music(() => ({
+    get paused() {
+      return paused;
+    },
+    play() {
+      plays++;
+    },
+    pause() {
+      paused = true;
+      pauses++;
+    },
+    onPlay: (fn) => (listeners.play = fn),
+    onPause: (fn) => (listeners.pause = fn),
+    onStop: (fn) => (listeners.stop = fn),
+    onError: (fn) => (listeners.error = fn),
+  }));
+  return {
+    music,
+    get plays() {
+      return plays;
+    },
+    get pauses() {
+      return pauses;
+    },
+    emit(event: string) {
+      if (event === "play") paused = false;
+      if (event === "pause" || event === "stop") paused = true;
+      listeners[event]();
+    },
+    acknowledgeOldPause: () => listeners.pause(),
+  };
+}
+
+test("native void play waits for onPlay and retries silently blocked autoplay on input", () => {
+  const n = nativeMusic();
+  n.music.update(true, "home");
+  for (let i = 0; i < 100; i++) n.music.update(true, "home");
+  assert.equal(n.plays, 1);
+  n.music.gesture(true, "home");
+  assert.equal(n.plays, 2);
+  n.emit("play");
+  n.acknowledgeOldPause();
+  n.music.gesture(true, "active");
+  assert.equal(n.plays, 2);
+});
+
+test("native pause, stop and error recover on gestures without frame retry loops", () => {
+  for (const event of ["pause", "stop", "error"]) {
+    const n = nativeMusic();
+    n.music.gesture(true, "home");
+    n.emit("play");
+    n.emit(event);
+    for (let i = 0; i < 100; i++) n.music.update(true, "home");
+    assert.equal(n.plays, 1, event);
+    n.music.gesture(true, "home");
+    assert.equal(n.plays, 2, event);
+  }
+});
+
+test("late native play is paused after mute, suspension, ads or hiding", () => {
+  for (const cancel of [
+    (m: Music) => m.update(false, "home"),
+    (m: Music) => m.suspend(),
+    (m: Music) => m.update(true, "ad"),
+    (m: Music) => m.setForeground(false),
+  ]) {
+    const n = nativeMusic();
+    n.music.update(true, "home");
+    cancel(n.music);
+    assert.equal(n.pauses, 1);
+    n.emit("play");
+    assert.equal(n.pauses, 2);
+    assert.equal(n.plays, 1);
+  }
+});
+
+test("system interruption blocks input and only resumes an enabled foreground allowed phase", () => {
+  for (const [enabled, phase, foreground, resume] of [
+    [true, "home", true, true],
+    [false, "home", true, false],
+    [true, "paused", true, false],
+    [true, "ad", true, false],
+    [true, "active", false, false],
+  ] as const) {
+    const n = nativeMusic();
+    n.music.update(true, "home");
+    n.emit("play");
+    n.music.setInterrupted(true);
+    n.music.gesture(true, "home");
+    n.music.update(true, "home");
+    assert.equal(n.plays, 1);
+    n.music.setForeground(foreground);
+    n.music.setInterrupted(false);
+    n.music.update(enabled, phase);
+    assert.equal(n.plays, resume ? 2 : 1);
+  }
+});

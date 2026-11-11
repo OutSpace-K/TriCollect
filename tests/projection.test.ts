@@ -36,7 +36,7 @@ test("bundle rotates rigidly about its geometric center with no horizontal scale
           r = rotateWorld(p, angle),
           s = f.point(t);
         assert.ok(Math.abs(Math.hypot(p.x, p.z) - Math.hypot(r.x, r.z)) < 1e-9);
-        assert.ok(s.x - f.radius >= 15.99 && s.x + f.radius <= 304.01);
+        assert.ok(s.x - f.radius >= 9.99 && s.x + f.radius <= 310.01);
         assert.ok(s.y - f.height >= 176.99 && s.y <= 467.01);
       }
     }
@@ -71,17 +71,17 @@ test("enlarged spheres retain wall clearance, fixed height and touching slots", 
         edge = side - 1;
       const originalDepth = Math.min(108, edge * 18, (bottom - top) * 0.24);
       const maxHeight = Math.min(
-        260,
-        bottom - top - 52 - (originalDepth * 0.8 * 4) / 3,
+        300,
+        bottom - top - 52 - (originalDepth * 0.52 * 4) / 3,
       );
       const p = projection(side, width, top, bottom, 0);
       assert.ok(
-        Math.abs((p.zScale * edge * Math.sqrt(3)) / 2 - originalDepth * 0.8) <
+        Math.abs((p.zScale * edge * Math.sqrt(3)) / 2 - originalDepth * 0.52) <
           1e-8,
       );
       assert.equal(
         p.ballRadius,
-        Math.min(p.radius * 0.88, (maxHeight - 20) / 10),
+        Math.min(p.radius * 0.92, (maxHeight - 20) / 10),
       );
       assert.equal(p.height, p.ballRadius * 10 + 20);
     }

@@ -1,0 +1,26 @@
+{
+  "scope": "Independent offscreen @napi-rs/canvas rendering of actual Scene and packaged background; not browser/WeChat/device QA. Missing CJK fonts preclude text appearance validation.",
+  "screens": [
+    [
+      320,
+      480
+    ],
+    [
+      320,
+      568
+    ],
+    [
+      375,
+      667
+    ],
+    [
+      390,
+      844
+    ]
+  ],
+  "coverage": "Three difficulties, all three views, intermediate turns, synthetic inner exposure and low remaining ball positions. Inputs call Scene.tap; finger gesture classification has separate tests.",
+  "checks": 456,
+  "blocked": 29031,
+  "picks": 15340,
+  "issues": []
+}

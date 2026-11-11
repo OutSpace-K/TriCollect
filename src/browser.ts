@@ -1,4 +1,5 @@
 import { Music } from "./platform/music";
+import { gesture } from "./platform/gesture";
 import { startFrames } from "./platform/frame";
 import { Controller } from "./controller";
 import { Scene } from "./render/scene";
@@ -74,6 +75,7 @@ function resize() {
   canvas.width = w * dpr;
   canvas.height = h * dpr;
   displayFactor = Math.min(1, h / 660);
+  scene.displayScale = displayFactor;
   ctx.setTransform(dpr * displayFactor, 0, 0, dpr * displayFactor, 0, 0);
   scene.width = w / displayFactor;
   scene.height = h / displayFactor;
@@ -105,12 +107,11 @@ canvas.addEventListener("pointerdown", (e) => {
 canvas.addEventListener("pointercancel", () => (start = null));
 canvas.addEventListener("pointerup", (e) => {
   if (!start) return;
-  const dx = e.offsetX - start.x,
-    dy = e.offsetY - start.y;
+  const action = gesture(e.offsetX - start.x, e.offsetY - start.y);
   start = null;
-  if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy))
-    game.rotate(dx > 0 ? 1 : -1);
-  else if (Math.hypot(dx, dy) < 15)
+  if (action === "right" || action === "left")
+    game.rotate(action === "right" ? 1 : -1);
+  else if (action === "tap")
     scene.tap(e.offsetX / displayFactor, e.offsetY / displayFactor);
   music.gesture(game.state.sound, game.phase);
 });

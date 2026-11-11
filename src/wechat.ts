@@ -1,5 +1,10 @@
 import { viewport } from "./platform/viewport";
+import { gesture } from "./platform/gesture";
 import { Music } from "./platform/music";
+import {
+  configureWechatAudio,
+  createWechatPlayer,
+} from "./platform/wechat-audio";
 import { calibrateClock } from "./platform/clock";
 import { startFrames } from "./platform/frame";
 import { Controller } from "./controller";
@@ -17,12 +22,21 @@ const ctx = canvas.getContext("2d") as unknown as CanvasRenderingContext2D;
 ctx.scale(dpr, dpr);
 const perf = wx.getPerformance();
 let audio: WechatMinigame.InnerAudioContext | undefined;
-const music = new Music(() => {
-  const player = wx.createInnerAudioContext();
-  player.src = "assets/ambience.wav";
-  player.loop = true;
-  player.volume = 0.22;
-  return player;
+configureWechatAudio(wx);
+const music = new Music(() =>
+  createWechatPlayer(wx, "assets/ambience.wav", true, 0.22),
+);
+let audioInterrupted = false;
+wx.onAudioInterruptionBegin?.(() => {
+  audioInterrupted = true;
+  music.setInterrupted(true);
+  try {
+    audio?.stop();
+  } catch {}
+});
+wx.onAudioInterruptionEnd?.(() => {
+  audioInterrupted = false;
+  music.setInterrupted(false);
 });
 const ads = createAdService(
   AD_UNIT,
@@ -58,11 +72,8 @@ async function boot() {
       },
     },
     () => {
-      if (!audio) {
-        audio = wx.createInnerAudioContext();
-        audio.src = "assets/tap.wav";
-        audio.onError(() => {});
-      }
+      if (audioInterrupted) return;
+      audio ??= createWechatPlayer(wx, "assets/tap.wav");
       audio.stop();
       audio.play();
     },
@@ -79,7 +90,7 @@ async function boot() {
     info.safeArea?.bottom,
     menuBottom,
   );
-  const scene = new Scene(ctx, game, width / factor, logicalHeight);
+  const scene = new Scene(ctx, game, width / factor, logicalHeight, factor);
   for (const file of ["background.png", "play-background.png"]) {
     try {
       const image = wx.createImage();
@@ -98,7 +109,8 @@ async function boot() {
   let pointer: { x: number; y: number } | null = null;
   wx.onTouchStart((e) => {
     const t = e.touches[0];
-    if (t) pointer = { x: t.clientX / factor, y: (t.clientY - top) / factor };
+    pointer =
+      e.touches.length === 1 && t ? { x: t.clientX, y: t.clientY } : null;
   });
   wx.onTouchCancel(() => (pointer = null));
   wx.onTouchEnd((e) => {
@@ -106,12 +118,11 @@ async function boot() {
     if (!pointer || !t) return;
     const x = t.clientX / factor,
       y = (t.clientY - top) / factor,
-      dx = x - pointer.x,
-      dy = y - pointer.y;
+      action = gesture(t.clientX - pointer.x, t.clientY - pointer.y);
     pointer = null;
-    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy))
-      game.rotate(dx > 0 ? 1 : -1);
-    else if (Math.hypot(dx, dy) < 15) scene.tap(x, y);
+    if (action === "right" || action === "left")
+      game.rotate(action === "right" ? 1 : -1);
+    else if (action === "tap") scene.tap(x, y);
     music.gesture(game.state.sound, game.phase);
   });
   wx.onHide(() => {
