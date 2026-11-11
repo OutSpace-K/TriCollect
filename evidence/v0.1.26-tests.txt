@@ -1,0 +1,291 @@
+✔ music keeps its exact 18-bar PCM loop without clipping or a silent seam (9.325263ms)
+✔ both prebuilt platforms contain the exact tested music asset (3.603284ms)
+✔ clock calibration normalizes 1 units/ms and rejects runtime freeze (0.842168ms)
+✔ clock calibration normalizes 1000 units/ms and rejects runtime freeze (0.318901ms)
+✔ frozen, invalid or ambiguous startup clock is rejected rather than starting a locked round (0.490063ms)
+✔ runtime frozen clock signals interruption without substituting wall-clock game time (0.363589ms)
+✔ independent real-time 10-second measurement in both clock unit modes (10355.25298ms)
+✔ ready/intro never consume fixed 300s, all presets share base (184.060329ms)
+✔ pause/background hide, resume remains paused, no wall time or frame dependence (27.939163ms)
+✔ rotation queues net turns, completes in bounded time and preserves board (27.881091ms)
+✔ settlement lock rejects rapid duplicate taps (26.161776ms)
+✔ undo restores score and balls without refunding time or copying ad ledger (26.77244ms)
+✔ deadline processed before input; no post-zero move (38.548732ms)
+✔ last legal pick wins before subsequent clock expiration (535.299245ms)
+✔ ad completion exactly once, persists ledger, survives undo and reload (40.203762ms)
+✔ cancelled/failed ad preserves board and time; old session never rewarded (84.435391ms)
+✔ pending ad restore never grants reward (36.410605ms)
+✔ corrupt/unknown/inconsistent saves rejected and last good backup recovered (25.03314ms)
+✔ failed storage write never crashes gameplay (35.22954ms)
+✔ WeChat adapter only isEnded true grants, load/show do not (7.873848ms)
+✔ WeChat rejection fails without rewards and listeners removed (0.548043ms)
+✔ two-extension limit enforced and no final result revival (41.764455ms)
+✔ unclaimed home lifecycle never replaces unfinished main or backup across restarts (89.166229ms)
+✔ empty home and repeated home navigation do not create or replace a save (25.011223ms)
+✔ explicit new game replaces a pending resume, then lifecycle saves that chosen session (52.484508ms)
+✔ manually ended non-winning round remains final through home hide and restart (58.456401ms)
+✔ rotation hides input, pause keeps requested face and restart cancels queued turns (33.495812ms)
+✔ hints never reveal another face and incompatible old rules do not resume (82.694759ms)
+✔ corrupted temporary readback cannot replace the committed save (21.927775ms)
+✔ sound preference survives new rounds, home and runtime restart (55.760847ms)
+✔ single undo survives matching, rotation, pause and reload; only a new pick rearms it (50.778587ms)
+✔ single undo restores a removed pipe and legacy saves offer only their most recent step (36.616577ms)
+✔ 10 tube mechanical layout has nine exposed boundaries and one locked center (8.726344ms)
+✔ top only, one ball and one action, stable unique ID conservation (4.935382ms)
+✔ three same resolve before seventh-slot failure (2.718965ms)
+✔ seven unmatched blocks eighth action (2.904264ms)
+✔ exterior flood exposes inner tube only after connected empty cell (2.671298ms)
+✔ sealed internal empty cell does not expose adjacent internal tubes (56.617637ms)
+✔ all presets deterministic and witness wins without ads preserving every ball (202.304973ms)
+✔ solver budget returns unknown rather than no-solution (1.778205ms)
+✔ solver safe path independently replays from current partial state (20.110437ms)
+✔ blocked state search is dead without mutating board (2.411961ms)
+✔ divisible color counts alone do not prove solvability: current state with no safe move (2.579205ms)
+✔ 60 adversarial deterministic walks maintain identity and tray invariants (1461.491095ms)
+✔ front faces hide deeper tubes and peeling reveals the same shared lattice (18.986682ms)
+✔ clearing the full outer boundary exposes inner pipes in all three views (12.281964ms)
+✔ variable-height presets have divisible totals and reveal only actual front windows (82.699861ms)
+✔ legacy boards retain exact identity and reload with undo; revisions cannot be relabelled (421.124971ms)
+✔ 300 new layouts have visible legal no-ad paths and measured progressive tray pressure (27411.446996ms)
+✔ local hard sample excludes old/advertised results and records free assistance without claiming a human rate (90.938396ms)
+✔ finger jitter uses screen pixels rather than shrunken logical-canvas thresholds (0.636208ms)
+✔ only a clearly horizontal screen-space swipe rotates the board (0.109038ms)
+✔ idle selectable spheres have no persistent outline; invalid sphere gives one bounded neutral pulse (70.300751ms)
+✔ background and UI taps never start feedback; valid pick and lifecycle clear transient feedback (42.664987ms)
+✔ confirmed display name and home effect lettering fit a narrow viewport (26.297466ms)
+✔ play backdrop is distinct with home fallback; decorative tray never selects or pulses (27.147866ms)
+✔ compact HUD omits seed, tube numbering and routine narration; modal controls fit narrow screens (24.210474ms)
+✔ home difficulty modal groups tiers and never overwrites resume without confirmation (34.631411ms)
+✔ decorative motion freezes offscreen and returns without a large elapsed jump (58.954498ms)
+✔ transient controls retain color while input lock and real unavailable undo remain enforced (28.048835ms)
+✔ caps depend on shared-lattice front access, never on transient pick locks (25.713242ms)
+✔ custom title uses curved glyph strokes and vertical-axis projection, never an enclosing circle (24.114031ms)
+✔ new title and toy drawing restore transforms after paint exceptions (27.222668ms)
+✔ held-ball control stays above tray and visually steady through pick/turn locks without accepting input (29.231495ms)
+✔ phone-sized touch halos accept near misses without stealing lower or hidden balls (192.291481ms)
+✔ overlapping touch halos choose the nearest legal top rather than paint order (52.102807ms)
+✔ lift cancelled/failed/unconfigured keeps exact board, time and retry eligibility (152.798076ms)
+✔ completed lift is once-only, session fenced, restart durable and free return undoable (55.874633ms)
+✔ restart while requested fails pending reward without moving a ball (50.853383ms)
+✔ 300 seeded rounds across three tiers preserve identities and finish with held ball (18359.154628ms)
+✔ full tray lift reopens play; immediate free return can block and single undo restores pocket (45.494853ms)
+✔ home attempts autoplay, reuses one player, pauses for every inactive lifecycle (1.524537ms)
+✔ music failures and async errors never escape or retry every frame (0.595496ms)
+✔ a cancelled pending play does not poison a subsequent unmute (0.229537ms)
+✔ blocked autoplay retries on first gesture; mute and background never restart audio (0.286857ms)
+✔ player creation failure can recover on a later gesture without frame retries (0.125289ms)
+✔ native void play waits for onPlay and retries silently blocked autoplay on input (0.280534ms)
+✔ native pause, stop and error recover on gestures without frame retry loops (0.224412ms)
+✔ late native play is paused after mute, suspension, ads or hiding (0.331799ms)
+✔ system interruption blocks input and only resumes an enabled foreground allowed phase (0.293775ms)
+✔ three-step guide blocks underlying actions and persists acknowledgement without changing round (80.014894ms)
+✔ guide preference storage failure cannot stop game start or mutate save (43.823717ms)
+✔ finite victory confetti pauses in background and never changes score or timer (28.707967ms)
+✔ unconfigured or failed ad creation stays explicitly unavailable and never throws at boot (0.210789ms)
+✔ bundle rotates rigidly about its geometric center with no horizontal scale (96.584722ms)
+✔ five fixed ball slots touch without crossing tube walls at mobile sizes (0.192793ms)
+✔ enlarged spheres retain wall clearance, fixed height and touching slots (0.5949ms)
+✔ only finished started games become local results; home/restart never duplicate (132.400131ms)
+✔ records reconcile once, cap at 30, and preserve prior valid backup on corruption (29.979432ms)
+✔ record storage failure cannot prevent ending the game (26.773981ms)
+✔ seed source handles throwing, invalid, constant and 32-bit wrap values (8.612376ms)
+✔ only confirmed home starts consume entropy; cancel and resume preserve exact save (220.14804ms)
+✔ constant entropy cannot repeat recent home seeds; reload excludes saved seed; explicit seeds remain reproducible (1739.103261ms)
+✔ 300 random-entry seeds across all tiers retain replayable no-ad solutions (26882.674676ms)
+✔ terminal transaction recovers tricollect.save.v1 write failure without revival or duplication (127.929511ms)
+✔ terminal transaction recovers tricollect.records.v1 write failure without revival or duplication (89.075412ms)
+✔ terminal transaction recovers tricollect.save.v1.backup write failure without revival or duplication (98.115028ms)
+✔ terminal transaction recovers tricollect.terminal.v1 write failure without revival or duplication (85.499419ms)
+✔ main plus records failure preserves journal; recovery orders never revive terminal (121.974928ms)
+✔ all writes fail: no false result, retain in-memory terminal and reject leaving until durable (48.110938ms)
+✔ v013 legacy recorded lost + old active save is fenced, record is not deleted (59.442576ms)
+✔ pending result cannot be overwritten by a new session; unreadable journal preserved (37.495785ms)
+✔ journal cleanup failure is idempotent and remains recoverable (47.880993ms)
+✔ verified legacy completed victory corrects conflicting lost entry without duplicate or downgrade (63.989978ms)
+✔ silent main write drop is detected and journal recovery preserves terminal (48.829609ms)
+✔ write-then-throw uncertain main result is recovered once without rewriting outcome (64.606224ms)
+✔ unreadable terminal journal blocks unsafe restore/new game without deleting storage (49.362301ms)
+✔ largest terminal snapshot fits quota without persisting unusable undo history (304.753976ms)
+✔ active persistence stores one usable undo without losing single-undo restore (60.302436ms)
+✔ variable heights preserve identity and physical scale through undo/save and reject altered capacity/old rules (195.34196ms)
+✔ complete witness records one genuine victory with correct cleared count and capacity (974.084613ms)
+✔ native capsule and home indicator remain outside all game coordinates at narrow and tall sizes (0.844941ms)
+✔ WeChat native sound overrides iOS silent switch globally and per context (1.799655ms)
+✔ older WeChat libraries without global audio options remain supported (0.172696ms)
+✔ loop music retains the native backend compatible with mute-switch options (0.169019ms)
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1000
+✔ prebuilt native game boots without DOM; wx microseconds normalized, touch and lifecycle work in mock runtime (121.790327ms)
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1000
+✔ native bundle home restart/hide preserves 290000ms session and both save copies (332.238167ms)
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1
+✔ native bundle manually ended non-winning session never revives on home hide/restart (237.824252ms)
+TriCollect clock units/ms 1
+TriCollect clock units/ms 1
+TriCollect clock units/ms 1000
+✔ native bundle 1 units/ms: continuous picks, animated turns and all presets (16987.769636ms)
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1
+✔ native bundle 1000 units/ms: continuous picks, animated turns and all presets (17565.6604ms)
+TriCollect frame interrupted Error: injected one-frame rendering fault
+    at Proxy.fillText (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:64:17)
+    at Scene.text (evalmachine.<anonymous>:1446:9)
+    at Scene.ball (evalmachine.<anonymous>:1582:14)
+    at Scene.drawBoard (evalmachine.<anonymous>:2377:18)
+    at Scene.render (evalmachine.<anonymous>:1776:12)
+    at evalmachine.<anonymous>:3643:17
+    at frame (evalmachine.<anonymous>:191:9)
+    at Object.render (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:247:5)
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:446:5)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+TriCollect audio unavailable Error: injected audio failure
+    at Object.play (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:175:34)
+    at Controller.playSound (evalmachine.<anonymous>:3575:15)
+    at Controller.pick (evalmachine.<anonymous>:1084:16)
+    at Scene.tap (evalmachine.<anonymous>:3431:19)
+    at Object.end (evalmachine.<anonymous>:3613:40)
+    at Object.tapTube (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:308:16)
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:451:5)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect audio unavailable Error: injected audio failure
+    at Object.play (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:175:34)
+    at Controller.playSound (evalmachine.<anonymous>:3575:15)
+    at Controller.pick (evalmachine.<anonymous>:1084:16)
+    at Scene.tap (evalmachine.<anonymous>:3431:19)
+    at Object.end (evalmachine.<anonymous>:3613:40)
+    at Object.tapTube (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:308:16)
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:454:5)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect clock units/ms 1
+✔ native RAF survives one rendering exception and audio exception never aborts pick (113.526326ms)
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:175:21)
+    at Controller.tick (evalmachine.<anonymous>:1016:24)
+    at evalmachine.<anonymous>:3637:14
+    at frame (evalmachine.<anonymous>:191:9)
+    at render (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:247:5)
+    at Object.advance (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:328:7)
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:463:5)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+✔ native frozen clock pauses instead of trapping input and can return home (91.922304ms)
+TriCollect clock units/ms 1
+✔ native animation wall-clock deadlines at 1 units/ms (1822.048706ms)
+TriCollect clock units/ms 1000
+✔ native animation wall-clock deadlines at 1000 units/ms (1836.010598ms)
+TriCollect startup failed Error: Clock calibration failed; no reliable progressing clock
+    at calibrateClock (evalmachine.<anonymous>:183:11)
+    at async boot (evalmachine.<anonymous>:3548:19)
+TriCollect clock units/ms 1
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:175:21)
+    at Controller.tick (evalmachine.<anonymous>:1016:24)
+    at evalmachine.<anonymous>:3637:14
+    at frame (evalmachine.<anonymous>:191:9)
+    at Object.render (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:247:5)
+    at driveUntil (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:479:7)
+    at async TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:583:23)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect clock units/ms 1
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:175:21)
+    at Controller.tick (evalmachine.<anonymous>:1016:24)
+    at evalmachine.<anonymous>:3637:14
+    at frame (evalmachine.<anonymous>:191:9)
+    at Object.render (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:247:5)
+    at driveUntil (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:479:7)
+    at async TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:583:23)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+✔ native frozen-clock intro/transfer fail safely at 1 units/ms (4000.354197ms)
+TriCollect startup failed Error: Clock calibration failed; no reliable progressing clock
+    at calibrateClock (evalmachine.<anonymous>:183:11)
+    at async boot (evalmachine.<anonymous>:3548:19)
+TriCollect clock units/ms 1000
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:175:21)
+    at Controller.tick (evalmachine.<anonymous>:1016:24)
+    at evalmachine.<anonymous>:3637:14
+    at frame (evalmachine.<anonymous>:191:9)
+    at Object.render (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:247:5)
+    at driveUntil (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:479:7)
+    at async TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:583:23)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect clock units/ms 1000
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:175:21)
+    at Controller.tick (evalmachine.<anonymous>:1016:24)
+    at evalmachine.<anonymous>:3637:14
+    at frame (evalmachine.<anonymous>:191:9)
+    at Object.render (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:247:5)
+    at driveUntil (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:479:7)
+    at async TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:583:23)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+✔ native frozen-clock intro/transfer fail safely at 1000 units/ms (4100.655238ms)
+TriCollect clock units/ms 1
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:175:21)
+    at Controller.tick (evalmachine.<anonymous>:1016:24)
+    at evalmachine.<anonymous>:3637:14
+    at frame (evalmachine.<anonymous>:191:9)
+    at Object.render (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:247:5)
+    at driveUntil (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:479:7)
+    at async TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:631:25)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+✔ native 250ms turns and frozen-turn recovery at 1 units/ms (2080.572262ms)
+TriCollect clock units/ms 1000
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:175:21)
+    at Controller.tick (evalmachine.<anonymous>:1016:24)
+    at evalmachine.<anonymous>:3637:14
+    at frame (evalmachine.<anonymous>:191:9)
+    at Object.render (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:247:5)
+    at driveUntil (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:479:7)
+    at async TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:631:25)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect clock units/ms 1000
+✔ native 250ms turns and frozen-turn recovery at 1000 units/ms (2108.597906ms)
+TriCollect clock units/ms 1
+✔ native music attempts home autoplay, pauses on hide and reuses one loop across rounds (300.39993ms)
+TriCollect clock units/ms 1
+TriCollect clock units/ms 1000
+✔ native image asset loads and image failure leaves gameplay available (182.002091ms)
+TriCollect frame interrupted Error: injected one-frame rendering fault
+    at Proxy.fillText (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:64:17)
+    at Scene.text (evalmachine.<anonymous>:1446:9)
+    at Scene.ball (evalmachine.<anonymous>:1582:14)
+    at Scene.home (evalmachine.<anonymous>:3214:18)
+    at Scene.render (evalmachine.<anonymous>:1744:14)
+    at evalmachine.<anonymous>:3643:17
+    at frame (evalmachine.<anonymous>:191:9)
+    at Object.render (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:247:5)
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-wechat-fix/tests/wechat-smoke.test.ts:711:5)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+TriCollect clock units/ms 1000
+✔ native home hero restores canvas state after a paint fault (87.156397ms)
+TriCollect clock units/ms 1000
+✔ native audio configures silent-switch compatibility and retries blocked autoplay on first touch (47.181876ms)
+✔ native audio interruption, mute and hidden lifecycle gate native play events (108.625091ms)
+ℹ tests 133
+ℹ suites 0
+ℹ pass 133
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 149543.187157

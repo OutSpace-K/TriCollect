@@ -10,6 +10,7 @@ with wave.open('assets/tap.wav', 'w') as output:
 
 # Original 32-second puzzle-game cue: 135 BPM, 18 bars, melody/bass/percussion.
 # All voices are synthesized; no imported samples or melodies.
+# Keep the 32-second musical grid; final note release wraps to the first samples.
 import random
 import json
 rate = 22050
@@ -34,7 +35,11 @@ for bar in range(bars):
     phrase=phrases[(bar//2)%4]
     for k in range(4):
         pitch=phrase[(bar%2)*4+k]+(12 if bar>=12 and k==3 else 0)
-        note('lead',bar*4*beat+k*beat,pitch,beat*.9,.19 if k%2==0 else .15,'lead')
+        # The old final note ended 44ms before EOF. Carry its release into the
+        # next cycle using note()'s modulo write, rather than trimming the beat
+        # or fading both ends to silence. This keeps 135 BPM and exactly 32s.
+        duration = beat*1.18 if bar == bars-1 and k == 3 else beat*.9
+        note('lead',bar*4*beat+k*beat,pitch,duration,.19 if k%2==0 else .15,'lead')
         if bar%2==1 and k==1:note('lead',bar*4*beat+beat*1.5,pitch+2,beat*.42,.10,'lead')
         if bar%4==3 and k==3:note('lead',bar*4*beat+beat*3.5,pitch-2,.23,.11,'lead')
         note('bass',bar*4*beat+k*beat,root+(7 if k==2 else 0),beat*.48,.075,'bass')
@@ -63,5 +68,5 @@ with wave.open('assets/ambience.wav','w') as output:
     output.writeframes(b''.join(struct.pack('<h',round(x*scale*32767)) for x in samples))
 report={'durationSeconds':seconds,'bpm':135,'bars':bars,'sampleRate':rate,'peak':peak*scale,'rms':math.sqrt(sum(x*x for x in samples)/count)*scale,'boundaryStep':abs(samples[0]-samples[-1])*scale,'clippedSamples':sum(abs(x*scale)>=1 for x in samples),'layers':{name:{'rms':math.sqrt(sum(x*x for x in data)/count)*scale,'peak':max(abs(x) for x in data)*scale} for name,data in layers.items()},'humanListeningPerformed':False}
 from pathlib import Path
-Path('evidence/v0.1.7-audio-signal.json').write_text(json.dumps(report,indent=2))
+Path('evidence/v0.1.26-audio-synthesis.json').write_text(json.dumps(report,indent=2))
 print(json.dumps(report,indent=2))

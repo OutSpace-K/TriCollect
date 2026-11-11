@@ -1,0 +1,38 @@
+{
+  "scope": "PCM sample analysis, not native WeChat playback or human listening",
+  "baselineCommit": "e3c9ad4fa3734656811dbbe028438699890fb90e",
+  "before": {
+    "sha256": "2d4377e6cd099a471e3733440959eb3ff2594ae1f693545503686cf7c234a85b",
+    "frames": 705600,
+    "sampleRate": 22050,
+    "durationSeconds": 32.0,
+    "peak": 0.333984375,
+    "rms": 0.06842611148436101,
+    "clippedSamples": 0,
+    "trailingSilenceMs": 44.44444444444444,
+    "tail20msRms": 0.0,
+    "minimum10msSeamRms": 0.0,
+    "boundaryStep": 0.0,
+    "incomingSlopeChange": 0.0,
+    "outgoingSlopeChange": 0.000213623046875
+  },
+  "after": {
+    "sha256": "4fb092ec0d21262d4066e62eb811e63152f6f215e4620da1b714d52c42ab4b18",
+    "frames": 705600,
+    "sampleRate": 22050,
+    "durationSeconds": 32.0,
+    "peak": 0.333984375,
+    "rms": 0.06843069040841646,
+    "clippedSamples": 0,
+    "trailingSilenceMs": 0.0,
+    "tail20msRms": 0.01260248258484841,
+    "minimum10msSeamRms": 0.012187881534613183,
+    "boundaryStep": 0.00860595703125,
+    "incomingSlopeChange": 0.001007080078125,
+    "outgoingSlopeChange": 0.0032958984375
+  },
+  "humanListeningPerformed": false,
+  "realWechatDeviceTested": false,
+  "nativeDecoderRestartLatencyMeasured": false,
+  "interpretation": "The tail had a 44.44ms rest; similar rests also exist within the cue, so this does not establish the cause of the reported once-per-loop interruption. The patch wraps the final note release without shortening the musical grid or changing the mute-compatible native player."
+}

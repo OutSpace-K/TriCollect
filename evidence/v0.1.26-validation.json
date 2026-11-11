@@ -1,0 +1,32 @@
+{
+  "version": "0.1.26",
+  "baseCommit": "e3c9ad4fa3734656811dbbe028438699890fb90e",
+  "scope": "Local asset-loop candidate; no public push or WeChat upload performed",
+  "checks": {
+    "build": "passed",
+    "typecheck": "passed",
+    "unitTests": {
+      "passed": 133,
+      "failed": 0,
+      "command": "node --import tsx --test --test-concurrency=1 tests/*.test.ts"
+    },
+    "seedVerification": {
+      "passed": 300,
+      "presets": 3
+    },
+    "format": "passed",
+    "gitDiffCheck": "passed",
+    "deterministicAudioRegeneration": "passed: both WAV SHA256 hashes identical after regeneration",
+    "oldAssetRegression": "expected failure on old 44ms silent tail",
+    "newAssetRegression": "passed; built assets byte-identical"
+  },
+  "browserAudio": {
+    "status": "blocked before test execution",
+    "attemptedCommand": "npm run test:audio",
+    "error": "Chromium process_singleton_posix.cc:297 Check failed: . socket() failed: Operation not permitted (1)",
+    "meaning": "No browser playback, audio capture, or browser gap measurement was performed"
+  },
+  "humanListeningPerformed": false,
+  "realWechatDeviceTested": false,
+  "remaining": "Native decoder loop restart latency is unmeasured. Test actual iOS/Android WeChat at 32, 64, and 96 seconds before claiming the reported interruption is resolved."
+}

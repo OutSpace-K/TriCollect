@@ -1,0 +1,13 @@
+✔ music keeps its exact 18-bar PCM loop without clipping or a silent seam (10.307462ms)
+✔ both prebuilt platforms contain the exact tested music asset (3.688142ms)
+✔ WeChat native sound overrides iOS silent switch globally and per context (1.586958ms)
+✔ older WeChat libraries without global audio options remain supported (0.341163ms)
+✔ loop music retains the native backend compatible with mute-switch options (0.140758ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 340.552812

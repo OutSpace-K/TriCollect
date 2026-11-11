@@ -48,3 +48,27 @@ test("older WeChat libraries without global audio options remain supported", () 
     configureWechatAudio({} as Pick<WechatMinigame.Wx, "setInnerAudioOption">),
   );
 });
+
+test("loop music retains the native backend compatible with mute-switch options", () => {
+  let calls = 0;
+  const player = createWechatPlayer(
+    {
+      createInnerAudioContext(
+        options?: WechatMinigame.CreateInnerAudioContextOption,
+      ) {
+        calls++;
+        // WeChat documents WebAudio as incompatible with setInnerAudioOption.
+        // Do not trade the earlier silent-switch fix for unverified looping.
+        assert.equal(options?.useWebAudioImplement, undefined);
+        return { onError() {} } as unknown as WechatMinigame.InnerAudioContext;
+      },
+    },
+    "assets/ambience.wav",
+    true,
+    0.22,
+  );
+  assert.equal(calls, 1);
+  assert.equal(player.loop, true);
+  assert.equal(player.obeyMuteSwitch, false);
+  assert.equal(player.volume, 0.22);
+});
