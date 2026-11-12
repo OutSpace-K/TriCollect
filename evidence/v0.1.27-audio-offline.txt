@@ -1,0 +1,33 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> tricollect@0.1.27 test:audio:buffer
+> node --import tsx tests/audio-buffer-offline.ts
+
+{
+  "passed": true,
+  "scope": "Actual 100-second offline PCM render using web-audio-engine 0.13.4 and production BufferedMusic. Not a browser or real WeChat device; no human listening.",
+  "durationSeconds": 100,
+  "sampleRate": 22050,
+  "renderedFrames": 2205000,
+  "sourceNodesCreated": 1,
+  "decodes": 1,
+  "nativeFallbacks": 0,
+  "maxDecodeQuantizationError": 0.000010192394256591797,
+  "maxSampleError": 3.5762786898541066e-9,
+  "boundaries": [
+    {
+      "seconds": 32,
+      "minimum10msRms": 0.0027102228465792845
+    },
+    {
+      "seconds": 64,
+      "minimum10msRms": 0.0027102228465792845
+    },
+    {
+      "seconds": 96,
+      "minimum10msRms": 0.0027102228465792845
+    }
+  ],
+  "realWechatDeviceTested": false,
+  "humanListeningPerformed": false
+}

@@ -1,6 +1,6 @@
 {
   "name": "tricollect",
-  "version": "0.1.26",
+  "version": "0.1.27",
   "private": true,
   "type": "module",
   "scripts": {
@@ -13,15 +13,17 @@
     "verify:seeds": "tsx scripts/verify-seeds.ts",
     "format": "prettier --write src tests scripts config *.json README.md docs",
     "format:check": "prettier --check src tests scripts config *.json README.md docs",
-    "preview": "node scripts/serve.mjs"
+    "preview": "node scripts/serve.mjs",
+    "test:audio:buffer": "node --import tsx tests/audio-buffer-offline.ts"
   },
   "devDependencies": {
-    "typescript": "5.9.3",
-    "esbuild": "0.25.12",
-    "tsx": "4.20.6",
-    "prettier": "3.6.2",
-    "playwright-core": "1.56.1",
     "@types/node": "24.10.0",
-    "minigame-api-typings": "3.8.21"
+    "esbuild": "0.25.12",
+    "minigame-api-typings": "3.8.21",
+    "playwright-core": "1.56.1",
+    "prettier": "3.6.2",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3",
+    "web-audio-engine": "0.13.4"
   }
 }

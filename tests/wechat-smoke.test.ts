@@ -14,6 +14,7 @@ async function boot(
   initiallyFrozen = false,
   brokenImage = false,
   blockFirstAutoplay = false,
+  bufferedAudio = false,
 ) {
   const images: string[] = [];
   let backgroundDraws = 0;
@@ -90,6 +91,66 @@ async function boot(
     },
   );
   const audioOptions: WechatMinigame.SetInnerAudioOption[] = [];
+  const bufferSources: {
+    buffer?: { duration: number };
+    loop: boolean;
+    loopStart: number;
+    loopEnd: number;
+    active: boolean;
+    offset: number;
+    onended: (() => void) | null;
+    connect(): void;
+    disconnect(): void;
+    start(when: number, offset: number): void;
+    stop(): void;
+  }[] = [];
+  const bufferReads: string[] = [];
+  let bufferDecodes = 0;
+  const bufferGain = { gain: { value: 0 }, connect: noop, disconnect: noop };
+  const bufferContext = {
+    currentTime: 0,
+    state: "suspended",
+    destination: {},
+    onstatechange: null as (() => void) | null,
+    createGain: () => bufferGain,
+    createBufferSource() {
+      const source = {
+        loop: false,
+        loopStart: 0,
+        loopEnd: 0,
+        active: false,
+        offset: 0,
+        onended: null as (() => void) | null,
+        connect: noop,
+        disconnect: noop,
+        start(_when: number, offset: number) {
+          this.active = true;
+          this.offset = offset;
+        },
+        stop() {
+          this.active = false;
+        },
+      };
+      bufferSources.push(source);
+      return source;
+    },
+    decodeAudioData(_data: ArrayBuffer, success: (buffer: object) => void) {
+      bufferDecodes++;
+      queueMicrotask(() => success({ duration: 32 }));
+    },
+    resume() {
+      this.state = "running";
+      return Promise.resolve();
+    },
+    suspend() {
+      this.state = "suspended";
+      return Promise.resolve();
+    },
+    close() {
+      this.state = "closed";
+      return Promise.resolve();
+    },
+  };
   const audioPlayers: {
     src: string;
     loop: boolean;
@@ -109,6 +170,22 @@ async function boot(
     onError: (f: () => void) => void;
   }[] = [];
   const wx = {
+    ...(bufferedAudio
+      ? {
+          createWebAudioContext: () => bufferContext,
+          getFileSystemManager: () => ({
+            readFile(options: {
+              filePath: string;
+              success(result: { data: ArrayBuffer }): void;
+            }) {
+              bufferReads.push(options.filePath);
+              queueMicrotask(() =>
+                options.success({ data: new ArrayBuffer(4) }),
+              );
+            },
+          }),
+        }
+      : {}),
     createImage: () => {
       const image = {
         onload: () => {},
@@ -219,7 +296,7 @@ async function boot(
       }
     },
     setTimeout: (fn: () => void, ms: number) => {
-      if (live) return setTimeout(fn, ms);
+      if (live || ms >= 5000) return setTimeout(fn, ms);
       queueMicrotask(() => {
         microseconds += ms * 1000;
         fn();
@@ -310,6 +387,11 @@ async function boot(
     },
     audioPlayers,
     audioOptions,
+    bufferContext,
+    bufferGain,
+    bufferSources,
+    bufferReads,
+    bufferDecodes: () => bufferDecodes,
     interruptAudio: () => handlers.interruptionBegin(),
     endAudioInterruption: () => handlers.interruptionEnd(),
     canvasDepth: () => saveDepth,
@@ -788,4 +870,93 @@ test("native audio interruption, mute and hidden lifecycle gate native play even
   r.endAudioInterruption();
   r.render();
   assert.equal(music.playing, false, "interruption end never bypasses pause");
+});
+
+test("native bundle uses one decoded looping source across 32/64/96-second boundaries", async () => {
+  const r = await boot(
+    new Map(),
+    1000,
+    false,
+    false,
+    false,
+    false,
+    false,
+    true,
+  );
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(r.bufferReads, ["assets/ambience.wav"]);
+  assert.equal(r.bufferDecodes(), 1);
+  assert.equal(
+    r.audioPlayers.length,
+    0,
+    "no native music mixed with buffered music",
+  );
+  const source = r.bufferSources[0];
+  assert.equal(source.loop, true);
+  assert.equal(source.loopStart, 0);
+  assert.equal(source.loopEnd, 32);
+  assert.equal(r.bufferGain.gain.value, 0.22);
+  for (const seconds of [31.999, 32, 64, 96, 100]) {
+    r.bufferContext.currentTime = seconds;
+    r.render();
+    assert.equal(source.active, true);
+    assert.equal(r.bufferSources.length, 1);
+  }
+  assert.equal(r.bufferDecodes(), 1);
+  assert.equal(r.bufferReads.length, 1);
+  r.hide();
+  assert.equal(source.active, false);
+  assert.equal(r.bufferGain.gain.value, 0);
+  r.show();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(r.bufferSources.length, 2);
+  assert.equal(r.bufferSources[1].offset, 4, "resume at 100 modulo 32 seconds");
+  assert.equal(r.bufferSources.filter((s) => s.active).length, 1);
+  r.hide();
+});
+
+test("native bundle buffered music keeps mute, pause and interruption restrictions", async () => {
+  const r = await boot(
+    new Map(),
+    1000,
+    false,
+    false,
+    false,
+    false,
+    false,
+    true,
+  );
+  beginRuntime(r);
+  await new Promise((resolve) => setImmediate(resolve));
+  const active = () => r.bufferSources.filter((s) => s.active).length;
+  assert.equal(active(), 1);
+  r.interruptAudio();
+  assert.equal(active(), 0);
+  r.tap("声音开", true);
+  r.endAudioInterruption();
+  r.render();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(active(), 0, "interruption end respects mute");
+  r.tap("静音", true);
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(active(), 1);
+  r.tap("暂停", true);
+  assert.equal(active(), 0);
+  r.interruptAudio();
+  r.endAudioInterruption();
+  r.render();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(active(), 0, "interruption end respects pause");
+  r.tap("继续游戏");
+  r.hide();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(active(), 0, "late resumed work cannot play in background");
+  r.show();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(active(), 0, "show does not unpause active gameplay");
+  r.tap("继续游戏");
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(active(), 1);
+  assert.equal(r.bufferDecodes(), 1);
+  r.hide();
 });

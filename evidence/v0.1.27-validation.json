@@ -1,0 +1,47 @@
+{
+  "version": "0.1.27",
+  "baseCommit": "6eab639141c243d7dd40247c053902473733f7d8",
+  "scope": "Buffered loop implementation; local automated verification does not establish WeChat upload or physical-device acceptance",
+  "checks": {
+    "build": "passed: WeChat and browser",
+    "typecheck": "passed",
+    "unitTests": {
+      "passed": 186,
+      "failed": 0,
+      "command": "node --import tsx --test --test-concurrency=1 tests/*.test.ts"
+    },
+    "seedVerification": {
+      "passed": 300,
+      "presets": 3
+    },
+    "format": "passed",
+    "independentCodeReview": "passed after fixing unresolved resume and non-running startup recovery",
+    "offlineAudio": {
+      "passed": true,
+      "seconds": 100,
+      "engine": "web-audio-engine 0.13.4",
+      "sourceNodes": 1,
+      "decodes": 1,
+      "boundariesSeconds": [
+        32,
+        64,
+        96
+      ],
+      "maximumSampleError": 3.5762786898541066e-09
+    }
+  },
+  "browserAudio": {
+    "status": "blocked before playback",
+    "reason": "Chromium process_singleton_posix.cc:297 socket() failed: Operation not permitted (1)"
+  },
+  "audioAssetChanged": false,
+  "audioAssetSha256": "4fb092ec0d21262d4066e62eb811e63152f6f215e4620da1b714d52c42ab4b18",
+  "visualOrGameplayChanged": false,
+  "humanListeningPerformed": false,
+  "realWechatDeviceTested": false,
+  "limitations": [
+    "Native compatibility fallback may still have a loop gap.",
+    "WeChat WebAudio does not document support for setInnerAudioOption silent-switch override. iPhone physical mute behavior must be tested.",
+    "Offline audio rendering is not WeChat or browser playback validation."
+  ]
+}

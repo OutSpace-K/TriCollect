@@ -128,6 +128,245 @@
     }
   };
 
+  // src/platform/buffered-music.ts
+  var BufferedMusic = class {
+    constructor(context, load, fallback, volume = 0.22, loadTimeoutMs = 5e3) {
+      this.context = context;
+      this.load = load;
+      this.fallback = fallback;
+      this.volume = volume;
+      this.loadTimeoutMs = loadTimeoutMs;
+      __publicField(this, "gain");
+      __publicField(this, "source");
+      __publicField(this, "buffer");
+      __publicField(this, "loading");
+      __publicField(this, "native");
+      __publicField(this, "nativeOnly", false);
+      __publicField(this, "wanted", false);
+      __publicField(this, "isPaused", true);
+      __publicField(this, "attempt", 0);
+      __publicField(this, "offset", 0);
+      __publicField(this, "startedAt", 0);
+      __publicField(this, "startupTimer");
+      __publicField(this, "listeners", {
+        play: /* @__PURE__ */ new Set(),
+        pause: /* @__PURE__ */ new Set(),
+        error: /* @__PURE__ */ new Set()
+      });
+      this.gain = context.createGain();
+      this.gain.gain.value = 0;
+      this.gain.connect(context.destination);
+      context.onstatechange = () => {
+        if (this.nativeOnly || !this.source || !this.wanted) return;
+        if (context.state === "closed") {
+          this.useNative(Error("WebAudio context closed"));
+        } else if (context.state !== "running") {
+          this.pause();
+          this.emit("pause");
+        }
+      };
+    }
+    get paused() {
+      return this.isPaused;
+    }
+    onPlay(callback) {
+      this.listeners.play.add(callback);
+    }
+    onPause(callback) {
+      this.listeners.pause.add(callback);
+    }
+    onError(callback) {
+      this.listeners.error.add(callback);
+    }
+    play() {
+      this.wanted = true;
+      if (!this.isPaused) return;
+      const attempt = ++this.attempt;
+      if (this.nativeOnly) {
+        this.playNative();
+        return;
+      }
+      this.clearStartupTimer();
+      this.startupTimer = setTimeout(() => {
+        if (attempt === this.attempt && this.wanted)
+          this.useNative(Error("Music resume/start timed out"));
+      }, this.loadTimeoutMs);
+      try {
+        const resumed = this.context.resume();
+        void Promise.all([this.prepare(), Promise.resolve(resumed)]).then(
+          ([buffer]) => {
+            if (attempt !== this.attempt || !this.wanted || this.nativeOnly)
+              return;
+            this.clearStartupTimer();
+            if (this.context.state !== "running") {
+              this.useNative(Error("WebAudio did not enter running state"));
+              return;
+            }
+            try {
+              const source = this.context.createBufferSource();
+              this.source = source;
+              source.buffer = buffer;
+              source.loop = true;
+              source.loopStart = 0;
+              source.loopEnd = buffer.duration;
+              source.connect(this.gain);
+              source.onended = () => {
+                if (this.source === source && this.wanted)
+                  this.useNative(Error("Looping WebAudio source ended"));
+              };
+              this.startedAt = this.context.currentTime;
+              this.offset %= buffer.duration;
+              this.gain.gain.value = this.volume;
+              source.start(0, this.offset);
+              this.isPaused = false;
+              this.emit("play");
+            } catch (error) {
+              this.useNative(error);
+            }
+          },
+          (error) => {
+            if (attempt === this.attempt) this.useNative(error);
+          }
+        );
+      } catch (error) {
+        this.useNative(error);
+      }
+    }
+    pause() {
+      var _a3;
+      this.wanted = false;
+      this.attempt++;
+      this.clearStartupTimer();
+      this.isPaused = true;
+      this.stopSource();
+      if (this.nativeOnly) {
+        try {
+          (_a3 = this.native) == null ? void 0 : _a3.pause();
+        } catch (e) {
+        }
+      } else {
+        try {
+          void Promise.resolve(this.context.suspend()).catch(() => {
+          });
+        } catch (e) {
+        }
+      }
+    }
+    prepare() {
+      if (!this.loading) {
+        this.loading = new Promise((resolve, reject) => {
+          const timer = setTimeout(
+            () => reject(Error("Music read/decode timed out")),
+            this.loadTimeoutMs
+          );
+          void Promise.resolve().then(this.load).then(
+            (buffer) => {
+              clearTimeout(timer);
+              if (!buffer || !Number.isFinite(buffer.duration) || buffer.duration <= 0)
+                reject(Error("Invalid decoded music duration"));
+              else {
+                if (!this.nativeOnly) this.buffer = buffer;
+                resolve(buffer);
+              }
+            },
+            (error) => {
+              clearTimeout(timer);
+              reject(error);
+            }
+          );
+        });
+      }
+      return this.loading;
+    }
+    stopSource() {
+      try {
+        this.gain.gain.value = 0;
+      } catch (e) {
+      }
+      const source = this.source;
+      this.source = void 0;
+      if (!source) return;
+      if (this.buffer && this.context.state !== "closed")
+        this.offset = (this.offset + Math.max(0, this.context.currentTime - this.startedAt)) % this.buffer.duration;
+      source.onended = null;
+      try {
+        source.stop();
+      } catch (e) {
+      }
+      try {
+        source.disconnect();
+      } catch (e) {
+      }
+    }
+    useNative(error) {
+      this.clearStartupTimer();
+      if (!this.nativeOnly) {
+        console.warn(
+          "TriCollect buffered music unavailable; using native loop",
+          error
+        );
+        this.nativeOnly = true;
+        this.attempt++;
+        this.stopSource();
+        this.buffer = void 0;
+        this.loading = void 0;
+        this.isPaused = true;
+        this.context.onstatechange = null;
+        try {
+          this.gain.disconnect();
+        } catch (e) {
+        }
+        try {
+          void Promise.resolve(this.context.close()).catch(() => {
+          });
+        } catch (e) {
+        }
+      }
+      if (this.wanted) this.playNative();
+    }
+    playNative() {
+      var _a3, _b, _c, _d;
+      try {
+        if (!this.native) {
+          const player = this.fallback();
+          this.native = player;
+          (_a3 = player.onPlay) == null ? void 0 : _a3.call(player, () => {
+            if (!this.wanted) {
+              try {
+                player.pause();
+              } catch (e) {
+              }
+              return;
+            }
+            this.isPaused = false;
+            this.emit("play");
+          });
+          const stopped = () => {
+            if (!this.wanted || player.paused === false) return;
+            this.isPaused = true;
+            this.emit("pause");
+          };
+          (_b = player.onPause) == null ? void 0 : _b.call(player, stopped);
+          (_c = player.onStop) == null ? void 0 : _c.call(player, stopped);
+          (_d = player.onError) == null ? void 0 : _d.call(player, () => {
+            this.isPaused = true;
+            if (this.wanted) this.emit("error");
+          });
+        }
+        this.native.play();
+      } catch (e) {
+        this.emit("error");
+      }
+    }
+    emit(event) {
+      for (const callback of this.listeners[event]) callback();
+    }
+    clearStartupTimer() {
+      clearTimeout(this.startupTimer);
+      this.startupTimer = void 0;
+    }
+  };
+
   // src/platform/wechat-audio.ts
   function configureWechatAudio(api) {
     var _a3;
@@ -150,6 +389,48 @@
     );
     player.src = src;
     return player;
+  }
+
+  // src/platform/wechat-music.ts
+  function createWechatMusic(api) {
+    const src = "assets/ambience.wav";
+    const fallback = () => createWechatPlayer(api, src, true, 0.22);
+    if (!api.createWebAudioContext || !api.getFileSystemManager)
+      return fallback();
+    let context;
+    try {
+      const audio2 = api.createWebAudioContext();
+      context = audio2;
+      const load = () => new Promise((resolve, reject) => {
+        api.getFileSystemManager().readFile({
+          filePath: src,
+          success: ({ data }) => {
+            if (typeof data === "string") {
+              reject(Error("Music must be loaded as binary data"));
+              return;
+            }
+            try {
+              const result = audio2.decodeAudioData(data, resolve, reject);
+              const promise = result;
+              if (typeof (promise == null ? void 0 : promise.then) === "function")
+                void promise.then(resolve, reject);
+            } catch (error) {
+              reject(error);
+            }
+          },
+          fail: reject
+        });
+      });
+      return new BufferedMusic(audio2, load, fallback);
+    } catch (error) {
+      console.warn("TriCollect WebAudio unavailable; using native loop", error);
+      try {
+        void Promise.resolve(context == null ? void 0 : context.close()).catch(() => {
+        });
+      } catch (e) {
+      }
+      return fallback();
+    }
   }
 
   // src/platform/clock.ts
@@ -3516,9 +3797,7 @@
   var perf = wx.getPerformance();
   var audio;
   configureWechatAudio(wx);
-  var music = new Music(
-    () => createWechatPlayer(wx, "assets/ambience.wav", true, 0.22)
-  );
+  var music = new Music(() => createWechatMusic(wx));
   var audioInterrupted = false;
   var _a;
   (_a = wx.onAudioInterruptionBegin) == null ? void 0 : _a.call(wx, () => {

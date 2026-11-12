@@ -49,7 +49,7 @@ test("older WeChat libraries without global audio options remain supported", () 
   );
 });
 
-test("loop music retains the native backend compatible with mute-switch options", () => {
+test("native fallback loop retains the backend compatible with mute-switch options", () => {
   let calls = 0;
   const player = createWechatPlayer(
     {

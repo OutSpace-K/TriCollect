@@ -1,6 +1,7 @@
 import { viewport } from "./platform/viewport";
 import { gesture } from "./platform/gesture";
 import { Music } from "./platform/music";
+import { createWechatMusic } from "./platform/wechat-music";
 import {
   configureWechatAudio,
   createWechatPlayer,
@@ -23,9 +24,7 @@ ctx.scale(dpr, dpr);
 const perf = wx.getPerformance();
 let audio: WechatMinigame.InnerAudioContext | undefined;
 configureWechatAudio(wx);
-const music = new Music(() =>
-  createWechatPlayer(wx, "assets/ambience.wav", true, 0.22),
-);
+const music = new Music(() => createWechatMusic(wx));
 let audioInterrupted = false;
 wx.onAudioInterruptionBegin?.(() => {
   audioInterrupted = true;

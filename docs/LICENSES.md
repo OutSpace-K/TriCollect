@@ -7,6 +7,7 @@
 - `assets/ambience.wav`：本项目原创32秒、135BPM休闲益智合成曲（v0.1.7轻拨弦回应、轻鼓与较弱低音编配），纯数学谐波、衰减包络、原创旋律/低音/和弦及确定性噪声打击乐，无外部采样、录音或导入旋律；生成脚本同为 `scripts/make-audio.py`，按 MIT 随工程提供。
 - 构建/测试依赖：TypeScript（Apache-2.0）、esbuild（MIT）、tsx（MIT）、Prettier（MIT）、playwright-core（Apache-2.0）、@types/node（MIT）、minigame-api-typings（MIT）。具体版本与传递依赖以 `package-lock.json` 为准；第三方 license 原文打包到 `docs/third-party`。
 - 不分发 Chromium 浏览器；交互测试调用用户本机安装版本。
+- v0.1.27 增加测试依赖 `web-audio-engine@0.13.4`（MIT）及其MIT传递依赖，用于离线音频渲染。版本锁定于 `package-lock.json`；源码包不分发其 `node_modules`，小游戏运行包不包含该引擎。上游：https://github.com/mohayonao/web-audio-engine 。
 
 官方接口核验：2026-11-01，读取官方 `wechat-miniprogram/minigame-api-typings` 仓库与 npm 包 3.8.21 的 `types/wx/lib.wx.api.d.ts`。该文件由微信 API 文档生成。核对 createCanvas、getPerformance/Performance.now（微秒）、getWindowInfo、激励视频单例和完成回调，以及生命周期与存储声明。官方指南网页本次抓取失败。
 
