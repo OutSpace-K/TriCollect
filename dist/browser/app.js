@@ -1309,6 +1309,7 @@
       __publicField(this, "selectedDifficulty", 0);
       __publicField(this, "trackObjects", []);
       __publicField(this, "misclickFeedback", null);
+      __publicField(this, "ballAtlas", null);
       __publicField(this, "homeLogo", null);
       __publicField(this, "homeHero", null);
       __publicField(this, "backgroundLoaded", false);
@@ -1351,6 +1352,9 @@
       } catch {
         this.decorationLast = null;
       }
+    }
+    setBallAtlas(image) {
+      this.ballAtlas = image;
     }
     setHomeArt(kind, image) {
       if (kind === "logo") this.homeLogo = image;
@@ -1479,79 +1483,143 @@
       c.save();
       try {
         c.globalAlpha = alpha;
-        c.fillStyle = "#344b3550";
+        if (this.ballAtlas) {
+          c.save();
+          try {
+            c.beginPath();
+            c.arc(x, y, r, 0, Math.PI * 2);
+            c.clip();
+            c.drawImage(
+              this.ballAtlas,
+              type % 4 * 128,
+              Math.floor(type / 4) * 128,
+              128,
+              128,
+              x - r,
+              y - r,
+              r * 2,
+              r * 2
+            );
+          } finally {
+            c.restore();
+          }
+          this.text(
+            SYMBOLS[type],
+            x,
+            y + r * 0.4,
+            Math.max(5, r * 0.32),
+            "#43204338",
+            "center"
+          );
+          return;
+        }
+        const rgb = PALETTE[type].slice(1).match(/../g).map((n) => parseInt(n, 16));
+        const shade = (mix) => "#" + rgb.map(
+          (v) => Math.round(mix > 0 ? v + (255 - v) * mix : v * (1 + mix)).toString(16).padStart(2, "0")
+        ).join("");
+        const contact = c.createRadialGradient(
+          x + r * 0.1,
+          y + r * 0.88,
+          0,
+          x + r * 0.1,
+          y + r * 0.88,
+          r * 0.86
+        );
+        contact.addColorStop(0, "#59331d60");
+        contact.addColorStop(0.5, "#59331d24");
+        contact.addColorStop(1, "#59331d00");
+        c.save();
+        c.translate(x + r * 0.1, y + r * 0.88);
+        c.scale(1, 0.24);
+        c.translate(-x - r * 0.1, -y - r * 0.88);
+        c.fillStyle = contact;
         c.beginPath();
-        c.ellipse(
-          x + r * 0.22,
-          y + r * 0.86,
-          r * 0.88,
-          r * 0.23,
-          0,
-          0,
-          Math.PI * 2
-        );
+        c.arc(x + r * 0.1, y + r * 0.88, r * 0.86, 0, Math.PI * 2);
         c.fill();
-        const shade = (mix) => {
-          const rgb = PALETTE[type].slice(1).match(/../g).map((n) => parseInt(n, 16));
-          return "#" + rgb.map(
-            (v) => Math.round(mix > 0 ? v + (255 - v) * mix : v * (1 + mix)).toString(16).padStart(2, "0")
-          ).join("");
-        };
-        const gradient = c.createRadialGradient(
-          x - r * 0.36,
-          y - r * 0.4,
-          r * 0.03,
-          x + r * 0.15,
-          y + r * 0.2,
-          r * 1.15
+        c.restore();
+        const body = c.createRadialGradient(
+          x - r * 0.38,
+          y - r * 0.42,
+          r * 0.02,
+          x + r * 0.13,
+          y + r * 0.22,
+          r * 1.25
         );
-        gradient.addColorStop(0, shade(0.48));
-        gradient.addColorStop(0.3, shade(0.1));
-        gradient.addColorStop(0.62, PALETTE[type]);
-        gradient.addColorStop(0.88, shade(-0.14));
-        gradient.addColorStop(1, shade(-0.35));
-        c.fillStyle = gradient;
+        body.addColorStop(0, shade(0.55));
+        body.addColorStop(0.23, shade(0.25));
+        body.addColorStop(0.48, shade(0.04));
+        body.addColorStop(0.7, shade(-0.08));
+        body.addColorStop(0.88, shade(-0.26));
+        body.addColorStop(1, shade(-0.42));
+        c.fillStyle = body;
         c.beginPath();
         c.arc(x, y, r, 0, Math.PI * 2);
         c.fill();
-        c.strokeStyle = shade(-0.36);
-        c.lineWidth = Math.max(1, r * 0.055);
-        c.stroke();
-        c.strokeStyle = "#ffffff88";
-        c.lineWidth = Math.max(1, r * 0.065);
-        c.beginPath();
-        c.arc(x, y, r * 0.88, Math.PI * 0.93, Math.PI * 1.86);
-        c.stroke();
-        c.fillStyle = "#ffffffed";
+        c.save();
+        c.clip();
+        const bounce = c.createRadialGradient(
+          x + r * 0.26,
+          y + r * 0.83,
+          0,
+          x + r * 0.26,
+          y + r * 0.83,
+          r * 0.76
+        );
+        bounce.addColorStop(0, "#fff6bb68");
+        bounce.addColorStop(0.45, "#fff0ae20");
+        bounce.addColorStop(1, "#fff0ae00");
+        c.fillStyle = bounce;
+        c.fillRect(x - r, y - r, r * 2, r * 2);
+        const gloss = c.createRadialGradient(
+          x - r * 0.34,
+          y - r * 0.45,
+          0,
+          x - r * 0.34,
+          y - r * 0.45,
+          r * 0.48
+        );
+        gloss.addColorStop(0, "#ffffffbd");
+        gloss.addColorStop(0.38, "#ffffff55");
+        gloss.addColorStop(1, "#ffffff00");
+        c.fillStyle = gloss;
+        c.fillRect(x - r, y - r, r * 2, r * 2);
+        c.fillStyle = "#fffffff2";
         c.beginPath();
         c.ellipse(
           x - r * 0.34,
-          y - r * 0.43,
-          r * 0.25,
-          r * 0.17,
+          y - r * 0.46,
+          r * 0.23,
+          r * 0.145,
           -0.65,
           0,
           Math.PI * 2
         );
         c.fill();
-        c.fillStyle = "#ffffff38";
+        c.fillStyle = "#ffffff9c";
         c.beginPath();
         c.ellipse(
-          x + r * 0.28,
-          y + r * 0.54,
-          r * 0.39,
-          r * 0.14,
-          -0.4,
+          x - r * 0.04,
+          y - r * 0.69,
+          r * 0.052,
+          r * 0.037,
+          -0.3,
           0,
           Math.PI * 2
         );
         c.fill();
+        c.strokeStyle = "#fff7dc66";
+        c.lineWidth = Math.max(0.7, r * 0.055);
+        c.lineCap = "round";
+        c.beginPath();
+        c.arc(x, y, r * 0.92, Math.PI * 0.05, Math.PI * 0.31);
+        c.stroke();
+        c.restore();
         this.text(
           SYMBOLS[type],
           x,
-          y + r * 0.34,
-          Math.max(7, r * 0.51),
-          "#30244770",
+          y + r * 0.42,
+          Math.max(5, r * 0.32),
+          "#30244758",
           "center"
         );
       } finally {
@@ -2114,30 +2182,30 @@
         this.capStates.push({ id: t.id, closed: capped, x, y: ty });
         if (!front) {
           const rear = c.createLinearGradient(x - radius, ty, x + radius, y);
-          rear.addColorStop(0, "#88a99c");
-          rear.addColorStop(0.13, "#e8f3df");
-          rear.addColorStop(0.32, "#c1d7c4");
-          rear.addColorStop(0.7, "#afc7b7");
-          rear.addColorStop(1, "#76968c");
+          rear.addColorStop(0, "#b6b5d1");
+          rear.addColorStop(0.13, "#fffaf0");
+          rear.addColorStop(0.32, "#e9e5ef");
+          rear.addColorStop(0.7, "#d8d6e6");
+          rear.addColorStop(1, "#aca8c5");
           this.chamberPath(x, ty, y, radius);
           c.fillStyle = rear;
           c.fill();
-          c.strokeStyle = "#76998e80";
+          c.strokeStyle = "#9185a666";
           c.lineWidth = 1;
           c.stroke();
           c.beginPath();
           c.ellipse(x, ty - 1, radius * 0.98, opening, 0, 0, Math.PI * 2);
-          c.fillStyle = "#e3e9d4";
+          c.fillStyle = "#fff8ed";
           c.fill();
           c.beginPath();
           c.ellipse(x, ty - 1, radius * 0.79, opening * 0.55, 0, 0, Math.PI * 2);
-          c.fillStyle = "#afc2ac";
+          c.fillStyle = "#d9d1df";
           c.fill();
           c.beginPath();
           c.ellipse(x, y - 1, radius * 0.9, opening * 0.6, 0, 0, Math.PI * 2);
-          c.fillStyle = "#9bb19855";
+          c.fillStyle = "#c2b6cf55";
           c.fill();
-          c.strokeStyle = "#f4fff5b0";
+          c.strokeStyle = "#fffaf5cc";
           c.lineWidth = 0.8;
           c.beginPath();
           c.moveTo(x - radius * 0.79, ty + 12);
@@ -2150,11 +2218,11 @@
           c.stroke();
           if (capped) {
             const palette = [
-              ["#ffa9a2", "#e96c6b", "#a94350"],
-              ["#ffe39a", "#ebba4d", "#ab792d"],
-              ["#c5b6fa", "#9d85dd", "#63549b"],
-              ["#a4e4ed", "#64becb", "#347e97"],
-              ["#c9e7a8", "#91bd78", "#5d8753"]
+              ["#fff1e9", "#e5ccd9", "#b9a5bc"],
+              ["#fff5e2", "#e8d8bf", "#b9a8b2"],
+              ["#f5edff", "#d4c8e5", "#ac9bbd"],
+              ["#edf6ff", "#cbdce8", "#a4abbf"],
+              ["#fff5ec", "#e2d5db", "#b5a5b9"]
             ][(t.q * 3 + t.r * 7) % 5];
             const lidSide = c.createLinearGradient(
               x - radius,
@@ -2254,12 +2322,12 @@
           c.clip();
           this.transmittedBackdrop(x - radius, ty, radius * 2, height);
           const glass = c.createLinearGradient(x - radius, 0, x + radius, 0);
-          glass.addColorStop(0, "#557a6677");
+          glass.addColorStop(0, "#9f8ba866");
           glass.addColorStop(0.09, "#ffffeed0");
-          glass.addColorStop(0.19, "#f5fff520");
+          glass.addColorStop(0.19, "#fff4ed20");
           glass.addColorStop(0.65, "#ffffff08");
-          glass.addColorStop(0.85, "#aacdb822");
-          glass.addColorStop(1, "#54736177");
+          glass.addColorStop(0.85, "#cfbddb22");
+          glass.addColorStop(1, "#9987a366");
           c.fillStyle = glass;
           c.fillRect(x - radius, ty, radius * 2, height);
           c.strokeStyle = "#ffffffd9";
@@ -2282,7 +2350,7 @@
         } finally {
           c.restore();
         }
-        c.strokeStyle = "#698571aa";
+        c.strokeStyle = "#9d86a488";
         c.lineWidth = 1;
         this.chamberPath(x, ty, y, radius);
         c.stroke();
@@ -2293,23 +2361,23 @@
           ty + opening
         );
         rim.addColorStop(0, "#f6ffff");
-        rim.addColorStop(0.22, "#e4edda");
-        rim.addColorStop(0.6, "#b0c2ae");
-        rim.addColorStop(1, "#6f8b76");
+        rim.addColorStop(0.22, "#fff2eb");
+        rim.addColorStop(0.6, "#dacee5");
+        rim.addColorStop(1, "#a893b0");
         c.fillStyle = rim;
         c.beginPath();
         c.ellipse(x, ty + 4, radius * 0.98, opening, 0, 0, Math.PI * 2);
         c.fill();
-        c.fillStyle = "#c4d8b977";
+        c.fillStyle = "#efdfef77";
         c.fillRect(x - radius * 0.86, ty + 1, radius * 1.72, 7);
         c.fillStyle = rim;
         c.beginPath();
         c.ellipse(x, ty - 1, radius * 0.98, opening, 0, 0, Math.PI * 2);
         c.fill();
         const well = c.createLinearGradient(x, ty - opening, x, ty + opening);
-        well.addColorStop(0, "#4d6958");
-        well.addColorStop(0.5, "#a1b59a");
-        well.addColorStop(1, "#e8f5e8");
+        well.addColorStop(0, "#9c839f");
+        well.addColorStop(0.5, "#d9c9df");
+        well.addColorStop(1, "#fff7f0");
         c.fillStyle = well;
         c.beginPath();
         c.ellipse(x, ty - 1, radius * 0.89, opening * 0.63, 0, 0, Math.PI * 2);
@@ -2329,8 +2397,8 @@
         c.stroke();
         const foot = c.createLinearGradient(x - radius, y - 7, x + radius, y + 4);
         foot.addColorStop(0, "#f7ffffc9");
-        foot.addColorStop(0.35, "#c9d9ba77");
-        foot.addColorStop(1, "#809b7eaa");
+        foot.addColorStop(0.35, "#e5d3e577");
+        foot.addColorStop(1, "#ad94b0aa");
         c.fillStyle = foot;
         c.beginPath();
         c.ellipse(x, y - 2, radius, opening * 0.8, 0, 0, Math.PI * 2);
@@ -2393,32 +2461,25 @@
             this.chamberPath(x, ty, y, radius);
             c.clip();
             const sleeve = c.createLinearGradient(x - radius, 0, x + radius, 0);
-            sleeve.addColorStop(0, "#a85f29");
-            sleeve.addColorStop(0.14, "#e8b15b");
-            sleeve.addColorStop(0.32, "#ffe6a3");
-            sleeve.addColorStop(0.62, "#f2c675");
-            sleeve.addColorStop(1, "#b97836");
+            sleeve.addColorStop(0, "#b8accb");
+            sleeve.addColorStop(0.16, "#eee5f0");
+            sleeve.addColorStop(0.38, "#fffaf3");
+            sleeve.addColorStop(0.72, "#efe7f2");
+            sleeve.addColorStop(1, "#bfb2d0");
             c.fillStyle = sleeve;
             c.fillRect(x - radius, frostTop, radius * 2, y - frostTop + 4);
-            for (let rib = -3; rib <= 3; rib++) {
-              const px = x + rib * radius * 0.23;
-              c.strokeStyle = rib < 0 ? "#fff4c777" : "#9b5b2438";
-              c.lineWidth = 1;
-              c.beginPath();
-              c.moveTo(px, frostTop + 5);
-              c.quadraticCurveTo(
-                px + radius * 0.05,
-                (frostTop + y) / 2,
-                px,
-                y - 9
-              );
-              c.stroke();
-            }
-            c.fillStyle = "#b87939";
+            c.fillStyle = "#ffffff55";
+            c.fillRect(
+              x - radius * 0.62,
+              frostTop + 5,
+              radius * 0.25,
+              Math.max(0, y - frostTop - 12)
+            );
+            c.fillStyle = "#d0bfd8";
             c.beginPath();
             c.ellipse(x, frostTop + 2, radius, 3.5, 0, 0, Math.PI * 2);
             c.fill();
-            c.strokeStyle = "#fff2bd";
+            c.strokeStyle = "#fffaf4";
             c.lineWidth = 1.4;
             c.beginPath();
             c.ellipse(
@@ -2431,13 +2492,7 @@
               Math.PI * 2
             );
             c.stroke();
-            c.strokeStyle = "#fff8db99";
-            c.lineWidth = radius * 0.09;
-            c.beginPath();
-            c.moveTo(x - radius * 0.58, frostTop + 8);
-            c.lineTo(x - radius * 0.58, y - 12);
-            c.stroke();
-            c.fillStyle = "#fff3bc90";
+            c.fillStyle = "#ffffff80";
             c.fillRect(x - radius, y - 9, radius * 2, 2);
           } finally {
             c.restore();
@@ -3575,11 +3630,12 @@
     "background.png",
     "play-background.png",
     "home-logo.png",
-    "home-hero.png"
+    "home-hero.png",
+    "balls-candy.png"
   ]) {
     try {
       const image = new Image();
-      image.onload = () => file === "background.png" ? scene.setBackground(image) : file === "play-background.png" ? scene.setPlayBackground(image) : scene.setHomeArt(
+      image.onload = () => file === "background.png" ? scene.setBackground(image) : file === "play-background.png" ? scene.setPlayBackground(image) : file === "balls-candy.png" ? scene.setBallAtlas(image) : scene.setHomeArt(
         file === "home-logo.png" ? "logo" : "hero",
         image
       );

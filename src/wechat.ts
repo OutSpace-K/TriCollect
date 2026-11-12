@@ -95,6 +95,7 @@ async function boot() {
     "play-background.png",
     "home-logo.png",
     "home-hero.png",
+    "balls-candy.png",
   ]) {
     try {
       const image = wx.createImage();
@@ -103,10 +104,12 @@ async function boot() {
           ? scene.setBackground(image as unknown as CanvasImageSource)
           : file === "play-background.png"
             ? scene.setPlayBackground(image as unknown as CanvasImageSource)
-            : scene.setHomeArt(
-                file === "home-logo.png" ? "logo" : "hero",
-                image as unknown as CanvasImageSource,
-              );
+            : file === "balls-candy.png"
+              ? scene.setBallAtlas(image as unknown as CanvasImageSource)
+              : scene.setHomeArt(
+                  file === "home-logo.png" ? "logo" : "hero",
+                  image as unknown as CanvasImageSource,
+                );
       image.onerror = () => {
         /* Keep the available backdrop if loading fails. */
       };

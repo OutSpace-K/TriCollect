@@ -1,0 +1,487 @@
+✔ music keeps its exact 18-bar PCM loop without clipping or a silent seam (8.294236ms)
+✔ both prebuilt platforms contain the exact tested music asset (2.176176ms)
+TriCollect buffered music unavailable; using native loop Error: load
+    at <anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/buffered-music.test.ts:208:49)
+    at player.player (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/buffered-music.test.ts:89:21)
+TriCollect buffered music unavailable; using native loop Error: resume
+    at Object.f.context.resume (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/buffered-music.test.ts:211:47)
+    at BufferedMusic.play (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/src/platform/buffered-music.ts:86:36)
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/buffered-music.test.ts:226:14)
+    at Test.runInAsyncScope (node:async_hooks:227:14)
+    at Test.run (node:internal/test_runner/test:1402:25)
+    at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    at Test.postRun (node:internal/test_runner/test:1542:19)
+    at Test.run (node:internal/test_runner/test:1467:12)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect buffered music unavailable; using native loop Error: source
+    at Object.f.context.createBufferSource (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/buffered-music.test.ts:214:15)
+    at <anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/src/platform/buffered-music.ts:97:41)
+TriCollect buffered music unavailable; using native loop Error: start
+    at Object.s.start (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/buffered-music.test.ts:221:17)
+    at <anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/src/platform/buffered-music.ts:111:20)
+TriCollect buffered music unavailable; using native loop Error: Looping WebAudio source ended
+    at Object.source.onended (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/src/platform/buffered-music.ts:106:32)
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/buffered-music.test.ts:228:43)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+✔ decoded buffer loops on audio thread beyond 100 seconds without reloading or restarting (2.342597ms)
+✔ pause silences immediately and resumes at accumulated modulo offset (0.515606ms)
+✔ Music mute gate prevents delayed decode from starting and allows later recovery (0.758542ms)
+✔ Music hidden gate prevents delayed decode from starting and allows later recovery (0.38515ms)
+✔ Music ad gate prevents delayed decode from starting and allows later recovery (0.283778ms)
+✔ Music paused gate prevents delayed decode from starting and allows later recovery (0.226661ms)
+✔ Music interruption gate prevents delayed decode from starting and allows later recovery (0.273692ms)
+✔ late resume success after cancellation cannot start sound (0.208744ms)
+✔ quick cancel and retry shares decode and ignores previous rejected resume (0.448885ms)
+✔ load failure falls back once and reuses the native player (3.29444ms)
+✔ resume failure falls back once and reuses the native player (0.942279ms)
+✔ source failure falls back once and reuses the native player (0.308375ms)
+✔ start failure falls back once and reuses the native player (0.285339ms)
+✔ ended failure falls back once and reuses the native player (0.376166ms)
+TriCollect buffered music unavailable; using native loop Error: Music resume/start timed out
+    at Timeout.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/src/platform/buffered-music.ts:82:24)
+    at listOnTimeout (node:internal/timers:685:17)
+    at process.processTimers (node:internal/timers:618:7)
+TriCollect buffered music unavailable; using native loop Error: WebAudio context closed
+    at BufferedMusic.context.onstatechange (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/src/platform/buffered-music.ts:50:24)
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/buffered-music.test.ts:289:3)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect buffered music unavailable; using native loop Error: Invalid decoded music duration
+    at <anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/src/platform/buffered-music.ts:161:24)
+TriCollect buffered music unavailable; using native loop Error: Invalid decoded music duration
+    at <anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/src/platform/buffered-music.ts:161:24)
+TriCollect buffered music unavailable; using native loop Error: Invalid decoded music duration
+    at <anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/src/platform/buffered-music.ts:161:24)
+TriCollect buffered music unavailable; using native loop Error: Invalid decoded music duration
+    at <anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/src/platform/buffered-music.ts:161:24)
+TriCollect buffered music unavailable; using native loop Error: Invalid decoded music duration
+    at <anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/src/platform/buffered-music.ts:161:24)
+TriCollect buffered music unavailable; using native loop Error: Invalid decoded music duration
+    at <anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/src/platform/buffered-music.ts:161:24)
+✔ decode timeout falls back and ignores late decoded buffer (20.414694ms)
+✔ cancelled failing decode never starts native fallback (0.318259ms)
+✔ active buffered playback is immediately disconnected by mute (0.174662ms)
+✔ active buffered playback is immediately disconnected by hidden (0.083346ms)
+✔ active buffered playback is immediately disconnected by ad (0.152279ms)
+✔ active buffered playback is immediately disconnected by paused (0.104568ms)
+✔ active buffered playback is immediately disconnected by interruption (0.095314ms)
+✔ unexpected context close switches once to native while stale state events are ignored (0.345901ms)
+✔ external context suspension waits for gesture rather than restarting each frame (0.302525ms)
+✔ invalid duration 0 cannot create looping source (0.250857ms)
+✔ invalid duration -1 cannot create looping source (0.275545ms)
+✔ invalid duration NaN cannot create looping source (0.229165ms)
+✔ invalid duration Infinity cannot create looping source (0.17246ms)
+✔ missing decoded buffer (null) falls back without an unhandled rejection (0.215804ms)
+✔ missing decoded buffer (undefined) falls back without an unhandled rejection (0.269596ms)
+TriCollect buffered music unavailable; using native loop Error: Music resume/start timed out
+    at Timeout.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/src/platform/buffered-music.ts:82:24)
+    at listOnTimeout (node:internal/timers:685:17)
+    at process.processTimers (node:internal/timers:618:7)
+TriCollect buffered music unavailable; using native loop Error: WebAudio did not enter running state
+    at <anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/src/platform/buffered-music.ts:93:28)
+TriCollect buffered music unavailable; using native loop Error: WebAudio did not enter running state
+    at <anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/src/platform/buffered-music.ts:93:28)
+✔ never-settling resume falls back after overall startup timeout (25.194601ms)
+✔ fulfilled resume with suspended context falls back (0.409897ms)
+✔ fulfilled resume with closed context falls back (0.198028ms)
+✔ cancelled startup watchdog cannot start native sound while muted (26.023968ms)
+✔ cancelled startup watchdog cannot interrupt a successful immediate retry (26.180474ms)
+✔ clock calibration normalizes 1 units/ms and rejects runtime freeze (0.910861ms)
+✔ clock calibration normalizes 1000 units/ms and rejects runtime freeze (0.109544ms)
+✔ frozen, invalid or ambiguous startup clock is rejected rather than starting a locked round (0.504009ms)
+✔ runtime frozen clock signals interruption without substituting wall-clock game time (0.401514ms)
+✔ independent real-time 10-second measurement in both clock unit modes (10345.009713ms)
+✔ ready/intro never consume fixed 300s, all presets share base (192.091356ms)
+✔ pause/background hide, resume remains paused, no wall time or frame dependence (24.32482ms)
+✔ rotation queues net turns, completes in bounded time and preserves board (27.341593ms)
+✔ settlement lock rejects rapid duplicate taps (26.623096ms)
+✔ undo restores score and balls without refunding time or copying ad ledger (29.924821ms)
+✔ deadline processed before input; no post-zero move (35.890868ms)
+✔ last legal pick wins before subsequent clock expiration (628.879801ms)
+✔ ad completion exactly once, persists ledger, survives undo and reload (38.90531ms)
+✔ cancelled/failed ad preserves board and time; old session never rewarded (85.759249ms)
+✔ pending ad restore never grants reward (38.740833ms)
+✔ corrupt/unknown/inconsistent saves rejected and last good backup recovered (26.289538ms)
+✔ failed storage write never crashes gameplay (37.21081ms)
+✔ WeChat adapter only isEnded true grants, load/show do not (7.261953ms)
+✔ WeChat rejection fails without rewards and listeners removed (0.352861ms)
+✔ two-extension limit enforced and no final result revival (51.008648ms)
+✔ unclaimed home lifecycle never replaces unfinished main or backup across restarts (74.076301ms)
+✔ empty home and repeated home navigation do not create or replace a save (24.352382ms)
+✔ explicit new game replaces a pending resume, then lifecycle saves that chosen session (50.327958ms)
+✔ manually ended non-winning round remains final through home hide and restart (61.568561ms)
+✔ rotation hides input, pause keeps requested face and restart cancels queued turns (68.867213ms)
+✔ hints never reveal another face and incompatible old rules do not resume (113.31256ms)
+✔ corrupted temporary readback cannot replace the committed save (29.194828ms)
+✔ sound preference survives new rounds, home and runtime restart (72.018733ms)
+✔ single undo survives matching, rotation, pause and reload; only a new pick rearms it (65.287018ms)
+✔ single undo restores a removed pipe and legacy saves offer only their most recent step (47.777218ms)
+✔ 10 tube mechanical layout has nine exposed boundaries and one locked center (7.484898ms)
+✔ top only, one ball and one action, stable unique ID conservation (5.0148ms)
+✔ three same resolve before seventh-slot failure (2.761768ms)
+✔ seven unmatched blocks eighth action (2.865123ms)
+✔ exterior flood exposes inner tube only after connected empty cell (3.058444ms)
+✔ sealed internal empty cell does not expose adjacent internal tubes (72.005833ms)
+✔ all presets deterministic and witness wins without ads preserving every ball (208.087201ms)
+✔ solver budget returns unknown rather than no-solution (1.973391ms)
+✔ solver safe path independently replays from current partial state (19.604334ms)
+✔ blocked state search is dead without mutating board (1.772709ms)
+✔ divisible color counts alone do not prove solvability: current state with no safe move (2.320734ms)
+✔ 60 adversarial deterministic walks maintain identity and tray invariants (1484.515518ms)
+✔ front faces hide deeper tubes and peeling reveals the same shared lattice (11.329346ms)
+✔ clearing the full outer boundary exposes inner pipes in all three views (11.210598ms)
+✔ variable-height presets have divisible totals and reveal only actual front windows (81.472515ms)
+✔ legacy boards retain exact identity and reload with undo; revisions cannot be relabelled (413.120496ms)
+✔ 300 new layouts have visible legal no-ad paths and measured progressive tray pressure (28503.334324ms)
+✔ local hard sample excludes old/advertised results and records free assistance without claiming a human rate (114.385715ms)
+✔ finger jitter uses screen pixels rather than shrunken logical-canvas thresholds (0.808938ms)
+✔ only a clearly horizontal screen-space swipe rotates the board (0.108093ms)
+{
+  legal: 240,
+  blocked: 4900,
+  overlaps: 224,
+  bounds: 336960,
+  configurations: 36
+}
+✔ independent four-phone restored perspective input and rotation audit (1901.104112ms)
+✔ idle selectable spheres have no persistent outline; invalid sphere gives one bounded neutral pulse (63.649883ms)
+✔ background and UI taps never start feedback; valid pick and lifecycle clear transient feedback (45.305687ms)
+✔ confirmed display name and home effect lettering fit a narrow viewport (27.089523ms)
+✔ play backdrop is distinct with home fallback; decorative tray never selects or pulses (31.305845ms)
+✔ compact HUD omits seed, tube numbering and routine narration; modal controls fit narrow screens (48.751734ms)
+✔ home difficulty modal groups tiers and never overwrites resume without confirmation (35.461065ms)
+✔ decorative motion freezes offscreen and returns without a large elapsed jump (27.13442ms)
+✔ transient controls retain color while input lock and real unavailable undo remain enforced (30.040264ms)
+✔ caps depend on shared-lattice front access, never on transient pick locks (33.905784ms)
+✔ custom title uses curved glyph strokes and vertical-axis projection, never an enclosing circle (25.174389ms)
+✔ new title and toy drawing restore transforms after paint exceptions (26.960478ms)
+✔ held-ball control stays above tray and visually steady through pick/turn locks without accepting input (32.515881ms)
+✔ phone-sized touch halos accept near misses without stealing lower or hidden balls (185.718604ms)
+✔ overlapping touch halos choose the nearest legal top rather than paint order (48.473986ms)
+✔ lift cancelled/failed/unconfigured keeps exact board, time and retry eligibility (141.719369ms)
+✔ completed lift is once-only, session fenced, restart durable and free return undoable (52.915944ms)
+✔ restart while requested fails pending reward without moving a ball (53.368975ms)
+✔ 300 seeded rounds across three tiers preserve identities and finish with held ball (12901.358947ms)
+✔ full tray lift reopens play; immediate free return can block and single undo restores pocket (41.99634ms)
+✔ home attempts autoplay, reuses one player, pauses for every inactive lifecycle (1.173737ms)
+✔ music failures and async errors never escape or retry every frame (0.364729ms)
+✔ a cancelled pending play does not poison a subsequent unmute (0.398189ms)
+✔ blocked autoplay retries on first gesture; mute and background never restart audio (0.303937ms)
+✔ player creation failure can recover on a later gesture without frame retries (0.288975ms)
+✔ native void play waits for onPlay and retries silently blocked autoplay on input (0.381845ms)
+✔ native pause, stop and error recover on gestures without frame retry loops (0.364048ms)
+✔ late native play is paused after mute, suspension, ads or hiding (0.354964ms)
+✔ system interruption blocks input and only resumes an enabled foreground allowed phase (0.34509ms)
+✔ three-step guide blocks underlying actions and persists acknowledgement without changing round (75.084988ms)
+✔ guide preference storage failure cannot stop game start or mutate save (91.775776ms)
+✔ finite victory confetti pauses in background and never changes score or timer (29.792572ms)
+✔ unconfigured or failed ad creation stays explicitly unavailable and never throws at boot (0.309616ms)
+✔ bundle rotates rigidly about its geometric center with no horizontal scale (94.194777ms)
+✔ five fixed ball slots touch without crossing tube walls at mobile sizes (0.214593ms)
+✔ enlarged spheres retain wall clearance, fixed height and touching slots (0.558751ms)
+✔ v0.1.28 spends recovered vertical margins on larger phone balls (0.296456ms)
+✔ front-row arc is symmetric, shallow and keeps ball size through turns (5.233659ms)
+✔ only finished started games become local results; home/restart never duplicate (128.067883ms)
+✔ records reconcile once, cap at 30, and preserve prior valid backup on corruption (38.416514ms)
+✔ record storage failure cannot prevent ending the game (26.757021ms)
+✔ seed source handles throwing, invalid, constant and 32-bit wrap values (0.933846ms)
+✔ only confirmed home starts consume entropy; cancel and resume preserve exact save (191.121782ms)
+✔ constant entropy cannot repeat recent home seeds; reload excludes saved seed; explicit seeds remain reproducible (1748.461483ms)
+✔ 300 random-entry seeds across all tiers retain replayable no-ad solutions (27222.950008ms)
+✔ terminal transaction recovers tricollect.save.v1 write failure without revival or duplication (121.017963ms)
+✔ terminal transaction recovers tricollect.records.v1 write failure without revival or duplication (85.272719ms)
+✔ terminal transaction recovers tricollect.save.v1.backup write failure without revival or duplication (90.641151ms)
+✔ terminal transaction recovers tricollect.terminal.v1 write failure without revival or duplication (83.288441ms)
+✔ main plus records failure preserves journal; recovery orders never revive terminal (137.519277ms)
+✔ all writes fail: no false result, retain in-memory terminal and reject leaving until durable (52.357595ms)
+✔ v013 legacy recorded lost + old active save is fenced, record is not deleted (66.968126ms)
+✔ pending result cannot be overwritten by a new session; unreadable journal preserved (37.340667ms)
+✔ journal cleanup failure is idempotent and remains recoverable (48.499275ms)
+✔ verified legacy completed victory corrects conflicting lost entry without duplicate or downgrade (66.261868ms)
+✔ silent main write drop is detected and journal recovery preserves terminal (58.33417ms)
+✔ write-then-throw uncertain main result is recovered once without rewriting outcome (51.301804ms)
+✔ unreadable terminal journal blocks unsafe restore/new game without deleting storage (50.022557ms)
+✔ largest terminal snapshot fits quota without persisting unusable undo history (383.246654ms)
+✔ active persistence stores one usable undo without losing single-undo restore (53.205439ms)
+✔ variable heights preserve identity and physical scale through undo/save and reject altered capacity/old rules (177.367487ms)
+✔ complete witness records one genuine victory with correct cleared count and capacity (909.636415ms)
+✔ native capsule and home indicator remain outside all game coordinates at narrow and tall sizes (0.820465ms)
+✔ WeChat native sound overrides iOS silent switch globally and per context (1.562913ms)
+✔ older WeChat libraries without global audio options remain supported (0.23251ms)
+✔ native fallback loop retains the backend compatible with mute-switch options (0.13987ms)
+TriCollect WebAudio unavailable; using native loop Error: create
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-music.test.ts:150:17)
+    at Test.runInAsyncScope (node:async_hooks:227:14)
+    at Test.run (node:internal/test_runner/test:1402:25)
+    at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    at Test.postRun (node:internal/test_runner/test:1542:19)
+    at Test.run (node:internal/test_runner/test:1467:12)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect WebAudio unavailable; using native loop Error: gain
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-music.test.ts:150:17)
+    at Test.runInAsyncScope (node:async_hooks:227:14)
+    at Test.run (node:internal/test_runner/test:1402:25)
+    at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    at Test.postRun (node:internal/test_runner/test:1542:19)
+    at Test.run (node:internal/test_runner/test:1467:12)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect buffered music unavailable; using native loop Error: filesystem
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-music.test.ts:150:17)
+    at Test.runInAsyncScope (node:async_hooks:227:14)
+    at Test.run (node:internal/test_runner/test:1402:25)
+    at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    at Test.postRun (node:internal/test_runner/test:1542:19)
+    at Test.run (node:internal/test_runner/test:1467:12)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect buffered music unavailable; using native loop Error: read
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-music.test.ts:150:17)
+    at Test.runInAsyncScope (node:async_hooks:227:14)
+    at Test.run (node:internal/test_runner/test:1402:25)
+    at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    at Test.postRun (node:internal/test_runner/test:1542:19)
+    at Test.run (node:internal/test_runner/test:1467:12)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect buffered music unavailable; using native loop Error: readThrow
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-music.test.ts:150:17)
+    at Test.runInAsyncScope (node:async_hooks:227:14)
+    at Test.run (node:internal/test_runner/test:1402:25)
+    at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    at Test.postRun (node:internal/test_runner/test:1542:19)
+    at Test.run (node:internal/test_runner/test:1467:12)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect buffered music unavailable; using native loop Error: Music must be loaded as binary data
+    at Object.success (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/src/platform/wechat-music.ts:25:22)
+    at Object.readFile (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-music.test.ts:167:44)
+    at <anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/src/platform/wechat-music.ts:21:37)
+    at new Promise (<anonymous>)
+    at load (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/src/platform/wechat-music.ts:20:7)
+TriCollect buffered music unavailable; using native loop Error: decode
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-music.test.ts:150:17)
+    at Test.runInAsyncScope (node:async_hooks:227:14)
+    at Test.run (node:internal/test_runner/test:1402:25)
+    at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    at Test.postRun (node:internal/test_runner/test:1542:19)
+    at Test.run (node:internal/test_runner/test:1467:12)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect buffered music unavailable; using native loop Error: decodeThrow
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-music.test.ts:150:17)
+    at Test.runInAsyncScope (node:async_hooks:227:14)
+    at Test.run (node:internal/test_runner/test:1402:25)
+    at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    at Test.postRun (node:internal/test_runner/test:1542:19)
+    at Test.run (node:internal/test_runner/test:1467:12)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect buffered music unavailable; using native loop Error: decodePromise
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-music.test.ts:150:17)
+    at Test.runInAsyncScope (node:async_hooks:227:14)
+    at Test.run (node:internal/test_runner/test:1402:25)
+    at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    at Test.postRun (node:internal/test_runner/test:1542:19)
+    at Test.run (node:internal/test_runner/test:1467:12)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect buffered music unavailable; using native loop Error: resume
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-music.test.ts:150:17)
+    at Test.runInAsyncScope (node:async_hooks:227:14)
+    at Test.run (node:internal/test_runner/test:1402:25)
+    at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    at Test.postRun (node:internal/test_runner/test:1542:19)
+    at Test.run (node:internal/test_runner/test:1467:12)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+✔ factory loads packaged WAV as binary and handles documented callback decode (2.008954ms)
+✔ missing createWebAudioContext preserves native WAV looping configuration (0.31876ms)
+✔ missing getFileSystemManager preserves native WAV looping configuration (0.134132ms)
+✔ factory safely falls back on create failure (2.839033ms)
+✔ factory safely falls back on gain failure (0.454203ms)
+✔ factory safely falls back on filesystem failure (0.750831ms)
+✔ factory safely falls back on read failure (0.815237ms)
+✔ factory safely falls back on readThrow failure (0.433683ms)
+✔ factory safely falls back on string failure (0.848497ms)
+✔ factory safely falls back on decode failure (0.526042ms)
+✔ factory safely falls back on decodeThrow failure (0.322365ms)
+✔ factory safely falls back on decodePromise failure (0.495346ms)
+✔ factory safely falls back on resume failure (0.374624ms)
+✔ decode promise settles only once without duplicate sources (0.294353ms)
+✔ decode callbackAndResolve settles only once without duplicate sources (0.185058ms)
+✔ decode callbackAndReject settles only once without duplicate sources (0.255244ms)
+✔ unavailable native API does not escape Music gate or cause per-frame retries (0.37162ms)
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1000
+✔ prebuilt native game boots without DOM; wx microseconds normalized, touch and lifecycle work in mock runtime (152.594999ms)
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1000
+✔ native bundle home restart/hide preserves 290000ms session and both save copies (293.061487ms)
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1
+✔ native bundle manually ended non-winning session never revives on home hide/restart (229.305244ms)
+TriCollect clock units/ms 1
+TriCollect clock units/ms 1
+TriCollect clock units/ms 1000
+✔ native bundle 1 units/ms: continuous picks, animated turns and all presets (20406.116783ms)
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1
+✔ native bundle 1000 units/ms: continuous picks, animated turns and all presets (19213.370705ms)
+TriCollect frame interrupted Error: injected one-frame rendering fault
+    at Proxy.fillText (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:65:17)
+    at Scene.text (evalmachine.<anonymous>:1762:9)
+    at Scene.ball (evalmachine.<anonymous>:1883:16)
+    at Scene.drawBoard (evalmachine.<anonymous>:2818:18)
+    at Scene.render (evalmachine.<anonymous>:2212:12)
+    at evalmachine.<anonymous>:4151:17
+    at frame (evalmachine.<anonymous>:472:9)
+    at Object.render (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:325:5)
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:529:5)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+TriCollect audio unavailable Error: injected audio failure
+    at Object.play (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:253:34)
+    at Controller.playSound (evalmachine.<anonymous>:4074:15)
+    at Controller.pick (evalmachine.<anonymous>:1365:16)
+    at Scene.tap (evalmachine.<anonymous>:3932:19)
+    at Object.end (evalmachine.<anonymous>:4121:40)
+    at Object.tapTube (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:386:16)
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:534:5)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect audio unavailable Error: injected audio failure
+    at Object.play (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:253:34)
+    at Controller.playSound (evalmachine.<anonymous>:4074:15)
+    at Controller.pick (evalmachine.<anonymous>:1365:16)
+    at Scene.tap (evalmachine.<anonymous>:3932:19)
+    at Object.end (evalmachine.<anonymous>:4121:40)
+    at Object.tapTube (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:386:16)
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:537:5)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect clock units/ms 1
+✔ native RAF survives one rendering exception and audio exception never aborts pick (100.488767ms)
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:456:21)
+    at Controller.tick (evalmachine.<anonymous>:1297:24)
+    at evalmachine.<anonymous>:4145:14
+    at frame (evalmachine.<anonymous>:472:9)
+    at render (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:325:5)
+    at Object.advance (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:411:7)
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:546:5)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+✔ native frozen clock pauses instead of trapping input and can return home (78.363948ms)
+TriCollect clock units/ms 1
+✔ native animation wall-clock deadlines at 1 units/ms (1837.986106ms)
+TriCollect clock units/ms 1000
+✔ native animation wall-clock deadlines at 1000 units/ms (1822.671463ms)
+TriCollect startup failed Error: Clock calibration failed; no reliable progressing clock
+    at calibrateClock (evalmachine.<anonymous>:464:11)
+    at async boot (evalmachine.<anonymous>:4047:19)
+TriCollect clock units/ms 1
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:456:21)
+    at Controller.tick (evalmachine.<anonymous>:1297:24)
+    at evalmachine.<anonymous>:4145:14
+    at frame (evalmachine.<anonymous>:472:9)
+    at Object.render (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:325:5)
+    at driveUntil (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:562:7)
+    at async TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:666:23)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect clock units/ms 1
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:456:21)
+    at Controller.tick (evalmachine.<anonymous>:1297:24)
+    at evalmachine.<anonymous>:4145:14
+    at frame (evalmachine.<anonymous>:472:9)
+    at Object.render (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:325:5)
+    at driveUntil (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:562:7)
+    at async TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:666:23)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+✔ native frozen-clock intro/transfer fail safely at 1 units/ms (3969.655459ms)
+TriCollect startup failed Error: Clock calibration failed; no reliable progressing clock
+    at calibrateClock (evalmachine.<anonymous>:464:11)
+    at async boot (evalmachine.<anonymous>:4047:19)
+TriCollect clock units/ms 1000
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:456:21)
+    at Controller.tick (evalmachine.<anonymous>:1297:24)
+    at evalmachine.<anonymous>:4145:14
+    at frame (evalmachine.<anonymous>:472:9)
+    at Object.render (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:325:5)
+    at driveUntil (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:562:7)
+    at async TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:666:23)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect clock units/ms 1000
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:456:21)
+    at Controller.tick (evalmachine.<anonymous>:1297:24)
+    at evalmachine.<anonymous>:4145:14
+    at frame (evalmachine.<anonymous>:472:9)
+    at Object.render (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:325:5)
+    at driveUntil (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:562:7)
+    at async TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:666:23)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+✔ native frozen-clock intro/transfer fail safely at 1000 units/ms (3954.851912ms)
+TriCollect clock units/ms 1
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:456:21)
+    at Controller.tick (evalmachine.<anonymous>:1297:24)
+    at evalmachine.<anonymous>:4145:14
+    at frame (evalmachine.<anonymous>:472:9)
+    at Object.render (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:325:5)
+    at driveUntil (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:562:7)
+    at async TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:714:25)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+✔ native 250ms turns and frozen-turn recovery at 1 units/ms (2041.509163ms)
+TriCollect clock units/ms 1000
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:456:21)
+    at Controller.tick (evalmachine.<anonymous>:1297:24)
+    at evalmachine.<anonymous>:4145:14
+    at frame (evalmachine.<anonymous>:472:9)
+    at Object.render (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:325:5)
+    at driveUntil (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:562:7)
+    at async TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:714:25)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect clock units/ms 1000
+✔ native 250ms turns and frozen-turn recovery at 1000 units/ms (2038.148162ms)
+TriCollect clock units/ms 1
+✔ native music attempts home autoplay, pauses on hide and reuses one loop across rounds (291.163165ms)
+TriCollect clock units/ms 1
+TriCollect clock units/ms 1000
+✔ native image asset loads and image failure leaves gameplay available (213.816338ms)
+TriCollect frame interrupted Error: injected one-frame rendering fault
+    at Proxy.fillText (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:65:17)
+    at Scene.text (evalmachine.<anonymous>:1762:9)
+    at Scene.ball (evalmachine.<anonymous>:1883:16)
+    at Scene.home (evalmachine.<anonymous>:3796:37)
+    at Scene.render (evalmachine.<anonymous>:2156:14)
+    at evalmachine.<anonymous>:4151:17
+    at frame (evalmachine.<anonymous>:472:9)
+    at Object.render (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:325:5)
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:797:5)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+TriCollect clock units/ms 1000
+✔ native home hero restores canvas state after a paint fault (80.86112ms)
+TriCollect clock units/ms 1000
+✔ native audio configures silent-switch compatibility and retries blocked autoplay on first touch (27.100599ms)
+TriCollect clock units/ms 1000
+✔ native audio interruption, mute and hidden lifecycle gate native play events (94.738126ms)
+TriCollect clock units/ms 1000
+✔ native bundle uses one decoded looping source across 32/64/96-second boundaries (27.090233ms)
+✔ native bundle buffered music keeps mute, pause and interruption restrictions (85.720508ms)
+ℹ tests 189
+ℹ suites 0
+ℹ pass 189
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 153006.326196

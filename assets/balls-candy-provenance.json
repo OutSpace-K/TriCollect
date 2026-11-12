@@ -1,0 +1,12 @@
+{
+  "version": "0.1.30",
+  "tool": "built-in ImageGen",
+  "reference": "user-approved original TriCollect visual proposal",
+  "source": "exec-084972b0-aec7-4b3f-8f2e-1f73e725bf07.png",
+  "source_sha256": "bc4a614ff6731fd16fe03f7f86f6d87fa15b69115a0e17e269fa8dcf84a74f6b",
+  "asset": "assets/balls-candy.png",
+  "sha256": "831f3dde2c3dcbb1c7e5911b3fc2843fb5961c25412471eef9f696006c2f9e02",
+  "bytes": 156155,
+  "preparation": "Largest alpha component per grid cell, crop and normalize to 128px square; preserve transparency; first 7 of 8 cells used",
+  "prompt": "Production transparent 4x2 atlas, equally sized perfect round glossy candy-like toy balls. Coral red, turquoise teal, golden yellow, violet; sky blue, candy pink, lime green, orange. Same upper-left glint, soft volume and lower-right bounced light as approved proposal. No icons, text, tubes, UI rings, or external shadows."
+}

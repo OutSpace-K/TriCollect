@@ -10,7 +10,7 @@ GlobalFonts.registerFromPath(
   "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
   "sans-serif",
 );
-mkdirSync("evidence/v0.1.29", { recursive: true });
+mkdirSync("evidence/v0.1.30", { recursive: true });
 const home = await loadImage("assets/background.png"),
   play = await loadImage("assets/play-background.png");
 for (const [w, h] of [
@@ -43,6 +43,7 @@ for (const [w, h] of [
   );
   s.setHomeArt("logo", (await loadImage("assets/home-logo.png")) as any);
   s.setHomeArt("hero", (await loadImage("assets/home-hero.png")) as any);
+  s.setBallAtlas((await loadImage("assets/balls-candy.png")) as any);
   s.setBackground(home as any);
   s.setPlayBackground(play as any);
   for (const page of ["home", "difficulty", "game", "pause"]) {
@@ -60,7 +61,7 @@ for (const [w, h] of [
     s.render();
     ctx.restore();
     writeFileSync(
-      `evidence/v0.1.29/${w}-${page}${process.env.TRICOLLECT_PREVIEW_NORMAL ? "-normal" : ""}.png`,
+      `evidence/v0.1.30/${w}-${page}${process.env.TRICOLLECT_PREVIEW_NORMAL ? "-normal" : ""}.png`,
       c.toBuffer("image/png"),
     );
   }

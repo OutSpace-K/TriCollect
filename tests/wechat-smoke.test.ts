@@ -782,6 +782,7 @@ test("native image asset loads and image failure leaves gameplay available", asy
       "assets/play-background.png",
       "assets/home-logo.png",
       "assets/home-hero.png",
+      "assets/balls-candy.png",
     ]);
     assert.equal(r.backgroundDraws() > 0, !fail);
     r.tapTube(1);
