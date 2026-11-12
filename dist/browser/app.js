@@ -181,8 +181,8 @@
     { name: "\u661F\u84DD\u9762", color: "#6552bc", shell: "#e4dcf0" }
   ];
   var PALETTE = [
-    "#f34462",
-    "#00bc98",
+    "#ff3b3b",
+    "#ff990c",
     "#ffbf26",
     "#7d60f0",
     "#16a9ef",
@@ -1309,6 +1309,7 @@
       __publicField(this, "selectedDifficulty", 0);
       __publicField(this, "trackObjects", []);
       __publicField(this, "misclickFeedback", null);
+      __publicField(this, "turntable", null);
       __publicField(this, "ballAtlas", null);
       __publicField(this, "homeLogo", null);
       __publicField(this, "homeHero", null);
@@ -1352,6 +1353,9 @@
       } catch {
         this.decorationLast = null;
       }
+    }
+    setTurntable(image) {
+      this.turntable = image;
     }
     setBallAtlas(image) {
       this.ballAtlas = image;
@@ -1503,14 +1507,6 @@
           } finally {
             c.restore();
           }
-          this.text(
-            SYMBOLS[type],
-            x,
-            y + r * 0.4,
-            Math.max(5, r * 0.32),
-            "#43204338",
-            "center"
-          );
           return;
         }
         const rgb = PALETTE[type].slice(1).match(/../g).map((n) => parseInt(n, 16));
@@ -1661,24 +1657,19 @@
       c.stroke();
     }
     chamberPath(x, top, y, r) {
-      const c = this.ctx, neck = r * 0.86, shoulder = Math.min(20, (y - top) * 0.15);
+      const c = this.ctx;
       c.beginPath();
-      c.moveTo(x - neck, top);
-      c.lineTo(x + neck, top);
-      c.lineTo(x + neck, top + 6);
-      c.bezierCurveTo(x + neck, top + 11, x + r, top + 11, x + r, top + shoulder);
-      c.lineTo(x + r, y - 7);
-      c.quadraticCurveTo(x + r, y + 2, x + r * 0.72, y + 2);
-      c.lineTo(x - r * 0.72, y + 2);
-      c.quadraticCurveTo(x - r, y + 2, x - r, y - 7);
-      c.lineTo(x - r, top + shoulder);
-      c.bezierCurveTo(x - r, top + 11, x - neck, top + 11, x - neck, top + 6);
-      c.lineTo(x - neck, top);
+      c.moveTo(x - r, top);
+      c.lineTo(x + r, top);
+      c.lineTo(x + r, y - 5);
+      c.quadraticCurveTo(x + r, y + 2, x + r * 0.75, y + 2);
+      c.lineTo(x - r * 0.75, y + 2);
+      c.quadraticCurveTo(x - r, y + 2, x - r, y - 5);
       c.closePath();
     }
     transmittedBackdrop(x, y, w, h) {
       const c = this.ctx;
-      c.fillStyle = "#dbe6cf";
+      c.fillStyle = "#fff0dc";
       c.fillRect(x, y, w, h);
       if (this.currentBackground) {
         const scale = Math.max(this.width / 600, this.height / 1040), left = (this.width - 600 * scale) / 2, top = (this.height - 1040 * scale) / 2;
@@ -2144,20 +2135,30 @@
         c.fillStyle = fill;
         c.fill();
       };
-      oval(dishY + 30, dishRx + 3, dishRy + 2, "#85503538");
-      oval(dishY + 24, dishRx, dishRy, "#9a452c");
-      const side = c.createLinearGradient(dishLeft, 0, dishRight, 0);
-      side.addColorStop(0, "#f88c62");
-      side.addColorStop(0.3, "#ffb17f");
-      side.addColorStop(0.6, "#ff7352");
-      side.addColorStop(1, "#bf4d31");
-      c.fillStyle = side;
-      c.fillRect(dishLeft, dishY, dishRx * 2, 22);
-      oval(dishY + 21, dishRx - 1, dishRy, side);
-      oval(dishY, dishRx, dishRy, "#a95031");
-      oval(dishY - 1, dishRx - 2, Math.max(4, dishRy - 1), "#fff5ca");
-      oval(dishY - 1, dishRx - 7, Math.max(3, dishRy - 5), "#ffce89");
-      oval(dishY - 2, dishRx - 10, Math.max(2, dishRy - 7), "#ffe8b1");
+      if (this.turntable) {
+        c.drawImage(
+          this.turntable,
+          dishLeft - 4,
+          dishBack - 12,
+          dishRx * 2 + 8,
+          dishFront - dishBack + 52
+        );
+      } else {
+        oval(dishY + 30, dishRx + 3, dishRy + 2, "#85503538");
+        oval(dishY + 24, dishRx, dishRy, "#9a452c");
+        const side = c.createLinearGradient(dishLeft, 0, dishRight, 0);
+        side.addColorStop(0, "#f88c62");
+        side.addColorStop(0.3, "#ffb17f");
+        side.addColorStop(0.6, "#ff7352");
+        side.addColorStop(1, "#bf4d31");
+        c.fillStyle = side;
+        c.fillRect(dishLeft, dishY, dishRx * 2, 22);
+        oval(dishY + 21, dishRx - 1, dishRy, side);
+        oval(dishY, dishRx, dishRy, "#a95031");
+        oval(dishY - 1, dishRx - 2, Math.max(4, dishRy - 1), "#fff5ca");
+        oval(dishY - 1, dishRx - 7, Math.max(3, dishRy - 5), "#ffce89");
+        oval(dishY - 2, dishRx - 10, Math.max(2, dishRy - 7), "#ffe8b1");
+      }
       const opening = Math.min(
         9,
         Math.max(4, radius * layout.zScale / layout.lane)
@@ -2182,15 +2183,15 @@
         this.capStates.push({ id: t.id, closed: capped, x, y: ty });
         if (!front) {
           const rear = c.createLinearGradient(x - radius, ty, x + radius, y);
-          rear.addColorStop(0, "#b6b5d1");
-          rear.addColorStop(0.13, "#fffaf0");
-          rear.addColorStop(0.32, "#e9e5ef");
-          rear.addColorStop(0.7, "#d8d6e6");
-          rear.addColorStop(1, "#aca8c5");
+          rear.addColorStop(0, "#c8b9a9");
+          rear.addColorStop(0.13, "#fff7e9");
+          rear.addColorStop(0.32, "#f7ecdd");
+          rear.addColorStop(0.7, "#edddca");
+          rear.addColorStop(1, "#c1ac99");
           this.chamberPath(x, ty, y, radius);
           c.fillStyle = rear;
           c.fill();
-          c.strokeStyle = "#9185a666";
+          c.strokeStyle = "#ab8b6b55";
           c.lineWidth = 1;
           c.stroke();
           c.beginPath();
@@ -2199,11 +2200,11 @@
           c.fill();
           c.beginPath();
           c.ellipse(x, ty - 1, radius * 0.79, opening * 0.55, 0, 0, Math.PI * 2);
-          c.fillStyle = "#d9d1df";
+          c.fillStyle = "#e9d4bc";
           c.fill();
           c.beginPath();
           c.ellipse(x, y - 1, radius * 0.9, opening * 0.6, 0, 0, Math.PI * 2);
-          c.fillStyle = "#c2b6cf55";
+          c.fillStyle = "#d8bd9c44";
           c.fill();
           c.strokeStyle = "#fffaf5cc";
           c.lineWidth = 0.8;
@@ -2217,13 +2218,7 @@
           );
           c.stroke();
           if (capped) {
-            const palette = [
-              ["#fff1e9", "#e5ccd9", "#b9a5bc"],
-              ["#fff5e2", "#e8d8bf", "#b9a8b2"],
-              ["#f5edff", "#d4c8e5", "#ac9bbd"],
-              ["#edf6ff", "#cbdce8", "#a4abbf"],
-              ["#fff5ec", "#e2d5db", "#b5a5b9"]
-            ][(t.q * 3 + t.r * 7) % 5];
+            const palette = ["#fff8ee", "#eadaca", "#bca38e"];
             const lidSide = c.createLinearGradient(
               x - radius,
               ty - 5,
@@ -2322,12 +2317,12 @@
           c.clip();
           this.transmittedBackdrop(x - radius, ty, radius * 2, height);
           const glass = c.createLinearGradient(x - radius, 0, x + radius, 0);
-          glass.addColorStop(0, "#9f8ba866");
+          glass.addColorStop(0, "#b89e8866");
           glass.addColorStop(0.09, "#ffffeed0");
           glass.addColorStop(0.19, "#fff4ed20");
           glass.addColorStop(0.65, "#ffffff08");
-          glass.addColorStop(0.85, "#cfbddb22");
-          glass.addColorStop(1, "#9987a366");
+          glass.addColorStop(0.85, "#ecd7bf22");
+          glass.addColorStop(1, "#b3977d66");
           c.fillStyle = glass;
           c.fillRect(x - radius, ty, radius * 2, height);
           c.strokeStyle = "#ffffffd9";
@@ -2350,55 +2345,38 @@
         } finally {
           c.restore();
         }
-        c.strokeStyle = "#9d86a488";
+        c.strokeStyle = "#b08e7188";
         c.lineWidth = 1;
         this.chamberPath(x, ty, y, radius);
         c.stroke();
-        const rim = c.createLinearGradient(
-          x - radius,
-          ty - opening,
-          x + radius,
-          ty + opening
-        );
-        rim.addColorStop(0, "#f6ffff");
-        rim.addColorStop(0.22, "#fff2eb");
-        rim.addColorStop(0.6, "#dacee5");
-        rim.addColorStop(1, "#a893b0");
-        c.fillStyle = rim;
-        c.beginPath();
-        c.ellipse(x, ty + 4, radius * 0.98, opening, 0, 0, Math.PI * 2);
-        c.fill();
-        c.fillStyle = "#efdfef77";
-        c.fillRect(x - radius * 0.86, ty + 1, radius * 1.72, 7);
-        c.fillStyle = rim;
         c.beginPath();
         c.ellipse(x, ty - 1, radius * 0.98, opening, 0, 0, Math.PI * 2);
+        c.fillStyle = "#fffaf2b0";
         c.fill();
-        const well = c.createLinearGradient(x, ty - opening, x, ty + opening);
-        well.addColorStop(0, "#9c839f");
-        well.addColorStop(0.5, "#d9c9df");
-        well.addColorStop(1, "#fff7f0");
-        c.fillStyle = well;
+        c.strokeStyle = "#b49b8490";
+        c.lineWidth = 1;
+        c.stroke();
         c.beginPath();
-        c.ellipse(x, ty - 1, radius * 0.89, opening * 0.63, 0, 0, Math.PI * 2);
+        c.ellipse(x, ty - 1, radius * 0.87, opening * 0.65, 0, 0, Math.PI * 2);
+        c.fillStyle = "#e4ccb650";
         c.fill();
-        c.strokeStyle = "#ffffffd9";
-        c.lineWidth = 1.2;
         c.beginPath();
         c.ellipse(
-          x - radius * 0.04,
+          x - radius * 0.02,
           ty - 2,
-          radius * 0.91,
-          opening * 0.72,
+          radius * 0.94,
+          opening * 0.88,
           0,
           Math.PI,
-          Math.PI * 1.9
+          Math.PI * 1.95
         );
+        c.strokeStyle = "#ffffffed";
+        c.lineWidth = 1.7;
         c.stroke();
         const foot = c.createLinearGradient(x - radius, y - 7, x + radius, y + 4);
         foot.addColorStop(0, "#f7ffffc9");
-        foot.addColorStop(0.35, "#e5d3e577");
-        foot.addColorStop(1, "#ad94b0aa");
+        foot.addColorStop(0.35, "#f0dcc177");
+        foot.addColorStop(1, "#bca08688");
         c.fillStyle = foot;
         c.beginPath();
         c.ellipse(x, y - 2, radius, opening * 0.8, 0, 0, Math.PI * 2);
@@ -2460,40 +2438,36 @@
           try {
             this.chamberPath(x, ty, y, radius);
             c.clip();
-            const sleeve = c.createLinearGradient(x - radius, 0, x + radius, 0);
-            sleeve.addColorStop(0, "#b8accb");
-            sleeve.addColorStop(0.16, "#eee5f0");
-            sleeve.addColorStop(0.38, "#fffaf3");
-            sleeve.addColorStop(0.72, "#efe7f2");
-            sleeve.addColorStop(1, "#bfb2d0");
-            c.fillStyle = sleeve;
+            const mist = c.createLinearGradient(x - radius, 0, x + radius, 0);
+            mist.addColorStop(0, "#d9c8b4");
+            mist.addColorStop(0.12, "#f2e5d1");
+            mist.addColorStop(0.42, "#fff5e5");
+            mist.addColorStop(0.76, "#f8ecd8");
+            mist.addColorStop(1, "#dcc5aa");
+            c.fillStyle = mist;
             c.fillRect(x - radius, frostTop, radius * 2, y - frostTop + 4);
-            c.fillStyle = "#ffffff55";
-            c.fillRect(
-              x - radius * 0.62,
-              frostTop + 5,
-              radius * 0.25,
-              Math.max(0, y - frostTop - 12)
-            );
-            c.fillStyle = "#d0bfd8";
+            const lip = c.createLinearGradient(0, frostTop, 0, frostTop + 14);
+            lip.addColorStop(0, "#fffdf8");
+            lip.addColorStop(1, "#fff9ee00");
+            c.fillStyle = lip;
+            c.fillRect(x - radius, frostTop, radius * 2, 14);
+            c.strokeStyle = "#ffffffa0";
+            c.lineWidth = radius * 0.11;
             c.beginPath();
-            c.ellipse(x, frostTop + 2, radius, 3.5, 0, 0, Math.PI * 2);
-            c.fill();
-            c.strokeStyle = "#fffaf4";
-            c.lineWidth = 1.4;
-            c.beginPath();
-            c.ellipse(
-              x,
-              frostTop + 1,
-              radius * 0.96,
-              2.8,
-              0,
-              Math.PI,
-              Math.PI * 2
+            c.moveTo(x - radius * 0.78, frostTop + 5);
+            c.quadraticCurveTo(
+              x - radius * 0.9,
+              (frostTop + y) / 2,
+              x - radius * 0.73,
+              y - 7
             );
             c.stroke();
-            c.fillStyle = "#ffffff80";
-            c.fillRect(x - radius, y - 9, radius * 2, 2);
+            c.strokeStyle = "#a88b6c55";
+            c.lineWidth = 0.8;
+            c.beginPath();
+            c.moveTo(x + radius * 0.9, frostTop);
+            c.lineTo(x + radius * 0.9, y - 4);
+            c.stroke();
           } finally {
             c.restore();
           }
@@ -2540,7 +2514,7 @@
         });
       }
       const markY = dishFront + 10;
-      for (const direction of [-1, 1]) {
+      for (const direction of this.turntable ? [] : [-1, 1]) {
         c.save();
         try {
           c.translate(dishX + direction * dishRx * 0.47, markY);
@@ -3631,11 +3605,12 @@
     "play-background.png",
     "home-logo.png",
     "home-hero.png",
-    "balls-candy.png"
+    "balls-candy.png",
+    "turntable.png"
   ]) {
     try {
       const image = new Image();
-      image.onload = () => file === "background.png" ? scene.setBackground(image) : file === "play-background.png" ? scene.setPlayBackground(image) : file === "balls-candy.png" ? scene.setBallAtlas(image) : scene.setHomeArt(
+      image.onload = () => file === "background.png" ? scene.setBackground(image) : file === "play-background.png" ? scene.setPlayBackground(image) : file === "turntable.png" ? scene.setTurntable(image) : file === "balls-candy.png" ? scene.setBallAtlas(image) : scene.setHomeArt(
         file === "home-logo.png" ? "logo" : "hero",
         image
       );

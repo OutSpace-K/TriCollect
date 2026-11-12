@@ -81,7 +81,12 @@ console.log(
   "Built native WeChat game + optional browser development preview. Real device verification pending.",
 );
 
-for (const file of ["home-logo.png", "home-hero.png", "balls-candy.png"]) {
+for (const file of [
+  "home-logo.png",
+  "home-hero.png",
+  "balls-candy.png",
+  "turntable.png",
+]) {
   await cp(`assets/${file}`, `dist/browser/assets/${file}`);
   await cp(`assets/${file}`, `dist/wechat/assets/${file}`);
 }

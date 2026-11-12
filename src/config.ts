@@ -76,8 +76,8 @@ export const FACES = [
   { name: "星蓝面", color: "#6552bc", shell: "#e4dcf0" },
 ];
 export const PALETTE = [
-  "#f34462",
-  "#00bc98",
+  "#ff3b3b",
+  "#ff990c",
   "#ffbf26",
   "#7d60f0",
   "#16a9ef",

@@ -1,0 +1,12 @@
+{
+  "version": "0.1.31",
+  "tool": "built-in ImageGen",
+  "reference": "user-approved original visual proposal",
+  "source": "exec-36f3a208-fa1b-43a8-962f-12420fb74207.png",
+  "source_sha256": "2bb9c858755159a4a2dd00110549a80d90736472888359abd4c42fa15cdb6930",
+  "asset": "assets/turntable.png",
+  "sha256": "adfb7403df1e59958bc879effdf327d08e5568f70f101f52cad551202783e18f",
+  "bytes": 185629,
+  "preparation": "Transparent production sprite, cropped and downsampled for game; first seven cells of ball atlas retain type indices",
+  "prompt_summary": "Faithfully redraw the reference right-panel platform or seven balls as isolated transparent production assets, preserving coral/gold cream platform, white-bordered arrows and center clasp, or red/orange/yellow/purple/blue/pink/lime spheres with small upper-left glints."
+}

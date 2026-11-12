@@ -36,7 +36,20 @@ async function boot(
   const noop = () => {};
   const ctx = new Proxy(
     {
-      drawImage: () => {
+      drawImage: (...args: unknown[]) => {
+        if (
+          args.length === 9 &&
+          args[3] === 128 &&
+          args[4] === 128 &&
+          args[7] === args[8]
+        ) {
+          if (failRender === "ball") {
+            failRender = false;
+            throw Error("injected sprite fault");
+          }
+          const [x, y, w, h] = args.slice(5) as number[];
+          paintedBalls.push({ x: x + w / 2, y: y + h / 2, r: w / 2 });
+        }
         backgroundDraws++;
       },
       save: () => {
@@ -60,7 +73,12 @@ async function boot(
           rings.push(lastArc);
       },
       fillText: (s: string, x: number, y: number) => {
-        if (failRender === true || failRender === s) {
+        if (
+          failRender === true ||
+          failRender === s ||
+          (failRender === "ball" &&
+            ["●", "◆", "▲", "✚", "■", "★", "♥"].includes(s))
+        ) {
           failRender = false;
           throw Error("injected one-frame rendering fault");
         }
@@ -525,7 +543,7 @@ for (const units of [1, 1000])
 test("native RAF survives one rendering exception and audio exception never aborts pick", async () => {
   const r = await boot(new Map(), 1, true);
   beginRuntime(r);
-  r.failNextRender("●");
+  r.failNextRender("ball");
   r.render();
   r.render();
   assert.ok(r.labels.some((l) => l.s === "休息一下"));
@@ -783,6 +801,7 @@ test("native image asset loads and image failure leaves gameplay available", asy
       "assets/home-logo.png",
       "assets/home-hero.png",
       "assets/balls-candy.png",
+      "assets/turntable.png",
     ]);
     assert.equal(r.backgroundDraws() > 0, !fail);
     r.tapTube(1);
@@ -793,7 +812,7 @@ test("native image asset loads and image failure leaves gameplay available", asy
 
 test("native home hero restores canvas state after a paint fault", async () => {
   const r = await boot();
-  r.failNextRender("●");
+  r.failNextRender("ball");
   r.render();
   r.render();
   assert.equal(r.canvasDepth(), 0);

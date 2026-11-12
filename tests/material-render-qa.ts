@@ -8,6 +8,8 @@ const { createCanvas, loadImage } = await import(
   process.env.TRICOLLECT_CANVAS_MODULE ?? "@napi-rs/canvas"
 );
 const atlas = await loadImage("assets/balls-candy.png");
+const turntable = await loadImage("assets/turntable.png");
+const background = await loadImage("assets/play-background.png");
 let cases = 0,
   hidden = 0;
 for (const [w, h] of [
@@ -45,11 +47,21 @@ for (const [w, h] of [
           vp.logicalHeight,
           vp.factor,
         );
-        if (useAtlas) s.setBallAtlas(atlas as any);
-        ctx.translate(0, vp.top);
-        ctx.scale(vp.factor, vp.factor);
-        s.render();
-        s.render(); // Warm the renderer state before isolating hidden-color changes.
+        if (useAtlas) {
+          s.setBallAtlas(atlas as any);
+          s.setTurntable(turntable as any);
+        }
+        s.setPlayBackground(background as any);
+        const renderFrame = () => {
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.clearRect(0, 0, w, h);
+          ctx.save();
+          ctx.translate(0, vp.top);
+          ctx.scale(vp.factor, vp.factor);
+          s.render();
+          ctx.restore();
+        };
+        renderFrame();
         const before = canvas.toBuffer("image/png"),
           visible = new Set(s.visibleBalls.flatMap((t) => t.ids));
         for (const t of g.board.tubes)
@@ -58,11 +70,11 @@ for (const [w, h] of [
               b.type = (b.type + 3) % 7;
               hidden++;
             }
-        s.render();
+        renderFrame();
         const after = canvas.toBuffer("image/png");
         if (!before.equals(after)) {
-          writeFileSync("evidence/v0.1.30/material-before.png", before);
-          writeFileSync("evidence/v0.1.30/material-after.png", after);
+          writeFileSync("evidence/v0.1.31/material-before.png", before);
+          writeFileSync("evidence/v0.1.31/material-after.png", after);
         }
         assert.ok(
           before.equals(after),
@@ -79,7 +91,7 @@ const result = {
     "pixel-identical with hidden colors changed, with sprites and fallback",
 };
 writeFileSync(
-  "evidence/v0.1.30/material-pixels.json",
+  "evidence/v0.1.31/material-pixels.json",
   JSON.stringify(result, null, 2) + "\n",
 );
 console.log(result);
