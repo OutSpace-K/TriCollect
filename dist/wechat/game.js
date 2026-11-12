@@ -1630,11 +1630,36 @@
       x: width2 / 2,
       y: top + 14 + height2 + extent + Math.max(0, (bottom - top - 24 - height2 - extent * 2) / 2)
     };
+    const arcDepth = Math.min(14, depthSpace * 0.26);
+    const worldExtent = edge / Math.sqrt(3);
+    let meanSquare = 0, count = 0;
+    for (let q = 0; q <= edge; q++)
+      for (let r = 0; r <= edge - q; r++) {
+        const p = worldPosition({ q, r }, side);
+        meanSquare += p.x * p.x;
+        count++;
+      }
+    meanSquare /= count;
     const point = (t) => {
       const p = rotateWorld(worldPosition(t, side), angle);
-      return { x: axis.x + p.x * lane, y: axis.y - p.z * zScale, depth: p.z };
+      const bow = arcDepth * (meanSquare - p.x * p.x) / (worldExtent * worldExtent);
+      return {
+        x: axis.x + p.x * lane,
+        y: axis.y - p.z * zScale + bow,
+        depth: p.z
+      };
     };
-    return { axis, lane, radius, height: height2, step, ballRadius, zScale, point };
+    return {
+      axis,
+      lane,
+      radius,
+      height: height2,
+      step,
+      ballRadius,
+      zScale,
+      arcDepth,
+      point
+    };
   }
 
   // src/render/scene.ts
@@ -2419,8 +2444,9 @@
       };
       const dishLeft = Math.min(...corners.map((p2) => p2.x)) - padding;
       const dishRight = Math.max(...corners.map((p2) => p2.x)) + padding;
-      const dishBack = Math.min(...corners.map((p2) => p2.y)) - padding * ratio;
-      const dishFront = Math.max(...corners.map((p2) => p2.y)) + padding * ratio;
+      const footprint = g.board.tubes.map(point);
+      const dishBack = Math.min(...footprint.map((p2) => p2.y)) - padding * ratio;
+      const dishFront = Math.max(...footprint.map((p2) => p2.y)) + padding * ratio;
       const dishX = (dishLeft + dishRight) / 2;
       const dishY = (dishBack + dishFront) / 2;
       const dishRx = (dishRight - dishLeft) / 2;

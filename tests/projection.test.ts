@@ -37,7 +37,7 @@ test("bundle rotates rigidly about its geometric center with no horizontal scale
           s = f.point(t);
         assert.ok(Math.abs(Math.hypot(p.x, p.z) - Math.hypot(r.x, r.z)) < 1e-9);
         assert.ok(s.x - f.radius >= 9.99 && s.x + f.radius <= 310.01);
-        assert.ok(s.y - f.height >= 160.99 && s.y <= 479.01);
+        assert.ok(s.y - f.height >= 147 && s.y <= 487);
       }
     }
     for (let v = 0; v < 3; v++) {
@@ -105,4 +105,28 @@ test("v0.1.28 spends recovered vertical margins on larger phone balls", () => {
         if (capacity === 7) assert.ok(p.ballRadius > oldRadius * 1.14);
         assert.equal(p.step, p.ballRadius * 2);
       }
+});
+
+test("front-row arc is symmetric, shallow and keeps ball size through turns", () => {
+  for (const side of [6, 8])
+    for (const width of [320, 390, 500]) {
+      const p = projection(side, width, 127, 549, 0, 7);
+      const left = p.point({ q: 0, r: 0 }),
+        right = p.point({ q: side - 1, r: 0 });
+      const middle = p.point({ q: (side - 1) / 2, r: 0 });
+      assert.ok(Math.abs(left.y - right.y) < 1e-8);
+      assert.ok(middle.y > left.y && middle.y - left.y <= 14);
+      for (let degree = 0; degree < 360; degree++) {
+        const turn = projection(
+          side,
+          width,
+          127,
+          549,
+          (degree * Math.PI) / 180,
+          7,
+        );
+        assert.equal(turn.ballRadius, p.ballRadius);
+        assert.equal(turn.lane, p.lane);
+      }
+    }
 });

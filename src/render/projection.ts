@@ -47,9 +47,38 @@ export function projection(
       extent +
       Math.max(0, (bottom - top - 24 - height - extent * 2) / 2),
   };
+  // A shallow screen-space lens bow puts the front row on a soft arc.
+  // World rotation, horizontal spacing, ball size and accessibility stay intact.
+  const arcDepth = Math.min(14, depthSpace * 0.26);
+  const worldExtent = edge / Math.sqrt(3);
+  let meanSquare = 0,
+    count = 0;
+  for (let q = 0; q <= edge; q++)
+    for (let r = 0; r <= edge - q; r++) {
+      const p = worldPosition({ q, r }, side);
+      meanSquare += p.x * p.x;
+      count++;
+    }
+  meanSquare /= count;
   const point = (t: Pick<Tube, "q" | "r">) => {
     const p = rotateWorld(worldPosition(t, side), angle);
-    return { x: axis.x + p.x * lane, y: axis.y - p.z * zScale, depth: p.z };
+    const bow =
+      (arcDepth * (meanSquare - p.x * p.x)) / (worldExtent * worldExtent);
+    return {
+      x: axis.x + p.x * lane,
+      y: axis.y - p.z * zScale + bow,
+      depth: p.z,
+    };
   };
-  return { axis, lane, radius, height, step, ballRadius, zScale, point };
+  return {
+    axis,
+    lane,
+    radius,
+    height,
+    step,
+    ballRadius,
+    zScale,
+    arcDepth,
+    point,
+  };
 }

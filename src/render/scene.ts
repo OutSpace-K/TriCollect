@@ -921,8 +921,9 @@ export class Scene {
     // Its artwork does not alter projection, touch targets, or tube ordering.
     const dishLeft = Math.min(...corners.map((p) => p.x)) - padding;
     const dishRight = Math.max(...corners.map((p) => p.x)) + padding;
-    const dishBack = Math.min(...corners.map((p) => p.y)) - padding * ratio;
-    const dishFront = Math.max(...corners.map((p) => p.y)) + padding * ratio;
+    const footprint = g.board.tubes.map(point);
+    const dishBack = Math.min(...footprint.map((p) => p.y)) - padding * ratio;
+    const dishFront = Math.max(...footprint.map((p) => p.y)) + padding * ratio;
     const dishX = (dishLeft + dishRight) / 2;
     const dishY = (dishBack + dishFront) / 2;
     const dishRx = (dishRight - dishLeft) / 2;
