@@ -90,13 +90,23 @@ async function boot() {
     menuBottom,
   );
   const scene = new Scene(ctx, game, width / factor, logicalHeight, factor);
-  for (const file of ["background.png", "play-background.png"]) {
+  for (const file of [
+    "background.png",
+    "play-background.png",
+    "home-logo.png",
+    "home-hero.png",
+  ]) {
     try {
       const image = wx.createImage();
       image.onload = () =>
         file === "background.png"
           ? scene.setBackground(image as unknown as CanvasImageSource)
-          : scene.setPlayBackground(image as unknown as CanvasImageSource);
+          : file === "play-background.png"
+            ? scene.setPlayBackground(image as unknown as CanvasImageSource)
+            : scene.setHomeArt(
+                file === "home-logo.png" ? "logo" : "hero",
+                image as unknown as CanvasImageSource,
+              );
       image.onerror = () => {
         /* Keep the available backdrop if loading fails. */
       };

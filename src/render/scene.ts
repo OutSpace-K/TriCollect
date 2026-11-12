@@ -53,6 +53,12 @@ export class Scene {
     session: string;
     view: number;
   } | null = null;
+  private homeLogo: CanvasImageSource | null = null;
+  private homeHero: CanvasImageSource | null = null;
+  setHomeArt(kind: "logo" | "hero", image: CanvasImageSource) {
+    if (kind === "logo") this.homeLogo = image;
+    else this.homeHero = image;
+  }
   backgroundLoaded = false;
   private background: CanvasImageSource | null = null;
   private playBackground: CanvasImageSource | null = null;
@@ -151,7 +157,7 @@ export class Scene {
     align: CanvasTextAlign = "left",
   ) {
     const c = this.ctx;
-    c.font = `${size >= 24 ? "600" : "400"} ${size}px sans-serif`;
+    c.font = `${size >= 14 ? "800" : "400"} ${size}px sans-serif`;
     c.fillStyle = color;
     c.textAlign = align;
     c.fillText(t, x, y);
@@ -191,34 +197,81 @@ export class Scene {
       ["home-dialog-close", "tool-close", "home"].includes(id) ? 62 : 52,
       h,
     );
-    const primary = accent || id === "hint" || id === "again";
-    const fill = dimmed ? "#bdc9c9" : primary ? "#ffcf48" : "#258cae";
-    this.rect(x, y, w, h, "#244b68", 14);
+    const c = this.ctx;
+    const primary = accent || id.startsWith("rotate") || id === "again";
+    const radius = Math.min(25, h * 0.38);
+    c.save();
+    this.rect(x - 3, y + 3, w + 6, h + 3, "#68382130", radius + 4);
+    this.rect(x - 3, y - 3, w + 6, h + 6, "#fffef5", radius + 4);
+    this.rect(x, y, w, h, dimmed ? "#77817a" : "#67351d", radius);
     this.rect(
       x + 2,
-      y + 4,
+      y + 3,
       w - 4,
-      h - 6,
-      dimmed ? "#889ca5" : primary ? "#c7812e" : "#175b7a",
-      12,
+      h - 5,
+      dimmed ? "#a5b0a7" : primary ? "#297815" : "#e2a542",
+      radius - 2,
     );
-    this.rect(x + 2, y + 2, w - 4, h - 8, fill, 12);
-    this.rect(
-      x + 6,
-      y + 4,
-      w - 12,
-      Math.min(8, h / 5),
-      dimmed ? "#ffffff08" : "#ffffff30",
-      6,
+    const fill = c.createLinearGradient(0, y + 3, 0, y + h - 7);
+    fill.addColorStop(0, dimmed ? "#d1d8cd" : primary ? "#b7f51b" : "#fffbd6");
+    fill.addColorStop(
+      0.48,
+      dimmed ? "#b7c0b6" : primary ? "#8fdd09" : "#fff1b7",
     );
-    this.text(
-      label,
-      x + w / 2,
-      y + h / 2 + 5,
-      id.startsWith("rotate") ? 24 : 15,
-      dimmed ? "#4f5c50" : primary ? "#3b2b1d" : "#ffffff",
-      "center",
-    );
+    fill.addColorStop(1, dimmed ? "#a3afa2" : primary ? "#58bf04" : "#ffd978");
+    this.rect(x + 3, y + 3, w - 6, h - 11, "#ffffff", radius - 3);
+    c.fillStyle = fill;
+    c.fill();
+    c.strokeStyle = dimmed ? "#ffffff44" : "#ffffffb0";
+    c.lineWidth = 2;
+    c.stroke();
+    c.strokeStyle = "#ffffffed";
+    c.lineWidth = 3;
+    c.lineCap = "round";
+    c.beginPath();
+    c.moveTo(x + 11, y + 13);
+    c.quadraticCurveTo(x + 13, y + 8, x + 22, y + 8);
+    c.stroke();
+    const outlinedText = (value: string, yy: number, size: number) => {
+      c.font = `900 ${size}px sans-serif`;
+      c.textAlign = "center";
+      c.lineJoin = "round";
+      c.lineWidth = size > 22 ? 5 : 3;
+      c.strokeStyle = primary ? "#315411" : "#fff6d4";
+      c.strokeText(value, x + w / 2, yy);
+      c.fillStyle = dimmed ? "#5d655b" : primary ? "#fffdf1" : "#67351d";
+      c.fillText(value, x + w / 2, yy);
+    };
+    if (id.startsWith("rotate")) {
+      c.save();
+      c.translate(x + w / 2, y + 19);
+      c.scale(id === "rotate-left" ? 1 : -1, 1);
+      c.beginPath();
+      c.moveTo(-12, -9);
+      c.lineTo(-22, 0);
+      c.lineTo(-12, 9);
+      c.lineTo(-12, 4);
+      c.bezierCurveTo(0, 2, 10, 3, 9, 12);
+      c.bezierCurveTo(25, 0, 11, -7, -12, -5);
+      c.closePath();
+      c.strokeStyle = "#315411";
+      c.lineWidth = 3;
+      c.lineJoin = "round";
+      c.stroke();
+      c.fillStyle = "#fffdf1";
+      c.fill();
+      c.restore();
+      outlinedText(
+        id === "rotate-left" ? "向左转" : "向右转",
+        y + h - 10,
+        Math.min(15, w / 4.1),
+      );
+    } else if (id === "start-menu") {
+      outlinedText(label, y + h / 2 + 9, 28);
+    } else {
+      outlinedText(label, y + h / 2 + 5, 16);
+    }
+    c.restore();
     this.buttons.push({ id, x, y, w, h, act, disabled, dimmed });
   }
   private ball(type: number, x: number, y: number, r: number, alpha = 1) {
@@ -255,66 +308,50 @@ export class Scene {
         );
       };
       const gradient = c.createRadialGradient(
-        x - r * 0.32,
-        y - r * 0.38,
-        r * 0.05,
-        x,
-        y,
-        r,
+        x - r * 0.36,
+        y - r * 0.4,
+        r * 0.03,
+        x + r * 0.15,
+        y + r * 0.2,
+        r * 1.15,
       );
-      gradient.addColorStop(0, shade(0.34));
-      gradient.addColorStop(0.3, shade(0.08));
-      gradient.addColorStop(0.5, PALETTE[type]);
-      gradient.addColorStop(0.78, shade(-0.12));
-      gradient.addColorStop(1, shade(-0.6));
+      gradient.addColorStop(0, shade(0.48));
+      gradient.addColorStop(0.3, shade(0.1));
+      gradient.addColorStop(0.62, PALETTE[type]);
+      gradient.addColorStop(0.88, shade(-0.14));
+      gradient.addColorStop(1, shade(-0.35));
       c.fillStyle = gradient;
       c.beginPath();
       c.arc(x, y, r, 0, Math.PI * 2);
       c.fill();
-      const glint = c.createRadialGradient(
-        x - r * 0.31,
-        y - r * 0.4,
-        0,
-        x - r * 0.31,
-        y - r * 0.4,
-        r * 0.29,
-      );
-      glint.addColorStop(0, "#ffffffdc");
-      glint.addColorStop(0.3, "#ffffff60");
-      glint.addColorStop(1, "#ffffff00");
-      c.fillStyle = glint;
+      c.strokeStyle = shade(-0.36);
+      c.lineWidth = Math.max(1, r * 0.055);
+      c.stroke();
+      c.strokeStyle = "#ffffff88";
+      c.lineWidth = Math.max(1, r * 0.065);
+      c.beginPath();
+      c.arc(x, y, r * 0.88, Math.PI * 0.93, Math.PI * 1.86);
+      c.stroke();
+      c.fillStyle = "#ffffffed";
       c.beginPath();
       c.ellipse(
-        x - r * 0.31,
-        y - r * 0.4,
-        r * 0.29,
-        r * 0.23,
-        -0.5,
+        x - r * 0.34,
+        y - r * 0.43,
+        r * 0.25,
+        r * 0.17,
+        -0.65,
         0,
         Math.PI * 2,
       );
       c.fill();
-      c.fillStyle = "#fffffff2";
+      c.fillStyle = "#ffffff38";
       c.beginPath();
       c.ellipse(
-        x - r * 0.3,
-        y - r * 0.38,
-        r * 0.19,
-        r * 0.085,
-        -0.55,
-        0,
-        Math.PI * 2,
-      );
-      c.fill();
-      // A subdued second reflection resembles a polished billiard ball, not a glowing outline.
-      c.fillStyle = "#d4eaff44";
-      c.beginPath();
-      c.ellipse(
-        x + r * 0.35,
-        y + r * 0.42,
-        r * 0.23,
-        r * 0.075,
-        -0.62,
+        x + r * 0.28,
+        y + r * 0.54,
+        r * 0.39,
+        r * 0.14,
+        -0.4,
         0,
         Math.PI * 2,
       );
@@ -324,7 +361,7 @@ export class Scene {
         x,
         y + r * 0.34,
         Math.max(7, r * 0.51),
-        "#302447a8",
+        "#30244770",
         "center",
       );
     } finally {
@@ -502,25 +539,49 @@ export class Scene {
     }
     this.homePanel = null;
     this.decorationLast = null;
-    this.rect(16, 16, 116, 51, "#355b75", 16);
-    this.rect(19, 19, 110, 45, "#fffbed", 13);
+    this.rect(15, 15, 118, 53, "#fffef3", 22);
+    this.rect(18, 18, 112, 47, "#683821", 19);
+    const clockGloss = c.createLinearGradient(0, 19, 0, 62);
+    clockGloss.addColorStop(0, "#9c6546");
+    clockGloss.addColorStop(1, "#5c2e22");
+    this.rect(21, 21, 106, 39, "#75452e", 16);
+    c.fillStyle = clockGloss;
+    c.fill();
     const secs = Math.ceil(g.state.remaining / 1000);
     this.text(
       `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`,
       74,
       51,
       29,
-      g.state.remaining < 30000 ? "#bd3b30" : "#29495e",
+      g.state.remaining < 30000 ? "#ffd174" : "#ffffff",
       "center",
     );
-    this.rect(14, 74, w - 28, 40, "#fff8deee", 12);
+    this.rect(12, 74, w - 24, 44, "#745c4433", 17);
+    this.rect(12, 71, w - 24, 44, "#ffffff", 17);
+    const hudBlue = c.createLinearGradient(0, 74, 0, 114);
+    hudBlue.addColorStop(0, "#37cbff");
+    hudBlue.addColorStop(0.4, "#159fe3");
+    hudBlue.addColorStop(1, "#0472ba");
+    this.rect(15, 74, w - 30, 38, "#159ed5", 14);
+    c.fillStyle = hudBlue;
+    c.fill();
     const total = g.board.tubes.reduce((n, t) => n + t.capacity, 0);
     const progress = g.board.cleared.length / total;
-    this.text(`清空 ${g.board.cleared.length}/${total}`, 20, 91, 13, "#29495e");
-    this.text(PRESETS[g.state.preset].name, w - 20, 91, 13, "#29495e", "right");
-    this.rect(20, 101, w - 40, 9, "#698fa5", 5);
+    this.text(`清空 ${g.board.cleared.length}/${total}`, 23, 93, 16, "#ffffff");
+    this.rect(w - 72, 78, 50, 23, "#6b3821", 11);
+    this.rect(w - 70, 79, 46, 20, "#fff4cd", 9);
+    this.text(
+      PRESETS[g.state.preset].name,
+      w - 47,
+      94,
+      13,
+      "#67351d",
+      "center",
+    );
+    this.rect(23, 101, w - 46, 7, "#b6ecff", 4);
+    this.rect(25, 103, w - 50, 3, "#4b9dcc", 2);
     if (progress > 0)
-      this.rect(20, 101, Math.max(9, (w - 40) * progress), 9, "#258cae", 5);
+      this.rect(25, 102, Math.max(6, (w - 50) * progress), 5, "#9feeff", 3);
     const hidden = ["paused", "ad", "expired", "blocked", "result"].includes(
       g.phase,
     );
@@ -529,8 +590,8 @@ export class Scene {
       return;
     }
     const trayY = this.trayTop,
-      boardBottom = trayY - 92;
-    this.drawBoard(133, boardBottom);
+      boardBottom = trayY - 80;
+    this.drawBoard(127, boardBottom);
     this.drawMisclick();
     this.button(
       "pause",
@@ -545,7 +606,7 @@ export class Scene {
       !["active", "resolving", "rotating"].includes(g.phase),
     );
     this.rect(14, trayY - 1, w - 28, 63, "#314c3229", 17);
-    this.rect(14, trayY - 8, w - 28, 60, "#355f78", 17);
+    this.rect(14, trayY - 8, w - 28, 60, "#bc8d5d", 17);
     this.rect(17, trayY - 9, w - 34, 56, "#fdfcf0", 14);
     this.rect(20, trayY - 6, w - 40, 5, "#ffffff", 3);
     const cell = (w - 44) / 7;
@@ -553,10 +614,10 @@ export class Scene {
       const x = 22 + i * cell;
       this.rect(x, trayY + 1, cell - 4, 43, "#ffffff", 13);
       const well = c.createLinearGradient(x, trayY, x + cell, trayY + 42);
-      well.addColorStop(0, "#567b91");
-      well.addColorStop(0.2, "#9ac1cd");
-      well.addColorStop(0.78, "#dcece7");
-      well.addColorStop(1, "#edf7e9");
+      well.addColorStop(0, "#b38c65");
+      well.addColorStop(0.2, "#dcc3a0");
+      well.addColorStop(0.78, "#f0dfc3");
+      well.addColorStop(1, "#fff2d9");
       this.rect(x, trayY, cell - 4, 40, "#adced2", 12);
       c.fillStyle = well;
       c.fill();
@@ -663,8 +724,8 @@ export class Scene {
           : "寄存",
         54,
         trayY - 31,
-        10,
-        "#fff",
+        11,
+        "#66371f",
         "center",
       );
     }
@@ -852,36 +913,45 @@ export class Scene {
       padding = radius + 4;
     this.decorativeTray = {
       corners: corners.map((p) => ({ x: p.x, y: p.y })),
-      frontY: Math.max(...corners.map((p) => p.y)) + padding * ratio + 17,
+      frontY: Math.max(...corners.map((p) => p.y)) + padding * ratio + 24,
       axis: { ...axis },
-      thickness: 15,
+      thickness: 23,
     };
-    const dish = (offset: number, color: string, inset = 0) => {
-      c.save();
-      try {
-        c.translate(0, axis.y + offset);
-        c.scale(1, ratio);
-        c.lineJoin = "round";
-        c.beginPath();
-        corners.forEach((p, i) =>
-          i
-            ? c.lineTo(p.x, (p.y - axis.y) / ratio)
-            : c.moveTo(p.x, (p.y - axis.y) / ratio),
-        );
-        c.closePath();
-        c.fillStyle = color;
-        c.strokeStyle = color;
-        c.lineWidth = 2 * (padding - inset);
-        c.stroke();
-        c.fill();
-      } finally {
-        c.restore();
-      }
+    // A circular toy turntable surrounds the same rotating tube footprint.
+    // Its artwork does not alter projection, touch targets, or tube ordering.
+    const dishLeft = Math.min(...corners.map((p) => p.x)) - padding;
+    const dishRight = Math.max(...corners.map((p) => p.x)) + padding;
+    const dishBack = Math.min(...corners.map((p) => p.y)) - padding * ratio;
+    const dishFront = Math.max(...corners.map((p) => p.y)) + padding * ratio;
+    const dishX = (dishLeft + dishRight) / 2;
+    const dishY = (dishBack + dishFront) / 2;
+    const dishRx = (dishRight - dishLeft) / 2;
+    const dishRy = Math.max(12, (dishFront - dishBack) / 2);
+    const oval = (
+      yy: number,
+      rx: number,
+      ry: number,
+      fill: string | CanvasGradient,
+    ) => {
+      c.beginPath();
+      c.ellipse(dishX, yy, rx, ry, 0, 0, Math.PI * 2);
+      c.fillStyle = fill;
+      c.fill();
     };
-    dish(27, "#263e2940");
-    dish(18, "#2d6a87");
-    dish(3, "#eaf5dc");
-    dish(1, "#8ec9cf", 3.5);
+    oval(dishY + 30, dishRx + 3, dishRy + 2, "#85503538");
+    oval(dishY + 24, dishRx, dishRy, "#9a452c");
+    const side = c.createLinearGradient(dishLeft, 0, dishRight, 0);
+    side.addColorStop(0, "#f88c62");
+    side.addColorStop(0.3, "#ffb17f");
+    side.addColorStop(0.6, "#ff7352");
+    side.addColorStop(1, "#bf4d31");
+    c.fillStyle = side;
+    c.fillRect(dishLeft, dishY, dishRx * 2, 22);
+    oval(dishY + 21, dishRx - 1, dishRy, side);
+    oval(dishY, dishRx, dishRy, "#a95031");
+    oval(dishY - 1, dishRx - 2, Math.max(4, dishRy - 1), "#fff5ca");
+    oval(dishY - 1, dishRx - 7, Math.max(3, dishRy - 5), "#ffce89");
+    oval(dishY - 2, dishRx - 10, Math.max(2, dishRy - 7), "#ffe8b1");
     const opening = Math.min(
       9,
       Math.max(4, (radius * layout.zScale) / layout.lane),
@@ -1297,6 +1367,32 @@ export class Scene {
         visualRadius: ballRadius,
       });
     }
+    // Directional marks are decorative, never additional touch targets.
+    const markY = dishFront + 10;
+    for (const direction of [-1, 1]) {
+      c.save();
+      try {
+        c.translate(dishX + direction * dishRx * 0.47, markY);
+        c.scale(direction, 1);
+        c.beginPath();
+        c.moveTo(-25, 1);
+        c.quadraticCurveTo(-7, 8, 15, -1);
+        c.lineTo(9, -7);
+        c.lineTo(30, -4);
+        c.lineTo(23, 10);
+        c.lineTo(19, 4);
+        c.quadraticCurveTo(-6, 14, -27, 7);
+        c.closePath();
+        c.lineJoin = "round";
+        c.strokeStyle = "#fffdf0";
+        c.lineWidth = 6;
+        c.stroke();
+        c.fillStyle = "#ff6b4d";
+        c.fill();
+      } finally {
+        c.restore();
+      }
+    }
     if (g.phase === "resolving") {
       const prev = g.state.history.at(-1),
         t = prev?.tubes.find(
@@ -1326,6 +1422,17 @@ export class Scene {
     const t = Math.max(0, Math.min(1, (cycle - 1800) / 1600));
     this.titleAngle =
       cycle >= 1800 && cycle < 3400 ? t * t * (3 - 2 * t) * Math.PI * 2 : 0;
+    if (this.homeLogo) {
+      const width = Math.min(this.width - 26, 420, this.height * 0.5);
+      c.drawImage(
+        this.homeLogo,
+        (this.width - width) / 2,
+        70,
+        width,
+        width * 0.5,
+      );
+      return;
+    }
     // Each entry is a real stroke; there is no enclosing circle or font backing plate.
     type Stroke = number[][];
     // Wide, compact bubble lettering. Keep the radicals separated at small sizes.
@@ -1486,8 +1593,8 @@ export class Scene {
       };
       paint(zhuan, 25, "#244a6340", 3);
       paint(zhuan, 24, "#fffbee");
-      paint(zhuan, 21, "#254a62");
-      paint(zhuan, 13, jelly("#ffd2c8", "#ff8c8c"));
+      paint(zhuan, 21, "#60301f");
+      paint(zhuan, 13, jelly("#ffaaa7", "#fa605e"));
       paint(
         [
           [
@@ -1509,8 +1616,8 @@ export class Scene {
         for (let depth = -2; depth <= -1; depth++)
           paint(ge, 24, "#244a6340", 2, true, depth);
         paint(ge, 28, "#fffbee", 0, true, 0);
-        paint(ge, 25, "#254a62", 0, true, 0);
-        paint(ge, 17, jelly("#d5fff1", "#67d6ba"), 0, true, 0);
+        paint(ge, 25, "#60301f", 0, true, 0);
+        paint(ge, 17, jelly("#d7ff69", "#8bcf09"), 0, true, 0);
         paint(
           [
             [
@@ -1536,8 +1643,8 @@ export class Scene {
         c.translate(224, 0);
         paint(qiu, 21.5, "#244a6340", 3);
         paint(qiu, 20.5, "#fffbee");
-        paint(qiu, 17.5, "#254a62");
-        paint(qiu, 11, jelly("#fff0ab", "#ffc45c"));
+        paint(qiu, 17.5, "#60301f");
+        paint(qiu, 11, jelly("#fff378", "#ffc50d"));
         paint(
           [
             [
@@ -1869,7 +1976,7 @@ export class Scene {
     }
     this.rect(12, 74, w - 24, h - 122, "#274e6d", 24);
     this.rect(17, 79, w - 34, h - 133, "#fff9e8", 20);
-    this.rect(30, 90, w - 60, 40, "#e3eff0", 13);
+    this.rect(30, 90, w - 60, 40, "#149bcf", 13);
     this.text(
       this.homePanel === "records"
         ? "本机战绩"
@@ -1881,7 +1988,7 @@ export class Scene {
       w / 2,
       116,
       25,
-      "#29495e",
+      "#ffffff",
       "center",
     );
     if (this.homePanel === "difficulty") {
@@ -2047,91 +2154,104 @@ export class Scene {
     });
 
     const c = this.ctx;
-    c.save();
-    try {
-      c.translate(0, this.homeGroupOffset);
-      c.translate(w / 2, 264);
-      c.scale(1.2, 1.2);
-      c.translate(-w / 2, -264);
-      // An elliptical toy display table carries the hero instead of a glowing platform.
-      for (const [dy, rx, ry, color] of [
-        [19, 114, 27, "#263e2933"],
-        [10, 108, 31, "#2d6a87"],
-        [0, 108, 31, "#eaf5dc"],
-        [-2, 99, 25, "#8ec9cf"],
-      ] as const) {
-        c.beginPath();
-        c.ellipse(w / 2, 333 + dy, rx, ry, 0, 0, Math.PI * 2);
-        c.fillStyle = color;
-        c.fill();
-      }
-      for (let i = 0; i < 3; i++) {
-        const x = w / 2 + (i - 1) * 44,
-          top = 204 + Math.abs(i - 1) * 10,
-          bottom = top + 112;
-        this.chamberPath(x, top, bottom, 20);
-        const glass = c.createLinearGradient(x - 23, top, x + 23, bottom);
-        glass.addColorStop(0, "#fffefecc");
-        glass.addColorStop(0.22, "#c9f4f54d");
-        glass.addColorStop(0.76, "#ffffff18");
-        glass.addColorStop(1, "#9ba9c078");
-        c.fillStyle = glass;
-        c.fill();
-        c.strokeStyle = "#a8aaaab0";
-        c.lineWidth = 1;
-        c.stroke();
-        for (let j = 0; j < 3; j++)
-          this.ball((i * 2 + j) % 7, x, top + 22 + j * 32, 16);
-        c.fillStyle = "#bdcdb0";
-        c.beginPath();
-        c.ellipse(x, bottom, 23, 4, 0, 0, Math.PI * 2);
-        c.fill();
-        c.fillStyle = "#e3ebd8";
-        c.beginPath();
-        c.ellipse(x, top, 22, 4, 0, 0, Math.PI * 2);
-        c.fill();
-        c.fillStyle = "#95ac90";
-        c.beginPath();
-        c.ellipse(x, top, 18, 2.3, 0, 0, Math.PI * 2);
-        c.fill();
-        c.strokeStyle = "#ffffffe0";
-        c.beginPath();
-        c.moveTo(x - 19, top + 8);
-        c.lineTo(x - 19, bottom - 8);
-        c.stroke();
-      }
-    } finally {
-      c.restore();
-    }
-    const mx = w / 2,
-      my = 400 + this.homeGroupOffset + Math.sin(this.mascotTime / 650) * 5;
-    this.ball(3, mx, my, 23);
-    for (const dx of [-7, 7]) {
-      c.fillStyle = "#fff";
-      c.beginPath();
-      c.ellipse(
-        mx + dx,
-        my - 3,
-        5,
-        Math.sin(this.mascotTime / 1900) > 0.985 ? 1 : 7,
-        0,
-        0,
-        Math.PI * 2,
+    const y = h - (this.game.resume ? 208 : 184);
+    if (this.homeHero) {
+      const logoBottom = 70 + Math.min(w - 26, 420, h * 0.5) * 0.5;
+      const heroHeight = Math.min((w - 16) * 0.8, y - logoBottom - 24);
+      const heroWidth = heroHeight / 0.8;
+      c.drawImage(
+        this.homeHero,
+        (w - heroWidth) / 2,
+        y - heroHeight - 12,
+        heroWidth,
+        heroHeight,
       );
-      c.fill();
-      c.fillStyle = "#25384e";
-      c.beginPath();
-      c.arc(mx + dx + 1, my - 2, 2.5, 0, Math.PI * 2);
-      c.fill();
+    } else {
+      c.save();
+      try {
+        c.translate(0, this.homeGroupOffset);
+        c.translate(w / 2, 264);
+        c.scale(Math.min(1.38, (w - 40) / 188), 1.38);
+        c.translate(-w / 2, -264);
+        // An elliptical toy display table carries the hero instead of a glowing platform.
+        for (const [dy, rx, ry, color] of [
+          [19, 114, 27, "#263e2933"],
+          [10, 108, 31, "#c75f3f"],
+          [0, 108, 31, "#ffdca0"],
+          [-2, 99, 25, "#fff0c2"],
+        ] as const) {
+          c.beginPath();
+          c.ellipse(w / 2, 333 + dy, rx, ry, 0, 0, Math.PI * 2);
+          c.fillStyle = color;
+          c.fill();
+        }
+        for (let i = 0; i < 5; i++) {
+          const x = w / 2 + (i - 2) * 36,
+            top = 204 + Math.abs(i - 2) * 10,
+            bottom = top + 112;
+          this.chamberPath(x, top, bottom, 20);
+          const glass = c.createLinearGradient(x - 23, top, x + 23, bottom);
+          glass.addColorStop(0, "#fffefecc");
+          glass.addColorStop(0.22, "#c9f4f54d");
+          glass.addColorStop(0.76, "#ffffff18");
+          glass.addColorStop(1, "#9ba9c078");
+          c.fillStyle = glass;
+          c.fill();
+          c.strokeStyle = "#a8aaaab0";
+          c.lineWidth = 1;
+          c.stroke();
+          for (let j = 0; j < 3; j++)
+            this.ball((i * 2 + j) % 7, x, top + 22 + j * 32, 16);
+          c.fillStyle = "#bdcdb0";
+          c.beginPath();
+          c.ellipse(x, bottom, 23, 4, 0, 0, Math.PI * 2);
+          c.fill();
+          c.fillStyle = "#e3ebd8";
+          c.beginPath();
+          c.ellipse(x, top, 22, 4, 0, 0, Math.PI * 2);
+          c.fill();
+          c.fillStyle = "#95ac90";
+          c.beginPath();
+          c.ellipse(x, top, 18, 2.3, 0, 0, Math.PI * 2);
+          c.fill();
+          c.strokeStyle = "#ffffffe0";
+          c.beginPath();
+          c.moveTo(x - 19, top + 8);
+          c.lineTo(x - 19, bottom - 8);
+          c.stroke();
+        }
+      } finally {
+        c.restore();
+      }
+      const mx = w / 2 - 94,
+        my = 375 + this.homeGroupOffset + Math.sin(this.mascotTime / 650) * 5;
+      this.ball(0, mx, my, 32);
+      for (const dx of [-7, 7]) {
+        c.fillStyle = "#fff";
+        c.beginPath();
+        c.ellipse(
+          mx + dx,
+          my - 3,
+          5,
+          Math.sin(this.mascotTime / 1900) > 0.985 ? 1 : 7,
+          0,
+          0,
+          Math.PI * 2,
+        );
+        c.fill();
+        c.fillStyle = "#25384e";
+        c.beginPath();
+        c.arc(mx + dx + 1, my - 2, 2.5, 0, Math.PI * 2);
+        c.fill();
+      }
     }
-    const y = Math.min(h - 230, 435) + this.homeGroupOffset;
     this.button(
       "start-menu",
       "开始游戏",
       28,
       y,
       w - 56,
-      this.game.resume ? 54 : 58,
+      this.game.resume ? 66 : 74,
       () => {
         this.homePanel = "difficulty";
       },
@@ -2139,7 +2259,7 @@ export class Scene {
       true,
     );
     if (this.game.resume)
-      this.button("resume", "继续上次", 28, y + 64, w - 56, 40, () =>
+      this.button("resume", "继续上次", 28, y + 78, w - 56, 40, () =>
         this.game.continueSaved(),
       );
     this.trackObjects = [];
@@ -2149,6 +2269,29 @@ export class Scene {
       const compactTrack = !!this.game.resume && h < 720;
       c.rect(0, h - (compactTrack ? 96 : 112), w, compactTrack ? 90 : 106);
       c.clip();
+      if (this.homeHero) {
+        for (const lane of [0, 1]) {
+          c.beginPath();
+          c.moveTo(-25, h - 90 + lane * 49);
+          c.bezierCurveTo(
+            w * 0.24,
+            h + 10 + lane * 20,
+            w * 0.68,
+            h - 38 + lane * 40,
+            w + 25,
+            h - 65 + lane * 45,
+          );
+          c.strokeStyle = "#c88037";
+          c.lineWidth = 28;
+          c.stroke();
+          c.strokeStyle = "#fff1c3";
+          c.lineWidth = 23;
+          c.stroke();
+          c.strokeStyle = "#f8c36b";
+          c.lineWidth = 13;
+          c.stroke();
+        }
+      }
       const phases = [0.03, 0.23, 0.47, 0.73, 0.53],
         lanes = [0, 1, 2, 1, 0];
       for (let i = 0; i < phases.length; i++) {
@@ -2173,7 +2316,8 @@ export class Scene {
           c.translate(x, y);
           const squash = Math.sin(this.mascotTime / 330 + i) * 0.09;
           c.scale((speed < 0 ? -1 : 1) * (1 + squash), 1 - squash);
-          this.trackToy(i, 0, 0, r);
+          if (this.homeHero) this.ball([2, 1, 4, 0, 3][i], 0, 0, r);
+          else this.trackToy(i, 0, 0, r);
         } finally {
           c.restore();
         }

@@ -1,0 +1,55 @@
+{
+  "scope": "Native bundle with simulated wx, real host timers; not installed DevTools",
+  "results": [
+    {
+      "unitsPerMs": 1,
+      "introMs": 934,
+      "transferMs": 247,
+      "skipMs": 1,
+      "remainingBallsStable": true,
+      "secondPickAccepted": true
+    },
+    {
+      "unitsPerMs": 1000,
+      "introMs": 932,
+      "transferMs": 242,
+      "skipMs": 1,
+      "remainingBallsStable": true,
+      "secondPickAccepted": true
+    },
+    {
+      "unitsPerMs": 1,
+      "frozenStage": "intro",
+      "visiblePauseMs": 1535,
+      "returnHomeWorks": true
+    },
+    {
+      "unitsPerMs": 1,
+      "frozenStage": "transfer",
+      "visiblePauseMs": 1535,
+      "returnHomeWorks": true
+    },
+    {
+      "unitsPerMs": 1000,
+      "frozenStage": "intro",
+      "visiblePauseMs": 1545,
+      "returnHomeWorks": true
+    },
+    {
+      "unitsPerMs": 1000,
+      "frozenStage": "transfer",
+      "visiblePauseMs": 1545,
+      "returnHomeWorks": true
+    },
+    {
+      "unitsPerMs": 1,
+      "rotationMs": 253,
+      "frozenRotationPauseMs": 1550
+    },
+    {
+      "unitsPerMs": 1000,
+      "rotationMs": 253,
+      "frozenRotationPauseMs": 1550
+    }
+  ]
+}

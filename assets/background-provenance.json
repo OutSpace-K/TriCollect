@@ -1,22 +1,27 @@
 {
-  "version": "0.1.22",
-  "method": "ImageGen edits of existing original TriCollect backgrounds; no reference-game artwork used",
-  "preparation": "ImageMagick resampling to existing 600x1040 runtime asset dimensions",
-  "historicalScript": "scripts/make-showroom-backgrounds.py generates the earlier baseline, not these edited PNGs",
+  "version": "0.1.28 revision 2",
+  "method": "Built-in ImageGen production assets derived from the user-approved original visual proposal; no third-party branded characters",
+  "preparation": "Pillow LANCZOS size reduction only; transparent logo and hero alpha preserved",
   "assets": [
     {
       "asset": "assets/background.png",
-      "sha256": "131f719373a894c09075c6cf6b3e33a6d0a75b098eb5a4fe50ac16324e1bd187",
-      "bytes": 474262,
-      "generatedSource": "exec-f7c4b81f-ff50-4ee0-adeb-b09d0d893082.png",
-      "generatedSourceSha256": "228010b90b3ec4c502c91efd69ef12d794fef827cef5ecaa1ae945b2e9033f61"
+      "bytes": 524471,
+      "sha256": "49df0a57375cf59fea68fd86469acfd2564e187c08e13db427bf7f5ad760caa6"
     },
     {
       "asset": "assets/play-background.png",
-      "sha256": "7c05e00f36be873b7cd3f18a90c887b82a30e7286385157e0b0a206ee1952ce5",
-      "bytes": 457498,
-      "generatedSource": "exec-25cbbfa6-1c7c-49ae-8b3e-84f44de4f4ea.png",
-      "generatedSourceSha256": "cfd9ddc0410fe5c7289174f94d48440a277b85bc43fb0d73992e70aaeba07fc9"
+      "bytes": 490267,
+      "sha256": "4d79d5939c4a378dcce599fe10746c1240fccd66aaab8a01b2302eb8ea6d6047"
+    },
+    {
+      "asset": "assets/home-logo.png",
+      "bytes": 316418,
+      "sha256": "54e99c9c5560247e2691a2665dcb43fc8ac1bb5dea958007343fd1609402855f"
+    },
+    {
+      "asset": "assets/home-hero.png",
+      "bytes": 560273,
+      "sha256": "1314b1771cba2a01ac877acd4403f644ee310dc471b79af0833915f3299b5f52"
     }
   ]
 }

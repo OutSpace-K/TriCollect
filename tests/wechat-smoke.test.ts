@@ -65,9 +65,10 @@ async function boot(
           throw Error("injected one-frame rendering fault");
         }
         if (["●", "◆", "▲", "✚", "■", "★", "♥"].includes(s)) {
-          const ball = [...circles]
-            .reverse()
-            .find((b) => Math.abs(b.x - x) < 0.01 && y > b.y && y - b.y < b.r);
+          // Decorative inner highlight arcs share the sphere center; use its outer silhouette.
+          const ball = circles
+            .filter((b) => Math.abs(b.x - x) < 0.01 && y > b.y && y - b.y < b.r)
+            .sort((a, b) => b.r - a.r)[0];
           if (ball) paintedBalls.push(ball);
         }
 
@@ -327,8 +328,8 @@ async function boot(
       const layout = projection(
         saved.board.side,
         390,
-        133,
-        748 - 211,
+        127,
+        748 - 199,
         (saved.view * Math.PI * 2) / 3,
         Math.max(...saved.board.tubes.map((t) => t.capacity)),
       );
@@ -498,7 +499,7 @@ for (const units of [1, 1000])
       assert.equal(decode(r.storage.get(SAVE_KEY)!)!.remaining, 290000);
       r.tap("继续游戏");
       for (let rotation = 0; rotation < 6; rotation++) {
-        r.tap("→", true);
+        r.tap("向右转", true);
         r.advance(250_000);
         assert.equal(
           decode(r.storage.get(SAVE_KEY)!)!.view,
@@ -511,7 +512,7 @@ for (const units of [1, 1000])
           (t) => t.id === level.witness[step],
         );
         while (decode(r.storage.get(SAVE_KEY)!)!.view !== level.views[step]) {
-          r.tap("→", true);
+          r.tap("向右转", true);
           r.advance(250_000);
         }
         r.tapTube(index + 1);
@@ -699,16 +700,16 @@ for (const units of [1, 1000])
     r.tap("简单");
     r.tap("跳过开场");
     r.tap("开始 ·");
-    r.tap("→", true);
+    r.tap("向右转", true);
     const ms = await driveUntil(r, () => r.topBalls.size > 0, 800);
     assert.ok(ms >= 180 && ms < 500);
     assert.equal(decode(r.storage.get(SAVE_KEY)!)!.view, 2);
-    r.tap("←", true);
-    r.tap("←", true);
+    r.tap("向左转", true);
+    r.tap("向左转", true);
     r.tap("暂停", true);
     assert.equal(decode(r.storage.get(SAVE_KEY)!)!.view, 1);
     r.tap("继续游戏");
-    r.tap("→", true);
+    r.tap("向右转", true);
     r.freezeClock();
     const interrupted = await driveUntil(
       r,
@@ -779,6 +780,8 @@ test("native image asset loads and image failure leaves gameplay available", asy
     assert.deepEqual(r.images, [
       "assets/background.png",
       "assets/play-background.png",
+      "assets/home-logo.png",
+      "assets/home-hero.png",
     ]);
     assert.equal(r.backgroundDraws() > 0, !fail);
     r.tapTube(1);

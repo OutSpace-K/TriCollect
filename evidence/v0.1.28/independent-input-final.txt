@@ -1,0 +1,16 @@
+{
+  legal: 240,
+  blocked: 4900,
+  overlaps: 224,
+  bounds: 336960,
+  configurations: 36
+}
+✔ independent four-phone restored perspective input and rotation audit (1625.607153ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1999.033058

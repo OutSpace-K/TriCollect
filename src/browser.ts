@@ -50,13 +50,23 @@ const music = new Music(() => {
   return player;
 });
 const scene = new Scene(ctx, game, 390, 844);
-for (const file of ["background.png", "play-background.png"]) {
+for (const file of [
+  "background.png",
+  "play-background.png",
+  "home-logo.png",
+  "home-hero.png",
+]) {
   try {
     const image = new Image();
     image.onload = () =>
       file === "background.png"
         ? scene.setBackground(image as unknown as CanvasImageSource)
-        : scene.setPlayBackground(image as unknown as CanvasImageSource);
+        : file === "play-background.png"
+          ? scene.setPlayBackground(image as unknown as CanvasImageSource)
+          : scene.setHomeArt(
+              file === "home-logo.png" ? "logo" : "hero",
+              image as unknown as CanvasImageSource,
+            );
     image.onerror = () => {
       /* Keep the available backdrop if loading fails. */
     };

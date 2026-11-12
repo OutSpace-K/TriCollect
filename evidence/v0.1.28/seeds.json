@@ -1,0 +1,5208 @@
+{
+  "rule": "tricollect-5-variable-height",
+  "verifiedSeeds": 300,
+  "totalMs": 13953.72,
+  "scope": "Pure reducer replay, no ads; not human timing or real device validation",
+  "results": [
+    {
+      "preset": "learn",
+      "seed": 104729,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 70,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 42700,
+      "score": 4420,
+      "ms": 58.84,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104730,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 68,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 42200,
+      "score": 4420,
+      "ms": 34.74,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104731,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 70,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 42700,
+      "score": 4420,
+      "ms": 24.18,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104732,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 67,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41950,
+      "score": 4420,
+      "ms": 24.83,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104733,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 68,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 42200,
+      "score": 4420,
+      "ms": 22.91,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104734,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 61,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40450,
+      "score": 4420,
+      "ms": 32.91,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104735,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 72,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 43200,
+      "score": 4420,
+      "ms": 25.87,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104736,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 63,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40950,
+      "score": 4420,
+      "ms": 23.21,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104737,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 69,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 42450,
+      "score": 4420,
+      "ms": 21.56,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104738,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 63,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40950,
+      "score": 4420,
+      "ms": 23.05,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104739,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 50,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 37700,
+      "score": 4420,
+      "ms": 21.12,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104740,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 59,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 39950,
+      "score": 4420,
+      "ms": 23.11,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104741,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 70,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 42700,
+      "score": 4420,
+      "ms": 21.83,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104742,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 66,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41700,
+      "score": 4420,
+      "ms": 21.98,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104743,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 68,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 42200,
+      "score": 4420,
+      "ms": 21.55,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104744,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 79,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 44950,
+      "score": 4420,
+      "ms": 29.1,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104745,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 61,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40450,
+      "score": 4420,
+      "ms": 24.73,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104746,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 67,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41950,
+      "score": 4420,
+      "ms": 21.92,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104747,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 63,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40950,
+      "score": 4420,
+      "ms": 22.52,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104748,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 65,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41450,
+      "score": 4420,
+      "ms": 21.47,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104749,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 69,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 42450,
+      "score": 4420,
+      "ms": 23.4,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104750,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 66,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41700,
+      "score": 4420,
+      "ms": 25.49,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104751,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 72,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 43200,
+      "score": 4420,
+      "ms": 22.3,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104752,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 76,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 44200,
+      "score": 4420,
+      "ms": 45.33,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104753,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 64,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41200,
+      "score": 4420,
+      "ms": 21.55,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104754,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 52,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 38200,
+      "score": 4420,
+      "ms": 20.65,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104755,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 63,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40950,
+      "score": 4420,
+      "ms": 21.36,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104756,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 58,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 39700,
+      "score": 4420,
+      "ms": 20.45,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104757,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 59,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 39950,
+      "score": 4420,
+      "ms": 22.02,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104758,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 67,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41950,
+      "score": 4420,
+      "ms": 20.59,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104759,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 69,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 42450,
+      "score": 4420,
+      "ms": 20.85,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104760,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 62,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40700,
+      "score": 4420,
+      "ms": 19.76,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104761,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 66,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41700,
+      "score": 4420,
+      "ms": 20,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104762,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 65,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41450,
+      "score": 4420,
+      "ms": 19.79,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104763,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 66,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41700,
+      "score": 4420,
+      "ms": 20.45,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104764,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 69,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 42450,
+      "score": 4420,
+      "ms": 21.02,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104765,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 65,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41450,
+      "score": 4420,
+      "ms": 19.28,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104766,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 58,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 39700,
+      "score": 4420,
+      "ms": 19.14,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104767,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 68,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 42200,
+      "score": 4420,
+      "ms": 19.27,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104768,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 63,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40950,
+      "score": 4420,
+      "ms": 19.15,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104769,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 65,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41450,
+      "score": 4420,
+      "ms": 19.65,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104770,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 65,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41450,
+      "score": 4420,
+      "ms": 21.06,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104771,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 63,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40950,
+      "score": 4420,
+      "ms": 21.39,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104772,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 67,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41950,
+      "score": 4420,
+      "ms": 22.33,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104773,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 64,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41200,
+      "score": 4420,
+      "ms": 22.35,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104774,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 79,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 44950,
+      "score": 4420,
+      "ms": 22.11,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104775,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 70,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 42700,
+      "score": 4420,
+      "ms": 26.66,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104776,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 61,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40450,
+      "score": 4420,
+      "ms": 32.15,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104777,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 70,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 42700,
+      "score": 4420,
+      "ms": 32.15,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104778,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 70,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 42700,
+      "score": 4420,
+      "ms": 32.21,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104779,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 58,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 39700,
+      "score": 4420,
+      "ms": 23.69,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104780,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 59,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 39950,
+      "score": 4420,
+      "ms": 23.2,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104781,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 55,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 38950,
+      "score": 4420,
+      "ms": 20.36,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104782,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 61,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40450,
+      "score": 4420,
+      "ms": 21.96,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104783,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 69,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 42450,
+      "score": 4420,
+      "ms": 21.44,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104784,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 67,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41950,
+      "score": 4420,
+      "ms": 21.12,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104785,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 62,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40700,
+      "score": 4420,
+      "ms": 20.72,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104786,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 59,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 39950,
+      "score": 4420,
+      "ms": 21.26,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104787,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 69,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 42450,
+      "score": 4420,
+      "ms": 22.64,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104788,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 62,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40700,
+      "score": 4420,
+      "ms": 23.37,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104789,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 76,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 44200,
+      "score": 4420,
+      "ms": 21.93,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104790,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 59,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 39950,
+      "score": 4420,
+      "ms": 20.92,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104791,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 65,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41450,
+      "score": 4420,
+      "ms": 21.13,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104792,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 62,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40700,
+      "score": 4420,
+      "ms": 23.5,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104793,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 60,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40200,
+      "score": 4420,
+      "ms": 31.49,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104794,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 62,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40700,
+      "score": 4420,
+      "ms": 31.63,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104795,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 65,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41450,
+      "score": 4420,
+      "ms": 31.06,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104796,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 74,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 43700,
+      "score": 4420,
+      "ms": 31.11,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104797,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 70,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 42700,
+      "score": 4420,
+      "ms": 19.35,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104798,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 73,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 43450,
+      "score": 4420,
+      "ms": 19.33,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104799,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 67,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41950,
+      "score": 4420,
+      "ms": 19.9,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104800,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 64,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41200,
+      "score": 4420,
+      "ms": 23.53,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104801,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 67,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41950,
+      "score": 4420,
+      "ms": 18.93,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104802,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 74,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 43700,
+      "score": 4420,
+      "ms": 26.9,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104803,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 72,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 43200,
+      "score": 4420,
+      "ms": 31.85,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104804,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 60,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40200,
+      "score": 4420,
+      "ms": 31.43,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104805,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 63,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40950,
+      "score": 4420,
+      "ms": 22.46,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104806,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 62,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40700,
+      "score": 4420,
+      "ms": 20.27,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104807,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 65,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41450,
+      "score": 4420,
+      "ms": 19.5,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104808,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 62,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40700,
+      "score": 4420,
+      "ms": 19.61,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104809,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 74,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 43700,
+      "score": 4420,
+      "ms": 20.43,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104810,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 66,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41700,
+      "score": 4420,
+      "ms": 21.31,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104811,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 59,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 39950,
+      "score": 4420,
+      "ms": 20.36,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104812,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 63,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40950,
+      "score": 4420,
+      "ms": 19.82,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104813,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 68,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 42200,
+      "score": 4420,
+      "ms": 19.24,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104814,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 60,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40200,
+      "score": 4420,
+      "ms": 20.94,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104815,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 63,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40950,
+      "score": 4420,
+      "ms": 21.14,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104816,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 72,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 43200,
+      "score": 4420,
+      "ms": 21.15,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104817,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 66,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41700,
+      "score": 4420,
+      "ms": 22.78,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104818,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 78,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 44700,
+      "score": 4420,
+      "ms": 32.03,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104819,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 66,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41700,
+      "score": 4420,
+      "ms": 31.69,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104820,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 71,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 42950,
+      "score": 4420,
+      "ms": 31.83,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104821,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 60,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40200,
+      "score": 4420,
+      "ms": 22.29,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104822,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 66,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41700,
+      "score": 4420,
+      "ms": 21.59,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104823,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 61,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40450,
+      "score": 4420,
+      "ms": 20.62,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104824,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 66,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 41700,
+      "score": 4420,
+      "ms": 21.85,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104825,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 61,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 40450,
+      "score": 4420,
+      "ms": 21.38,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104826,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 58,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 39700,
+      "score": 4420,
+      "ms": 21.18,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104827,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 70,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 42700,
+      "score": 4420,
+      "ms": 22.85,
+      "passed": true
+    },
+    {
+      "preset": "learn",
+      "seed": 104828,
+      "moves": 105,
+      "maxTray": 2,
+      "capacities": [
+        5
+      ],
+      "types": 5,
+      "turns": 73,
+      "activeBudgetMsPerPick": 2857.14,
+      "animationOnlyWallMs": 43450,
+      "score": 4420,
+      "ms": 21.49,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130363,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 85,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 51490,
+      "score": 5120,
+      "ms": 27.38,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130364,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 79,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 49990,
+      "score": 5120,
+      "ms": 27.09,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130365,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 73,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 48490,
+      "score": 5120,
+      "ms": 28.07,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130366,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 81,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50490,
+      "score": 5120,
+      "ms": 26.57,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130367,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 92,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 53240,
+      "score": 5120,
+      "ms": 26.6,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130368,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 83,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50990,
+      "score": 5120,
+      "ms": 26.72,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130369,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 81,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50490,
+      "score": 5120,
+      "ms": 40.69,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130370,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 78,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 49740,
+      "score": 5120,
+      "ms": 41.2,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130371,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 71,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 47990,
+      "score": 5120,
+      "ms": 36.06,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130372,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 66,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 46740,
+      "score": 5120,
+      "ms": 25.07,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130373,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 78,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 49740,
+      "score": 5120,
+      "ms": 27.35,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130374,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 76,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 49240,
+      "score": 5120,
+      "ms": 67.31,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130375,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 84,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 51240,
+      "score": 5120,
+      "ms": 28.86,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130376,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 76,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 49240,
+      "score": 5120,
+      "ms": 32.13,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130377,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 72,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 48240,
+      "score": 5120,
+      "ms": 29.1,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130378,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 80,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50240,
+      "score": 5120,
+      "ms": 28.77,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130379,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 67,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 46990,
+      "score": 5120,
+      "ms": 28.12,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130380,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 72,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 48240,
+      "score": 5120,
+      "ms": 30.76,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130381,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 93,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 53490,
+      "score": 5120,
+      "ms": 30.72,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130382,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 80,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50240,
+      "score": 5120,
+      "ms": 26.29,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130383,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 71,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 47990,
+      "score": 5120,
+      "ms": 29.02,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130384,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 76,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 49240,
+      "score": 5120,
+      "ms": 30.38,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130385,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 65,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 46490,
+      "score": 5120,
+      "ms": 29.85,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130386,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 80,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50240,
+      "score": 5120,
+      "ms": 28.03,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130387,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 80,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50240,
+      "score": 5120,
+      "ms": 27.72,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130388,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 65,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 46490,
+      "score": 5120,
+      "ms": 28.05,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130389,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 84,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 51240,
+      "score": 5120,
+      "ms": 29.41,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130390,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 81,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50490,
+      "score": 5120,
+      "ms": 29.36,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130391,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 88,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 52240,
+      "score": 5120,
+      "ms": 27.75,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130392,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 73,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 48490,
+      "score": 5120,
+      "ms": 27.38,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130393,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 73,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 48490,
+      "score": 5120,
+      "ms": 26.15,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130394,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 80,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50240,
+      "score": 5120,
+      "ms": 27.4,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130395,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 66,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 46740,
+      "score": 5120,
+      "ms": 27.3,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130396,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 69,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 47490,
+      "score": 5120,
+      "ms": 27.92,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130397,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 80,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50240,
+      "score": 5120,
+      "ms": 29.79,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130398,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 70,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 47740,
+      "score": 5120,
+      "ms": 32.62,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130399,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 70,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 47740,
+      "score": 5120,
+      "ms": 33.86,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130400,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 94,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 53740,
+      "score": 5120,
+      "ms": 32.89,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130401,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 80,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50240,
+      "score": 5120,
+      "ms": 29.28,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130402,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 74,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 48740,
+      "score": 5120,
+      "ms": 29.25,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130403,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 91,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 52990,
+      "score": 5120,
+      "ms": 29.5,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130404,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 72,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 48240,
+      "score": 5120,
+      "ms": 31.96,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130405,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 74,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 48740,
+      "score": 5120,
+      "ms": 32.55,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130406,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 69,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 47490,
+      "score": 5120,
+      "ms": 29.48,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130407,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 87,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 51990,
+      "score": 5120,
+      "ms": 30.86,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130408,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 80,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50240,
+      "score": 5120,
+      "ms": 29.79,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130409,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 85,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 51490,
+      "score": 5120,
+      "ms": 29.45,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130410,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 79,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 49990,
+      "score": 5120,
+      "ms": 29.51,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130411,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 82,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50740,
+      "score": 5120,
+      "ms": 30.4,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130412,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 72,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 48240,
+      "score": 5120,
+      "ms": 31.08,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130413,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 80,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50240,
+      "score": 5120,
+      "ms": 47.44,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130414,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 81,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50490,
+      "score": 5120,
+      "ms": 40.13,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130415,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 80,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50240,
+      "score": 5120,
+      "ms": 26.74,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130416,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 85,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 51490,
+      "score": 5120,
+      "ms": 28.27,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130417,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 86,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 51740,
+      "score": 5120,
+      "ms": 41.05,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130418,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 77,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 49490,
+      "score": 5120,
+      "ms": 36.14,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130419,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 80,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50240,
+      "score": 5120,
+      "ms": 35.02,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130420,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 68,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 47240,
+      "score": 5120,
+      "ms": 37.49,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130421,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 91,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 52990,
+      "score": 5120,
+      "ms": 27.32,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130422,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 70,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 47740,
+      "score": 5120,
+      "ms": 32.02,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130423,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 83,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50990,
+      "score": 5120,
+      "ms": 28.1,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130424,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 81,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50490,
+      "score": 5120,
+      "ms": 38.8,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130425,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 73,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 48490,
+      "score": 5120,
+      "ms": 41.32,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130426,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 75,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 48990,
+      "score": 5120,
+      "ms": 40.8,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130427,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 81,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50490,
+      "score": 5120,
+      "ms": 40.88,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130428,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 76,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 49240,
+      "score": 5120,
+      "ms": 35.98,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130429,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 77,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 49490,
+      "score": 5120,
+      "ms": 24.47,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130430,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 77,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 49490,
+      "score": 5120,
+      "ms": 26.42,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130431,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 75,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 48990,
+      "score": 5120,
+      "ms": 25.63,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130432,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 79,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 49990,
+      "score": 5120,
+      "ms": 24.78,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130433,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 77,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 49490,
+      "score": 5120,
+      "ms": 25.18,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130434,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 82,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50740,
+      "score": 5120,
+      "ms": 24.72,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130435,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 74,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 48740,
+      "score": 5120,
+      "ms": 25.4,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130436,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 74,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 48740,
+      "score": 5120,
+      "ms": 36.12,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130437,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 62,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 45740,
+      "score": 5120,
+      "ms": 40.45,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130438,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 74,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 48740,
+      "score": 5120,
+      "ms": 40.56,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130439,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 75,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 48990,
+      "score": 5120,
+      "ms": 40.7,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130440,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 68,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 47240,
+      "score": 5120,
+      "ms": 29.8,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130441,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 74,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 48740,
+      "score": 5120,
+      "ms": 28.32,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130442,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 85,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 51490,
+      "score": 5120,
+      "ms": 25.7,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130443,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 79,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 49990,
+      "score": 5120,
+      "ms": 25.48,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130444,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 86,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 51740,
+      "score": 5120,
+      "ms": 24.9,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130445,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 80,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50240,
+      "score": 5120,
+      "ms": 30.13,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130446,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 87,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 51990,
+      "score": 5120,
+      "ms": 28.84,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130447,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 80,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50240,
+      "score": 5120,
+      "ms": 28.14,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130448,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 77,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 49490,
+      "score": 5120,
+      "ms": 26.63,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130449,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 73,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 48490,
+      "score": 5120,
+      "ms": 26.25,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130450,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 72,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 48240,
+      "score": 5120,
+      "ms": 26.23,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130451,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 74,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 48740,
+      "score": 5120,
+      "ms": 26.3,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130452,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 82,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50740,
+      "score": 5120,
+      "ms": 26.5,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130453,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 76,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 49240,
+      "score": 5120,
+      "ms": 25.21,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130454,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 91,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 52990,
+      "score": 5120,
+      "ms": 25.82,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130455,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 82,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50740,
+      "score": 5120,
+      "ms": 26.01,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130456,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 76,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 49240,
+      "score": 5120,
+      "ms": 27.03,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130457,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 70,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 47740,
+      "score": 5120,
+      "ms": 25.66,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130458,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 70,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 47740,
+      "score": 5120,
+      "ms": 25.29,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130459,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 81,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 50490,
+      "score": 5120,
+      "ms": 26.09,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130460,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 76,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 49240,
+      "score": 5120,
+      "ms": 26.13,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130461,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 71,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 47990,
+      "score": 5120,
+      "ms": 25.86,
+      "passed": true
+    },
+    {
+      "preset": "normal",
+      "seed": 130462,
+      "moves": 126,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 6,
+      "turns": 79,
+      "activeBudgetMsPerPick": 2380.95,
+      "animationOnlyWallMs": 49990,
+      "score": 5120,
+      "ms": 24.89,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155921,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 137,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 86090,
+      "score": 8420,
+      "ms": 77.58,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155922,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 143,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 87590,
+      "score": 8420,
+      "ms": 81.93,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155923,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 141,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 87090,
+      "score": 8420,
+      "ms": 82.68,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155924,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 129,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 84090,
+      "score": 8420,
+      "ms": 83.45,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155925,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 130,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 84340,
+      "score": 8420,
+      "ms": 87.41,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155926,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 129,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 84090,
+      "score": 8420,
+      "ms": 73.18,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155927,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 136,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 85840,
+      "score": 8420,
+      "ms": 76.22,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155928,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 122,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 82340,
+      "score": 8420,
+      "ms": 94.01,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155929,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 140,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 86840,
+      "score": 8420,
+      "ms": 81.81,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155930,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 139,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 86590,
+      "score": 8420,
+      "ms": 95.41,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155931,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 156,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 90840,
+      "score": 8420,
+      "ms": 76.13,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155932,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 142,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 87340,
+      "score": 8420,
+      "ms": 72.23,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155933,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 133,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 85090,
+      "score": 8420,
+      "ms": 74.67,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155934,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 140,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 86840,
+      "score": 8420,
+      "ms": 75.51,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155935,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 141,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 87090,
+      "score": 8420,
+      "ms": 72.93,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155936,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 137,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 86090,
+      "score": 8420,
+      "ms": 121.5,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155937,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 127,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 83590,
+      "score": 8420,
+      "ms": 79.26,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155938,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 146,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 88340,
+      "score": 8420,
+      "ms": 78.09,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155939,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 130,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 84340,
+      "score": 8420,
+      "ms": 78.03,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155940,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 148,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 88840,
+      "score": 8420,
+      "ms": 80.25,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155941,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 133,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 85090,
+      "score": 8420,
+      "ms": 78.51,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155942,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 124,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 82840,
+      "score": 8420,
+      "ms": 122.64,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155943,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 136,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 85840,
+      "score": 8420,
+      "ms": 77.8,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155944,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 139,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 86590,
+      "score": 8420,
+      "ms": 83.03,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155945,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 121,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 82090,
+      "score": 8420,
+      "ms": 83.16,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155946,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 141,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 87090,
+      "score": 8420,
+      "ms": 89.44,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155947,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 126,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 83340,
+      "score": 8420,
+      "ms": 85.3,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155948,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 126,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 83340,
+      "score": 8420,
+      "ms": 80.78,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155949,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 140,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 86840,
+      "score": 8420,
+      "ms": 114.27,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155950,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 138,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 86340,
+      "score": 8420,
+      "ms": 77.12,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155951,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 137,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 86090,
+      "score": 8420,
+      "ms": 116.88,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155952,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 131,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 84590,
+      "score": 8420,
+      "ms": 90.25,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155953,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 130,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 84340,
+      "score": 8420,
+      "ms": 100.07,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155954,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 142,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 87340,
+      "score": 8420,
+      "ms": 77.42,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155955,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 133,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 85090,
+      "score": 8420,
+      "ms": 82.16,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155956,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 126,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 83340,
+      "score": 8420,
+      "ms": 112.22,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155957,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 140,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 86840,
+      "score": 8420,
+      "ms": 98.28,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155958,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 144,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 87840,
+      "score": 8420,
+      "ms": 89.9,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155959,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 147,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 88590,
+      "score": 8420,
+      "ms": 74.49,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155960,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 135,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 85590,
+      "score": 8420,
+      "ms": 74.56,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155961,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 145,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 88090,
+      "score": 8420,
+      "ms": 75.7,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155962,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 131,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 84590,
+      "score": 8420,
+      "ms": 74.26,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155963,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 130,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 84340,
+      "score": 8420,
+      "ms": 75.82,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155964,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 138,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 86340,
+      "score": 8420,
+      "ms": 81.17,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155965,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 141,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 87090,
+      "score": 8420,
+      "ms": 81.75,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155966,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 133,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 85090,
+      "score": 8420,
+      "ms": 78.48,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155967,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 135,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 85590,
+      "score": 8420,
+      "ms": 77.22,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155968,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 141,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 87090,
+      "score": 8420,
+      "ms": 79.55,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155969,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 132,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 84840,
+      "score": 8420,
+      "ms": 79.94,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155970,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 151,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 89590,
+      "score": 8420,
+      "ms": 81.67,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155971,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 134,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 85340,
+      "score": 8420,
+      "ms": 83.15,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155972,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 134,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 85340,
+      "score": 8420,
+      "ms": 83.46,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155973,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 140,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 86840,
+      "score": 8420,
+      "ms": 81.19,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155974,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 141,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 87090,
+      "score": 8420,
+      "ms": 83.36,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155975,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 142,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 87340,
+      "score": 8420,
+      "ms": 77.48,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155976,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 134,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 85340,
+      "score": 8420,
+      "ms": 82.63,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155977,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 143,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 87590,
+      "score": 8420,
+      "ms": 83.72,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155978,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 128,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 83840,
+      "score": 8420,
+      "ms": 96.5,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155979,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 143,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 87590,
+      "score": 8420,
+      "ms": 77.68,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155980,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 135,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 85590,
+      "score": 8420,
+      "ms": 151.88,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155981,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 144,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 87840,
+      "score": 8420,
+      "ms": 95.79,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155982,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 138,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 86340,
+      "score": 8420,
+      "ms": 76.37,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155983,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 137,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 86090,
+      "score": 8420,
+      "ms": 75.65,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155984,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 133,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 85090,
+      "score": 8420,
+      "ms": 76.63,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155985,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 128,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 83840,
+      "score": 8420,
+      "ms": 130.23,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155986,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 146,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 88340,
+      "score": 8420,
+      "ms": 71.92,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155987,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 136,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 85840,
+      "score": 8420,
+      "ms": 74.22,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155988,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 126,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 83340,
+      "score": 8420,
+      "ms": 78.21,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155989,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 143,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 87590,
+      "score": 8420,
+      "ms": 81.68,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155990,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 133,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 85090,
+      "score": 8420,
+      "ms": 73.27,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155991,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 135,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 85590,
+      "score": 8420,
+      "ms": 74.22,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155992,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 148,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 88840,
+      "score": 8420,
+      "ms": 89.55,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155993,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 125,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 83090,
+      "score": 8420,
+      "ms": 85.01,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155994,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 141,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 87090,
+      "score": 8420,
+      "ms": 81.48,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155995,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 132,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 84840,
+      "score": 8420,
+      "ms": 82.17,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155996,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 143,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 87590,
+      "score": 8420,
+      "ms": 80.18,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155997,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 137,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 86090,
+      "score": 8420,
+      "ms": 80.33,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155998,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 150,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 89340,
+      "score": 8420,
+      "ms": 79.15,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 155999,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 142,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 87340,
+      "score": 8420,
+      "ms": 79.44,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156000,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 145,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 88090,
+      "score": 8420,
+      "ms": 86.72,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156001,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 130,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 84340,
+      "score": 8420,
+      "ms": 112.11,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156002,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 139,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 86590,
+      "score": 8420,
+      "ms": 89.8,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156003,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 131,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 84590,
+      "score": 8420,
+      "ms": 73.62,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156004,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 135,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 85590,
+      "score": 8420,
+      "ms": 77.99,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156005,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 142,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 87340,
+      "score": 8420,
+      "ms": 84.58,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156006,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 137,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 86090,
+      "score": 8420,
+      "ms": 86.6,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156007,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 124,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 82840,
+      "score": 8420,
+      "ms": 87.94,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156008,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 130,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 84340,
+      "score": 8420,
+      "ms": 85.18,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156009,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 142,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 87340,
+      "score": 8420,
+      "ms": 87.47,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156010,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 143,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 87590,
+      "score": 8420,
+      "ms": 87.86,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156011,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 138,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 86340,
+      "score": 8420,
+      "ms": 76.27,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156012,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 120,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 81840,
+      "score": 8420,
+      "ms": 79.15,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156013,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 133,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 85090,
+      "score": 8420,
+      "ms": 77.02,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156014,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 137,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 86090,
+      "score": 8420,
+      "ms": 78.2,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156015,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 146,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 88340,
+      "score": 8420,
+      "ms": 114.84,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156016,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 138,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 86340,
+      "score": 8420,
+      "ms": 120.04,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156017,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 129,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 84090,
+      "score": 8420,
+      "ms": 77.51,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156018,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 137,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 86090,
+      "score": 8420,
+      "ms": 82.67,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156019,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 122,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 82340,
+      "score": 8420,
+      "ms": 76.68,
+      "passed": true
+    },
+    {
+      "preset": "deep",
+      "seed": 156020,
+      "moves": 216,
+      "maxTray": 6,
+      "capacities": [
+        5,
+        6,
+        7
+      ],
+      "types": 7,
+      "turns": 123,
+      "activeBudgetMsPerPick": 1388.89,
+      "animationOnlyWallMs": 82590,
+      "score": 8420,
+      "ms": 83.75,
+      "passed": true
+    }
+  ]
+}

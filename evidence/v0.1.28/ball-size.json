@@ -1,0 +1,30 @@
+[
+  {
+    "width": 320,
+    "height": 568,
+    "oldDiameter": 19.556083809523813,
+    "newDiameter": 23.949647792207795,
+    "increasePercent": 22.466481661038486
+  },
+  {
+    "width": 360,
+    "height": 640,
+    "oldDiameter": 22.539215238095238,
+    "newDiameter": 27.602983896103897,
+    "increasePercent": 22.466481661038486
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "oldDiameter": 37.477001702332856,
+    "newDiameter": 39.10643655895602,
+    "increasePercent": 4.347826086956519
+  },
+  {
+    "width": 430,
+    "height": 932,
+    "oldDiameter": 40,
+    "newDiameter": 43.33415943019451,
+    "increasePercent": 8.335398575486286
+  }
+]
