@@ -73,8 +73,8 @@ for (const [w, h] of [
         renderFrame();
         const after = canvas.toBuffer("image/png");
         if (!before.equals(after)) {
-          writeFileSync("evidence/v0.1.31/material-before.png", before);
-          writeFileSync("evidence/v0.1.31/material-after.png", after);
+          writeFileSync("evidence/v0.1.32/material-before.png", before);
+          writeFileSync("evidence/v0.1.32/material-after.png", after);
         }
         assert.ok(
           before.equals(after),
@@ -91,7 +91,7 @@ const result = {
     "pixel-identical with hidden colors changed, with sprites and fallback",
 };
 writeFileSync(
-  "evidence/v0.1.31/material-pixels.json",
+  "evidence/v0.1.32/material-pixels.json",
   JSON.stringify(result, null, 2) + "\n",
 );
 console.log(result);

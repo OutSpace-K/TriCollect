@@ -1254,25 +1254,42 @@
       x: width / 2,
       y: top + 14 + height + extent + Math.max(0, (bottom - top - 24 - height - extent * 2) / 2)
     };
-    const arcDepth = Math.min(14, depthSpace * 0.26);
+    const arcDepth = depthSpace * 0.9;
     const worldExtent = edge / Math.sqrt(3);
-    let meanSquare = 0, count = 0;
+    const ellipseRadiusX = worldExtent * lane + radius + 4;
+    const curve = (screenX) => Math.sqrt(Math.max(0, 1 - (screenX / ellipseRadiusX) ** 2));
+    let meanCurve = 0, count = 0;
     for (let q = 0; q <= edge; q++)
       for (let r = 0; r <= edge - q; r++) {
-        const p = worldPosition({ q, r }, side);
-        meanSquare += p.x * p.x;
+        const p = rotateWorld(worldPosition({ q, r }, side), angle);
+        meanCurve += curve(p.x * lane);
         count++;
       }
-    meanSquare /= count;
+    meanCurve /= count;
+    const trayCurve = {
+      x: axis.x,
+      y: axis.y + depthSpace / 3 - arcDepth * meanCurve,
+      rx: ellipseRadiusX,
+      ry: arcDepth
+    };
     const point = (t) => {
       const p = rotateWorld(worldPosition(t, side), angle);
-      const bow = arcDepth * (meanSquare - p.x * p.x) / (worldExtent * worldExtent);
+      const bow = arcDepth * (curve(p.x * lane) - meanCurve);
       return {
         x: axis.x + p.x * lane,
         y: axis.y - p.z * zScale + bow,
         depth: p.z
       };
     };
+    let traySurfaceRy = arcDepth + 8;
+    for (let q = 0; q <= edge; q++)
+      for (let r = 0; r <= edge - q; r++) {
+        const p = point({ q, r });
+        traySurfaceRy = Math.max(
+          traySurfaceRy,
+          (p.y + 5 - trayCurve.y) / curve(p.x - trayCurve.x)
+        );
+      }
     return {
       axis,
       lane,
@@ -1282,6 +1299,8 @@
       ballRadius,
       zScale,
       arcDepth,
+      trayCurve,
+      traySurfaceRy,
       point
     };
   }
@@ -2120,15 +2139,13 @@
         axis: { ...axis },
         thickness: 23
       };
-      const dishLeft = Math.min(...corners.map((p2) => p2.x)) - padding;
-      const dishRight = Math.max(...corners.map((p2) => p2.x)) + padding;
-      const footprint = g.board.tubes.map(point);
-      const dishBack = Math.min(...footprint.map((p2) => p2.y)) - padding * ratio;
-      const dishFront = Math.max(...footprint.map((p2) => p2.y)) + padding * ratio;
-      const dishX = (dishLeft + dishRight) / 2;
-      const dishY = (dishBack + dishFront) / 2;
-      const dishRx = (dishRight - dishLeft) / 2;
-      const dishRy = Math.max(12, (dishFront - dishBack) / 2);
+      const dishX = layout.trayCurve.x;
+      const dishY = layout.trayCurve.y;
+      const dishRx = layout.trayCurve.rx;
+      const dishRy = layout.traySurfaceRy;
+      const dishLeft = dishX - dishRx, dishRight = dishX + dishRx;
+      const dishBack = dishY - dishRy, dishFront = dishY + dishRy;
+      this.decorativeTray.frontY = dishFront + 24;
       const oval = (yy, rx, ry, fill) => {
         c.beginPath();
         c.ellipse(dishX, yy, rx, ry, 0, 0, Math.PI * 2);
@@ -2136,13 +2153,16 @@
         c.fill();
       };
       if (this.turntable) {
+        const artworkHeight = dishRy * 2 / 0.72;
         c.drawImage(
           this.turntable,
-          dishLeft - 4,
-          dishBack - 12,
-          dishRx * 2 + 8,
-          dishFront - dishBack + 52
+          dishLeft,
+          dishBack,
+          dishRx * 2,
+          artworkHeight
         );
+        this.decorativeTray.thickness = artworkHeight - dishRy * 2;
+        this.decorativeTray.frontY = dishBack + artworkHeight;
       } else {
         oval(dishY + 30, dishRx + 3, dishRy + 2, "#85503538");
         oval(dishY + 24, dishRx, dishRy, "#9a452c");

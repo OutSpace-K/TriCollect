@@ -10,7 +10,7 @@ GlobalFonts.registerFromPath(
   "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
   "sans-serif",
 );
-mkdirSync("evidence/v0.1.31", { recursive: true });
+mkdirSync("evidence/v0.1.32", { recursive: true });
 const home = await loadImage("assets/background.png"),
   play = await loadImage("assets/play-background.png");
 for (const [w, h] of [
@@ -62,7 +62,7 @@ for (const [w, h] of [
     s.render();
     ctx.restore();
     writeFileSync(
-      `evidence/v0.1.31/${w}-${page}${process.env.TRICOLLECT_PREVIEW_NORMAL ? "-normal" : ""}.png`,
+      `evidence/v0.1.32/${w}-${page}${process.env.TRICOLLECT_PREVIEW_NORMAL ? "-normal" : ""}.png`,
       c.toBuffer("image/png"),
     );
   }

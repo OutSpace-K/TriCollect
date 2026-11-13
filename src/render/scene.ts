@@ -981,15 +981,15 @@ export class Scene {
     };
     // A circular toy turntable surrounds the same rotating tube footprint.
     // Its artwork does not alter projection, touch targets, or tube ordering.
-    const dishLeft = Math.min(...corners.map((p) => p.x)) - padding;
-    const dishRight = Math.max(...corners.map((p) => p.x)) + padding;
-    const footprint = g.board.tubes.map(point);
-    const dishBack = Math.min(...footprint.map((p) => p.y)) - padding * ratio;
-    const dishFront = Math.max(...footprint.map((p) => p.y)) + padding * ratio;
-    const dishX = (dishLeft + dishRight) / 2;
-    const dishY = (dishBack + dishFront) / 2;
-    const dishRx = (dishRight - dishLeft) / 2;
-    const dishRy = Math.max(12, (dishFront - dishBack) / 2);
+    const dishX = layout.trayCurve.x;
+    const dishY = layout.trayCurve.y;
+    const dishRx = layout.trayCurve.rx;
+    const dishRy = layout.traySurfaceRy;
+    const dishLeft = dishX - dishRx,
+      dishRight = dishX + dishRx;
+    const dishBack = dishY - dishRy,
+      dishFront = dishY + dishRy;
+    this.decorativeTray.frontY = dishFront + 24;
     const oval = (
       yy: number,
       rx: number,
@@ -1002,13 +1002,18 @@ export class Scene {
       c.fill();
     };
     if (this.turntable) {
+      // The cream top occupies about 72% of the original illustration.
+      // Scale the whole sprite once so arrows and clasp never cross a slice seam.
+      const artworkHeight = (dishRy * 2) / 0.72;
       c.drawImage(
         this.turntable,
-        dishLeft - 4,
-        dishBack - 12,
-        dishRx * 2 + 8,
-        dishFront - dishBack + 52,
+        dishLeft,
+        dishBack,
+        dishRx * 2,
+        artworkHeight,
       );
+      this.decorativeTray.thickness = artworkHeight - dishRy * 2;
+      this.decorativeTray.frontY = dishBack + artworkHeight;
     } else {
       oval(dishY + 30, dishRx + 3, dishRy + 2, "#85503538");
       oval(dishY + 24, dishRx, dishRy, "#9a452c");

@@ -107,7 +107,7 @@ test("v0.1.28 spends recovered vertical margins on larger phone balls", () => {
       }
 });
 
-test("front-row arc is symmetric, shallow and keeps ball size through turns", () => {
+test("front-row arc is symmetric, tray-aligned and keeps ball size through turns", () => {
   for (const side of [6, 8])
     for (const width of [320, 390, 500]) {
       const p = projection(side, width, 127, 549, 0, 7);
@@ -115,7 +115,7 @@ test("front-row arc is symmetric, shallow and keeps ball size through turns", ()
         right = p.point({ q: side - 1, r: 0 });
       const middle = p.point({ q: (side - 1) / 2, r: 0 });
       assert.ok(Math.abs(left.y - right.y) < 1e-8);
-      assert.ok(middle.y > left.y && middle.y - left.y <= 14);
+      assert.ok(middle.y > left.y && middle.y - left.y <= 28);
       for (let degree = 0; degree < 360; degree++) {
         const turn = projection(
           side,
@@ -129,4 +129,46 @@ test("front-row arc is symmetric, shallow and keeps ball size through turns", ()
         assert.equal(turn.lane, p.lane);
       }
     }
+});
+
+test("front tube bases follow the shared turntable ellipse in all three views", () => {
+  for (const side of [6, 8])
+    for (const angle of [0, (Math.PI * 2) / 3, (Math.PI * 4) / 3]) {
+      const p = projection(side, 390, 127, 549, angle, 7);
+      const points = [];
+      for (let q = 0; q < side; q++)
+        for (let r = 0; r < side - q; r++) points.push(p.point({ q, r }));
+      const near = Math.min(...points.map((t) => t.depth));
+      for (const t of points.filter((t) => Math.abs(t.depth - near) < 1e-7)) {
+        const normalized = (t.x - p.trayCurve.x) / p.trayCurve.rx;
+        const expected =
+          p.trayCurve.y +
+          p.trayCurve.ry * Math.sqrt(1 - normalized * normalized);
+        assert.ok(Math.abs(t.y - expected) < 1e-7);
+      }
+    }
+});
+
+test("rotating tube feet remain inside the shared decorative ellipse", () => {
+  for (const side of [6, 8])
+    for (const width of [320, 390, 500])
+      for (let degree = 0; degree < 360; degree++) {
+        const p = projection(
+          side,
+          width,
+          127,
+          549,
+          (degree * Math.PI) / 180,
+          7,
+        );
+        for (let q = 0; q < side; q++)
+          for (let r = 0; r < side - q; r++) {
+            const t = p.point({ q, r }),
+              u = (t.x - p.trayCurve.x) / p.trayCurve.rx;
+            assert.ok(
+              t.y + 4 <=
+                p.trayCurve.y + p.traySurfaceRy * Math.sqrt(1 - u * u) + 1e-7,
+            );
+          }
+      }
 });

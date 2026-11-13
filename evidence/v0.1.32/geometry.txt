@@ -1,0 +1,22 @@
+{
+  legal: 240,
+  blocked: 4900,
+  overlaps: 224,
+  bounds: 336960,
+  configurations: 36
+}
+✔ independent four-phone restored perspective input and rotation audit (1671.0607ms)
+✔ bundle rotates rigidly about its geometric center with no horizontal scale (89.493533ms)
+✔ five fixed ball slots touch without crossing tube walls at mobile sizes (0.243365ms)
+✔ enlarged spheres retain wall clearance, fixed height and touching slots (0.183956ms)
+✔ v0.1.28 spends recovered vertical margins on larger phone balls (0.41344ms)
+✔ front-row arc is symmetric, tray-aligned and keeps ball size through turns (8.50837ms)
+✔ front tube bases follow the shared turntable ellipse in all three views (0.498077ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1998.444477

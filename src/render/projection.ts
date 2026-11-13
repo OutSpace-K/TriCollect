@@ -47,29 +47,48 @@ export function projection(
       extent +
       Math.max(0, (bottom - top - 24 - height - extent * 2) / 2),
   };
-  // A shallow screen-space lens bow puts the front row on a soft arc.
-  // World rotation, horizontal spacing, ball size and accessibility stay intact.
-  const arcDepth = Math.min(14, depthSpace * 0.26);
+  // The front row and turntable use the same elliptical arc, rather than
+  // independently chosen bends. Rotation happens in world coordinates first.
+  const arcDepth = depthSpace * 0.9;
   const worldExtent = edge / Math.sqrt(3);
-  let meanSquare = 0,
+  const ellipseRadiusX = worldExtent * lane + radius + 4;
+  const curve = (screenX: number) =>
+    Math.sqrt(Math.max(0, 1 - (screenX / ellipseRadiusX) ** 2));
+  let meanCurve = 0,
     count = 0;
   for (let q = 0; q <= edge; q++)
     for (let r = 0; r <= edge - q; r++) {
-      const p = worldPosition({ q, r }, side);
-      meanSquare += p.x * p.x;
+      const p = rotateWorld(worldPosition({ q, r }, side), angle);
+      meanCurve += curve(p.x * lane);
       count++;
     }
-  meanSquare /= count;
+  meanCurve /= count;
+  const trayCurve = {
+    x: axis.x,
+    y: axis.y + depthSpace / 3 - arcDepth * meanCurve,
+    rx: ellipseRadiusX,
+    ry: arcDepth,
+  };
   const point = (t: Pick<Tube, "q" | "r">) => {
     const p = rotateWorld(worldPosition(t, side), angle);
-    const bow =
-      (arcDepth * (meanSquare - p.x * p.x)) / (worldExtent * worldExtent);
+    const bow = arcDepth * (curve(p.x * lane) - meanCurve);
     return {
       x: axis.x + p.x * lane,
       y: axis.y - p.z * zScale + bow,
       depth: p.z,
     };
   };
+  // In between the three resting faces, a corner can project farther forward.
+  // Expand only the decorative surface to keep the full rotating footprint seated.
+  let traySurfaceRy = arcDepth + 8;
+  for (let q = 0; q <= edge; q++)
+    for (let r = 0; r <= edge - q; r++) {
+      const p = point({ q, r });
+      traySurfaceRy = Math.max(
+        traySurfaceRy,
+        (p.y + 5 - trayCurve.y) / curve(p.x - trayCurve.x),
+      );
+    }
   return {
     axis,
     lane,
@@ -79,6 +98,8 @@ export function projection(
     ballRadius,
     zScale,
     arcDepth,
+    trayCurve,
+    traySurfaceRy,
     point,
   };
 }
