@@ -1,12 +1,16 @@
 {
-  "version": "0.1.31",
+  "version": "0.1.33",
   "tool": "built-in ImageGen",
-  "reference": "user-approved original visual proposal",
-  "source": "exec-36f3a208-fa1b-43a8-962f-12420fb74207.png",
-  "source_sha256": "2bb9c858755159a4a2dd00110549a80d90736472888359abd4c42fa15cdb6930",
+  "reference": "previous approved cream/coral turntable and original proposal",
   "asset": "assets/turntable.png",
-  "sha256": "adfb7403df1e59958bc879effdf327d08e5568f70f101f52cad551202783e18f",
-  "bytes": 185629,
-  "preparation": "Transparent production sprite, cropped and downsampled for game; first seven cells of ball atlas retain type indices",
-  "prompt_summary": "Faithfully redraw the reference right-panel platform or seven balls as isolated transparent production assets, preserving coral/gold cream platform, white-bordered arrows and center clasp, or red/orange/yellow/purple/blue/pink/lime spheres with small upper-left glints."
+  "sha256": "3efbaea3444423e1e1aa9b1f1f48968386efca526a9b4f12586c2264a4750f85",
+  "bytes": 173737,
+  "preparation": "alpha-threshold margin crop and proportional resize to800x255",
+  "prompt_summary": "deeper cream top oval occupying82percent, thin coral front edge, white curved arrows and center gold clasp; preserve illustrated style",
+  "safe_surface": {
+    "cx": 400,
+    "cy": 108,
+    "rx": 380,
+    "ry": 98
+  }
 }

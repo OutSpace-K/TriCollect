@@ -1,0 +1,6 @@
+{
+  "source": "OpenAI built-in image generation, approved visual proposal reference",
+  "purpose": "Thin warm pink transparent open cylinder overlay for dynamic gameplay",
+  "processing": "alpha-margin crop and proportional resize to 166x768",
+  "hidden_information": "Hidden balls are not rendered; separate opaque neutral inner mask"
+}

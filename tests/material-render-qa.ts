@@ -9,6 +9,7 @@ const { createCanvas, loadImage } = await import(
 );
 const atlas = await loadImage("assets/balls-candy.png");
 const turntable = await loadImage("assets/turntable.png");
+const glass = await loadImage("assets/tube-glass.png");
 const background = await loadImage("assets/play-background.png");
 let cases = 0,
   hidden = 0;
@@ -50,6 +51,7 @@ for (const [w, h] of [
         if (useAtlas) {
           s.setBallAtlas(atlas as any);
           s.setTurntable(turntable as any);
+          s.setTubeGlass(glass as any);
         }
         s.setPlayBackground(background as any);
         const renderFrame = () => {
@@ -73,8 +75,8 @@ for (const [w, h] of [
         renderFrame();
         const after = canvas.toBuffer("image/png");
         if (!before.equals(after)) {
-          writeFileSync("evidence/v0.1.32/material-before.png", before);
-          writeFileSync("evidence/v0.1.32/material-after.png", after);
+          writeFileSync("evidence/v0.1.33/material-before.png", before);
+          writeFileSync("evidence/v0.1.33/material-after.png", after);
         }
         assert.ok(
           before.equals(after),
@@ -91,7 +93,7 @@ const result = {
     "pixel-identical with hidden colors changed, with sprites and fallback",
 };
 writeFileSync(
-  "evidence/v0.1.32/material-pixels.json",
+  "evidence/v0.1.33/material-pixels.json",
   JSON.stringify(result, null, 2) + "\n",
 );
 console.log(result);

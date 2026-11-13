@@ -53,6 +53,61 @@ export class Scene {
     session: string;
     view: number;
   } | null = null;
+  private tubeGlass: CanvasImageSource | null = null;
+  setTubeGlass(image: CanvasImageSource) {
+    this.tubeGlass = image;
+  }
+  private glassWall(x: number, top: number, bottom: number, radius: number) {
+    if (!this.tubeGlass) return;
+    const c = this.ctx;
+    // Three vertical slices retain the circular lip/foot proportions.
+    const sw = 166,
+      sh = 768,
+      cap = 54;
+    const scale = (radius * 2) / sw,
+      end = cap * scale;
+    const yy = top - end / 2,
+      total = bottom + 2 - yy;
+    c.drawImage(this.tubeGlass, 0, 0, sw, cap, x - radius, yy, radius * 2, end);
+    // The generated wall contains a broad milky band. Restrict it to the
+    // outer glass edges so the balls retain their complete circular silhouette.
+    c.save();
+    try {
+      c.beginPath();
+      c.rect(x - radius, yy + end, radius * 0.14, Math.max(1, total - end * 2));
+      c.rect(
+        x + radius * 0.86,
+        yy + end,
+        radius * 0.14,
+        Math.max(1, total - end * 2),
+      );
+      c.clip();
+      c.drawImage(
+        this.tubeGlass,
+        0,
+        cap,
+        sw,
+        sh - cap * 2,
+        x - radius,
+        yy + end,
+        radius * 2,
+        Math.max(1, total - end * 2),
+      );
+    } finally {
+      c.restore();
+    }
+    c.drawImage(
+      this.tubeGlass,
+      0,
+      sh - cap,
+      sw,
+      cap,
+      x - radius,
+      yy + total - end,
+      radius * 2,
+      end,
+    );
+  }
   private turntable: CanvasImageSource | null = null;
   setTurntable(image: CanvasImageSource) {
     this.turntable = image;
@@ -757,7 +812,7 @@ export class Scene {
         "return-ball",
         "免费放回",
         22,
-        trayY - 76,
+        trayY - 68,
         140,
         44,
         () => g.returnBall(),
@@ -765,13 +820,13 @@ export class Scene {
         false,
         g.locked && !transientLock,
       );
-      this.ball(g.board.pocket[0].type, 46, trayY - 51, 12);
+      this.ball(g.board.pocket[0].type, 46, trayY - 43, 12);
     } else {
       this.button(
         "lift-ball",
         "",
         22,
-        trayY - 76,
+        trayY - 68,
         64,
         44,
         () => this.openTool(),
@@ -779,13 +834,13 @@ export class Scene {
         false,
         !["active", "blocked"].includes(g.phase) && !transientLock,
       );
-      this.drawTool(54, trayY - 57);
+      this.drawTool(54, trayY - 49);
       this.text(
         g.state.rewards.some((r) => r.kind === "lift" && r.redeemed)
           ? "已使用"
           : "寄存",
         54,
-        trayY - 31,
+        trayY - 23,
         11,
         "#66371f",
         "center",
@@ -1002,18 +1057,16 @@ export class Scene {
       c.fill();
     };
     if (this.turntable) {
-      // The cream top occupies about 72% of the original illustration.
-      // Scale the whole sprite once so arrows and clasp never cross a slice seam.
-      const artworkHeight = (dishRy * 2) / 0.72;
-      c.drawImage(
-        this.turntable,
-        dishLeft,
-        dishBack,
-        dishRx * 2,
-        artworkHeight,
-      );
-      this.decorativeTray.thickness = artworkHeight - dishRy * 2;
-      this.decorativeTray.frontY = dishBack + artworkHeight;
+      // Measured anchors in the 800 x 255 production sprite. The safe cream
+      // ellipse excludes the white arrows, coral rim and center gold clasp.
+      // Map that ellipse, not the whole image's guessed percentage, to the feet.
+      const sx = dishRx / 380;
+      const sy = dishRy / 98;
+      const artworkX = dishX - 400 * sx;
+      const artworkY = dishY - 108 * sy;
+      c.drawImage(this.turntable, artworkX, artworkY, 800 * sx, 255 * sy);
+      this.decorativeTray.frontY = artworkY + 255 * sy;
+      this.decorativeTray.thickness = this.decorativeTray.frontY - dishFront;
     } else {
       oval(dishY + 30, dishRx + 3, dishRy + 2, "#85503538");
       oval(dishY + 24, dishRx, dishRy, "#9a452c");
@@ -1056,108 +1109,141 @@ export class Scene {
       const capped = !accessible.has(t.id);
       this.capStates.push({ id: t.id, closed: capped, x, y: ty });
       if (!front) {
-        const rear = c.createLinearGradient(x - radius, ty, x + radius, y);
-        rear.addColorStop(0, "#c8b9a9");
-        rear.addColorStop(0.13, "#fff7e9");
-        rear.addColorStop(0.32, "#f7ecdd");
-        rear.addColorStop(0.7, "#edddca");
-        rear.addColorStop(1, "#c1ac99");
-        this.chamberPath(x, ty, y, radius);
-        c.fillStyle = rear;
-        c.fill();
-        c.strokeStyle = "#ab8b6b55";
-        c.lineWidth = 1;
-        c.stroke();
-        c.beginPath();
-        c.ellipse(x, ty - 1, radius * 0.98, opening, 0, 0, Math.PI * 2);
-        c.fillStyle = "#fff8ed";
-        c.fill();
-        c.beginPath();
-        c.ellipse(x, ty - 1, radius * 0.79, opening * 0.55, 0, 0, Math.PI * 2);
-        c.fillStyle = "#e9d4bc";
-        c.fill();
-        c.beginPath();
-        c.ellipse(x, y - 1, radius * 0.9, opening * 0.6, 0, 0, Math.PI * 2);
-        c.fillStyle = "#d8bd9c44";
-        c.fill();
-        c.strokeStyle = "#fffaf5cc";
-        c.lineWidth = 0.8;
-        c.beginPath();
-        c.moveTo(x - radius * 0.79, ty + 12);
-        c.quadraticCurveTo(
-          x - radius * 0.88,
-          ty + height * 0.55,
-          x - radius * 0.7,
-          y - 10,
-        );
-        c.stroke();
-        if (capped) {
-          const palette = ["#fff8ee", "#eadaca", "#bca38e"];
-          const lidSide = c.createLinearGradient(
-            x - radius,
-            ty - 5,
-            x + radius,
-            ty + 6,
-          );
-          lidSide.addColorStop(0, palette[1]);
-          lidSide.addColorStop(0.3, palette[0]);
-          lidSide.addColorStop(1, palette[2]);
-          c.fillStyle = "#29483935";
+        if (!this.tubeGlass) {
+          const rear = c.createLinearGradient(x - radius, ty, x + radius, y);
+          rear.addColorStop(0, "#c8b9a9");
+          rear.addColorStop(0.13, "#fff7e9");
+          rear.addColorStop(0.32, "#f7ecdd");
+          rear.addColorStop(0.7, "#edddca");
+          rear.addColorStop(1, "#c1ac99");
+          this.chamberPath(x, ty, y, radius);
+          c.fillStyle = rear;
+          c.fill();
+          c.strokeStyle = "#ab8b6b55";
+          c.lineWidth = 1;
+          c.stroke();
+          c.beginPath();
+          c.ellipse(x, ty - 1, radius * 0.98, opening, 0, 0, Math.PI * 2);
+          c.fillStyle = "#fff8ed";
+          c.fill();
           c.beginPath();
           c.ellipse(
-            x + radius * 0.12,
-            ty + 7,
-            radius * 1.03,
-            opening * 0.9,
+            x,
+            ty - 1,
+            radius * 0.79,
+            opening * 0.55,
             0,
             0,
             Math.PI * 2,
           );
+          c.fillStyle = "#e9d4bc";
           c.fill();
-          c.fillStyle = lidSide;
-          c.fillRect(x - radius * 0.99, ty - 7, radius * 1.98, 9);
           c.beginPath();
-          c.ellipse(x, ty + 2, radius * 0.99, opening, 0, 0, Math.PI * 2);
+          c.ellipse(x, y - 1, radius * 0.9, opening * 0.6, 0, 0, Math.PI * 2);
+          c.fillStyle = "#d8bd9c44";
           c.fill();
-          const lidTop = c.createLinearGradient(
-            x - radius,
-            ty - opening - 7,
-            x + radius,
-            ty + opening - 7,
-          );
-          lidTop.addColorStop(0, "#fff7e9");
-          lidTop.addColorStop(0.45, palette[0]);
-          lidTop.addColorStop(1, palette[1]);
-          c.fillStyle = lidTop;
-          c.beginPath();
-          c.ellipse(x, ty - 7, radius * 1.02, opening, 0, 0, Math.PI * 2);
-          c.fill();
-          c.strokeStyle = "#fff6d9b0";
+          c.strokeStyle = "#fffaf5cc";
           c.lineWidth = 0.8;
           c.beginPath();
-          c.ellipse(
-            x,
-            ty - 8,
-            radius * 0.87,
-            opening * 0.6,
-            0,
-            Math.PI,
-            Math.PI * 1.95,
+          c.moveTo(x - radius * 0.79, ty + 12);
+          c.quadraticCurveTo(
+            x - radius * 0.88,
+            ty + height * 0.55,
+            x - radius * 0.7,
+            y - 10,
           );
           c.stroke();
-          c.strokeStyle = "#a4835050";
-          c.lineWidth = 0.7;
-          c.beginPath();
-          c.ellipse(
-            x,
-            ty - 7,
-            radius * 0.55,
-            opening * 0.38,
-            0,
-            0,
-            Math.PI * 2,
-          );
-          c.stroke();
+          if (capped) {
+            const palette = ["#fff8ee", "#eadaca", "#bca38e"];
+            const lidSide = c.createLinearGradient(
+              x - radius,
+              ty - 5,
+              x + radius,
+              ty + 6,
+            );
+            lidSide.addColorStop(0, palette[1]);
+            lidSide.addColorStop(0.3, palette[0]);
+            lidSide.addColorStop(1, palette[2]);
+            c.fillStyle = "#29483935";
+            c.beginPath();
+            c.ellipse(
+              x + radius * 0.12,
+              ty + 7,
+              radius * 1.03,
+              opening * 0.9,
+              0,
+              0,
+              Math.PI * 2,
+            );
+            c.fill();
+            c.fillStyle = lidSide;
+            c.fillRect(x - radius * 0.99, ty - 7, radius * 1.98, 9);
+            c.beginPath();
+            c.ellipse(x, ty + 2, radius * 0.99, opening, 0, 0, Math.PI * 2);
+            c.fill();
+            const lidTop = c.createLinearGradient(
+              x - radius,
+              ty - opening - 7,
+              x + radius,
+              ty + opening - 7,
+            );
+            lidTop.addColorStop(0, "#fff7e9");
+            lidTop.addColorStop(0.45, palette[0]);
+            lidTop.addColorStop(1, palette[1]);
+            c.fillStyle = lidTop;
+            c.beginPath();
+            c.ellipse(x, ty - 7, radius * 1.02, opening, 0, 0, Math.PI * 2);
+            c.fill();
+            c.strokeStyle = "#fff6d9b0";
+            c.lineWidth = 0.8;
+            c.beginPath();
+            c.ellipse(
+              x,
+              ty - 8,
+              radius * 0.87,
+              opening * 0.6,
+              0,
+              Math.PI,
+              Math.PI * 1.95,
+            );
+            c.stroke();
+            c.strokeStyle = "#a4835050";
+            c.lineWidth = 0.7;
+            c.beginPath();
+            c.ellipse(
+              x,
+              ty - 7,
+              radius * 0.55,
+              opening * 0.38,
+              0,
+              0,
+              Math.PI * 2,
+            );
+            c.stroke();
+          }
+        } else {
+          c.save();
+          try {
+            this.chamberPath(x, ty, y, radius * 0.9);
+            c.clip();
+            // Opaque backdrop reconstruction, never the live scene behind the tube.
+            this.transmittedBackdrop(
+              x - radius * 0.9,
+              ty,
+              radius * 1.8,
+              height + 3,
+            );
+            const core = c.createLinearGradient(x - radius, 0, x + radius, 0);
+            core.addColorStop(0, "#cfa9ba3c");
+            core.addColorStop(0.35, "#fff7f128");
+            core.addColorStop(0.7, "#ffe5ed15");
+            core.addColorStop(1, "#c79eac38");
+            c.fillStyle = core;
+            c.fillRect(x - radius, ty, radius * 2, height + 3);
+          } finally {
+            c.restore();
+          }
+          this.glassWall(x, ty, y, radius);
         }
         this.rearOpenings.push({
           id: t.id,
@@ -1185,91 +1271,98 @@ export class Scene {
         });
         continue;
       }
-      // Optical backdrop transmission is composited independently of hidden game contents.
-      c.save();
-      try {
+      if (!this.tubeGlass) {
+        // Optical backdrop transmission is composited independently of hidden game contents.
+        c.save();
+        try {
+          this.chamberPath(x, ty, y, radius);
+          c.clip();
+          this.transmittedBackdrop(x - radius, ty, radius * 2, height);
+          const glass = c.createLinearGradient(x - radius, 0, x + radius, 0);
+          glass.addColorStop(0, "#b89e8866");
+          glass.addColorStop(0.09, "#ffffeed0");
+          glass.addColorStop(0.19, "#fff4ed20");
+          glass.addColorStop(0.65, "#ffffff08");
+          glass.addColorStop(0.85, "#ecd7bf22");
+          glass.addColorStop(1, "#b3977d66");
+          c.fillStyle = glass;
+          c.fillRect(x - radius, ty, radius * 2, height);
+          c.strokeStyle = "#ffffffd9";
+          c.lineWidth = 1.3;
+          c.beginPath();
+          c.moveTo(x - radius * 0.78, ty + 12);
+          c.quadraticCurveTo(
+            x - radius * 0.92,
+            ty + height * 0.48,
+            x - radius * 0.76,
+            y - 12,
+          );
+          c.stroke();
+          c.strokeStyle = face.color + "66";
+          c.lineWidth = 1;
+          c.beginPath();
+          c.moveTo(x + radius * 0.83, ty + 10);
+          c.lineTo(x + radius * 0.83, y - 12);
+          c.stroke();
+        } finally {
+          c.restore();
+        }
+        c.strokeStyle = "#b08e7188";
+        c.lineWidth = 1;
         this.chamberPath(x, ty, y, radius);
-        c.clip();
-        this.transmittedBackdrop(x - radius, ty, radius * 2, height);
-        const glass = c.createLinearGradient(x - radius, 0, x + radius, 0);
-        glass.addColorStop(0, "#b89e8866");
-        glass.addColorStop(0.09, "#ffffeed0");
-        glass.addColorStop(0.19, "#fff4ed20");
-        glass.addColorStop(0.65, "#ffffff08");
-        glass.addColorStop(0.85, "#ecd7bf22");
-        glass.addColorStop(1, "#b3977d66");
-        c.fillStyle = glass;
-        c.fillRect(x - radius, ty, radius * 2, height);
-        c.strokeStyle = "#ffffffd9";
-        c.lineWidth = 1.3;
-        c.beginPath();
-        c.moveTo(x - radius * 0.78, ty + 12);
-        c.quadraticCurveTo(
-          x - radius * 0.92,
-          ty + height * 0.48,
-          x - radius * 0.76,
-          y - 12,
-        );
         c.stroke();
-        c.strokeStyle = face.color + "66";
+        // Thin open glass rim, not a bottle collar or plastic screw cap.
+        c.beginPath();
+        c.ellipse(x, ty - 1, radius * 0.98, opening, 0, 0, Math.PI * 2);
+        c.fillStyle = "#fffaf2b0";
+        c.fill();
+        c.strokeStyle = "#b49b8490";
+        c.lineWidth = 1;
+        c.stroke();
+        c.beginPath();
+        c.ellipse(x, ty - 1, radius * 0.87, opening * 0.65, 0, 0, Math.PI * 2);
+        c.fillStyle = "#e4ccb650";
+        c.fill();
+        c.beginPath();
+        c.ellipse(
+          x - radius * 0.02,
+          ty - 2,
+          radius * 0.94,
+          opening * 0.88,
+          0,
+          Math.PI,
+          Math.PI * 1.95,
+        );
+        c.strokeStyle = "#ffffffed";
+        c.lineWidth = 1.7;
+        c.stroke();
+        const foot = c.createLinearGradient(
+          x - radius,
+          y - 7,
+          x + radius,
+          y + 4,
+        );
+        foot.addColorStop(0, "#f7ffffc9");
+        foot.addColorStop(0.35, "#f0dcc177");
+        foot.addColorStop(1, "#bca08688");
+        c.fillStyle = foot;
+        c.beginPath();
+        c.ellipse(x, y - 2, radius, opening * 0.8, 0, 0, Math.PI * 2);
+        c.fill();
+        c.strokeStyle = "#f2ffffbb";
         c.lineWidth = 1;
         c.beginPath();
-        c.moveTo(x + radius * 0.83, ty + 10);
-        c.lineTo(x + radius * 0.83, y - 12);
+        c.ellipse(x, y - 3, radius * 0.82, opening * 0.46, 0, 0, Math.PI);
         c.stroke();
-      } finally {
-        c.restore();
+        if (!front)
+          this.rearOpenings.push({
+            id: t.id,
+            x,
+            y: ty - 1,
+            rx: radius * 0.98,
+            ry: opening,
+          });
       }
-      c.strokeStyle = "#b08e7188";
-      c.lineWidth = 1;
-      this.chamberPath(x, ty, y, radius);
-      c.stroke();
-      // Thin open glass rim, not a bottle collar or plastic screw cap.
-      c.beginPath();
-      c.ellipse(x, ty - 1, radius * 0.98, opening, 0, 0, Math.PI * 2);
-      c.fillStyle = "#fffaf2b0";
-      c.fill();
-      c.strokeStyle = "#b49b8490";
-      c.lineWidth = 1;
-      c.stroke();
-      c.beginPath();
-      c.ellipse(x, ty - 1, radius * 0.87, opening * 0.65, 0, 0, Math.PI * 2);
-      c.fillStyle = "#e4ccb650";
-      c.fill();
-      c.beginPath();
-      c.ellipse(
-        x - radius * 0.02,
-        ty - 2,
-        radius * 0.94,
-        opening * 0.88,
-        0,
-        Math.PI,
-        Math.PI * 1.95,
-      );
-      c.strokeStyle = "#ffffffed";
-      c.lineWidth = 1.7;
-      c.stroke();
-      const foot = c.createLinearGradient(x - radius, y - 7, x + radius, y + 4);
-      foot.addColorStop(0, "#f7ffffc9");
-      foot.addColorStop(0.35, "#f0dcc177");
-      foot.addColorStop(1, "#bca08688");
-      c.fillStyle = foot;
-      c.beginPath();
-      c.ellipse(x, y - 2, radius, opening * 0.8, 0, 0, Math.PI * 2);
-      c.fill();
-      c.strokeStyle = "#f2ffffbb";
-      c.lineWidth = 1;
-      c.beginPath();
-      c.ellipse(x, y - 3, radius * 0.82, opening * 0.46, 0, 0, Math.PI);
-      c.stroke();
-      if (!front)
-        this.rearOpenings.push({
-          id: t.id,
-          x,
-          y: ty - 1,
-          rx: radius * 0.98,
-          ry: opening,
-        });
       const previous =
         g.phase === "resolving"
           ? g.state.history.at(-1)?.tubes.find((old) => old.id === t.id)
@@ -1325,56 +1418,53 @@ export class Scene {
         try {
           this.chamberPath(x, ty, y, radius);
           c.clip();
-          // Hidden slots are never painted. An opaque warm mist panel is
-          // composited inside the continuous glass wall, not a separate pipe sleeve.
-          const mist = c.createLinearGradient(x - radius, 0, x + radius, 0);
-          mist.addColorStop(0, "#d9c8b4");
-          mist.addColorStop(0.12, "#f2e5d1");
-          mist.addColorStop(0.42, "#fff5e5");
-          mist.addColorStop(0.76, "#f8ecd8");
-          mist.addColorStop(1, "#dcc5aa");
-          c.fillStyle = mist;
-          c.fillRect(x - radius, frostTop, radius * 2, y - frostTop + 4);
-          const lip = c.createLinearGradient(0, frostTop, 0, frostTop + 14);
-          lip.addColorStop(0, "#fffdf8");
-          lip.addColorStop(1, "#fff9ee00");
-          c.fillStyle = lip;
-          c.fillRect(x - radius, frostTop, radius * 2, 14);
-          c.strokeStyle = "#ffffffa0";
-          c.lineWidth = radius * 0.11;
-          c.beginPath();
-          c.moveTo(x - radius * 0.78, frostTop + 5);
-          c.quadraticCurveTo(
-            x - radius * 0.9,
-            (frostTop + y) / 2,
-            x - radius * 0.73,
-            y - 7,
-          );
-          c.stroke();
-          c.strokeStyle = "#a88b6c55";
-          c.lineWidth = 0.8;
-          c.beginPath();
-          c.moveTo(x + radius * 0.9, frostTop);
-          c.lineTo(x + radius * 0.9, y - 4);
-          c.stroke();
+          // Never render hidden balls. This fully opaque core is independent of
+          // their identities and remains inside the outer glass walls.
+          const inner = radius * 0.9;
+          if (this.tubeGlass) {
+            this.transmittedBackdrop(
+              x - inner,
+              frostTop,
+              inner * 2,
+              y - frostTop + 4,
+            );
+            const refract = c.createLinearGradient(x - inner, 0, x + inner, 0);
+            refract.addColorStop(0, "#cea4b533");
+            refract.addColorStop(0.4, "#fff6f226");
+            refract.addColorStop(0.75, "#ffe8ef12");
+            refract.addColorStop(1, "#c79ba630");
+            c.fillStyle = refract;
+            c.fillRect(x - inner, frostTop, inner * 2, y - frostTop + 4);
+          } else {
+            const mist = c.createLinearGradient(x - inner, 0, x + inner, 0);
+            mist.addColorStop(0, "#d7c8c2");
+            mist.addColorStop(0.42, "#eee4dc");
+            mist.addColorStop(0.78, "#e8dad3");
+            mist.addColorStop(1, "#d2bdb5");
+            c.fillStyle = mist;
+            c.fillRect(x - inner, frostTop, inner * 2, y - frostTop + 4);
+          }
         } finally {
           c.restore();
         }
       }
-      // The curved reflections sit on the front wall, above the balls, without covering their centers.
-      c.strokeStyle = "#ffffff75";
-      c.lineWidth = Math.max(0.8, radius * 0.07);
-      c.beginPath();
-      c.moveTo(x - radius * 0.7, ty + 16);
-      c.bezierCurveTo(
-        x - radius * 0.83,
-        ty + height * 0.3,
-        x - radius * 0.78,
-        ty + height * 0.55,
-        x - radius * 0.66,
-        y - 12,
-      );
-      c.stroke();
+      if (this.tubeGlass) this.glassWall(x, ty, y, radius);
+      else {
+        // The curved reflections sit on the front wall, above the balls, without covering their centers.
+        c.strokeStyle = "#ffffff75";
+        c.lineWidth = Math.max(0.8, radius * 0.07);
+        c.beginPath();
+        c.moveTo(x - radius * 0.7, ty + 16);
+        c.bezierCurveTo(
+          x - radius * 0.83,
+          ty + height * 0.3,
+          x - radius * 0.78,
+          ty + height * 0.55,
+          x - radius * 0.66,
+          y - 12,
+        );
+        c.stroke();
+      }
       const topY = y - ballRadius - 6 - (t.balls.length - 1) * step;
       this.bodies.push({
         id: t.id,

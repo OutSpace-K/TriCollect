@@ -57,6 +57,7 @@ for (const file of [
   "home-hero.png",
   "balls-candy.png",
   "turntable.png",
+  "tube-glass.png",
 ]) {
   try {
     const image = new Image();
@@ -65,14 +66,16 @@ for (const file of [
         ? scene.setBackground(image as unknown as CanvasImageSource)
         : file === "play-background.png"
           ? scene.setPlayBackground(image as unknown as CanvasImageSource)
-          : file === "turntable.png"
-            ? scene.setTurntable(image as unknown as CanvasImageSource)
-            : file === "balls-candy.png"
-              ? scene.setBallAtlas(image as unknown as CanvasImageSource)
-              : scene.setHomeArt(
-                  file === "home-logo.png" ? "logo" : "hero",
-                  image as unknown as CanvasImageSource,
-                );
+          : file === "tube-glass.png"
+            ? scene.setTubeGlass(image as unknown as CanvasImageSource)
+            : file === "turntable.png"
+              ? scene.setTurntable(image as unknown as CanvasImageSource)
+              : file === "balls-candy.png"
+                ? scene.setBallAtlas(image as unknown as CanvasImageSource)
+                : scene.setHomeArt(
+                    file === "home-logo.png" ? "logo" : "hero",
+                    image as unknown as CanvasImageSource,
+                  );
     image.onerror = () => {
       /* Keep the available backdrop if loading fails. */
     };

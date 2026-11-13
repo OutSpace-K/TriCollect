@@ -459,3 +459,20 @@ test("overlapping touch halos choose the nearest legal top rather than paint ord
     );
   }
 });
+
+test("glass artwork retains targets and never reveals hidden-ball colors", () => {
+  const x = setup(2);
+  const targets = x.scene.targets.map((t) => ({ ...t }));
+  const positions = x.scene.ballPositions.map((t) => ({ ...t }));
+  x.scene.setTubeGlass({
+    width: 166,
+    height: 768,
+  } as unknown as CanvasImageSource);
+  x.scene.render();
+  assert.deepEqual(x.scene.targets, targets);
+  assert.deepEqual(x.scene.ballPositions, positions);
+  const visible = new Set(x.scene.visibleBalls.flatMap((t) => t.ids));
+  assert.ok(x.scene.ghostPositions.length > 0);
+  for (const hidden of x.scene.ghostPositions)
+    assert.ok(!visible.has(hidden.id));
+});

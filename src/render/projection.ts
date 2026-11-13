@@ -78,8 +78,9 @@ export function projection(
       depth: p.z,
     };
   };
-  // In between the three resting faces, a corner can project farther forward.
-  // Expand only the decorative surface to keep the full rotating footprint seated.
+  // Fit the full foot ellipse, including its back and lateral edges, not just
+  // the frontmost center. The extra 2 px is a material/rim clearance.
+  const footRy = Math.min(9, Math.max(4, (radius * zScale) / lane)) * 0.8;
   let traySurfaceRy = arcDepth + 8;
   for (let q = 0; q <= edge; q++)
     for (let r = 0; r <= edge - q; r++) {
@@ -88,6 +89,12 @@ export function projection(
         traySurfaceRy,
         (p.y + 5 - trayCurve.y) / curve(p.x - trayCurve.x),
       );
+      for (let sample = 0; sample < 16; sample++) {
+        const a = (sample * Math.PI * 2) / 16;
+        const dx = p.x + (radius + 2) * Math.cos(a) - trayCurve.x;
+        const dy = p.y - 2 + (footRy + 2) * Math.sin(a) - trayCurve.y;
+        traySurfaceRy = Math.max(traySurfaceRy, Math.abs(dy) / curve(dx));
+      }
     }
   return {
     axis,

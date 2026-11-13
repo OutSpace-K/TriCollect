@@ -172,3 +172,36 @@ test("rotating tube feet remain inside the shared decorative ellipse", () => {
           }
       }
 });
+
+test("whole tube foot is inside calibrated cream surface at every angle", () => {
+  for (const side of [6, 8])
+    for (const width of [320, 390, 500])
+      for (let degree = 0; degree < 360; degree++) {
+        const p = projection(
+          side,
+          width,
+          127,
+          549,
+          (degree * Math.PI) / 180,
+          7,
+        );
+        const footRy =
+          Math.min(9, Math.max(4, (p.radius * p.zScale) / p.lane)) * 0.8;
+        for (let q = 0; q < side; q++)
+          for (let r = 0; r < side - q; r++) {
+            const t = p.point({ q, r });
+            for (let sample = 0; sample < 128; sample++) {
+              const a = (sample * Math.PI * 2) / 128;
+              const u =
+                (t.x + p.radius * Math.cos(a) - p.trayCurve.x) / p.trayCurve.rx;
+              const v =
+                (t.y - 2 + footRy * Math.sin(a) - p.trayCurve.y) /
+                p.traySurfaceRy;
+              assert.ok(
+                u * u + v * v < 1,
+                `foot outside at ${side}/${width}/${degree}`,
+              );
+            }
+          }
+      }
+});
