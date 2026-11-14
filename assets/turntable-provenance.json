@@ -1,16 +1,19 @@
 {
-  "version": "0.1.33",
+  "source": "exec-94d3ea21-f5a4-443c-9778-231f4cfb9147.png",
   "tool": "built-in ImageGen",
-  "reference": "previous approved cream/coral turntable and original proposal",
-  "asset": "assets/turntable.png",
-  "sha256": "3efbaea3444423e1e1aa9b1f1f48968386efca526a9b4f12586c2264a4750f85",
-  "bytes": 173737,
-  "preparation": "alpha-threshold margin crop and proportional resize to800x255",
-  "prompt_summary": "deeper cream top oval occupying82percent, thin coral front edge, white curved arrows and center gold clasp; preserve illustrated style",
+  "reference": "approved cream/coral turntable",
+  "preparation": "alpha-margin crop, proportional resize800x261",
   "safe_surface": {
     "cx": 400,
-    "cy": 108,
+    "cy": 94,
     "rx": 380,
-    "ry": 98
-  }
+    "ry": 84
+  },
+  "prompt_summary": "moderately thicker coral front fascia, natural elliptical front outline, same cream top and curved arrows",
+  "status": "unpublished preview",
+  "asset": "assets/turntable.png",
+  "sha256": "0bc4edf87f0d12cdf2b790c88bf78056c22f11646120a4eeb24fc1156cc27b88",
+  "bytes": 193422,
+  "release": "0.1.34",
+  "encoding": "Indexed PNG palette optimization for package budget"
 }

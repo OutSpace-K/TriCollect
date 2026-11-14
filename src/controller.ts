@@ -1,3 +1,9 @@
+import {
+  chooseMuralVariant,
+  muralVariantFor,
+  readMuralRecent,
+  rememberMuralVariant,
+} from "./platform/mural";
 import { commitTerminal, drainTerminal } from "./platform/terminal";
 import { readRecords } from "./platform/records";
 import { CONFIG, RULE, PRESETS } from "./config";
@@ -47,13 +53,16 @@ export class Controller {
   private lastCheckpoint = 0;
   private terminalDurable = false;
   private recentHomeSeeds = new Set<number>();
+  private recentMuralVariants: number[] = [];
   constructor(
     public now: () => number,
     private store: Store,
     public ads: AdService,
     private playSound: () => void = () => {},
     private seedEntropy: () => number = Math.random,
+    private muralEntropy: () => number = Math.random,
   ) {
+    this.recentMuralVariants = readMuralRecent(store);
     this.state = this.fresh(0, PRESETS[0].seed);
     const drained = drainTerminal(store);
     const loaded = restore(store);
@@ -90,6 +99,7 @@ export class Controller {
       rule: RULE,
       session: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
       seed: level.seed,
+      muralVariant: 0,
       preset,
       board: level.board,
       history: [],
@@ -105,6 +115,9 @@ export class Controller {
       phase: "ready",
       sound: this.soundPreference(),
     };
+  }
+  get muralVariant(): number {
+    return muralVariantFor(this.state);
   }
   get records() {
     return readRecords(this.store);
@@ -207,6 +220,21 @@ export class Controller {
         return;
       }
     } else fresh = this.fresh(preset, seed ?? PRESETS[preset].seed);
+    const excludedMurals = new Set(this.recentMuralVariants);
+    excludedMurals.add(this.muralVariant);
+    if (this.resume) excludedMurals.add(muralVariantFor(this.resume));
+    if (saved) excludedMurals.add(muralVariantFor(saved));
+    fresh.muralVariant = chooseMuralVariant(
+      excludedMurals,
+      this.muralEntropy,
+      this.recentMuralVariants.at(-1) ??
+        (saved ? muralVariantFor(saved) : this.muralVariant),
+    );
+    this.recentMuralVariants = rememberMuralVariant(
+      this.store,
+      this.recentMuralVariants,
+      fresh.muralVariant,
+    );
     this.terminalDurable = false;
     this.state = fresh;
     if (randomize) {

@@ -476,3 +476,96 @@ test("glass artwork retains targets and never reveals hidden-ball colors", () =>
   for (const hidden of x.scene.ghostPositions)
     assert.ok(!visible.has(hidden.id));
 });
+
+test("dynamic vessel shrinks only after transfer while all remaining fixed slots stay put", () => {
+  const x = setup(2);
+  const target = x.scene.targets[0];
+  const id = target.id;
+  const top = () => x.scene.capStates.find((c) => c.id === id)!.y;
+  const positions = () =>
+    [...x.scene.ballPositions, ...x.scene.ghostPositions].filter(
+      (b) => b.tube === id,
+    );
+  const before = positions();
+  const oldTop = top();
+  const step = before[0].r * 1.94;
+  x.game.pick(id);
+  x.scene.render();
+  assert.equal(x.game.phase, "resolving");
+  assert.equal(top(), oldTop);
+  for (const p of positions())
+    assert.deepEqual(
+      p,
+      before.find((b) => b.id === p.id),
+    );
+  x.advance(250);
+  assert.ok(Math.abs(top() - oldTop - step) < 1e-8);
+  for (const p of positions())
+    assert.deepEqual(
+      p,
+      before.find((b) => b.id === p.id),
+    );
+  x.game.undo();
+  x.scene.render();
+  assert.equal(top(), oldTop);
+  assert.deepEqual(positions(), before);
+});
+test("inner-wall sticker front arc stays below the lowest visible sphere", () => {
+  const x = setup(2);
+  for (let pick = 0; pick < 3; pick++) {
+    for (const surface of x.scene.hiddenSurfaces) {
+      const visible = x.scene.ballPositions.filter(
+        (b) => b.tube === surface.id,
+      );
+      if (!visible.length) continue;
+      const lowest = visible.reduce((a, b) => (a.y > b.y ? a : b));
+      assert.ok(surface.top >= lowest.y + lowest.r - 1e-8);
+      assert.ok(surface.ry > 0 && surface.rx > surface.ry);
+      assert.ok(Math.abs(surface.center - surface.top) < 1e-8);
+      assert.ok(surface.center + surface.ry < surface.bottom);
+      // Only the front half-ellipse forms the sticker edge; no solid top disk.
+      for (let i = 0; i < 64; i++)
+        assert.ok(
+          surface.center + surface.ry * Math.sin((i * Math.PI) / 64) >=
+            lowest.y + lowest.r - 1e-8,
+        );
+    }
+    x.game.pick(x.scene.targets[0].id);
+    x.advance(250);
+  }
+});
+
+test("last-ball vessel persists through flight without target then disappears and undo restores it", () => {
+  const x = setup(0);
+  const id = x.scene.targets[0].id;
+  const tube = () => x.game.board.tubes.find((t) => t.id === id)!;
+  while (tube().balls.length > 1) {
+    x.game.pick(id);
+    x.advance(250);
+  }
+  const cap = { ...x.scene.capStates.find((t) => t.id === id)! };
+  const target = { ...x.scene.targets.find((t) => t.id === id)! };
+  x.game.pick(id);
+  x.scene.render();
+  assert.equal(tube().balls.length, 0);
+  assert.equal(x.game.phase, "resolving");
+  assert.ok(x.scene.tubeLayout.some((t) => t.id === id));
+  assert.equal(x.scene.capStates.find((t) => t.id === id)!.y, cap.y);
+  assert.ok(!x.scene.targets.some((t) => t.id === id));
+  assert.ok((x.scene as any).bodies.some((t: any) => t.id === id));
+  assert.equal(x.scene.flightOrigin!.x, target.x);
+  assert.equal(x.scene.flightOrigin!.y, target.y);
+  x.advance(120);
+  assert.ok(x.scene.tubeLayout.some((t) => t.id === id));
+  x.advance(130);
+  assert.ok(!x.scene.tubeLayout.some((t) => t.id === id));
+  assert.ok(!(x.scene as any).bodies.some((t: any) => t.id === id));
+  x.game.undo();
+  x.scene.render();
+  assert.equal(tube().balls.length, 1);
+  assert.equal(x.scene.capStates.find((t) => t.id === id)!.y, cap.y);
+  assert.deepEqual(
+    x.scene.targets.find((t) => t.id === id),
+    target,
+  );
+});

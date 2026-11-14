@@ -10,6 +10,7 @@ const { createCanvas, loadImage } = await import(
 const atlas = await loadImage("assets/balls-candy.png");
 const turntable = await loadImage("assets/turntable.png");
 const glass = await loadImage("assets/tube-glass.png");
+const rearGlass = await loadImage("assets/tube-glass-rear.png");
 const background = await loadImage("assets/play-background.png");
 let cases = 0,
   hidden = 0;
@@ -48,10 +49,28 @@ for (const [w, h] of [
           vp.logicalHeight,
           vp.factor,
         );
+        if (process.env.TRICOLLECT_HIDDEN_STYLE)
+          s.setHiddenStyle(process.env.TRICOLLECT_HIDDEN_STYLE as any);
+        if (process.env.TRICOLLECT_HIDDEN_ART)
+          s.setHiddenArtwork(
+            (await loadImage(process.env.TRICOLLECT_HIDDEN_ART)) as any,
+            !!process.env.TRICOLLECT_HIDDEN_MURAL,
+          );
+        if (process.env.TRICOLLECT_MURAL_BANK) {
+          s.setHiddenArtworkCanvasFactory((w, h) => createCanvas(w, h) as any);
+          for (const [i, file] of [
+            "hidden-mural.png",
+            "hidden-mural-doodle.png",
+            "hidden-mural-brush.png",
+            "hidden-mural-night.png",
+          ].entries())
+            s.setMuralImage(i, (await loadImage("assets/" + file)) as any);
+        }
         if (useAtlas) {
           s.setBallAtlas(atlas as any);
           s.setTurntable(turntable as any);
           s.setTubeGlass(glass as any);
+          s.setTubeGlassRear(rearGlass as any);
         }
         s.setPlayBackground(background as any);
         const renderFrame = () => {
@@ -75,8 +94,8 @@ for (const [w, h] of [
         renderFrame();
         const after = canvas.toBuffer("image/png");
         if (!before.equals(after)) {
-          writeFileSync("evidence/v0.1.33/material-before.png", before);
-          writeFileSync("evidence/v0.1.33/material-after.png", after);
+          writeFileSync("evidence/style-preview/material-before.png", before);
+          writeFileSync("evidence/style-preview/material-after.png", after);
         }
         assert.ok(
           before.equals(after),
@@ -93,7 +112,7 @@ const result = {
     "pixel-identical with hidden colors changed, with sprites and fallback",
 };
 writeFileSync(
-  "evidence/v0.1.33/material-pixels.json",
+  "evidence/style-preview/material-pixels.json",
   JSON.stringify(result, null, 2) + "\n",
 );
 console.log(result);

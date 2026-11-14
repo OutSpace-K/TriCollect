@@ -1,3 +1,4 @@
+import { composeMural, muralRecipe } from "./mural";
 import { projection } from "./projection";
 import { PALETTE, SYMBOLS, PRESETS, CONFIG, FACES } from "../config";
 import { faceVisible, faceCoordinates } from "../core/rules";
@@ -57,56 +58,413 @@ export class Scene {
   setTubeGlass(image: CanvasImageSource) {
     this.tubeGlass = image;
   }
-  private glassWall(x: number, top: number, bottom: number, radius: number) {
+  private tubeGlassRear: CanvasImageSource | null = null;
+  setTubeGlassRear(image: CanvasImageSource) {
+    this.tubeGlassRear = image;
+  }
+  private glassWall(
+    x: number,
+    top: number,
+    bottom: number,
+    radius: number,
+    rear = 0,
+  ) {
     if (!this.tubeGlass) return;
-    const c = this.ctx;
-    // Three vertical slices retain the circular lip/foot proportions.
-    const sw = 166,
-      sh = 768,
-      cap = 54;
-    const scale = (radius * 2) / sw,
-      end = cap * scale;
-    const yy = top - end / 2,
-      total = bottom + 2 - yy;
-    c.drawImage(this.tubeGlass, 0, 0, sw, cap, x - radius, yy, radius * 2, end);
-    // The generated wall contains a broad milky band. Restrict it to the
-    // outer glass edges so the balls retain their complete circular silhouette.
+    const c = this.ctx,
+      material = this.tubeGlass;
+    const drawMaterial = () => {
+      // Three vertical slices retain the circular lip/foot proportions.
+      const sw = 166,
+        sh = 603,
+        cap = 64,
+        foot = 50;
+      const scale = (radius * 2) / sw,
+        end = radius * 0.6;
+      const yy = top - end / 2,
+        total = bottom + 2 - yy;
+      c.drawImage(material, 0, 0, sw, cap, x - radius, yy, radius * 2, end);
+      // The generated wall contains a broad milky band. Restrict it to the
+      // outer glass edges so the balls retain their complete circular silhouette.
+      c.save();
+      try {
+        c.beginPath();
+        c.rect(
+          x - radius,
+          yy + end,
+          radius * 0.14,
+          Math.max(1, total - end - 4 - radius * 0.13),
+        );
+        c.rect(
+          x + radius * 0.86,
+          yy + end,
+          radius * 0.14,
+          Math.max(1, total - end - 4 - radius * 0.13),
+        );
+        c.clip();
+        c.drawImage(
+          material,
+          0,
+          cap,
+          sw,
+          sh - cap - foot,
+          x - radius,
+          yy + end,
+          radius * 2,
+          Math.max(1, total - end - 4 - radius * 0.13),
+        );
+      } finally {
+        c.restore();
+      }
+      // Specular accents stay at the mouth only; no full-height reflection ribbon.
+      c.beginPath();
+      c.ellipse(
+        x,
+        top,
+        radius * 0.88,
+        radius * 0.22,
+        0,
+        Math.PI * 1.05,
+        Math.PI * 1.75,
+      );
+      c.strokeStyle = "#ffffffff";
+      c.lineWidth = Math.max(1.2, radius * 0.08);
+      c.stroke();
+      // Short reflection just beneath the lip, not a full-height stripe.
+      const glint = c.createLinearGradient(
+        0,
+        top + end * 0.65,
+        0,
+        top + radius * 0.85,
+      );
+      glint.addColorStop(0, "#ffffffff");
+      glint.addColorStop(0.45, "#ffffffd8");
+      glint.addColorStop(1, "#ffffff00");
+      c.beginPath();
+      c.moveTo(x - radius * 0.73, top + end * 0.7);
+      c.quadraticCurveTo(
+        x - radius * 0.83,
+        top + radius * 0.52,
+        x - radius * 0.73,
+        Math.min(bottom - radius, top + radius * 0.85),
+      );
+      c.strokeStyle = glint;
+      c.lineWidth = Math.max(1.7, radius * 0.15);
+      c.stroke();
+      // Oblique elliptical front base with vertical tangents at the side walls.
+      const sideY = bottom - 2 - radius * 0.13;
+      const contour = (inset: number, lift: number) => {
+        const rx = radius - inset;
+        c.beginPath();
+        c.moveTo(x - rx, sideY - radius * 0.36);
+        c.lineTo(x - rx, sideY);
+        c.ellipse(x, sideY, rx, radius * 0.43 - lift, 0, Math.PI, 0, true);
+        c.lineTo(x + rx, sideY - radius * 0.36);
+      };
+      contour(radius * 0.02, 0);
+      c.strokeStyle = "#302832c0";
+      c.lineWidth = 0.8;
+      c.stroke();
+      contour(radius * 0.07, radius * 0.075);
+      const heelReflection = c.createLinearGradient(
+        x - radius,
+        0,
+        x + radius,
+        0,
+      );
+      heelReflection.addColorStop(0, "#f5ffff10");
+      heelReflection.addColorStop(0.12, "#ffffffee");
+      heelReflection.addColorStop(0.35, "#f5ffff00");
+      heelReflection.addColorStop(0.68, "#f5ffff00");
+      heelReflection.addColorStop(0.9, "#f5ffff00");
+      heelReflection.addColorStop(1, "#f5ffff00");
+      c.strokeStyle = heelReflection;
+      c.lineWidth = Math.max(1.3, radius * 0.1);
+      c.stroke();
+    };
     c.save();
     try {
-      c.beginPath();
-      c.rect(x - radius, yy + end, radius * 0.14, Math.max(1, total - end * 2));
-      c.rect(
-        x + radius * 0.86,
-        yy + end,
-        radius * 0.14,
-        Math.max(1, total - end * 2),
-      );
-      c.clip();
-      c.drawImage(
-        this.tubeGlass,
-        0,
-        cap,
-        sw,
-        sh - cap * 2,
-        x - radius,
-        yy + end,
-        radius * 2,
-        Math.max(1, total - end * 2),
-      );
+      if (rear) {
+        if (this.tubeGlassRear) {
+          // Three preblurred depth bands replace 24 image draws per rear tube.
+          const band = rear < 0.35 ? 0 : rear < 0.78 ? 1 : 2;
+          const scale = (radius * 2) / 166,
+            pad = 12 * scale;
+          const topEnd = radius * 0.6,
+            footEnd = 64 * scale;
+          const yy = top - topEnd / 2,
+            total = bottom + 2 - yy;
+          const sx = band * 95,
+            dx = x - radius - pad,
+            dw = radius * 2 + pad * 2;
+          c.drawImage(
+            this.tubeGlassRear,
+            sx,
+            0,
+            95,
+            38,
+            dx,
+            yy - pad,
+            dw,
+            topEnd + pad,
+          );
+          c.save();
+          try {
+            c.beginPath();
+            c.rect(
+              dx,
+              yy + topEnd,
+              radius * 0.14 + pad * 2,
+              Math.max(1, total - topEnd - footEnd),
+            );
+            c.rect(
+              x + radius * 0.86 - pad,
+              yy + topEnd,
+              radius * 0.14 + pad * 2,
+              Math.max(1, total - topEnd - footEnd),
+            );
+            c.clip();
+            c.drawImage(
+              this.tubeGlassRear,
+              sx,
+              38,
+              95,
+              237.5,
+              dx,
+              yy + topEnd,
+              dw,
+              Math.max(1, total - topEnd - footEnd),
+            );
+          } finally {
+            c.restore();
+          }
+          c.drawImage(
+            this.tubeGlassRear,
+            sx,
+            275.5,
+            95,
+            38,
+            dx,
+            yy + total - footEnd,
+            dw,
+            footEnd + pad,
+          );
+        } else {
+          // Safe low-cost fallback while the cached material is unavailable.
+          c.globalAlpha *= 0.42 - rear * 0.2;
+          drawMaterial();
+        }
+      } else {
+        drawMaterial();
+        // Open foreground mouth: reconstruct the backdrop only inside its lip.
+        // Do not sample live scene pixels or touch the first sphere below it.
+        const rx = radius * 0.78;
+        const ry = radius * 0.15;
+        c.save();
+        try {
+          c.beginPath();
+          c.ellipse(x, top, rx, ry, 0, 0, Math.PI * 2);
+          c.clip();
+          this.transmittedBackdrop(x - rx, top - ry, rx * 2, ry * 2);
+        } finally {
+          c.restore();
+        }
+      }
     } finally {
       c.restore();
     }
-    c.drawImage(
-      this.tubeGlass,
-      0,
-      sh - cap,
-      sw,
-      cap,
-      x - radius,
-      yy + total - end,
-      radius * 2,
-      end,
-    );
+  }
+  private hiddenStyle:
+    | "current"
+    | "mint"
+    | "sky"
+    | "rose"
+    | "doodle"
+    | "space"
+    | "garden" = "current";
+  setHiddenStyle(
+    style: "current" | "mint" | "sky" | "rose" | "doodle" | "space" | "garden",
+  ) {
+    this.hiddenStyle = style;
+  }
+  private muralImages: Array<CanvasImageSource | undefined> = [];
+  private preparedMural = -1;
+  setMuralImage(index: number, image: CanvasImageSource) {
+    if (index < 0 || index > 3) return;
+    this.muralImages[index] = image;
+    this.preparedMural = -1;
+  }
+  private prepareMural() {
+    const variant = this.game.muralVariant;
+    if (this.preparedMural === variant) return;
+    const image = this.muralImages[muralRecipe(variant).base];
+    if (!image) return;
+    try {
+      const composed = this.hiddenArtworkCanvasFactory
+        ? composeMural(image, variant, this.hiddenArtworkCanvasFactory)
+        : image;
+      this.setHiddenArtwork(composed, true);
+      this.preparedMural = variant;
+    } catch {
+      this.setHiddenArtwork(image, true);
+      this.preparedMural = variant;
+    }
+  }
+  private hiddenArtworkCanvasFactory:
+    | ((
+        width: number,
+        height: number,
+      ) => {
+        width: number;
+        height: number;
+        getContext(type: "2d"): CanvasRenderingContext2D | null;
+      })
+    | null = null;
+  private hiddenArtworkRasterScale = 2;
+  private hiddenArtworkCache = new Map<
+    string,
+    { image: CanvasImageSource; width: number; height: number; bytes: number }
+  >();
+  private hiddenArtworkCacheBytes = 0;
+  private hiddenArtworkCacheHits = 0;
+  private hiddenArtworkCacheMisses = 0;
+  setHiddenArtworkCanvasFactory(
+    factory: typeof this.hiddenArtworkCanvasFactory,
+    rasterScale = 2,
+  ) {
+    this.clearHiddenArtworkCache();
+    this.hiddenArtworkCanvasFactory = factory;
+    this.hiddenArtworkRasterScale = Number.isFinite(rasterScale)
+      ? Math.max(1, Math.min(3, rasterScale))
+      : 2;
+  }
+  get hiddenArtworkCacheStats() {
+    return {
+      entries: this.hiddenArtworkCache.size,
+      bytes: this.hiddenArtworkCacheBytes,
+      hits: this.hiddenArtworkCacheHits,
+      misses: this.hiddenArtworkCacheMisses,
+    };
+  }
+  private clearHiddenArtworkCache() {
+    this.hiddenArtworkCache.clear();
+    this.hiddenArtworkCacheBytes = 0;
+    this.hiddenArtworkCacheHits = 0;
+    this.hiddenArtworkCacheMisses = 0;
+  }
+  private paintHiddenArtwork(
+    c: CanvasRenderingContext2D,
+    x: number,
+    capY: number,
+    baseY: number,
+    inner: number,
+    muralLeft: number,
+    muralRight: number,
+    muralTop: number,
+    muralBottom: number,
+  ) {
+    const image = this.hiddenArtwork;
+    if (!image) return;
+    const h = baseY - capY + inner * 0.43;
+    const sourceX = this.hiddenMural
+      ? ((x - inner - muralLeft) / (muralRight - muralLeft)) * 768
+      : 0;
+    const sourceY = this.hiddenMural
+      ? ((capY - muralTop) / (muralBottom - muralTop)) * 256
+      : 0;
+    const sourceW = this.hiddenMural
+      ? ((inner * 2) / (muralRight - muralLeft)) * 768
+      : 256;
+    const sourceH = this.hiddenMural
+      ? (h / (muralBottom - muralTop)) * 256
+      : 512;
+    const drawStrips = (
+      target: CanvasRenderingContext2D,
+      originX: number,
+      originY: number,
+    ) => {
+      for (let strip = 0; strip < 24; strip++) {
+        const u0 = strip / 24,
+          u1 = (strip + 1) / 24;
+        const dx0 = Math.sin((u0 - 0.5) * Math.PI) * inner;
+        const dx1 = Math.sin((u1 - 0.5) * Math.PI) * inner;
+        target.drawImage(
+          image,
+          sourceX + u0 * sourceW,
+          sourceY,
+          sourceW / 24,
+          sourceH,
+          originX + dx0,
+          originY,
+          dx1 - dx0 + 0.25,
+          h,
+        );
+      }
+    };
+    const scale = this.hiddenArtworkRasterScale;
+    const width = Math.ceil((inner * 2 + 0.25) * scale),
+      height = Math.ceil(h * scale);
+    const bytes = width * height * 4;
+    if (
+      this.hiddenArtworkCanvasFactory &&
+      width > 0 &&
+      height > 0 &&
+      bytes <= 16 * 1024 * 1024
+    ) {
+      const key = [inner, h, sourceX, sourceY, sourceW, sourceH, scale].join(
+        ":",
+      );
+      let entry = this.hiddenArtworkCache.get(key);
+      if (entry) {
+        this.hiddenArtworkCacheHits++;
+        this.hiddenArtworkCache.delete(key);
+        this.hiddenArtworkCache.set(key, entry);
+      } else {
+        this.hiddenArtworkCacheMisses++;
+        try {
+          const bitmap = this.hiddenArtworkCanvasFactory(width, height);
+          bitmap.width = width;
+          bitmap.height = height;
+          const target = bitmap.getContext("2d");
+          if (!target) throw new Error("No offscreen 2D canvas");
+          target.scale(scale, scale);
+          drawStrips(target, inner, 0);
+          entry = {
+            image: bitmap as unknown as CanvasImageSource,
+            width: width / scale,
+            height: height / scale,
+            bytes,
+          };
+          while (
+            this.hiddenArtworkCache.size >= 128 ||
+            this.hiddenArtworkCacheBytes + bytes > 16 * 1024 * 1024
+          ) {
+            const oldest = this.hiddenArtworkCache.keys().next().value;
+            if (oldest === undefined) break;
+            this.hiddenArtworkCacheBytes -=
+              this.hiddenArtworkCache.get(oldest)!.bytes;
+            this.hiddenArtworkCache.delete(oldest);
+          }
+          this.hiddenArtworkCache.set(key, entry);
+          this.hiddenArtworkCacheBytes += bytes;
+        } catch {
+          // Unsupported/offscreen capability failures retain the original drawing.
+          this.hiddenArtworkCanvasFactory = null;
+          this.clearHiddenArtworkCache();
+        }
+      }
+      if (entry) {
+        c.drawImage(entry.image, x - inner, capY, entry.width, entry.height);
+        return;
+      }
+    }
+    drawStrips(c, x, capY);
+  }
+  private hiddenArtwork: CanvasImageSource | null = null;
+  private hiddenMural = false;
+  setHiddenArtwork(image: CanvasImageSource, mural = false) {
+    this.clearHiddenArtworkCache();
+    this.hiddenArtwork = image;
+    this.hiddenMural = mural;
   }
   private turntable: CanvasImageSource | null = null;
   setTurntable(image: CanvasImageSource) {
@@ -183,6 +541,14 @@ export class Scene {
   rearOpenings: { id: string; x: number; y: number; rx: number; ry: number }[] =
     [];
   renderedFace = 0;
+  hiddenSurfaces: {
+    id: string;
+    top: number;
+    center: number;
+    rx: number;
+    ry: number;
+    bottom: number;
+  }[] = [];
   capStates: { id: string; closed: boolean; x: number; y: number }[] = [];
   titleAngle = 0;
   readonly homeGroupOffset = 16;
@@ -592,6 +958,7 @@ export class Scene {
     }
   }
   render() {
+    this.prepareMural();
     const c = this.ctx,
       g = this.game,
       w = this.width,
@@ -812,7 +1179,7 @@ export class Scene {
         "return-ball",
         "免费放回",
         22,
-        trayY - 68,
+        trayY - 63,
         140,
         44,
         () => g.returnBall(),
@@ -820,13 +1187,13 @@ export class Scene {
         false,
         g.locked && !transientLock,
       );
-      this.ball(g.board.pocket[0].type, 46, trayY - 43, 12);
+      this.ball(g.board.pocket[0].type, 46, trayY - 38, 12);
     } else {
       this.button(
         "lift-ball",
         "",
         22,
-        trayY - 68,
+        trayY - 63,
         64,
         44,
         () => this.openTool(),
@@ -834,13 +1201,13 @@ export class Scene {
         false,
         !["active", "blocked"].includes(g.phase) && !transientLock,
       );
-      this.drawTool(54, trayY - 49);
+      this.drawTool(54, trayY - 44);
       this.text(
         g.state.rewards.some((r) => r.kind === "lift" && r.redeemed)
           ? "已使用"
           : "寄存",
         54,
-        trayY - 23,
+        trayY - 18,
         11,
         "#66371f",
         "center",
@@ -992,8 +1359,21 @@ export class Scene {
     this.rotationAxis = axis;
     this.projectionScale = { x: layout.lane, z: layout.zScale };
     const accessible = faceVisible(g.board, view);
-    const visible = turning ? new Set<string>() : accessible;
+    const visible = turning ? new Set<string>() : new Set(accessible);
+    if (g.phase === "resolving") {
+      const oldBoard = g.state.history.at(-1);
+      if (oldBoard)
+        for (const old of oldBoard.tubes) {
+          if (
+            old.balls.length &&
+            !g.board.tubes.find((t) => t.id === old.id)?.balls.length &&
+            faceVisible(oldBoard, view).has(old.id)
+          )
+            visible.add(old.id);
+        }
+    }
     this.capStates = [];
+    this.hiddenSurfaces = [];
     this.renderedFace = view;
     this.renderedIds = [...visible];
     for (let i = 0; i < 3; i++) {
@@ -1007,7 +1387,13 @@ export class Scene {
       );
     }
     const ordered = g.board.tubes
-      .filter((t) => t.balls.length)
+      .filter(
+        (t) =>
+          t.balls.length ||
+          (g.phase === "resolving" &&
+            g.state.history.at(-1)?.tubes.find((old) => old.id === t.id)?.balls
+              .length),
+      )
       .map((t) => ({ t, ...point(t) }))
       .sort((a, b) => b.depth - a.depth);
     this.tubeLayout = ordered.map((t) => ({
@@ -1037,7 +1423,7 @@ export class Scene {
     // A circular toy turntable surrounds the same rotating tube footprint.
     // Its artwork does not alter projection, touch targets, or tube ordering.
     const dishX = layout.trayCurve.x;
-    const dishY = layout.trayCurve.y;
+    const dishY = layout.traySurfaceY;
     const dishRx = layout.trayCurve.rx;
     const dishRy = layout.traySurfaceRy;
     const dishLeft = dishX - dishRx,
@@ -1057,16 +1443,102 @@ export class Scene {
       c.fill();
     };
     if (this.turntable) {
-      // Measured anchors in the 800 x 255 production sprite. The safe cream
+      // Measured anchors in the 800 x 261 production sprite. The safe cream
       // ellipse excludes the white arrows, coral rim and center gold clasp.
       // Map that ellipse, not the whole image's guessed percentage, to the feet.
       const sx = dishRx / 380;
-      const sy = dishRy / 98;
+      const sy = dishRy / 84;
       const artworkX = dishX - 400 * sx;
-      const artworkY = dishY - 108 * sy;
-      c.drawImage(this.turntable, artworkX, artworkY, 800 * sx, 255 * sy);
-      this.decorativeTray.frontY = artworkY + 255 * sy;
-      this.decorativeTray.thickness = this.decorativeTray.frontY - dishFront;
+      const artworkY = dishY - 94 * sy;
+      // Constant-height cylindrical fascia: identical front ellipses separated
+      // vertically, so its sides are as thick as its middle (not a tapered lens).
+      c.save();
+      try {
+        c.translate(artworkX, artworkY);
+        c.scale(sx, sy);
+        const lipY = 94,
+          lipRx = 399,
+          lipRy = 94,
+          wall = 65;
+        c.beginPath();
+        c.moveTo(400 - lipRx, lipY);
+        c.ellipse(400, lipY, lipRx, lipRy, 0, Math.PI, 0, true);
+        c.lineTo(400 + lipRx, lipY + wall);
+        c.ellipse(400, lipY + wall, lipRx, lipRy, 0, 0, Math.PI);
+        c.closePath();
+        const fascia = c.createLinearGradient(0, 0, 800, 0);
+        fascia.addColorStop(0, "#d53e26");
+        fascia.addColorStop(0.2, "#ff8562");
+        fascia.addColorStop(0.5, "#f56a49");
+        fascia.addColorStop(0.8, "#f46a4b");
+        fascia.addColorStop(1, "#c83b25");
+        c.fillStyle = fascia;
+        c.fill();
+        c.lineWidth = 3;
+        c.strokeStyle = "#a7432b";
+        c.stroke();
+        // Keep the original illustrated cream surface, only clip off its taper.
+        c.save();
+        try {
+          c.beginPath();
+          c.ellipse(400, lipY, lipRx, lipRy, 0, 0, Math.PI * 2);
+          c.clip();
+          c.drawImage(this.turntable, 0, 0, 800, 261);
+        } finally {
+          c.restore();
+        }
+        c.beginPath();
+        c.ellipse(400, lipY, lipRx - 2, lipRy, 0, 0, Math.PI);
+        c.strokeStyle = "#fff7d8";
+        c.lineWidth = 4;
+        c.stroke();
+        // White-bordered curved arrows retain the source locations and meaning.
+        for (const direction of [-1, 1]) {
+          c.save();
+          try {
+            c.translate(400 + direction * 210, 209);
+            c.scale(direction, 1);
+            c.beginPath();
+            c.moveTo(-63, 8);
+            c.bezierCurveTo(-22, 13, 12, 3, 36, -9);
+            c.lineTo(27, -20);
+            c.quadraticCurveTo(26, -27, 34, -24);
+            c.lineTo(69, -10);
+            c.quadraticCurveTo(76, -6, 70, 1);
+            c.lineTo(45, 26);
+            c.quadraticCurveTo(39, 32, 36, 24);
+            c.lineTo(33, 16);
+            c.bezierCurveTo(5, 29, -32, 34, -65, 29);
+            c.quadraticCurveTo(-77, 26, -73, 16);
+            c.quadraticCurveTo(-71, 8, -63, 8);
+            c.closePath();
+            c.lineJoin = "round";
+            c.strokeStyle = "#a9473030";
+            c.lineWidth = 11;
+            c.stroke();
+            c.strokeStyle = "#fffdf4";
+            c.lineWidth = 8;
+            c.stroke();
+            c.fillStyle = "#ff7351";
+            c.fill();
+          } finally {
+            c.restore();
+          }
+        }
+        // Original clasp retained; its position is independent of wall fitting.
+        c.save();
+        try {
+          this.rect(364, 183, 72, 76, "#c88a2b", 16);
+          c.clip();
+          c.drawImage(this.turntable, 360, 180, 80, 81, 360, 180, 80, 81);
+        } finally {
+          c.restore();
+        }
+      } finally {
+        c.restore();
+      }
+      this.decorativeTray.frontY = artworkY + 259 * sy;
+      this.decorativeTray.thickness = 65 * sy;
     } else {
       oval(dishY + 30, dishRx + 3, dishRy + 2, "#85503538");
       oval(dishY + 24, dishRx, dishRy, "#9a452c");
@@ -1087,26 +1559,50 @@ export class Scene {
       9,
       Math.max(4, (radius * layout.zScale) / layout.lane),
     );
-    c.fillStyle = "#263b3244";
+    c.fillStyle = "#86634b20";
     for (const item of ordered) {
       c.beginPath();
       c.ellipse(
-        item.x + radius * 0.6,
-        item.y + 7,
-        radius * 1.3,
-        opening * 0.9,
+        item.x + radius * 0.15,
+        item.y + 1,
+        radius * 0.95,
+        opening * 0.5,
         0.18,
         0,
         Math.PI * 2,
       );
       c.fill();
     }
+    // One screen-facing mural shared by the complete lattice. Its frame depends
+    // on capacity, not remaining hidden identities/counts, so picks only uncover it.
+    const muralPoints = g.board.tubes.map(point);
+    const maxCapacity = Math.max(...g.board.tubes.map((t) => t.capacity));
+    const muralLeft = Math.min(...muralPoints.map((p) => p.x - radius));
+    const muralRight = Math.max(...muralPoints.map((p) => p.x + radius));
+    const muralTop = Math.min(
+      ...muralPoints.map((p) => p.y - 6 - Math.max(0, maxCapacity - 3) * step),
+    );
+    const muralBottom = Math.max(...muralPoints.map((p) => p.y + radius * 0.3));
     for (const item of ordered) {
-      const { t, x, y } = item,
-        height = t.capacity * step + 20,
+      const { t, x, y } = item;
+      const previous =
+        g.phase === "resolving"
+          ? g.state.history.at(-1)?.tubes.find((old) => old.id === t.id)
+          : undefined;
+      const visibleCountBase =
+        previous && previous.balls.length > t.balls.length
+          ? previous.balls.length
+          : t.balls.length;
+      // Only the vessel shortens. World-space slots and projection remain fixed.
+      const height = visibleCountBase * step + 20,
         ty = y - height,
-        front = visible.has(t.id);
-      const capped = !accessible.has(t.id);
+        front =
+          visible.has(t.id) ||
+          (g.phase === "resolving" &&
+            !t.balls.length &&
+            !!previous &&
+            faceVisible(g.state.history.at(-1)!, view).has(t.id));
+      const capped = !accessible.has(t.id) && !visible.has(t.id);
       this.capStates.push({ id: t.id, closed: capped, x, y: ty });
       if (!front) {
         if (!this.tubeGlass) {
@@ -1234,16 +1730,25 @@ export class Scene {
               height + 3,
             );
             const core = c.createLinearGradient(x - radius, 0, x + radius, 0);
-            core.addColorStop(0, "#cfa9ba3c");
-            core.addColorStop(0.35, "#fff7f128");
-            core.addColorStop(0.7, "#ffe5ed15");
-            core.addColorStop(1, "#c79eac38");
+            core.addColorStop(0, "#b8ab9830");
+            core.addColorStop(0.35, "#fff9ef24");
+            core.addColorStop(0.7, "#ffeed610");
+            core.addColorStop(1, "#b5a38b26");
             c.fillStyle = core;
             c.fillRect(x - radius, ty, radius * 2, height + 3);
           } finally {
             c.restore();
           }
-          this.glassWall(x, ty, y, radius);
+          this.glassWall(
+            x,
+            ty,
+            y,
+            radius,
+            Math.max(
+              0.15,
+              Math.min(1, faceCoordinates(t, n, view).depth / (n - 1)),
+            ),
+          );
         }
         this.rearOpenings.push({
           id: t.id,
@@ -1363,14 +1868,6 @@ export class Scene {
             ry: opening,
           });
       }
-      const previous =
-        g.phase === "resolving"
-          ? g.state.history.at(-1)?.tubes.find((old) => old.id === t.id)
-          : undefined;
-      const visibleCountBase =
-        previous && previous.balls.length > t.balls.length
-          ? previous.balls.length
-          : t.balls.length;
       // Keep the next hidden slot covered until the departing ball has left the pipe.
       const first = Math.max(0, visibleCountBase - 3),
         shown = t.balls.slice(first);
@@ -1391,6 +1888,37 @@ export class Scene {
           const drop =
             g.phase === "intro" ? (1 - g.introProgress) * (150 - i * 14) : 0;
           this.ball(t.balls[i].type, x, by - drop, ballRadius);
+          // Oblique-view cast shadow belongs to the LOWER visible sphere surface.
+          if (i > first && g.phase !== "intro") {
+            const lowerY = by + step;
+            c.save();
+            c.beginPath();
+            c.arc(x, lowerY, ballRadius * 0.98, 0, Math.PI * 2);
+            c.clip();
+            const shadowTop = lowerY - ballRadius;
+            const shadow = c.createLinearGradient(
+              0,
+              shadowTop,
+              0,
+              shadowTop + ballRadius * 0.37,
+            );
+            shadow.addColorStop(0, "#35243a65");
+            shadow.addColorStop(0.36, "#35243a38");
+            shadow.addColorStop(1, "#35243a00");
+            c.fillStyle = shadow;
+            c.beginPath();
+            c.ellipse(
+              x + ballRadius * 0.07,
+              shadowTop + ballRadius * 0.05,
+              ballRadius * 0.67,
+              ballRadius * 0.32,
+              0,
+              0,
+              Math.PI * 2,
+            );
+            c.fill();
+            c.restore();
+          }
         } else {
           this.ghostPositions.push(position);
           // Hidden identity remains available to QA only; opaque glass hides its contents.
@@ -1416,52 +1944,265 @@ export class Scene {
         const frostTop = y - 6 - first * step;
         c.save();
         try {
-          this.chamberPath(x, ty, y, radius);
+          // Clip to the full rounded glass base, not the legacy shallow bottom.
+          c.beginPath();
+          c.moveTo(x - radius, ty);
+          c.lineTo(x + radius, ty);
+          c.lineTo(x + radius, y - 2);
+          c.ellipse(x, y - 2, radius, radius * 0.3, 0, 0, Math.PI);
+          c.closePath();
           c.clip();
-          // Never render hidden balls. This fully opaque core is independent of
-          // their identities and remains inside the outer glass walls.
+          // Thin opaque sticker on the inner FRONT wall, not a filled plug.
+          // Only its front half-ellipse is visible; there is no top disk/back rim.
           const inner = radius * 0.9;
-          if (this.tubeGlass) {
-            this.transmittedBackdrop(
-              x - inner,
-              frostTop,
-              inner * 2,
-              y - frostTop + 4,
-            );
-            const refract = c.createLinearGradient(x - inner, 0, x + inner, 0);
-            refract.addColorStop(0, "#cea4b533");
-            refract.addColorStop(0.4, "#fff6f226");
-            refract.addColorStop(0.75, "#ffe8ef12");
-            refract.addColorStop(1, "#c79ba630");
-            c.fillStyle = refract;
-            c.fillRect(x - inner, frostTop, inner * 2, y - frostTop + 4);
-          } else {
-            const mist = c.createLinearGradient(x - inner, 0, x + inner, 0);
-            mist.addColorStop(0, "#d7c8c2");
-            mist.addColorStop(0.42, "#eee4dc");
-            mist.addColorStop(0.78, "#e8dad3");
-            mist.addColorStop(1, "#d2bdb5");
-            c.fillStyle = mist;
-            c.fillRect(x - inner, frostTop, inner * 2, y - frostTop + 4);
+          const rimRy = inner * 0.3;
+          const capY = frostTop;
+          const baseY = y - 4 - inner * 0.13;
+          c.beginPath();
+          c.rect(
+            x - radius,
+            frostTop,
+            radius * 2,
+            y - frostTop + radius * 0.3 + 3,
+          );
+          c.clip();
+          c.beginPath();
+          c.moveTo(x - inner, capY);
+          c.ellipse(x, capY, inner, rimRy, 0, Math.PI, 0, true);
+          c.lineTo(x + inner, baseY);
+          c.ellipse(x, baseY, inner, inner * 0.43, 0, 0, Math.PI);
+          c.closePath();
+          const side = c.createLinearGradient(x - inner, 0, x + inner, 0);
+          const palette =
+            this.hiddenStyle === "mint" || this.hiddenStyle === "garden"
+              ? ["#72aa9b", "#a6d8c6", "#b9e6d7", "#a5d6c4", "#77aa9b"]
+              : this.hiddenStyle === "sky" || this.hiddenStyle === "space"
+                ? ["#819eb9", "#bad3e7", "#d0e5f3", "#bbd3e7", "#819eb9"]
+                : this.hiddenStyle === "rose" || this.hiddenStyle === "doodle"
+                  ? ["#bd9299", "#e5bfc5", "#f4d6d9", "#e6c0c7", "#bd9299"]
+                  : ["#b3adbf", "#ccc6d5", "#d6d1de", "#cdc7d6", "#b7b0c2"];
+          [0, 0.16, 0.42, 0.75, 1].forEach((stop, i) =>
+            side.addColorStop(stop, palette[i]),
+          );
+          c.fillStyle = side;
+          c.fill();
+          if (this.hiddenStyle !== "current") {
+            c.save();
+            c.clip();
+            // Decorative ink is independent of all hidden identities.
+            c.strokeStyle = "#ffffff55";
+            c.fillStyle = "#ffffff65";
+            c.lineWidth = Math.max(0.6, radius * 0.035);
+            if (["doodle", "space", "garden"].includes(this.hiddenStyle)) {
+              let row = 0;
+              for (
+                let yy = capY + radius * 0.65;
+                yy < baseY - radius * 0.15;
+                yy += radius * 0.9, row++
+              ) {
+                const xx = x + inner * (row % 2 ? 0.3 : -0.26);
+                c.save();
+                c.translate(xx, yy);
+                // Motifs narrow toward the cylinder's sides rather than floating flat.
+                c.scale(0.85, 1);
+                const z = radius * 0.27;
+                c.lineWidth = Math.max(0.8, radius * 0.045);
+                if (this.hiddenStyle === "space") {
+                  c.fillStyle = row % 2 ? "#fff7d9" : "#ffe2a0";
+                  c.strokeStyle = "#7d95b5";
+                  c.beginPath();
+                  for (let k = 0; k < 10; k++) {
+                    const a = -Math.PI / 2 + (k * Math.PI) / 5,
+                      rr = k % 2 ? z * 0.45 : z;
+                    if (k === 0) c.moveTo(Math.cos(a) * rr, Math.sin(a) * rr);
+                    else c.lineTo(Math.cos(a) * rr, Math.sin(a) * rr);
+                  }
+                  c.closePath();
+                  c.fill();
+                  c.stroke();
+                  c.beginPath();
+                  c.arc(z * 1.6, -z * 0.8, z * 0.15, 0, Math.PI * 2);
+                  c.fill();
+                } else if (this.hiddenStyle === "garden") {
+                  c.strokeStyle = "#689e85";
+                  c.fillStyle = "#fff7e7";
+                  for (let k = 0; k < 5; k++) {
+                    const a = (k * Math.PI * 2) / 5;
+                    c.beginPath();
+                    c.ellipse(
+                      Math.cos(a) * z * 0.55,
+                      Math.sin(a) * z * 0.55,
+                      z * 0.45,
+                      z * 0.35,
+                      a,
+                      0,
+                      Math.PI * 2,
+                    );
+                    c.fill();
+                  }
+                  c.fillStyle = "#eec35c";
+                  c.beginPath();
+                  c.arc(0, 0, z * 0.3, 0, Math.PI * 2);
+                  c.fill();
+                  c.fillStyle = "#6da78d";
+                  c.beginPath();
+                  c.ellipse(
+                    z * 1.3,
+                    z * 0.8,
+                    z * 0.5,
+                    z * 0.21,
+                    -0.55,
+                    0,
+                    Math.PI * 2,
+                  );
+                  c.fill();
+                } else {
+                  c.strokeStyle = "#aa6f87";
+                  c.fillStyle = "#fff7e9";
+                  c.beginPath();
+                  c.arc(0, 0, z, 0, Math.PI * 2);
+                  c.fill();
+                  c.stroke();
+                  c.fillStyle = "#986278";
+                  for (const eye of [-0.32, 0.32]) {
+                    c.beginPath();
+                    c.arc(z * eye, -z * 0.15, z * 0.085, 0, Math.PI * 2);
+                    c.fill();
+                  }
+                  c.beginPath();
+                  c.arc(0, z * 0.05, z * 0.42, 0.1, Math.PI - 0.1);
+                  c.stroke();
+                  c.beginPath();
+                  c.moveTo(z * 1.3, -z);
+                  c.lineTo(z * 1.65, -z * 0.4);
+                  c.lineTo(z * 1.2, z * 0.05);
+                  c.stroke();
+                }
+                c.restore();
+              }
+            } else if (this.hiddenStyle === "mint") {
+              for (
+                let yy = capY + radius * 0.6;
+                yy < baseY;
+                yy += radius * 0.65
+              ) {
+                for (const xx of [-0.4, 0.3]) {
+                  c.beginPath();
+                  c.arc(x + inner * xx, yy, radius * 0.055, 0, Math.PI * 2);
+                  c.fill();
+                }
+              }
+            } else if (this.hiddenStyle === "sky") {
+              for (
+                let yy = capY + radius * 0.65;
+                yy < baseY;
+                yy += radius * 0.7
+              ) {
+                c.beginPath();
+                c.moveTo(x - inner, yy);
+                c.bezierCurveTo(
+                  x - inner * 0.4,
+                  yy + radius * 0.2,
+                  x + inner * 0.4,
+                  yy + radius * 0.2,
+                  x + inner,
+                  yy,
+                );
+                c.stroke();
+              }
+            } else {
+              for (
+                let yy = capY - radius;
+                yy < baseY + radius;
+                yy += radius * 0.85
+              ) {
+                c.beginPath();
+                c.moveTo(x - inner, yy);
+                c.lineTo(x + inner, yy + radius * 0.8);
+                c.lineWidth = radius * 0.17;
+                c.stroke();
+              }
+            }
+            c.restore();
           }
+          if (this.hiddenArtwork) {
+            c.save();
+            try {
+              c.clip();
+              this.paintHiddenArtwork(
+                c,
+                x,
+                capY,
+                baseY,
+                inner,
+                muralLeft,
+                muralRight,
+                muralTop,
+                muralBottom,
+              );
+            } finally {
+              c.restore();
+            }
+          }
+          // Soft side reflections reveal curved glass over the opaque inner sleeve.
+          c.save();
+          c.clip();
+          // Crisp specular strip, vertically graded: bright at the raised rim,
+          // weaker near the base. No broad horizontal haze over the sleeve.
+          const sleeveReflection = c.createLinearGradient(0, capY, 0, baseY);
+          sleeveReflection.addColorStop(0, "#ffffffff");
+          sleeveReflection.addColorStop(0.22, "#ffffffe8");
+          sleeveReflection.addColorStop(0.55, "#ffffff80");
+          sleeveReflection.addColorStop(1, "#ffffff18");
+          // Symmetric taper around one vertical center, matching the reference's
+          // straight side highlight beneath the mouth rather than a bent streak.
+          const highlightX = x - inner * 0.64;
+          c.beginPath();
+          c.moveTo(highlightX - inner * 0.09, capY);
+          c.lineTo(highlightX + inner * 0.09, capY);
+          c.lineTo(highlightX + inner * 0.05, baseY);
+          c.lineTo(highlightX - inner * 0.05, baseY);
+          c.closePath();
+          c.fillStyle = sleeveReflection;
+          c.fill();
+          c.beginPath();
+          c.moveTo(x - inner * 0.8, capY + rimRy * 0.25);
+          c.lineTo(x - inner * 0.8, baseY);
+          c.strokeStyle = sleeveReflection;
+          c.lineWidth = Math.max(0.45, radius * 0.025);
+          c.stroke();
+          c.restore();
+          // Single fine front-edge glint follows the sticker, with no rear cap.
+          c.lineWidth = 0.65;
+          c.strokeStyle = "#edf7ffd0";
+          c.beginPath();
+          c.ellipse(x, capY + 0.5, inner - 0.3, rimRy, 0, 0, Math.PI);
+          c.stroke();
+          this.hiddenSurfaces.push({
+            id: t.id,
+            top: frostTop,
+            center: capY,
+            rx: inner,
+            ry: rimRy,
+            bottom: baseY,
+          });
         } finally {
           c.restore();
         }
       }
       if (this.tubeGlass) this.glassWall(x, ty, y, radius);
       else {
-        // The curved reflections sit on the front wall, above the balls, without covering their centers.
-        c.strokeStyle = "#ffffff75";
-        c.lineWidth = Math.max(0.8, radius * 0.07);
+        c.strokeStyle = "#ffffffdd";
+        c.lineWidth = Math.max(1, radius * 0.07);
         c.beginPath();
-        c.moveTo(x - radius * 0.7, ty + 16);
-        c.bezierCurveTo(
-          x - radius * 0.83,
-          ty + height * 0.3,
-          x - radius * 0.78,
-          ty + height * 0.55,
-          x - radius * 0.66,
-          y - 12,
+        c.ellipse(
+          x,
+          ty,
+          radius * 0.88,
+          radius * 0.22,
+          0,
+          Math.PI * 1.05,
+          Math.PI * 1.75,
         );
         c.stroke();
       }
@@ -1474,7 +2215,7 @@ export class Scene {
         h: height + opening,
         topY,
       });
-      if (!front) continue;
+      if (!front || !t.balls.length) continue;
       // Physical-pixel touch tolerance must survive short-screen scaling.
       // The resolver below excludes non-top balls and chooses the nearest top.
       const hitRadius = Math.max(ballRadius + 5, 22 / this.displayScale);

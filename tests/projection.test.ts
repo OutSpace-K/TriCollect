@@ -58,7 +58,7 @@ test("five fixed ball slots touch without crossing tube walls at mobile sizes", 
   for (const side of [6, 8])
     for (const width of [320, 390, 500]) {
       const p = projection(side, width, 147, 487, 0);
-      assert.equal(p.step, 2 * p.ballRadius);
+      assert.equal(p.step, 1.94 * p.ballRadius);
       assert.ok(p.ballRadius < p.radius);
       assert.ok(p.step * 4 + 2 * p.ballRadius + 6 <= p.height);
     }
@@ -83,7 +83,7 @@ test("enlarged spheres retain wall clearance, fixed height and touching slots", 
         p.ballRadius,
         Math.min(p.radius * 0.96, (maxHeight - 20) / 10),
       );
-      assert.equal(p.height, p.ballRadius * 10 + 20);
+      assert.equal(p.height, p.step * 5 + 20);
     }
 });
 
@@ -103,7 +103,7 @@ test("v0.1.28 spends recovered vertical margins on larger phone balls", () => {
         );
         assert.ok(p.ballRadius >= oldRadius);
         if (capacity === 7) assert.ok(p.ballRadius > oldRadius * 1.14);
-        assert.equal(p.step, p.ballRadius * 2);
+        assert.equal(p.step, p.ballRadius * 1.94);
       }
 });
 
@@ -115,7 +115,9 @@ test("front-row arc is symmetric, tray-aligned and keeps ball size through turns
         right = p.point({ q: side - 1, r: 0 });
       const middle = p.point({ q: (side - 1) / 2, r: 0 });
       assert.ok(Math.abs(left.y - right.y) < 1e-8);
-      assert.ok(middle.y > left.y && middle.y - left.y <= 28);
+      assert.ok(
+        middle.y > left.y && middle.y - left.y <= (right.x - left.x) * 0.094,
+      );
       for (let degree = 0; degree < 360; degree++) {
         const turn = projection(
           side,
@@ -167,7 +169,7 @@ test("rotating tube feet remain inside the shared decorative ellipse", () => {
               u = (t.x - p.trayCurve.x) / p.trayCurve.rx;
             assert.ok(
               t.y + 4 <=
-                p.trayCurve.y + p.traySurfaceRy * Math.sqrt(1 - u * u) + 1e-7,
+                p.traySurfaceY + p.traySurfaceRy * Math.sqrt(1 - u * u) + 1e-7,
             );
           }
       }
@@ -185,8 +187,7 @@ test("whole tube foot is inside calibrated cream surface at every angle", () => 
           (degree * Math.PI) / 180,
           7,
         );
-        const footRy =
-          Math.min(9, Math.max(4, (p.radius * p.zScale) / p.lane)) * 0.8;
+        const footRy = p.radius * 0.3 + Math.max(1.5, p.radius * 0.08) / 2;
         for (let q = 0; q < side; q++)
           for (let r = 0; r < side - q; r++) {
             const t = p.point({ q, r });
@@ -195,7 +196,7 @@ test("whole tube foot is inside calibrated cream surface at every angle", () => 
               const u =
                 (t.x + p.radius * Math.cos(a) - p.trayCurve.x) / p.trayCurve.rx;
               const v =
-                (t.y - 2 + footRy * Math.sin(a) - p.trayCurve.y) /
+                (t.y - 2 + footRy * Math.sin(a) - p.traySurfaceY) /
                 p.traySurfaceRy;
               assert.ok(
                 u * u + v * v < 1,
@@ -204,4 +205,57 @@ test("whole tube foot is inside calibrated cream surface at every angle", () => 
             }
           }
       }
+});
+
+test("front foot arc matches measured proposal sag across mobile widths", () => {
+  for (const side of [6, 8])
+    for (const width of [320, 390, 500]) {
+      const p = projection(side, width, 127, 549, 0, 7);
+      const l = p.point({ q: 0, r: 0 }),
+        r = p.point({ q: side - 1, r: 0 }),
+        m = p.point({ q: (side - 1) / 2, r: 0 });
+      assert.ok(
+        Math.abs((m.y - (l.y + r.y) / 2) / (r.x - l.x) - 37 / 397) < 1e-8,
+      );
+    }
+});
+
+test("reference arc never crops fixed ball slots at any turn on short phones", () => {
+  for (const side of [6, 8])
+    for (const width of [320, 390, 500])
+      for (const space of [294, 340, 422])
+        for (const cap of [5, 7])
+          for (let degree = 0; degree < 360; degree++) {
+            const p = projection(
+              side,
+              width,
+              127,
+              127 + space,
+              (degree * Math.PI) / 180,
+              cap,
+            );
+            for (let q = 0; q < side; q++)
+              for (let r = 0; r < side - q; r++) {
+                const t = p.point({ q, r });
+                assert.ok(t.y - p.height >= 127 - 1e-8);
+                assert.ok(t.y <= 127 + space + 1e-8);
+                assert.ok(
+                  t.x - p.radius >= 9.99 && t.x + p.radius <= width - 9.99,
+                );
+              }
+          }
+});
+
+test("platter fit is independent of the arrangement curvature", () => {
+  const p = projection(6, 390, 127, 549, 0, 7);
+  assert.ok(p.traySurfaceRy < p.arcDepth * 0.8);
+  assert.ok(p.traySurfaceY > p.trayCurve.y);
+});
+
+test("platter retains artwork aspect ratio and chooses highest feasible center", () => {
+  for (const side of [6, 8])
+    for (const width of [320, 390, 500]) {
+      const p = projection(side, width, 127, 549, 0, 7);
+      assert.ok(p.traySurfaceRy >= (p.trayCurve.rx * 84) / 380 - 1e-8);
+    }
 });

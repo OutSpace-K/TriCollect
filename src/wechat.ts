@@ -90,6 +90,12 @@ async function boot() {
     menuBottom,
   );
   const scene = new Scene(ctx, game, width / factor, logicalHeight, factor);
+  scene.setHiddenArtworkCanvasFactory((width, height) => {
+    const c = wx.createCanvas();
+    c.width = width;
+    c.height = height;
+    return c as unknown as HTMLCanvasElement;
+  });
   for (const file of [
     "background.png",
     "play-background.png",
@@ -98,24 +104,43 @@ async function boot() {
     "balls-candy.png",
     "turntable.png",
     "tube-glass.png",
+    "tube-glass-rear.png",
+    "hidden-mural.png",
+    "hidden-mural-doodle.png",
+    "hidden-mural-brush.png",
+    "hidden-mural-night.png",
   ]) {
     try {
       const image = wx.createImage();
       image.onload = () =>
-        file === "background.png"
-          ? scene.setBackground(image as unknown as CanvasImageSource)
-          : file === "play-background.png"
-            ? scene.setPlayBackground(image as unknown as CanvasImageSource)
-            : file === "tube-glass.png"
-              ? scene.setTubeGlass(image as unknown as CanvasImageSource)
-              : file === "turntable.png"
-                ? scene.setTurntable(image as unknown as CanvasImageSource)
-                : file === "balls-candy.png"
-                  ? scene.setBallAtlas(image as unknown as CanvasImageSource)
-                  : scene.setHomeArt(
-                      file === "home-logo.png" ? "logo" : "hero",
-                      image as unknown as CanvasImageSource,
-                    );
+        file.startsWith("hidden-mural")
+          ? scene.setMuralImage(
+              [
+                "hidden-mural.png",
+                "hidden-mural-doodle.png",
+                "hidden-mural-brush.png",
+                "hidden-mural-night.png",
+              ].indexOf(file),
+              image as unknown as CanvasImageSource,
+            )
+          : file === "background.png"
+            ? scene.setBackground(image as unknown as CanvasImageSource)
+            : file === "play-background.png"
+              ? scene.setPlayBackground(image as unknown as CanvasImageSource)
+              : file === "tube-glass-rear.png"
+                ? scene.setTubeGlassRear(image as unknown as CanvasImageSource)
+                : file === "tube-glass.png"
+                  ? scene.setTubeGlass(image as unknown as CanvasImageSource)
+                  : file === "turntable.png"
+                    ? scene.setTurntable(image as unknown as CanvasImageSource)
+                    : file === "balls-candy.png"
+                      ? scene.setBallAtlas(
+                          image as unknown as CanvasImageSource,
+                        )
+                      : scene.setHomeArt(
+                          file === "home-logo.png" ? "logo" : "hero",
+                          image as unknown as CanvasImageSource,
+                        );
       image.onerror = () => {
         /* Keep the available backdrop if loading fails. */
       };

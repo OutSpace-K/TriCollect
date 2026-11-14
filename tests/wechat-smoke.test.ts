@@ -334,6 +334,7 @@ async function boot(
     )
       await new Promise((r) => setTimeout(r, 5));
   }
+  let renderedSlotStep = 0;
   const render = () => {
     labels.length = 0;
     circles.length = 0;
@@ -351,6 +352,7 @@ async function boot(
         (saved.view * Math.PI * 2) / 3,
         Math.max(...saved.board.tubes.map((t) => t.capacity)),
       );
+      renderedSlotStep = layout.step;
       const visible = faceVisible(saved.board, saved.view);
       saved.board.tubes.forEach((t, i) => {
         if (!visible.has(t.id)) return;
@@ -394,6 +396,7 @@ async function boot(
     backgroundDraws: () => backgroundDraws,
     rings,
     topBalls,
+    slotStep: () => renderedSlotStep,
     paintedBalls,
     tapTube: (index: number) => {
       const ring = topBalls.get(String(index));
@@ -597,6 +600,8 @@ for (const units of [1, 1000])
     assert.ok(introMs >= 800 && introMs <= 1400);
     r.tap("开始 ·");
     const oldTop = { ...r.topBalls.get("1")! };
+    const slotStep = r.slotStep();
+    assert.ok(slotStep > 0);
     r.tapTube(1);
     const movingCircles = r.circles.map((c) => ({ ...c }));
     const transferMs = await driveUntil(
@@ -605,7 +610,7 @@ for (const units of [1, 1000])
         r.paintedBalls.some(
           (b) =>
             Math.abs(b.x - oldTop.x) < 0.01 &&
-            Math.abs(b.y - (oldTop.y + 6 * oldTop.r)) < 0.01,
+            Math.abs(b.y - (oldTop.y + 3 * slotStep)) < 0.01,
         ),
       800,
     );
@@ -633,7 +638,7 @@ for (const units of [1, 1000])
         r.paintedBalls.some(
           (b) =>
             Math.abs(b.x - nextTop.x) < 0.01 &&
-            Math.abs(b.y - (nextTop.y + 6 * nextTop.r)) < 0.01,
+            Math.abs(b.y - (nextTop.y + 3 * slotStep)) < 0.01,
         ),
       800,
     );
@@ -803,6 +808,11 @@ test("native image asset loads and image failure leaves gameplay available", asy
       "assets/balls-candy.png",
       "assets/turntable.png",
       "assets/tube-glass.png",
+      "assets/tube-glass-rear.png",
+      "assets/hidden-mural.png",
+      "assets/hidden-mural-doodle.png",
+      "assets/hidden-mural-brush.png",
+      "assets/hidden-mural-night.png",
     ]);
     assert.equal(r.backgroundDraws() > 0, !fail);
     r.tapTube(1);

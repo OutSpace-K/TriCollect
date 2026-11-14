@@ -49,7 +49,7 @@ test("variable heights preserve identity and physical scale through undo/save an
     assert.equal(valid(altered), false);
     for (const width of [320, 390]) {
       const f = projection(b.side, width, 147, 487, 0, 7);
-      assert.equal(f.step, 2 * f.ballRadius);
+      assert.equal(f.step, 1.94 * f.ballRadius);
       assert.ok(f.step * 7 + 6 <= f.height);
       const before = f.point(t);
       b.tubes.filter((t) => t.capacity === 7).forEach((t) => (t.balls = []));

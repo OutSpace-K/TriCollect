@@ -87,6 +87,11 @@ for (const file of [
   "balls-candy.png",
   "turntable.png",
   "tube-glass.png",
+  "tube-glass-rear.png",
+  "hidden-mural.png",
+  "hidden-mural-doodle.png",
+  "hidden-mural-brush.png",
+  "hidden-mural-night.png",
 ]) {
   await cp(`assets/${file}`, `dist/browser/assets/${file}`);
   await cp(`assets/${file}`, `dist/wechat/assets/${file}`);

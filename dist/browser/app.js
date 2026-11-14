@@ -123,6 +123,60 @@
     frame();
   }
 
+  // src/platform/mural.ts
+  var MURAL_VARIANTS = 8192;
+  var MURAL_RECENT_LIMIT = 64;
+  var MURAL_RECENT_KEY = "tricollect.mural.recent.v1";
+  function isMuralVariant(value) {
+    return Number.isInteger(value) && value >= 0 && value < MURAL_VARIANTS;
+  }
+  function muralVariantFor(state) {
+    if (state.muralVariant !== void 0) return state.muralVariant;
+    let hash2 = 2166136261;
+    for (const ch of `${state.session}:${state.seed}:${state.preset}`)
+      hash2 = Math.imul(hash2 ^ ch.charCodeAt(0), 16777619);
+    return (hash2 >>> 0) % MURAL_VARIANTS;
+  }
+  function readMuralRecent(store) {
+    try {
+      const parsed = JSON.parse(store.get(MURAL_RECENT_KEY) ?? "[]");
+      if (!Array.isArray(parsed) || parsed.length > MURAL_RECENT_LIMIT || !parsed.every(isMuralVariant) || new Set(parsed).size !== parsed.length)
+        return [];
+      return parsed;
+    } catch {
+      return [];
+    }
+  }
+  function chooseMuralVariant(excluded, entropy = Math.random, previousVariant) {
+    const allowed = (candidate2) => !excluded.has(candidate2) && (previousVariant === void 0 || candidate2 % 4 !== previousVariant % 4);
+    let candidate = (Date.now() >>> 0) % MURAL_VARIANTS;
+    for (let attempt = 0; attempt < 16; attempt++) {
+      let sample = NaN;
+      try {
+        sample = entropy();
+      } catch {
+      }
+      if (!Number.isFinite(sample) || sample < 0 || sample >= 1) break;
+      candidate = Math.floor(sample * MURAL_VARIANTS);
+      if (allowed(candidate)) return candidate;
+    }
+    for (let i = 0; i < MURAL_VARIANTS; i++) {
+      if (allowed(candidate)) return candidate;
+      candidate = (candidate + 4051) % MURAL_VARIANTS;
+    }
+    throw Error("No available mural composition");
+  }
+  function rememberMuralVariant(store, recent, variant) {
+    const next = [...recent.filter((v) => v !== variant), variant].slice(
+      -MURAL_RECENT_LIMIT
+    );
+    try {
+      store.set(MURAL_RECENT_KEY, JSON.stringify(next));
+    } catch {
+    }
+    return next;
+  }
+
   // src/config.ts
   var RULE = "tricollect-5-variable-height";
   var CONFIG = Object.freeze({
@@ -458,7 +512,7 @@
   var lastStored = /* @__PURE__ */ new WeakMap();
   function valid(s) {
     try {
-      if (s.schema !== 1 || s.generation !== void 0 && s.generation !== 1 && s.generation !== 2 || s.rule !== RULE || typeof s.session !== "string" || !Number.isInteger(s.seed) || !Number.isInteger(s.preset) || !PRESETS[s.preset])
+      if (s.schema !== 1 || s.generation !== void 0 && s.generation !== 1 && s.generation !== 2 || s.rule !== RULE || typeof s.session !== "string" || !Number.isInteger(s.seed) || s.muralVariant !== void 0 && !isMuralVariant(s.muralVariant) || !Number.isInteger(s.preset) || !PRESETS[s.preset])
         return false;
       if (!Number.isFinite(s.remaining) || s.remaining < 0 || s.remaining > CONFIG.baseMs + CONFIG.extraMs * CONFIG.maxExtensions || !Number.isInteger(s.extensions) || s.extensions < 0 || s.extensions > CONFIG.maxExtensions || s.added !== s.extensions * CONFIG.extraMs)
         return false;
@@ -723,12 +777,13 @@
   // src/controller.ts
   var Controller = class {
     constructor(now, store, ads2, playSound = () => {
-    }, seedEntropy = Math.random) {
+    }, seedEntropy = Math.random, muralEntropy = Math.random) {
       this.now = now;
       this.store = store;
       this.ads = ads2;
       this.playSound = playSound;
       this.seedEntropy = seedEntropy;
+      this.muralEntropy = muralEntropy;
       __publicField(this, "phase", "home");
       __publicField(this, "state");
       __publicField(this, "message", "\u65CB\u8F6C\u7403\u4ED3 \xB7 \u6536\u96C6\u4E09\u540C \xB7 \u63ED\u5F00\u5185\u5C42");
@@ -748,6 +803,8 @@
       __publicField(this, "lastCheckpoint", 0);
       __publicField(this, "terminalDurable", false);
       __publicField(this, "recentHomeSeeds", /* @__PURE__ */ new Set());
+      __publicField(this, "recentMuralVariants", []);
+      this.recentMuralVariants = readMuralRecent(store);
       this.state = this.fresh(0, PRESETS[0].seed);
       const drained = drainTerminal(store);
       const loaded = restore(store);
@@ -770,6 +827,7 @@
         rule: RULE,
         session: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
         seed: level.seed,
+        muralVariant: 0,
         preset,
         board: level.board,
         history: [],
@@ -785,6 +843,9 @@
         phase: "ready",
         sound: this.soundPreference()
       };
+    }
+    get muralVariant() {
+      return muralVariantFor(this.state);
     }
     get records() {
       return readRecords(this.store);
@@ -872,6 +933,20 @@
           return;
         }
       } else fresh = this.fresh(preset, seed ?? PRESETS[preset].seed);
+      const excludedMurals = new Set(this.recentMuralVariants);
+      excludedMurals.add(this.muralVariant);
+      if (this.resume) excludedMurals.add(muralVariantFor(this.resume));
+      if (saved) excludedMurals.add(muralVariantFor(saved));
+      fresh.muralVariant = chooseMuralVariant(
+        excludedMurals,
+        this.muralEntropy,
+        this.recentMuralVariants.at(-1) ?? (saved ? muralVariantFor(saved) : this.muralVariant)
+      );
+      this.recentMuralVariants = rememberMuralVariant(
+        this.store,
+        this.recentMuralVariants,
+        fresh.muralVariant
+      );
       this.terminalDurable = false;
       this.state = fresh;
       if (randomize) {
@@ -1225,6 +1300,61 @@
     }
   };
 
+  // src/render/mural.ts
+  var MURAL_VARIANTS2 = 8192;
+  function muralRecipe(value) {
+    let n = Math.max(0, Math.min(MURAL_VARIANTS2 - 1, Math.floor(value)));
+    const base = n % 4;
+    n = Math.floor(n / 4);
+    const crop = n % 16;
+    n = Math.floor(n / 16);
+    const zoom = n % 8;
+    n = Math.floor(n / 8);
+    const mirror = !!(n % 2);
+    n = Math.floor(n / 2);
+    return { base, crop, zoom: 1.04 + zoom * 0.04, mirror, tint: n % 8 };
+  }
+  function composeMural(image, variant, factory) {
+    const recipe = muralRecipe(variant), canvas2 = factory(768, 256);
+    canvas2.width = 768;
+    canvas2.height = 256;
+    const c = canvas2.getContext("2d");
+    if (!c) throw new Error("Mural canvas unavailable");
+    const sw = 768 / recipe.zoom, sh = 256 / recipe.zoom;
+    c.save();
+    if (recipe.mirror) {
+      c.translate(768, 0);
+      c.scale(-1, 1);
+    }
+    c.drawImage(
+      image,
+      (768 - sw) * recipe.crop / 15,
+      (256 - sh) / 2,
+      sw,
+      sh,
+      0,
+      0,
+      768,
+      256
+    );
+    c.restore();
+    const tints = [
+      "#fff4e416",
+      "#f5dce81a",
+      "#e4f3ee1a",
+      "#e1effa1a",
+      "#f8ebd51c",
+      "#ece5fa1c",
+      "#dcefea1c",
+      "#ffe8da1c"
+    ];
+    c.fillStyle = tints[recipe.tint];
+    c.fillRect(0, 0, 768, 256);
+    c.fillStyle = "#fff8ee14";
+    c.fillRect(0, 0, 768, 256);
+    return canvas2;
+  }
+
   // src/render/projection.ts
   function worldPosition(t, side) {
     const edge = side - 1;
@@ -1249,15 +1379,17 @@
     const ballRadius = Math.min(
       radius * 0.96,
       (maxHeight - 20) / (maxCapacity * 2)
-    ), step = ballRadius * 2, height = step * maxCapacity + 20;
+    ), step = ballRadius * 1.94, height = step * maxCapacity + 20;
     const axis = {
       x: width / 2,
       y: top + 14 + height + extent + Math.max(0, (bottom - top - 24 - height - extent * 2) / 2)
     };
-    const arcDepth = depthSpace * 0.9;
     const worldExtent = edge / Math.sqrt(3);
     const ellipseRadiusX = worldExtent * lane + radius + 4;
     const curve = (screenX) => Math.sqrt(Math.max(0, 1 - (screenX / ellipseRadiusX) ** 2));
+    const frontHalfSpan = edge * lane / 2;
+    const referenceSagRatio = 37 / 397;
+    let arcDepth = frontHalfSpan * 2 * referenceSagRatio / (1 - curve(frontHalfSpan));
     let meanCurve = 0, count = 0;
     for (let q = 0; q <= edge; q++)
       for (let r = 0; r <= edge - q; r++) {
@@ -1266,6 +1398,33 @@
         count++;
       }
     meanCurve /= count;
+    const offsets = (bend) => {
+      let min = Infinity, max = -Infinity;
+      for (let q = 0; q <= edge; q++)
+        for (let r = 0; r <= edge - q; r++) {
+          const p = rotateWorld(worldPosition({ q, r }, side), angle);
+          const offset = -p.z * zScale + bend * (curve(p.x * lane) - meanCurve);
+          min = Math.min(min, offset);
+          max = Math.max(max, offset);
+        }
+      return { min, max };
+    };
+    let fit = offsets(arcDepth);
+    if (fit.max - fit.min > bottom - top - height) {
+      let lo = 0, hi = arcDepth;
+      for (let i = 0; i < 24; i++) {
+        const mid = (lo + hi) / 2, trial = offsets(mid);
+        if (trial.max - trial.min <= bottom - top - height) lo = mid;
+        else hi = mid;
+      }
+      arcDepth = lo;
+      fit = offsets(arcDepth);
+    }
+    const minOffset = fit.min, maxOffset = fit.max;
+    axis.y = Math.max(
+      top + height - minOffset,
+      Math.min(bottom - maxOffset, axis.y)
+    );
     const trayCurve = {
       x: axis.x,
       y: axis.y + depthSpace / 3 - arcDepth * meanCurve,
@@ -1281,22 +1440,43 @@
         depth: p.z
       };
     };
-    const footRy = Math.min(9, Math.max(4, radius * zScale / lane)) * 0.8;
-    let traySurfaceRy = arcDepth + 8;
+    const footRy = radius * 0.3 + Math.max(1.5, radius * 0.08) / 2;
+    const samples = [];
     for (let q = 0; q <= edge; q++)
       for (let r = 0; r <= edge - q; r++) {
         const p = point({ q, r });
-        traySurfaceRy = Math.max(
-          traySurfaceRy,
-          (p.y + 5 - trayCurve.y) / curve(p.x - trayCurve.x)
-        );
+        samples.push({ y: p.y + 5, c: curve(p.x - trayCurve.x) });
         for (let sample = 0; sample < 16; sample++) {
           const a = sample * Math.PI * 2 / 16;
-          const dx = p.x + (radius + 2) * Math.cos(a) - trayCurve.x;
-          const dy = p.y - 2 + (footRy + 2) * Math.sin(a) - trayCurve.y;
-          traySurfaceRy = Math.max(traySurfaceRy, Math.abs(dy) / curve(dx));
+          samples.push({
+            y: p.y - 2 + (footRy + 2) * Math.sin(a),
+            c: curve(p.x + (radius + 2) * Math.cos(a) - trayCurve.x)
+          });
         }
       }
+    let lowY = Infinity, highY = -Infinity;
+    for (const p of samples) {
+      lowY = Math.min(lowY, p.y);
+      highY = Math.max(highY, p.y);
+    }
+    const requiredRadius = (cy) => {
+      let ry = 0;
+      for (const p of samples) ry = Math.max(ry, Math.abs(p.y - cy) / p.c);
+      return ry;
+    };
+    for (let i = 0; i < 28; i++) {
+      const left = (lowY * 2 + highY) / 3, right = (lowY + highY * 2) / 3;
+      if (requiredRadius(left) < requiredRadius(right)) highY = right;
+      else lowY = left;
+    }
+    const minFitY = (lowY + highY) / 2;
+    const traySurfaceRy = Math.max(
+      requiredRadius(minFitY) + 0.1,
+      ellipseRadiusX * 84 / 380
+    );
+    let traySurfaceY = -Infinity;
+    for (const p of samples)
+      traySurfaceY = Math.max(traySurfaceY, p.y - traySurfaceRy * p.c);
     return {
       axis,
       lane,
@@ -1307,6 +1487,7 @@
       zScale,
       arcDepth,
       trayCurve,
+      traySurfaceY,
       traySurfaceRy,
       point
     };
@@ -1336,6 +1517,18 @@
       __publicField(this, "trackObjects", []);
       __publicField(this, "misclickFeedback", null);
       __publicField(this, "tubeGlass", null);
+      __publicField(this, "tubeGlassRear", null);
+      __publicField(this, "hiddenStyle", "current");
+      __publicField(this, "muralImages", []);
+      __publicField(this, "preparedMural", -1);
+      __publicField(this, "hiddenArtworkCanvasFactory", null);
+      __publicField(this, "hiddenArtworkRasterScale", 2);
+      __publicField(this, "hiddenArtworkCache", /* @__PURE__ */ new Map());
+      __publicField(this, "hiddenArtworkCacheBytes", 0);
+      __publicField(this, "hiddenArtworkCacheHits", 0);
+      __publicField(this, "hiddenArtworkCacheMisses", 0);
+      __publicField(this, "hiddenArtwork", null);
+      __publicField(this, "hiddenMural", false);
       __publicField(this, "turntable", null);
       __publicField(this, "ballAtlas", null);
       __publicField(this, "homeLogo", null);
@@ -1356,6 +1549,7 @@
       __publicField(this, "silhouetteIds", []);
       __publicField(this, "rearOpenings", []);
       __publicField(this, "renderedFace", 0);
+      __publicField(this, "hiddenSurfaces", []);
       __publicField(this, "capStates", []);
       __publicField(this, "titleAngle", 0);
       __publicField(this, "homeGroupOffset", 16);
@@ -1384,49 +1578,312 @@
     setTubeGlass(image) {
       this.tubeGlass = image;
     }
-    glassWall(x, top, bottom, radius) {
+    setTubeGlassRear(image) {
+      this.tubeGlassRear = image;
+    }
+    glassWall(x, top, bottom, radius, rear = 0) {
       if (!this.tubeGlass) return;
-      const c = this.ctx;
-      const sw = 166, sh = 768, cap = 54;
-      const scale = radius * 2 / sw, end = cap * scale;
-      const yy = top - end / 2, total = bottom + 2 - yy;
-      c.drawImage(this.tubeGlass, 0, 0, sw, cap, x - radius, yy, radius * 2, end);
+      const c = this.ctx, material = this.tubeGlass;
+      const drawMaterial = () => {
+        const sw = 166, sh = 603, cap = 64, foot = 50;
+        const scale = radius * 2 / sw, end = radius * 0.6;
+        const yy = top - end / 2, total = bottom + 2 - yy;
+        c.drawImage(material, 0, 0, sw, cap, x - radius, yy, radius * 2, end);
+        c.save();
+        try {
+          c.beginPath();
+          c.rect(
+            x - radius,
+            yy + end,
+            radius * 0.14,
+            Math.max(1, total - end - 4 - radius * 0.13)
+          );
+          c.rect(
+            x + radius * 0.86,
+            yy + end,
+            radius * 0.14,
+            Math.max(1, total - end - 4 - radius * 0.13)
+          );
+          c.clip();
+          c.drawImage(
+            material,
+            0,
+            cap,
+            sw,
+            sh - cap - foot,
+            x - radius,
+            yy + end,
+            radius * 2,
+            Math.max(1, total - end - 4 - radius * 0.13)
+          );
+        } finally {
+          c.restore();
+        }
+        c.beginPath();
+        c.ellipse(
+          x,
+          top,
+          radius * 0.88,
+          radius * 0.22,
+          0,
+          Math.PI * 1.05,
+          Math.PI * 1.75
+        );
+        c.strokeStyle = "#ffffffff";
+        c.lineWidth = Math.max(1.2, radius * 0.08);
+        c.stroke();
+        const glint = c.createLinearGradient(
+          0,
+          top + end * 0.65,
+          0,
+          top + radius * 0.85
+        );
+        glint.addColorStop(0, "#ffffffff");
+        glint.addColorStop(0.45, "#ffffffd8");
+        glint.addColorStop(1, "#ffffff00");
+        c.beginPath();
+        c.moveTo(x - radius * 0.73, top + end * 0.7);
+        c.quadraticCurveTo(
+          x - radius * 0.83,
+          top + radius * 0.52,
+          x - radius * 0.73,
+          Math.min(bottom - radius, top + radius * 0.85)
+        );
+        c.strokeStyle = glint;
+        c.lineWidth = Math.max(1.7, radius * 0.15);
+        c.stroke();
+        const sideY = bottom - 2 - radius * 0.13;
+        const contour = (inset, lift2) => {
+          const rx = radius - inset;
+          c.beginPath();
+          c.moveTo(x - rx, sideY - radius * 0.36);
+          c.lineTo(x - rx, sideY);
+          c.ellipse(x, sideY, rx, radius * 0.43 - lift2, 0, Math.PI, 0, true);
+          c.lineTo(x + rx, sideY - radius * 0.36);
+        };
+        contour(radius * 0.02, 0);
+        c.strokeStyle = "#302832c0";
+        c.lineWidth = 0.8;
+        c.stroke();
+        contour(radius * 0.07, radius * 0.075);
+        const heelReflection = c.createLinearGradient(
+          x - radius,
+          0,
+          x + radius,
+          0
+        );
+        heelReflection.addColorStop(0, "#f5ffff10");
+        heelReflection.addColorStop(0.12, "#ffffffee");
+        heelReflection.addColorStop(0.35, "#f5ffff00");
+        heelReflection.addColorStop(0.68, "#f5ffff00");
+        heelReflection.addColorStop(0.9, "#f5ffff00");
+        heelReflection.addColorStop(1, "#f5ffff00");
+        c.strokeStyle = heelReflection;
+        c.lineWidth = Math.max(1.3, radius * 0.1);
+        c.stroke();
+      };
       c.save();
       try {
-        c.beginPath();
-        c.rect(x - radius, yy + end, radius * 0.14, Math.max(1, total - end * 2));
-        c.rect(
-          x + radius * 0.86,
-          yy + end,
-          radius * 0.14,
-          Math.max(1, total - end * 2)
-        );
-        c.clip();
-        c.drawImage(
-          this.tubeGlass,
-          0,
-          cap,
-          sw,
-          sh - cap * 2,
-          x - radius,
-          yy + end,
-          radius * 2,
-          Math.max(1, total - end * 2)
-        );
+        if (rear) {
+          if (this.tubeGlassRear) {
+            const band = rear < 0.35 ? 0 : rear < 0.78 ? 1 : 2;
+            const scale = radius * 2 / 166, pad = 12 * scale;
+            const topEnd = radius * 0.6, footEnd = 64 * scale;
+            const yy = top - topEnd / 2, total = bottom + 2 - yy;
+            const sx = band * 95, dx = x - radius - pad, dw = radius * 2 + pad * 2;
+            c.drawImage(
+              this.tubeGlassRear,
+              sx,
+              0,
+              95,
+              38,
+              dx,
+              yy - pad,
+              dw,
+              topEnd + pad
+            );
+            c.save();
+            try {
+              c.beginPath();
+              c.rect(
+                dx,
+                yy + topEnd,
+                radius * 0.14 + pad * 2,
+                Math.max(1, total - topEnd - footEnd)
+              );
+              c.rect(
+                x + radius * 0.86 - pad,
+                yy + topEnd,
+                radius * 0.14 + pad * 2,
+                Math.max(1, total - topEnd - footEnd)
+              );
+              c.clip();
+              c.drawImage(
+                this.tubeGlassRear,
+                sx,
+                38,
+                95,
+                237.5,
+                dx,
+                yy + topEnd,
+                dw,
+                Math.max(1, total - topEnd - footEnd)
+              );
+            } finally {
+              c.restore();
+            }
+            c.drawImage(
+              this.tubeGlassRear,
+              sx,
+              275.5,
+              95,
+              38,
+              dx,
+              yy + total - footEnd,
+              dw,
+              footEnd + pad
+            );
+          } else {
+            c.globalAlpha *= 0.42 - rear * 0.2;
+            drawMaterial();
+          }
+        } else {
+          drawMaterial();
+          const rx = radius * 0.78;
+          const ry = radius * 0.15;
+          c.save();
+          try {
+            c.beginPath();
+            c.ellipse(x, top, rx, ry, 0, 0, Math.PI * 2);
+            c.clip();
+            this.transmittedBackdrop(x - rx, top - ry, rx * 2, ry * 2);
+          } finally {
+            c.restore();
+          }
+        }
       } finally {
         c.restore();
       }
-      c.drawImage(
-        this.tubeGlass,
-        0,
-        sh - cap,
-        sw,
-        cap,
-        x - radius,
-        yy + total - end,
-        radius * 2,
-        end
-      );
+    }
+    setHiddenStyle(style) {
+      this.hiddenStyle = style;
+    }
+    setMuralImage(index, image) {
+      if (index < 0 || index > 3) return;
+      this.muralImages[index] = image;
+      this.preparedMural = -1;
+    }
+    prepareMural() {
+      const variant = this.game.muralVariant;
+      if (this.preparedMural === variant) return;
+      const image = this.muralImages[muralRecipe(variant).base];
+      if (!image) return;
+      try {
+        const composed = this.hiddenArtworkCanvasFactory ? composeMural(image, variant, this.hiddenArtworkCanvasFactory) : image;
+        this.setHiddenArtwork(composed, true);
+        this.preparedMural = variant;
+      } catch {
+        this.setHiddenArtwork(image, true);
+        this.preparedMural = variant;
+      }
+    }
+    setHiddenArtworkCanvasFactory(factory, rasterScale = 2) {
+      this.clearHiddenArtworkCache();
+      this.hiddenArtworkCanvasFactory = factory;
+      this.hiddenArtworkRasterScale = Number.isFinite(rasterScale) ? Math.max(1, Math.min(3, rasterScale)) : 2;
+    }
+    get hiddenArtworkCacheStats() {
+      return {
+        entries: this.hiddenArtworkCache.size,
+        bytes: this.hiddenArtworkCacheBytes,
+        hits: this.hiddenArtworkCacheHits,
+        misses: this.hiddenArtworkCacheMisses
+      };
+    }
+    clearHiddenArtworkCache() {
+      this.hiddenArtworkCache.clear();
+      this.hiddenArtworkCacheBytes = 0;
+      this.hiddenArtworkCacheHits = 0;
+      this.hiddenArtworkCacheMisses = 0;
+    }
+    paintHiddenArtwork(c, x, capY, baseY, inner, muralLeft, muralRight, muralTop, muralBottom) {
+      const image = this.hiddenArtwork;
+      if (!image) return;
+      const h = baseY - capY + inner * 0.43;
+      const sourceX = this.hiddenMural ? (x - inner - muralLeft) / (muralRight - muralLeft) * 768 : 0;
+      const sourceY = this.hiddenMural ? (capY - muralTop) / (muralBottom - muralTop) * 256 : 0;
+      const sourceW = this.hiddenMural ? inner * 2 / (muralRight - muralLeft) * 768 : 256;
+      const sourceH = this.hiddenMural ? h / (muralBottom - muralTop) * 256 : 512;
+      const drawStrips = (target, originX, originY) => {
+        for (let strip = 0; strip < 24; strip++) {
+          const u0 = strip / 24, u1 = (strip + 1) / 24;
+          const dx0 = Math.sin((u0 - 0.5) * Math.PI) * inner;
+          const dx1 = Math.sin((u1 - 0.5) * Math.PI) * inner;
+          target.drawImage(
+            image,
+            sourceX + u0 * sourceW,
+            sourceY,
+            sourceW / 24,
+            sourceH,
+            originX + dx0,
+            originY,
+            dx1 - dx0 + 0.25,
+            h
+          );
+        }
+      };
+      const scale = this.hiddenArtworkRasterScale;
+      const width = Math.ceil((inner * 2 + 0.25) * scale), height = Math.ceil(h * scale);
+      const bytes = width * height * 4;
+      if (this.hiddenArtworkCanvasFactory && width > 0 && height > 0 && bytes <= 16 * 1024 * 1024) {
+        const key2 = [inner, h, sourceX, sourceY, sourceW, sourceH, scale].join(
+          ":"
+        );
+        let entry = this.hiddenArtworkCache.get(key2);
+        if (entry) {
+          this.hiddenArtworkCacheHits++;
+          this.hiddenArtworkCache.delete(key2);
+          this.hiddenArtworkCache.set(key2, entry);
+        } else {
+          this.hiddenArtworkCacheMisses++;
+          try {
+            const bitmap = this.hiddenArtworkCanvasFactory(width, height);
+            bitmap.width = width;
+            bitmap.height = height;
+            const target = bitmap.getContext("2d");
+            if (!target) throw new Error("No offscreen 2D canvas");
+            target.scale(scale, scale);
+            drawStrips(target, inner, 0);
+            entry = {
+              image: bitmap,
+              width: width / scale,
+              height: height / scale,
+              bytes
+            };
+            while (this.hiddenArtworkCache.size >= 128 || this.hiddenArtworkCacheBytes + bytes > 16 * 1024 * 1024) {
+              const oldest = this.hiddenArtworkCache.keys().next().value;
+              if (oldest === void 0) break;
+              this.hiddenArtworkCacheBytes -= this.hiddenArtworkCache.get(oldest).bytes;
+              this.hiddenArtworkCache.delete(oldest);
+            }
+            this.hiddenArtworkCache.set(key2, entry);
+            this.hiddenArtworkCacheBytes += bytes;
+          } catch {
+            this.hiddenArtworkCanvasFactory = null;
+            this.clearHiddenArtworkCache();
+          }
+        }
+        if (entry) {
+          c.drawImage(entry.image, x - inner, capY, entry.width, entry.height);
+          return;
+        }
+      }
+      drawStrips(c, x, capY);
+    }
+    setHiddenArtwork(image, mural = false) {
+      this.clearHiddenArtworkCache();
+      this.hiddenArtwork = image;
+      this.hiddenMural = mural;
     }
     setTurntable(image) {
       this.turntable = image;
@@ -1793,6 +2250,7 @@
       }
     }
     render() {
+      this.prepareMural();
       const c = this.ctx, g = this.game, w = this.width, h = this.height;
       if (this.misclickFeedback && (g.phase !== "active" || this.misclickFeedback.session !== g.state.session || this.misclickFeedback.view !== g.state.view))
         this.misclickFeedback = null;
@@ -2000,7 +2458,7 @@
           "return-ball",
           "\u514D\u8D39\u653E\u56DE",
           22,
-          trayY - 68,
+          trayY - 63,
           140,
           44,
           () => g.returnBall(),
@@ -2008,13 +2466,13 @@
           false,
           g.locked && !transientLock
         );
-        this.ball(g.board.pocket[0].type, 46, trayY - 43, 12);
+        this.ball(g.board.pocket[0].type, 46, trayY - 38, 12);
       } else {
         this.button(
           "lift-ball",
           "",
           22,
-          trayY - 68,
+          trayY - 63,
           64,
           44,
           () => this.openTool(),
@@ -2022,11 +2480,11 @@
           false,
           !["active", "blocked"].includes(g.phase) && !transientLock
         );
-        this.drawTool(54, trayY - 49);
+        this.drawTool(54, trayY - 44);
         this.text(
           g.state.rewards.some((r) => r.kind === "lift" && r.redeemed) ? "\u5DF2\u4F7F\u7528" : "\u5BC4\u5B58",
           54,
-          trayY - 23,
+          trayY - 18,
           11,
           "#66371f",
           "center"
@@ -2159,8 +2617,17 @@
       this.rotationAxis = axis;
       this.projectionScale = { x: layout.lane, z: layout.zScale };
       const accessible = faceVisible(g.board, view);
-      const visible = turning ? /* @__PURE__ */ new Set() : accessible;
+      const visible = turning ? /* @__PURE__ */ new Set() : new Set(accessible);
+      if (g.phase === "resolving") {
+        const oldBoard = g.state.history.at(-1);
+        if (oldBoard)
+          for (const old of oldBoard.tubes) {
+            if (old.balls.length && !g.board.tubes.find((t) => t.id === old.id)?.balls.length && faceVisible(oldBoard, view).has(old.id))
+              visible.add(old.id);
+          }
+      }
       this.capStates = [];
+      this.hiddenSurfaces = [];
       this.renderedFace = view;
       this.renderedIds = [...visible];
       for (let i = 0; i < 3; i++) {
@@ -2173,7 +2640,9 @@
           3
         );
       }
-      const ordered = g.board.tubes.filter((t) => t.balls.length).map((t) => ({ t, ...point(t) })).sort((a, b) => b.depth - a.depth);
+      const ordered = g.board.tubes.filter(
+        (t) => t.balls.length || g.phase === "resolving" && g.state.history.at(-1)?.tubes.find((old) => old.id === t.id)?.balls.length
+      ).map((t) => ({ t, ...point(t) })).sort((a, b) => b.depth - a.depth);
       this.tubeLayout = ordered.map((t) => ({
         id: t.t.id,
         x: t.x,
@@ -2195,7 +2664,7 @@
         thickness: 23
       };
       const dishX = layout.trayCurve.x;
-      const dishY = layout.trayCurve.y;
+      const dishY = layout.traySurfaceY;
       const dishRx = layout.trayCurve.rx;
       const dishRy = layout.traySurfaceRy;
       const dishLeft = dishX - dishRx, dishRight = dishX + dishRx;
@@ -2209,12 +2678,90 @@
       };
       if (this.turntable) {
         const sx = dishRx / 380;
-        const sy = dishRy / 98;
+        const sy = dishRy / 84;
         const artworkX = dishX - 400 * sx;
-        const artworkY = dishY - 108 * sy;
-        c.drawImage(this.turntable, artworkX, artworkY, 800 * sx, 255 * sy);
-        this.decorativeTray.frontY = artworkY + 255 * sy;
-        this.decorativeTray.thickness = this.decorativeTray.frontY - dishFront;
+        const artworkY = dishY - 94 * sy;
+        c.save();
+        try {
+          c.translate(artworkX, artworkY);
+          c.scale(sx, sy);
+          const lipY = 94, lipRx = 399, lipRy = 94, wall = 65;
+          c.beginPath();
+          c.moveTo(400 - lipRx, lipY);
+          c.ellipse(400, lipY, lipRx, lipRy, 0, Math.PI, 0, true);
+          c.lineTo(400 + lipRx, lipY + wall);
+          c.ellipse(400, lipY + wall, lipRx, lipRy, 0, 0, Math.PI);
+          c.closePath();
+          const fascia = c.createLinearGradient(0, 0, 800, 0);
+          fascia.addColorStop(0, "#d53e26");
+          fascia.addColorStop(0.2, "#ff8562");
+          fascia.addColorStop(0.5, "#f56a49");
+          fascia.addColorStop(0.8, "#f46a4b");
+          fascia.addColorStop(1, "#c83b25");
+          c.fillStyle = fascia;
+          c.fill();
+          c.lineWidth = 3;
+          c.strokeStyle = "#a7432b";
+          c.stroke();
+          c.save();
+          try {
+            c.beginPath();
+            c.ellipse(400, lipY, lipRx, lipRy, 0, 0, Math.PI * 2);
+            c.clip();
+            c.drawImage(this.turntable, 0, 0, 800, 261);
+          } finally {
+            c.restore();
+          }
+          c.beginPath();
+          c.ellipse(400, lipY, lipRx - 2, lipRy, 0, 0, Math.PI);
+          c.strokeStyle = "#fff7d8";
+          c.lineWidth = 4;
+          c.stroke();
+          for (const direction of [-1, 1]) {
+            c.save();
+            try {
+              c.translate(400 + direction * 210, 209);
+              c.scale(direction, 1);
+              c.beginPath();
+              c.moveTo(-63, 8);
+              c.bezierCurveTo(-22, 13, 12, 3, 36, -9);
+              c.lineTo(27, -20);
+              c.quadraticCurveTo(26, -27, 34, -24);
+              c.lineTo(69, -10);
+              c.quadraticCurveTo(76, -6, 70, 1);
+              c.lineTo(45, 26);
+              c.quadraticCurveTo(39, 32, 36, 24);
+              c.lineTo(33, 16);
+              c.bezierCurveTo(5, 29, -32, 34, -65, 29);
+              c.quadraticCurveTo(-77, 26, -73, 16);
+              c.quadraticCurveTo(-71, 8, -63, 8);
+              c.closePath();
+              c.lineJoin = "round";
+              c.strokeStyle = "#a9473030";
+              c.lineWidth = 11;
+              c.stroke();
+              c.strokeStyle = "#fffdf4";
+              c.lineWidth = 8;
+              c.stroke();
+              c.fillStyle = "#ff7351";
+              c.fill();
+            } finally {
+              c.restore();
+            }
+          }
+          c.save();
+          try {
+            this.rect(364, 183, 72, 76, "#c88a2b", 16);
+            c.clip();
+            c.drawImage(this.turntable, 360, 180, 80, 81, 360, 180, 80, 81);
+          } finally {
+            c.restore();
+          }
+        } finally {
+          c.restore();
+        }
+        this.decorativeTray.frontY = artworkY + 259 * sy;
+        this.decorativeTray.thickness = 65 * sy;
       } else {
         oval(dishY + 30, dishRx + 3, dishRy + 2, "#85503538");
         oval(dishY + 24, dishRx, dishRy, "#9a452c");
@@ -2235,23 +2782,34 @@
         9,
         Math.max(4, radius * layout.zScale / layout.lane)
       );
-      c.fillStyle = "#263b3244";
+      c.fillStyle = "#86634b20";
       for (const item of ordered) {
         c.beginPath();
         c.ellipse(
-          item.x + radius * 0.6,
-          item.y + 7,
-          radius * 1.3,
-          opening * 0.9,
+          item.x + radius * 0.15,
+          item.y + 1,
+          radius * 0.95,
+          opening * 0.5,
           0.18,
           0,
           Math.PI * 2
         );
         c.fill();
       }
+      const muralPoints = g.board.tubes.map(point);
+      const maxCapacity = Math.max(...g.board.tubes.map((t) => t.capacity));
+      const muralLeft = Math.min(...muralPoints.map((p2) => p2.x - radius));
+      const muralRight = Math.max(...muralPoints.map((p2) => p2.x + radius));
+      const muralTop = Math.min(
+        ...muralPoints.map((p2) => p2.y - 6 - Math.max(0, maxCapacity - 3) * step)
+      );
+      const muralBottom = Math.max(...muralPoints.map((p2) => p2.y + radius * 0.3));
       for (const item of ordered) {
-        const { t, x, y } = item, height = t.capacity * step + 20, ty = y - height, front = visible.has(t.id);
-        const capped = !accessible.has(t.id);
+        const { t, x, y } = item;
+        const previous = g.phase === "resolving" ? g.state.history.at(-1)?.tubes.find((old) => old.id === t.id) : void 0;
+        const visibleCountBase = previous && previous.balls.length > t.balls.length ? previous.balls.length : t.balls.length;
+        const height = visibleCountBase * step + 20, ty = y - height, front = visible.has(t.id) || g.phase === "resolving" && !t.balls.length && !!previous && faceVisible(g.state.history.at(-1), view).has(t.id);
+        const capped = !accessible.has(t.id) && !visible.has(t.id);
         this.capStates.push({ id: t.id, closed: capped, x, y: ty });
         if (!front) {
           if (!this.tubeGlass) {
@@ -2378,16 +2936,25 @@
                 height + 3
               );
               const core = c.createLinearGradient(x - radius, 0, x + radius, 0);
-              core.addColorStop(0, "#cfa9ba3c");
-              core.addColorStop(0.35, "#fff7f128");
-              core.addColorStop(0.7, "#ffe5ed15");
-              core.addColorStop(1, "#c79eac38");
+              core.addColorStop(0, "#b8ab9830");
+              core.addColorStop(0.35, "#fff9ef24");
+              core.addColorStop(0.7, "#ffeed610");
+              core.addColorStop(1, "#b5a38b26");
               c.fillStyle = core;
               c.fillRect(x - radius, ty, radius * 2, height + 3);
             } finally {
               c.restore();
             }
-            this.glassWall(x, ty, y, radius);
+            this.glassWall(
+              x,
+              ty,
+              y,
+              radius,
+              Math.max(
+                0.15,
+                Math.min(1, faceCoordinates(t, n, view).depth / (n - 1))
+              )
+            );
           }
           this.rearOpenings.push({
             id: t.id,
@@ -2505,8 +3072,6 @@
               ry: opening
             });
         }
-        const previous = g.phase === "resolving" ? g.state.history.at(-1)?.tubes.find((old) => old.id === t.id) : void 0;
-        const visibleCountBase = previous && previous.balls.length > t.balls.length ? previous.balls.length : t.balls.length;
         const first = Math.max(0, visibleCountBase - 3), shown = t.balls.slice(first);
         if (front)
           this.visibleBalls.push({ tube: t.id, ids: shown.map((b) => b.id) });
@@ -2524,6 +3089,36 @@
             this.ballPositions.push(position);
             const drop = g.phase === "intro" ? (1 - g.introProgress) * (150 - i * 14) : 0;
             this.ball(t.balls[i].type, x, by - drop, ballRadius);
+            if (i > first && g.phase !== "intro") {
+              const lowerY = by + step;
+              c.save();
+              c.beginPath();
+              c.arc(x, lowerY, ballRadius * 0.98, 0, Math.PI * 2);
+              c.clip();
+              const shadowTop = lowerY - ballRadius;
+              const shadow = c.createLinearGradient(
+                0,
+                shadowTop,
+                0,
+                shadowTop + ballRadius * 0.37
+              );
+              shadow.addColorStop(0, "#35243a65");
+              shadow.addColorStop(0.36, "#35243a38");
+              shadow.addColorStop(1, "#35243a00");
+              c.fillStyle = shadow;
+              c.beginPath();
+              c.ellipse(
+                x + ballRadius * 0.07,
+                shadowTop + ballRadius * 0.05,
+                ballRadius * 0.67,
+                ballRadius * 0.32,
+                0,
+                0,
+                Math.PI * 2
+              );
+              c.fill();
+              c.restore();
+            }
           } else {
             this.ghostPositions.push(position);
           }
@@ -2547,49 +3142,230 @@
           const frostTop = y - 6 - first * step;
           c.save();
           try {
-            this.chamberPath(x, ty, y, radius);
+            c.beginPath();
+            c.moveTo(x - radius, ty);
+            c.lineTo(x + radius, ty);
+            c.lineTo(x + radius, y - 2);
+            c.ellipse(x, y - 2, radius, radius * 0.3, 0, 0, Math.PI);
+            c.closePath();
             c.clip();
             const inner = radius * 0.9;
-            if (this.tubeGlass) {
-              this.transmittedBackdrop(
-                x - inner,
-                frostTop,
-                inner * 2,
-                y - frostTop + 4
-              );
-              const refract = c.createLinearGradient(x - inner, 0, x + inner, 0);
-              refract.addColorStop(0, "#cea4b533");
-              refract.addColorStop(0.4, "#fff6f226");
-              refract.addColorStop(0.75, "#ffe8ef12");
-              refract.addColorStop(1, "#c79ba630");
-              c.fillStyle = refract;
-              c.fillRect(x - inner, frostTop, inner * 2, y - frostTop + 4);
-            } else {
-              const mist = c.createLinearGradient(x - inner, 0, x + inner, 0);
-              mist.addColorStop(0, "#d7c8c2");
-              mist.addColorStop(0.42, "#eee4dc");
-              mist.addColorStop(0.78, "#e8dad3");
-              mist.addColorStop(1, "#d2bdb5");
-              c.fillStyle = mist;
-              c.fillRect(x - inner, frostTop, inner * 2, y - frostTop + 4);
+            const rimRy = inner * 0.3;
+            const capY = frostTop;
+            const baseY = y - 4 - inner * 0.13;
+            c.beginPath();
+            c.rect(
+              x - radius,
+              frostTop,
+              radius * 2,
+              y - frostTop + radius * 0.3 + 3
+            );
+            c.clip();
+            c.beginPath();
+            c.moveTo(x - inner, capY);
+            c.ellipse(x, capY, inner, rimRy, 0, Math.PI, 0, true);
+            c.lineTo(x + inner, baseY);
+            c.ellipse(x, baseY, inner, inner * 0.43, 0, 0, Math.PI);
+            c.closePath();
+            const side = c.createLinearGradient(x - inner, 0, x + inner, 0);
+            const palette = this.hiddenStyle === "mint" || this.hiddenStyle === "garden" ? ["#72aa9b", "#a6d8c6", "#b9e6d7", "#a5d6c4", "#77aa9b"] : this.hiddenStyle === "sky" || this.hiddenStyle === "space" ? ["#819eb9", "#bad3e7", "#d0e5f3", "#bbd3e7", "#819eb9"] : this.hiddenStyle === "rose" || this.hiddenStyle === "doodle" ? ["#bd9299", "#e5bfc5", "#f4d6d9", "#e6c0c7", "#bd9299"] : ["#b3adbf", "#ccc6d5", "#d6d1de", "#cdc7d6", "#b7b0c2"];
+            [0, 0.16, 0.42, 0.75, 1].forEach(
+              (stop, i) => side.addColorStop(stop, palette[i])
+            );
+            c.fillStyle = side;
+            c.fill();
+            if (this.hiddenStyle !== "current") {
+              c.save();
+              c.clip();
+              c.strokeStyle = "#ffffff55";
+              c.fillStyle = "#ffffff65";
+              c.lineWidth = Math.max(0.6, radius * 0.035);
+              if (["doodle", "space", "garden"].includes(this.hiddenStyle)) {
+                let row = 0;
+                for (let yy = capY + radius * 0.65; yy < baseY - radius * 0.15; yy += radius * 0.9, row++) {
+                  const xx = x + inner * (row % 2 ? 0.3 : -0.26);
+                  c.save();
+                  c.translate(xx, yy);
+                  c.scale(0.85, 1);
+                  const z = radius * 0.27;
+                  c.lineWidth = Math.max(0.8, radius * 0.045);
+                  if (this.hiddenStyle === "space") {
+                    c.fillStyle = row % 2 ? "#fff7d9" : "#ffe2a0";
+                    c.strokeStyle = "#7d95b5";
+                    c.beginPath();
+                    for (let k = 0; k < 10; k++) {
+                      const a = -Math.PI / 2 + k * Math.PI / 5, rr = k % 2 ? z * 0.45 : z;
+                      if (k === 0) c.moveTo(Math.cos(a) * rr, Math.sin(a) * rr);
+                      else c.lineTo(Math.cos(a) * rr, Math.sin(a) * rr);
+                    }
+                    c.closePath();
+                    c.fill();
+                    c.stroke();
+                    c.beginPath();
+                    c.arc(z * 1.6, -z * 0.8, z * 0.15, 0, Math.PI * 2);
+                    c.fill();
+                  } else if (this.hiddenStyle === "garden") {
+                    c.strokeStyle = "#689e85";
+                    c.fillStyle = "#fff7e7";
+                    for (let k = 0; k < 5; k++) {
+                      const a = k * Math.PI * 2 / 5;
+                      c.beginPath();
+                      c.ellipse(
+                        Math.cos(a) * z * 0.55,
+                        Math.sin(a) * z * 0.55,
+                        z * 0.45,
+                        z * 0.35,
+                        a,
+                        0,
+                        Math.PI * 2
+                      );
+                      c.fill();
+                    }
+                    c.fillStyle = "#eec35c";
+                    c.beginPath();
+                    c.arc(0, 0, z * 0.3, 0, Math.PI * 2);
+                    c.fill();
+                    c.fillStyle = "#6da78d";
+                    c.beginPath();
+                    c.ellipse(
+                      z * 1.3,
+                      z * 0.8,
+                      z * 0.5,
+                      z * 0.21,
+                      -0.55,
+                      0,
+                      Math.PI * 2
+                    );
+                    c.fill();
+                  } else {
+                    c.strokeStyle = "#aa6f87";
+                    c.fillStyle = "#fff7e9";
+                    c.beginPath();
+                    c.arc(0, 0, z, 0, Math.PI * 2);
+                    c.fill();
+                    c.stroke();
+                    c.fillStyle = "#986278";
+                    for (const eye of [-0.32, 0.32]) {
+                      c.beginPath();
+                      c.arc(z * eye, -z * 0.15, z * 0.085, 0, Math.PI * 2);
+                      c.fill();
+                    }
+                    c.beginPath();
+                    c.arc(0, z * 0.05, z * 0.42, 0.1, Math.PI - 0.1);
+                    c.stroke();
+                    c.beginPath();
+                    c.moveTo(z * 1.3, -z);
+                    c.lineTo(z * 1.65, -z * 0.4);
+                    c.lineTo(z * 1.2, z * 0.05);
+                    c.stroke();
+                  }
+                  c.restore();
+                }
+              } else if (this.hiddenStyle === "mint") {
+                for (let yy = capY + radius * 0.6; yy < baseY; yy += radius * 0.65) {
+                  for (const xx of [-0.4, 0.3]) {
+                    c.beginPath();
+                    c.arc(x + inner * xx, yy, radius * 0.055, 0, Math.PI * 2);
+                    c.fill();
+                  }
+                }
+              } else if (this.hiddenStyle === "sky") {
+                for (let yy = capY + radius * 0.65; yy < baseY; yy += radius * 0.7) {
+                  c.beginPath();
+                  c.moveTo(x - inner, yy);
+                  c.bezierCurveTo(
+                    x - inner * 0.4,
+                    yy + radius * 0.2,
+                    x + inner * 0.4,
+                    yy + radius * 0.2,
+                    x + inner,
+                    yy
+                  );
+                  c.stroke();
+                }
+              } else {
+                for (let yy = capY - radius; yy < baseY + radius; yy += radius * 0.85) {
+                  c.beginPath();
+                  c.moveTo(x - inner, yy);
+                  c.lineTo(x + inner, yy + radius * 0.8);
+                  c.lineWidth = radius * 0.17;
+                  c.stroke();
+                }
+              }
+              c.restore();
             }
+            if (this.hiddenArtwork) {
+              c.save();
+              try {
+                c.clip();
+                this.paintHiddenArtwork(
+                  c,
+                  x,
+                  capY,
+                  baseY,
+                  inner,
+                  muralLeft,
+                  muralRight,
+                  muralTop,
+                  muralBottom
+                );
+              } finally {
+                c.restore();
+              }
+            }
+            c.save();
+            c.clip();
+            const sleeveReflection = c.createLinearGradient(0, capY, 0, baseY);
+            sleeveReflection.addColorStop(0, "#ffffffff");
+            sleeveReflection.addColorStop(0.22, "#ffffffe8");
+            sleeveReflection.addColorStop(0.55, "#ffffff80");
+            sleeveReflection.addColorStop(1, "#ffffff18");
+            const highlightX = x - inner * 0.64;
+            c.beginPath();
+            c.moveTo(highlightX - inner * 0.09, capY);
+            c.lineTo(highlightX + inner * 0.09, capY);
+            c.lineTo(highlightX + inner * 0.05, baseY);
+            c.lineTo(highlightX - inner * 0.05, baseY);
+            c.closePath();
+            c.fillStyle = sleeveReflection;
+            c.fill();
+            c.beginPath();
+            c.moveTo(x - inner * 0.8, capY + rimRy * 0.25);
+            c.lineTo(x - inner * 0.8, baseY);
+            c.strokeStyle = sleeveReflection;
+            c.lineWidth = Math.max(0.45, radius * 0.025);
+            c.stroke();
+            c.restore();
+            c.lineWidth = 0.65;
+            c.strokeStyle = "#edf7ffd0";
+            c.beginPath();
+            c.ellipse(x, capY + 0.5, inner - 0.3, rimRy, 0, 0, Math.PI);
+            c.stroke();
+            this.hiddenSurfaces.push({
+              id: t.id,
+              top: frostTop,
+              center: capY,
+              rx: inner,
+              ry: rimRy,
+              bottom: baseY
+            });
           } finally {
             c.restore();
           }
         }
         if (this.tubeGlass) this.glassWall(x, ty, y, radius);
         else {
-          c.strokeStyle = "#ffffff75";
-          c.lineWidth = Math.max(0.8, radius * 0.07);
+          c.strokeStyle = "#ffffffdd";
+          c.lineWidth = Math.max(1, radius * 0.07);
           c.beginPath();
-          c.moveTo(x - radius * 0.7, ty + 16);
-          c.bezierCurveTo(
-            x - radius * 0.83,
-            ty + height * 0.3,
-            x - radius * 0.78,
-            ty + height * 0.55,
-            x - radius * 0.66,
-            y - 12
+          c.ellipse(
+            x,
+            ty,
+            radius * 0.88,
+            radius * 0.22,
+            0,
+            Math.PI * 1.05,
+            Math.PI * 1.75
           );
           c.stroke();
         }
@@ -2602,7 +3378,7 @@
           h: height + opening,
           topY
         });
-        if (!front) continue;
+        if (!front || !t.balls.length) continue;
         const hitRadius = Math.max(ballRadius + 5, 22 / this.displayScale);
         if (g.hint === t.id)
           this.text(
@@ -3708,6 +4484,12 @@
     return player;
   });
   var scene = new Scene(ctx, game, 390, 844);
+  scene.setHiddenArtworkCanvasFactory((width, height) => {
+    const c = document.createElement("canvas");
+    c.width = width;
+    c.height = height;
+    return c;
+  });
   for (const file of [
     "background.png",
     "play-background.png",
@@ -3715,11 +4497,24 @@
     "home-hero.png",
     "balls-candy.png",
     "turntable.png",
-    "tube-glass.png"
+    "tube-glass.png",
+    "tube-glass-rear.png",
+    "hidden-mural.png",
+    "hidden-mural-doodle.png",
+    "hidden-mural-brush.png",
+    "hidden-mural-night.png"
   ]) {
     try {
       const image = new Image();
-      image.onload = () => file === "background.png" ? scene.setBackground(image) : file === "play-background.png" ? scene.setPlayBackground(image) : file === "tube-glass.png" ? scene.setTubeGlass(image) : file === "turntable.png" ? scene.setTurntable(image) : file === "balls-candy.png" ? scene.setBallAtlas(image) : scene.setHomeArt(
+      image.onload = () => file.startsWith("hidden-mural") ? scene.setMuralImage(
+        [
+          "hidden-mural.png",
+          "hidden-mural-doodle.png",
+          "hidden-mural-brush.png",
+          "hidden-mural-night.png"
+        ].indexOf(file),
+        image
+      ) : file === "background.png" ? scene.setBackground(image) : file === "play-background.png" ? scene.setPlayBackground(image) : file === "tube-glass-rear.png" ? scene.setTubeGlassRear(image) : file === "tube-glass.png" ? scene.setTubeGlass(image) : file === "turntable.png" ? scene.setTurntable(image) : file === "balls-candy.png" ? scene.setBallAtlas(image) : scene.setHomeArt(
         file === "home-logo.png" ? "logo" : "hero",
         image
       );

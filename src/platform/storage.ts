@@ -1,3 +1,4 @@
+import { isMuralVariant } from "./mural";
 import { RULE, PRESETS, CONFIG } from "../config";
 import { invariant, type Board } from "../core/rules";
 import { createLevel } from "../core/generation";
@@ -19,6 +20,8 @@ export type Saved = {
   rule: string;
   session: string;
   seed: number;
+  /** Missing in older saves uses a stable session hash. Independent of puzzle seed. */
+  muralVariant?: number;
   preset: number;
   board: Board;
   history: Board[];
@@ -64,6 +67,7 @@ export function valid(s: Saved): boolean {
       s.rule !== RULE ||
       typeof s.session !== "string" ||
       !Number.isInteger(s.seed) ||
+      (s.muralVariant !== undefined && !isMuralVariant(s.muralVariant)) ||
       !Number.isInteger(s.preset) ||
       !PRESETS[s.preset]
     )

@@ -1,0 +1,69 @@
+{
+  "generator": "built-in image_gen",
+  "edits": "Tool-generated calm low-saturation imagery; PIL only resizing and palette encoding",
+  "assets": {
+    "doodle": {
+      "source": "/workspace/scratch/dd1dd67953e4/generated_images/exec-5a6e0b83-62f5-425d-96ca-6e4f4fc12779.png",
+      "source_sha256": "45cdfa040ab8446be398855ad6f521cf6fbb546a009161234404bc1266240544",
+      "asset": "assets/hidden-mural-doodle.png",
+      "width": 768,
+      "height": 256,
+      "mode": "opaque palette PNG",
+      "colors": 16,
+      "bytes": 70935,
+      "asset_sha256": "f3f54b14a1d31178029af4881e0031b2129e7b8ac369f51822ccebd4f523bacf"
+    },
+    "brush": {
+      "source": "/workspace/scratch/dd1dd67953e4/generated_images/exec-5f92b7b6-01e9-4585-a7c4-1509637964fa.png",
+      "source_sha256": "9eb52da56a5bb1c6362255c528a2fb39fcad7673d8800045af8f893bb150d134",
+      "asset": "assets/hidden-mural-brush.png",
+      "width": 768,
+      "height": 256,
+      "mode": "opaque palette PNG",
+      "colors": 16,
+      "bytes": 49387,
+      "asset_sha256": "ef8de6387bfa54da4dfcaa9e7526b0a7e669a30637906dfb9824f10d57c9b4ff"
+    },
+    "night": {
+      "source": "/workspace/scratch/dd1dd67953e4/generated_images/exec-e32b1dc5-a678-4f43-8b31-c8f3495e9c7b.png",
+      "source_sha256": "c8ba500a090e60650b98e64633ee4c957136a712ce1a219419141dae4dfd62a3",
+      "asset": "assets/hidden-mural-night.png",
+      "width": 768,
+      "height": 256,
+      "mode": "opaque palette PNG",
+      "colors": 32,
+      "bytes": 56515,
+      "asset_sha256": "b3d7c83aa75f91b2996b8aad6367a96f17dd9224303cb3e0d58e9a2d6ea989b9"
+    }
+  },
+  "generation_prompts": {
+    "doodle": {
+      "prompt": "Wide 3:1 panoramic flat opaque decorative mural for a children's puzzle game. Very soft dusty pale blush pink background. ONE large loose smiling sun drawn with muted mauve crayon on left, a spontaneous looping hand-drawn line drifting across center, two large very pale coral and pale cream paint patches on right. NO moon, NO stars, NO puzzle piece, NO candy, NO ball. Clear hand-drawn doodle style, not icons or repeating wallpaper. Low saturation, low contrast, large simple shapes, calm enough to sit behind gameplay. No text, no border, no glass or bottles, no highlights, no transparency.",
+      "hint": "Generated images are saved to /workspace/scratch/dd1dd67953e4/generated_images as /workspace/scratch/dd1dd67953e4/generated_images/exec-5a6e0b83-62f5-425d-96ca-6e4f4fc12779.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    "brush": {
+      "prompt": "Wide 3:1 panoramic flat opaque ABSTRACT GOUACHE painting for a children's puzzle game's decorative background. Pale warm cream ground, broad sweeping muted mint and dusty teal brush strokes crossing horizontally, one pale butter-yellow curl and two pale salmon brush marks. Visible painterly texture, low saturation and low contrast, just a few large simple flowing shapes. No representational objects at all: no moon, no stars, no face, no flowers, no icons, no balls, no numbers. Not repeating stripes or wallpaper. No text, no borders, no glass or bottle, no transparency.",
+      "hint": "Generated images are saved to /workspace/scratch/dd1dd67953e4/generated_images as /workspace/scratch/dd1dd67953e4/generated_images/exec-5f92b7b6-01e9-4585-a7c4-1509637964fa.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    "night": {
+      "prompt": "Edit this image for a quiet decorative background in a children's puzzle game, not the gameplay focal point. Preserve its wide 3:1 composition and handmade painting style, but lower saturation substantially and lower contrast. Use pale dusty pastel colors, approximately a gentle 40% cream wash while preserving visible brush texture. No dark black or saturated blue/plum. Night sky should be pale powder blue and lavender, moon/stars pale cream not bright yellow. Doodle line should be muted dusty mauve, not dark purple. Remove any puzzle-piece-shaped motif and replace it with a simple broad coral paint patch. Keep only a few large calm shapes; no numbers, no operation arrows, no balls, no text, no frames, no transparency. Completely opaque.",
+      "hint": "Generated images are saved to /workspace/scratch/dd1dd67953e4/generated_images as /workspace/scratch/dd1dd67953e4/generated_images/exec-e32b1dc5-a678-4f43-8b31-c8f3495e9c7b.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "original": {
+        "prompt": "A single wide panoramic children's storybook gouache night-sky mural, 3:1 horizontal aspect ratio, completely opaque full bleed. Soft medium blue and deep periwinkle sky, one large friendly buttery yellow crescent moon on the left, flowing lavender cloud nebula spanning toward right, a few differently sized hand-painted golden stars grouped loosely on right. Charming expressive painted texture, one coherent scene, not repeated icons or wallpaper. Bright enough for a cheerful candy puzzle game, not dark or scary. Large simple shapes readable at 320x100 pixels. No text, no glass or bottles, no frame, no border, no highlights, no transparency.",
+        "hint": "Generated images are saved to /workspace/scratch/dd1dd67953e4/generated_images as /workspace/scratch/dd1dd67953e4/generated_images/exec-9ea848d8-359d-4707-8a52-bc4bb5463d49.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+      }
+    }
+  },
+  "release": "0.1.34",
+  "main_mural": {
+    "file": "hidden-mural.png",
+    "source": "exec-536eefc1-064f-404b-b1cd-74b2e90b4ce4.png",
+    "prompt_summary": "One panoramic opaque gouache sunrise, mint teal hills and ivory river; no text or glass."
+  },
+  "final_hashes": {
+    "hidden-mural.png": "a23aa455692906ed37e6d0adc3c884d83b8f1526e6fa8d0c8922da57eb52a37e",
+    "hidden-mural-brush.png": "ef8de6387bfa54da4dfcaa9e7526b0a7e669a30637906dfb9824f10d57c9b4ff",
+    "hidden-mural-doodle.png": "f3f54b14a1d31178029af4881e0031b2129e7b8ac369f51822ccebd4f523bacf",
+    "hidden-mural-night.png": "b3d7c83aa75f91b2996b8aad6367a96f17dd9224303cb3e0d58e9a2d6ea989b9"
+  }
+}

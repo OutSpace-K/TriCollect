@@ -1,0 +1,5 @@
+{
+  cases: 72,
+  hiddenColorMutations: 9288,
+  result: 'pixel-identical with hidden colors changed, with sprites and fallback'
+}

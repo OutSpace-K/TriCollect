@@ -1,6 +1,12 @@
 {
-  "source": "OpenAI built-in image generation, approved visual proposal reference",
-  "purpose": "Thin warm pink transparent open cylinder overlay for dynamic gameplay",
-  "processing": "alpha-margin crop and proportional resize to 166x768",
-  "hidden_information": "Hidden balls are not rendered; separate opaque neutral inner mask"
+  "tool": "built-in ImageGen",
+  "reference": "original proposal right gameplay glass",
+  "dimensions": [166, 603],
+  "runtime": "front-only foot, tapered wall reflections, independent opaque inner-wall sticker; hidden identities never rendered",
+  "status": "unpublished preview",
+  "asset": "assets/tube-glass.png",
+  "sha256": "7547420374e6928affd1f50f5de0999a44697469119c7ed1461cd8603388e190",
+  "bytes": 97801,
+  "release": "0.1.34",
+  "encoding": "Indexed PNG palette optimization for package budget"
 }

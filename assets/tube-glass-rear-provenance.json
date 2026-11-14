@@ -1,0 +1,12 @@
+{
+  "tool": "deterministic Canvas material bake",
+  "script": "scripts/bake-glass.mjs",
+  "dimensions": [285, 314],
+  "runtime": "three cached depth blur bands; three image draws per rear tube",
+  "status": "unpublished preview",
+  "asset": "assets/tube-glass-rear.png",
+  "sha256": "5504d9b7fe88d3d1374025a57641ae8bfcdcb2353bfacccff4356dc22a908d5f",
+  "bytes": 102665,
+  "release": "0.1.34",
+  "encoding": "Indexed PNG palette optimization for package budget"
+}

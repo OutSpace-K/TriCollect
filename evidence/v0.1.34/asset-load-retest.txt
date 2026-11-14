@@ -1,0 +1,11 @@
+TriCollect clock units/ms 1
+TriCollect clock units/ms 1
+✔ native image asset loads and image failure leaves gameplay available (616.906195ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 994.138336

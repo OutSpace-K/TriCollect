@@ -10,7 +10,7 @@ GlobalFonts.registerFromPath(
   "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
   "sans-serif",
 );
-mkdirSync("evidence/v0.1.33", { recursive: true });
+mkdirSync("evidence/style-preview", { recursive: true });
 const home = await loadImage("assets/background.png"),
   play = await loadImage("assets/play-background.png");
 for (const [w, h] of [
@@ -41,10 +41,28 @@ for (const [w, h] of [
     vp.logicalHeight,
     vp.factor,
   );
+  if (process.env.TRICOLLECT_HIDDEN_STYLE)
+    s.setHiddenStyle(process.env.TRICOLLECT_HIDDEN_STYLE as any);
+  if (process.env.TRICOLLECT_HIDDEN_ART)
+    s.setHiddenArtwork(
+      (await loadImage(process.env.TRICOLLECT_HIDDEN_ART)) as any,
+      !!process.env.TRICOLLECT_HIDDEN_MURAL,
+    );
+  if (process.env.TRICOLLECT_MURAL_BANK) {
+    s.setHiddenArtworkCanvasFactory((w, h) => createCanvas(w, h) as any);
+    for (const [i, file] of [
+      "hidden-mural.png",
+      "hidden-mural-doodle.png",
+      "hidden-mural-brush.png",
+      "hidden-mural-night.png",
+    ].entries())
+      s.setMuralImage(i, (await loadImage("assets/" + file)) as any);
+  }
   s.setHomeArt("logo", (await loadImage("assets/home-logo.png")) as any);
   s.setHomeArt("hero", (await loadImage("assets/home-hero.png")) as any);
   s.setBallAtlas((await loadImage("assets/balls-candy.png")) as any);
   s.setTubeGlass((await loadImage("assets/tube-glass.png")) as any);
+  s.setTubeGlassRear((await loadImage("assets/tube-glass-rear.png")) as any);
   s.setTurntable((await loadImage("assets/turntable.png")) as any);
   s.setBackground(home as any);
   s.setPlayBackground(play as any);
@@ -53,6 +71,8 @@ for (const [w, h] of [
     if (page === "game") {
       s.homePanel = null;
       g.start(process.env.TRICOLLECT_PREVIEW_NORMAL ? 1 : 2);
+      if (process.env.TRICOLLECT_MURAL_VARIANT !== undefined)
+        g.state.muralVariant = Number(process.env.TRICOLLECT_MURAL_VARIANT);
       g.skipIntro();
       g.begin();
     }
@@ -63,7 +83,7 @@ for (const [w, h] of [
     s.render();
     ctx.restore();
     writeFileSync(
-      `evidence/v0.1.33/${w}-${page}${process.env.TRICOLLECT_PREVIEW_NORMAL ? "-normal" : ""}.png`,
+      `evidence/style-preview/${w}-${page}${process.env.TRICOLLECT_PREVIEW_NORMAL ? "-normal" : ""}.png`,
       c.toBuffer("image/png"),
     );
   }
