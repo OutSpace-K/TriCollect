@@ -615,7 +615,7 @@ test("home subtitle adds only small decorative 消除 letters and no new hit are
     assert.ok(!x.labels.includes("消") && !x.labels.includes("除"));
     x.game.home();
     x.scene.render();
-    assert.ok(x.labels.includes("消") && x.labels.includes("除"));
+    assert.ok(x.strokes.some((s) => s.color === "#60301f" && s.width === 13));
     assert.ok(!x.scene.buttons.some((b) => b.id.includes("subtitle")));
     assert.equal(x.scene.targets.length, 0);
   }

@@ -4601,29 +4601,131 @@
     homeSubtitle() {
       const c = this.ctx;
       const logoWidth = Math.min(this.width - 26, 420, this.height * 0.5);
-      const y = this.homeLogo ? 70 + logoWidth * 0.5 + 14 : 211 + this.homeGroupOffset;
-      c.save();
-      c.font = '900 26px "Arial Rounded MT Bold", "Noto Sans CJK SC", sans-serif';
-      c.textAlign = "center";
-      c.textBaseline = "middle";
-      c.lineJoin = "round";
-      const colors = [
-        ["#ffd5df", "#fa727e"],
-        ["#f6ff9b", "#9edb32"]
+      const y = this.homeLogo ? 70 + logoWidth * 0.5 + 4.5 : 204 + this.homeGroupOffset;
+      const characters = [
+        [
+          [
+            [2, 6],
+            [8, 10]
+          ],
+          [
+            [0, 22],
+            [7, 25]
+          ],
+          [
+            [2, 44],
+            [9, 33]
+          ],
+          [
+            [20, 2],
+            [24, 10]
+          ],
+          [
+            [33, 0],
+            [33, 13]
+          ],
+          [
+            [47, 3],
+            [42, 10]
+          ],
+          [
+            [19, 46],
+            [19, 18],
+            [46, 18],
+            [46, 44],
+            [40, 46]
+          ],
+          [
+            [20, 28],
+            [45, 28]
+          ],
+          [
+            [20, 37],
+            [45, 37]
+          ]
+        ],
+        [
+          [
+            [1, 46],
+            [1, 3],
+            [13, 3],
+            [8, 16],
+            [14, 24],
+            [12, 30],
+            [6, 30]
+          ],
+          [
+            [19, 18],
+            [32, 2],
+            [48, 18]
+          ],
+          [
+            [23, 20],
+            [42, 20]
+          ],
+          [
+            [18, 29],
+            [48, 29]
+          ],
+          [
+            [33, 21],
+            [33, 44],
+            [28, 46]
+          ],
+          [
+            [23, 36],
+            [17, 44]
+          ],
+          [
+            [41, 36],
+            [48, 44]
+          ]
+        ]
       ];
-      for (const [i, char] of [..."\u6D88\u9664"].entries()) {
-        const x = this.width / 2 + (i - 0.5) * 31;
+      c.save();
+      c.translate(this.width / 2 - 27.14, y - 11.04);
+      c.scale(0.46, 0.46);
+      c.lineCap = "round";
+      c.lineJoin = "round";
+      for (const [i, strokes] of characters.entries()) {
+        c.save();
+        c.translate(i * 66, 0);
+        const trace = () => {
+          c.beginPath();
+          for (const stroke of strokes) {
+            c.moveTo(stroke[0][0], stroke[0][1]);
+            for (const p of stroke.slice(1)) c.lineTo(p[0], p[1]);
+          }
+        };
+        trace();
         c.strokeStyle = "#fffbee";
-        c.lineWidth = 7;
-        c.strokeText(char, x, y);
+        c.lineWidth = 17;
+        c.stroke();
         c.strokeStyle = "#60301f";
-        c.lineWidth = 4;
-        c.strokeText(char, x, y);
-        const fill = c.createLinearGradient(0, y - 13, 0, y + 13);
-        fill.addColorStop(0, colors[i][0]);
-        fill.addColorStop(1, colors[i][1]);
-        c.fillStyle = fill;
-        c.fillText(char, x, y);
+        c.lineWidth = 13;
+        c.stroke();
+        c.save();
+        c.translate(0, 1.5);
+        trace();
+        c.strokeStyle = i === 0 ? "#cb3d56" : "#70a619";
+        c.lineWidth = 8;
+        c.stroke();
+        c.restore();
+        trace();
+        const fill = c.createLinearGradient(0, 0, 0, 48);
+        fill.addColorStop(0, i === 0 ? "#ffc0ce" : "#efff7a");
+        fill.addColorStop(0.48, i === 0 ? "#ff849a" : "#beee2c");
+        fill.addColorStop(1, i === 0 ? "#f65875" : "#87c80d");
+        c.strokeStyle = fill;
+        c.lineWidth = 7.5;
+        c.stroke();
+        c.beginPath();
+        c.moveTo(i === 0 ? 23 : 25, i === 0 ? 17 : 19);
+        c.lineTo(i === 0 ? 30 : 31, i === 0 ? 17 : 19);
+        c.strokeStyle = "#fff9da";
+        c.lineWidth = 1.7;
+        c.stroke();
+        c.restore();
       }
       c.restore();
     }
