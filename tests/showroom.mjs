@@ -39,7 +39,7 @@ try {
       }));
       assert.equal(state.step, step);
       assert.equal(state.targets, 0);
-      assert.equal(state.remaining, 300000);
+      assert.equal(state.remaining, 120000);
       for (const b of state.buttons)
         assert.ok(
           b.x >= 0 && b.y >= 0 && b.x + b.w <= width && b.y + b.h + 8 <= height,

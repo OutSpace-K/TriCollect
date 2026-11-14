@@ -1,0 +1,15 @@
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1000
+TriCollect clock units/ms 1000
+✔ native per-difficulty time labels, saved resume and restart preserve new budgets (1330.904801ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1697.741847

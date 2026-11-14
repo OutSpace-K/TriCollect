@@ -1,0 +1,15 @@
+✔ only finished started games become local results; home/restart never duplicate (159.56733ms)
+✔ records reconcile once, cap at 30, and preserve prior valid backup on corruption (42.833205ms)
+✔ record storage failure cannot prevent ending the game (35.209293ms)
+✔ new round budgets are difficulty-specific and remaining is bounded by saved budget plus granted time (289.086572ms)
+✔ legacy saves restore original 300000 ms budget and exact remaining without resetting (276.76189ms)
+✔ new results calculate elapsed from their saved per-round budget including extensions (165.125897ms)
+✔ legacy results preserve old elapsed accounting and historical records remain readable (33.917933ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1097.356279

@@ -1,5 +1,5 @@
 import { isMuralVariant } from "./mural";
-import { RULE, PRESETS, CONFIG } from "../config";
+import { RULE, PRESETS, CONFIG, roundBaseMs } from "../config";
 import { invariant, type Board } from "../core/rules";
 import { createLevel } from "../core/generation";
 export interface Store {
@@ -27,6 +27,8 @@ export type Saved = {
   history: Board[];
   /** Absent in older saves: one latest undo is available if history exists. */
   undoAvailable?: boolean;
+  /** Original per-round budget; absent legacy saves retain 300000 ms. */
+  baseMs?: number;
   remaining: number;
   added: number;
   extensions: number;
@@ -73,9 +75,12 @@ export function valid(s: Saved): boolean {
     )
       return false;
     if (
+      (s.baseMs !== undefined &&
+        s.baseMs !== roundBaseMs(s.preset) &&
+        s.baseMs !== CONFIG.baseMs) ||
       !Number.isFinite(s.remaining) ||
       s.remaining < 0 ||
-      s.remaining > CONFIG.baseMs + CONFIG.extraMs * CONFIG.maxExtensions ||
+      s.remaining > (s.baseMs ?? CONFIG.baseMs) + s.added ||
       !Number.isInteger(s.extensions) ||
       s.extensions < 0 ||
       s.extensions > CONFIG.maxExtensions ||

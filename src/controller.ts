@@ -6,7 +6,7 @@ import {
 } from "./platform/mural";
 import { commitTerminal, drainTerminal } from "./platform/terminal";
 import { readRecords } from "./platform/records";
-import { CONFIG, RULE, PRESETS } from "./config";
+import { CONFIG, RULE, PRESETS, roundBaseMs } from "./config";
 import { nextSeed } from "./core/seed";
 import { createLevel } from "./core/generation";
 import {
@@ -104,7 +104,8 @@ export class Controller {
       board: level.board,
       history: [],
       undoAvailable: false,
-      remaining: CONFIG.baseMs,
+      baseMs: roundBaseMs(preset),
+      remaining: roundBaseMs(preset),
       added: 0,
       extensions: 0,
       rewards: [],

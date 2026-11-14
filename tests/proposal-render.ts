@@ -13,6 +13,12 @@ GlobalFonts.registerFromPath(
   "sans-serif",
 );
 mkdirSync("evidence/style-preview", { recursive: true });
+const selectedPreset =
+  process.env.TRICOLLECT_PREVIEW_PRESET !== undefined
+    ? Number(process.env.TRICOLLECT_PREVIEW_PRESET)
+    : process.env.TRICOLLECT_PREVIEW_NORMAL
+      ? 1
+      : 2;
 const home = await loadImage("assets/background.png"),
   play = await loadImage("assets/play-background.png");
 for (const [w, h] of [
@@ -72,12 +78,12 @@ for (const [w, h] of [
     if (page === "difficulty") s.homePanel = "difficulty";
     if (page === "ready") {
       s.homePanel = null;
-      g.start(process.env.TRICOLLECT_PREVIEW_NORMAL ? 1 : 2);
+      g.start(selectedPreset);
       g.skipIntro();
     }
     if (page === "game") {
       s.homePanel = null;
-      g.start(process.env.TRICOLLECT_PREVIEW_NORMAL ? 1 : 2);
+      g.start(selectedPreset);
       if (process.env.TRICOLLECT_MURAL_VARIANT !== undefined)
         g.state.muralVariant = Number(process.env.TRICOLLECT_MURAL_VARIANT);
       g.skipIntro();

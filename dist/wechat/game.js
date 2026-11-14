@@ -535,6 +535,7 @@
   // src/config.ts
   var RULE = "tricollect-5-variable-height";
   var CONFIG = Object.freeze({
+    // Legacy save duration; new rounds use roundBaseMs(preset).
     baseMs: 3e5,
     capacity: 7,
     match: 3,
@@ -549,6 +550,10 @@
     searchNodes: 12e3,
     searchMs: 40
   });
+  function roundBaseMs(preset) {
+    var _a3;
+    return (_a3 = [12e4, 18e4, 24e4][preset]) != null ? _a3 : 12e4;
+  }
   var PRESETS = [
     {
       id: "learn",
@@ -873,11 +878,11 @@
   }
   var lastStored = /* @__PURE__ */ new WeakMap();
   function valid(s) {
-    var _a3;
+    var _a3, _b;
     try {
       if (s.schema !== 1 || s.generation !== void 0 && s.generation !== 1 && s.generation !== 2 || s.rule !== RULE || typeof s.session !== "string" || !Number.isInteger(s.seed) || s.muralVariant !== void 0 && !isMuralVariant(s.muralVariant) || !Number.isInteger(s.preset) || !PRESETS[s.preset])
         return false;
-      if (!Number.isFinite(s.remaining) || s.remaining < 0 || s.remaining > CONFIG.baseMs + CONFIG.extraMs * CONFIG.maxExtensions || !Number.isInteger(s.extensions) || s.extensions < 0 || s.extensions > CONFIG.maxExtensions || s.added !== s.extensions * CONFIG.extraMs)
+      if (s.baseMs !== void 0 && s.baseMs !== roundBaseMs(s.preset) && s.baseMs !== CONFIG.baseMs || !Number.isFinite(s.remaining) || s.remaining < 0 || s.remaining > ((_a3 = s.baseMs) != null ? _a3 : CONFIG.baseMs) + s.added || !Number.isInteger(s.extensions) || s.extensions < 0 || s.extensions > CONFIG.maxExtensions || s.added !== s.extensions * CONFIG.extraMs)
         return false;
       if (!Number.isInteger(s.hintsUsed) || s.hintsUsed < 0 || s.undoAvailable !== void 0 && typeof s.undoAvailable !== "boolean" || !Number.isInteger(s.undosUsed) || s.undosUsed < 0)
         return false;
@@ -891,21 +896,21 @@
         return false;
       if (s.rewards.filter((r) => r.redeemed && r.kind !== "lift").length !== s.extensions || s.rewards.filter((r) => r.redeemed && r.kind === "lift").length > 1)
         return false;
-      const original = originalFor(s.preset, s.seed, (_a3 = s.generation) != null ? _a3 : 1), all = original.tubes.flatMap((t) => t.balls), identities = new Map(all.map((b) => [b.id, b.type]));
+      const original = originalFor(s.preset, s.seed, (_b = s.generation) != null ? _b : 1), all = original.tubes.flatMap((t) => t.balls), identities = new Map(all.map((b) => [b.id, b.type]));
       const check = (b) => {
-        var _a4, _b;
+        var _a4, _b2;
         return invariant(b, all.length) && (!((_a4 = b.pocket) == null ? void 0 : _a4.length) || s.rewards.some((r) => r.kind === "lift" && r.redeemed)) && b.side === original.side && [
           ...b.tubes.flatMap((t) => t.balls),
           ...b.tray,
           ...b.cleared,
-          ...(_b = b.pocket) != null ? _b : []
+          ...(_b2 = b.pocket) != null ? _b2 : []
         ].every((b2) => identities.get(b2.id) === b2.type) && b.tubes.every(
           (t) => {
             var _a5;
             return t.capacity === ((_a5 = original.tubes.find((x) => x.id === t.id)) == null ? void 0 : _a5.capacity) && t.balls.every(
               (b2, i) => {
-                var _a6, _b2;
-                return ((_b2 = (_a6 = original.tubes.find((x) => x.id === t.id)) == null ? void 0 : _a6.balls[i]) == null ? void 0 : _b2.id) === b2.id;
+                var _a6, _b3;
+                return ((_b3 = (_a6 = original.tubes.find((x) => x.id === t.id)) == null ? void 0 : _a6.balls[i]) == null ? void 0 : _b3.id) === b2.id;
               }
             );
           }
@@ -978,7 +983,7 @@
           (n) => Number.isFinite(n) && n >= 0
         ) || r.generation !== void 0 && r.generation !== 1 && r.generation !== 2 || [r.hintsUsed, r.undosUsed, r.rewardedAds].some(
           (n) => n !== void 0 && (!Number.isInteger(n) || n < 0)
-        ) || r.total < 1 || r.cleared > r.total || r.elapsedMs > CONFIG.baseMs + CONFIG.extraMs * CONFIG.maxExtensions
+        ) || r.total < 1 || r.cleared > r.total || r.baseMs !== void 0 && r.baseMs !== roundBaseMs(r.preset) && r.baseMs !== CONFIG.baseMs || r.elapsedMs > (r.baseMs === void 0 ? CONFIG.baseMs + CONFIG.extraMs * CONFIG.maxExtensions : r.baseMs + r.addedMs)
       ))
         return null;
       return a;
@@ -1002,7 +1007,7 @@
     }
   }
   function appendResult(store, s, correctVictory = false) {
-    var _a3;
+    var _a3, _b, _c;
     if (!s.started || s.phase !== "result" || s.finishedAt === void 0)
       return true;
     const loaded = readRecords(store);
@@ -1019,9 +1024,10 @@
       score: s.board.score,
       cleared: s.board.cleared.length,
       total: s.board.tubes.reduce((n, t) => n + t.capacity, 0),
-      elapsedMs: Math.max(0, CONFIG.baseMs + s.added - s.remaining),
+      baseMs: (_a3 = s.baseMs) != null ? _a3 : CONFIG.baseMs,
+      elapsedMs: Math.max(0, ((_b = s.baseMs) != null ? _b : CONFIG.baseMs) + s.added - s.remaining),
       addedMs: s.added,
-      generation: (_a3 = s.generation) != null ? _a3 : 1,
+      generation: (_c = s.generation) != null ? _c : 1,
       hintsUsed: s.hintsUsed,
       undosUsed: s.undosUsed,
       rewardedAds: s.rewards.filter((r) => r.redeemed).length
@@ -1207,7 +1213,8 @@
         board: level.board,
         history: [],
         undoAvailable: false,
-        remaining: CONFIG.baseMs,
+        baseMs: roundBaseMs(preset),
+        remaining: roundBaseMs(preset),
         added: 0,
         extensions: 0,
         rewards: [],
@@ -2977,7 +2984,7 @@
         );
         this.button(
           "begin",
-          g.phase === "intro" ? "\u8DF3\u8FC7\u5F00\u573A" : "\u5F00\u59CB \xB7 05:00",
+          g.phase === "intro" ? "\u8DF3\u8FC7\u5F00\u573A" : `\u5F00\u59CB \xB7 ${String(Math.floor(g.state.remaining / 6e4)).padStart(2, "0")}:${String(Math.floor(g.state.remaining / 1e3) % 60).padStart(2, "0")}`,
           44,
           panelY + 98,
           w - 88,
@@ -4470,7 +4477,7 @@
             i === 0
           );
           this.text(
-            `${[105, 126, 216][i]}\u9897 \xB7 ${p.types}\u7C7B`,
+            `${[105, 126, 216][i]}\u9897 \xB7 ${p.types}\u7C7B \xB7 ${roundBaseMs(i) / 6e4}\u5206\u949F`,
             w / 2,
             y + 72,
             12,
@@ -4573,7 +4580,7 @@
         [
           "\u70B9\u6B63\u9762\u6700\u4E0A\u7403\uFF0C\u4E09\u4E2A\u540C\u7C7B\u6D88\u9664",
           "\u5DE6\u53F3\u8F6C\u52A8\uFF0C\u6E05\u7A7A\u5916\u5C42\u770B\u91CC\u9762",
-          "\u64A4\u9500\u4E00\u6B65\uFF1B\u6BCF\u5C40\u6709\u6548\u65F6\u95F45\u5206\u949F",
+          "\u7B80\u53552\u5206\u949F \xB7 \u666E\u901A3\u5206\u949F \xB7 \u56F0\u96BE4\u5206\u949F",
           "\u7B80\u5355 105\u9897 / 5\u7C7B / 5\u5C42",
           "\u666E\u901A 126\u9897 / 6\u7C7B / 5\u20137\u5C42",
           "\u56F0\u96BE 216\u9897 / 7\u7C7B / 5\u20137\u5C42"

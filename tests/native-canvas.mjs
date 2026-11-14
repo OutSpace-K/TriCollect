@@ -139,7 +139,7 @@ try {
     await click("开始游戏");
     await click("简单");
     await click("跳过开场");
-    await click("开始 · 05:00");
+    await click("开始 · 02:00");
     await p.waitForTimeout(60);
     const buttons = await p.evaluate(() =>
       labels.filter((l) =>

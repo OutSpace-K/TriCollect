@@ -1,5 +1,5 @@
 import type { Store, Saved } from "./storage";
-import { CONFIG, PRESETS } from "../config";
+import { CONFIG, PRESETS, roundBaseMs } from "../config";
 export const RECORDS_KEY = "tricollect.records.v1",
   RECORD_LIMIT = 30;
 export type MatchRecord = {
@@ -11,6 +11,8 @@ export type MatchRecord = {
   score: number;
   cleared: number;
   total: number;
+  /** Saved round budget; absent historical records retain legacy bounds. */
+  baseMs?: number;
   elapsedMs: number;
   addedMs: number;
   /** Optional for compatibility; absent legacy entries are not experiment data. */
@@ -58,7 +60,13 @@ function parse(raw: string | null): MatchRecord[] | null {
           ) ||
           r.total < 1 ||
           r.cleared > r.total ||
-          r.elapsedMs > CONFIG.baseMs + CONFIG.extraMs * CONFIG.maxExtensions,
+          (r.baseMs !== undefined &&
+            r.baseMs !== roundBaseMs(r.preset) &&
+            r.baseMs !== CONFIG.baseMs) ||
+          r.elapsedMs >
+            (r.baseMs === undefined
+              ? CONFIG.baseMs + CONFIG.extraMs * CONFIG.maxExtensions
+              : r.baseMs + r.addedMs),
       )
     )
       return null;
@@ -107,7 +115,8 @@ export function appendResult(
     score: s.board.score,
     cleared: s.board.cleared.length,
     total: s.board.tubes.reduce((n, t) => n + t.capacity, 0),
-    elapsedMs: Math.max(0, CONFIG.baseMs + s.added - s.remaining),
+    baseMs: s.baseMs ?? CONFIG.baseMs,
+    elapsedMs: Math.max(0, (s.baseMs ?? CONFIG.baseMs) + s.added - s.remaining),
     addedMs: s.added,
     generation: s.generation ?? 1,
     hintsUsed: s.hintsUsed,

@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { Controller } from "../src/controller";
-import { CONFIG } from "../src/config";
+import { CONFIG, roundBaseMs } from "../src/config";
 import { createLevel } from "../src/core/generation";
 import { clone } from "../src/core/rules";
 import {
@@ -41,17 +41,17 @@ function start(g: Controller) {
   g.skipIntro();
   g.begin();
 }
-test("ready/intro never consume fixed 300s, all presets share base", () => {
+test("ready/intro preserve 2/3/4 minute budgets by difficulty", () => {
   const x = setup();
   for (let p = 0; p < 3; p++) {
     x.g.start(p);
     x.advance(10000);
     x.g.tick();
-    assert.equal(x.g.state.remaining, 300000);
+    assert.equal(x.g.state.remaining, roundBaseMs(p));
     x.g.begin();
     x.advance(1000);
     x.g.tick();
-    assert.equal(x.g.state.remaining, 299000);
+    assert.equal(x.g.state.remaining, roundBaseMs(x.g.state.preset) - 1000);
   }
 });
 test("pause/background hide, resume remains paused, no wall time or frame dependence", () => {
@@ -60,7 +60,7 @@ test("pause/background hide, resume remains paused, no wall time or frame depend
   x.advance(1234);
   x.g.hide();
   const remaining = x.g.state.remaining;
-  assert.equal(remaining, 298766);
+  assert.equal(remaining, 118766);
   x.advance(1000000);
   x.g.tick();
   assert.equal(x.g.phase, "paused");
@@ -106,7 +106,7 @@ test("undo restores score and balls without refunding time or copying ad ledger"
   x.g.tick();
   x.g.undo();
   assert.deepEqual(x.g.board, b);
-  assert.equal(x.g.state.remaining, 299000);
+  assert.equal(x.g.state.remaining, roundBaseMs(x.g.state.preset) - 1000);
   x.g.pick("0,0");
   assert.equal(x.g.state.history.length, 1);
 });

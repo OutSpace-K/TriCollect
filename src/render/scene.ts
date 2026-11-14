@@ -1,6 +1,13 @@
 import { composeMural, muralRecipe } from "./mural";
 import { projection } from "./projection";
-import { PALETTE, SYMBOLS, PRESETS, CONFIG, FACES } from "../config";
+import {
+  PALETTE,
+  SYMBOLS,
+  PRESETS,
+  CONFIG,
+  FACES,
+  roundBaseMs,
+} from "../config";
 import { faceVisible, faceCoordinates } from "../core/rules";
 import { Controller } from "../controller";
 export type Button = {
@@ -1233,7 +1240,9 @@ export class Scene {
       );
       this.button(
         "begin",
-        g.phase === "intro" ? "跳过开场" : "开始 · 05:00",
+        g.phase === "intro"
+          ? "跳过开场"
+          : `开始 · ${String(Math.floor(g.state.remaining / 60000)).padStart(2, "0")}:${String(Math.floor(g.state.remaining / 1000) % 60).padStart(2, "0")}`,
         44,
         panelY + 98,
         w - 88,
@@ -2894,7 +2903,7 @@ export class Scene {
           i === 0,
         );
         this.text(
-          `${[105, 126, 216][i]}颗 · ${p.types}类`,
+          `${[105, 126, 216][i]}颗 · ${p.types}类 · ${roundBaseMs(i) / 60000}分钟`,
           w / 2,
           y + 72,
           12,
@@ -3001,7 +3010,7 @@ export class Scene {
       [
         "点正面最上球，三个同类消除",
         "左右转动，清空外层看里面",
-        "撤销一步；每局有效时间5分钟",
+        "简单2分钟 · 普通3分钟 · 困难4分钟",
         "简单 105颗 / 5类 / 5层",
         "普通 126颗 / 6类 / 5–7层",
         "困难 216颗 / 7类 / 5–7层",

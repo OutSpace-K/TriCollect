@@ -2,6 +2,7 @@ export const VERSION = "0.1.25";
 export const DISPLAY_NAME = "转个“球”";
 export const RULE = "tricollect-5-variable-height";
 export const CONFIG = Object.freeze({
+  // Legacy save duration; new rounds use roundBaseMs(preset).
   baseMs: 300_000,
   capacity: 7,
   match: 3,
@@ -16,6 +17,9 @@ export const CONFIG = Object.freeze({
   searchNodes: 12_000,
   searchMs: 40,
 });
+export function roundBaseMs(preset: number): number {
+  return [120_000, 180_000, 240_000][preset] ?? 120_000;
+}
 export const PRESETS = [
   {
     id: "learn",

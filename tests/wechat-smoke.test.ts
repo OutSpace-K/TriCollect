@@ -1,3 +1,4 @@
+import { roundBaseMs } from "../src/config";
 import { projection } from "../src/render/projection";
 import { faceVisible } from "../src/core/rules";
 import { createLevel } from "../src/core/generation";
@@ -447,20 +448,20 @@ test("prebuilt native game boots without DOM; wx microseconds normalized, touch 
   const r = await boot();
   beginRuntime(r);
   r.advance(1_500_000);
-  assert.equal(decode(r.storage.get(SAVE_KEY)!)!.remaining, 298500);
+  assert.equal(decode(r.storage.get(SAVE_KEY)!)!.remaining, 118500);
   r.hide();
   r.advance(50_000_000);
   r.show();
   assert.ok(r.labels.some((l) => l.s === "休息一下"));
-  assert.equal(decode(r.storage.get(SAVE_KEY)!)!.remaining, 298500);
+  assert.equal(decode(r.storage.get(SAVE_KEY)!)!.remaining, 118500);
 });
-test("native bundle home restart/hide preserves 290000ms session and both save copies", async () => {
+test("native bundle home restart/hide preserves 110000ms session and both save copies", async () => {
   const r = await boot();
   beginRuntime(r);
   r.advance(10_000_000);
   r.hide();
   const expected = decode(r.storage.get(SAVE_KEY)!)!;
-  assert.equal(expected.remaining, 290000);
+  assert.equal(expected.remaining, 110000);
   const snapshot = new Map(r.storage);
   for (let restart = 0; restart < 3; restart++) {
     const home = await boot(r.storage);
@@ -478,7 +479,7 @@ test("native bundle home restart/hide preserves 290000ms session and both save c
   resumed.advance(1_000_000);
   resumed.hide();
   const actual = decode(r.storage.get(SAVE_KEY)!)!;
-  assert.equal(actual.remaining, 289000);
+  assert.equal(actual.remaining, 109000);
   assert.equal(actual.session, expected.session);
 });
 test("native bundle manually ended non-winning session never revives on home hide/restart", async () => {
@@ -517,7 +518,10 @@ for (const units of [1, 1000])
       r.advance(10_000_000);
       r.hide();
       r.show();
-      assert.equal(decode(r.storage.get(SAVE_KEY)!)!.remaining, 290000);
+      assert.equal(
+        decode(r.storage.get(SAVE_KEY)!)!.remaining,
+        roundBaseMs(preset) - 10000,
+      );
       r.tap("继续游戏");
       for (let rotation = 0; rotation < 6; rotation++) {
         r.tap("向右转", true);
@@ -1045,5 +1049,34 @@ test("no-ad native release: free pocket, two timeout extensions and retry remain
   const next = decode(r.storage.get(SAVE_KEY)!)!;
   assert.equal(next.extensions, 0);
   assert.equal(next.rewards.length, 0);
-  assert.equal(next.remaining, 300_000);
+  assert.equal(next.remaining, 120_000);
+});
+
+test("native per-difficulty time labels, saved resume and restart preserve new budgets", async () => {
+  for (const [preset, minutes] of [2, 3, 4].entries()) {
+    const r = await boot();
+    r.tap(["简单", "普通", "困难"][preset]);
+    r.tap("跳过开场");
+    assert.ok(r.labels.some((l) => l.s === `开始 · 0${minutes}:00`));
+    r.tap("开始 ·");
+    r.advance(1_000_000);
+    r.hide();
+    const saved = decode(r.storage.get(SAVE_KEY)!)!;
+    assert.equal(saved.baseMs, minutes * 60_000);
+    assert.equal(saved.remaining, minutes * 60_000 - 1000);
+    const next = await boot(r.storage);
+    next.tap("继续上次");
+    assert.equal(
+      decode(next.storage.get(SAVE_KEY)!)!.remaining,
+      saved.remaining,
+    );
+    next.tap("继续游戏");
+    next.tap("暂停", true);
+    next.tap("结束本局");
+    next.tap("再来一局");
+    assert.equal(
+      decode(next.storage.get(SAVE_KEY)!)!.remaining,
+      minutes * 60_000,
+    );
+  }
 });
