@@ -87,16 +87,13 @@ for (const b of coordinates())
     b,
     before.find((old) => old.id === b.id),
   );
-assert.ok(
-  Math.abs(s.capStates.find((t) => t.id === id)!.y - cap - before[0].r * 1.94) <
-    1e-8,
-);
+assert.ok(Math.abs(s.capStates.find((t) => t.id === id)!.y - cap) < 1e-8);
 g.undo();
 paint("undo");
 assert.deepEqual(coordinates(), before);
 assert.equal(s.capStates.find((t) => t.id === id)!.y, cap);
 console.log(
-  "4 actual frames: fixed coordinates, one-slot vessel shrink, and undo verified",
+  "4 actual frames: fixed coordinates, fixed-capacity vessel, and undo verified",
 );
 // Reach a three-ball window through legal picks, without rewriting the board.
 while (g.board.tubes.find((tube) => tube.id === id)!.balls.length > 3) {

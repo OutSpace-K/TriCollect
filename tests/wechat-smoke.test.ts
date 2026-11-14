@@ -546,6 +546,7 @@ for (const units of [1, 1000])
 test("native RAF survives one rendering exception and audio exception never aborts pick", async () => {
   const r = await boot(new Map(), 1, true);
   beginRuntime(r);
+  r.advance(260_000);
   r.failNextRender("ball");
   r.render();
   r.render();
@@ -599,6 +600,8 @@ for (const units of [1, 1000])
     );
     assert.ok(introMs >= 800 && introMs <= 1400);
     r.tap("开始 ·");
+    await new Promise((resolve) => setTimeout(resolve, 270));
+    r.render();
     const oldTop = { ...r.topBalls.get("1")! };
     const slotStep = r.slotStep();
     assert.ok(slotStep > 0);
@@ -683,6 +686,8 @@ for (const units of [1, 1000])
       if (stage === "transfer") {
         r.tap("跳过开场");
         r.tap("开始 ·");
+        await new Promise((resolve) => setTimeout(resolve, 270));
+        r.render();
         r.tapTube(1);
       }
       r.freezeClock();
@@ -815,6 +820,7 @@ test("native image asset loads and image failure leaves gameplay available", asy
       "assets/hidden-mural-night.png",
     ]);
     assert.equal(r.backgroundDraws() > 0, !fail);
+    r.advance(260_000);
     r.tapTube(1);
     r.advance(250000);
     assert.equal(decode(r.storage.get(SAVE_KEY)!)!.sequence, 1);
@@ -993,4 +999,15 @@ test("native bundle buffered music keeps mute, pause and interruption restrictio
   assert.equal(active(), 1);
   assert.equal(r.bufferDecodes(), 1);
   r.hide();
+});
+
+test("native start tap protection blocks immediate ball input then releases", async () => {
+  const r = await boot();
+  beginRuntime(r);
+  r.tapTube(1);
+  assert.equal(decode(r.storage.get(SAVE_KEY)!)!.sequence, 0);
+  r.advance(260_000);
+  r.tapTube(1);
+  r.advance(250_000);
+  assert.equal(decode(r.storage.get(SAVE_KEY)!)!.sequence, 1);
 });

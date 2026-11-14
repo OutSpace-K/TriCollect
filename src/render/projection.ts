@@ -13,7 +13,7 @@ export function rotateWorld(p: { x: number; z: number }, angle: number) {
     z: -p.x * Math.sin(angle) + p.z * Math.cos(angle),
   };
 }
-export function projection(
+function projectionFrame(
   side: number,
   width: number,
   top: number,
@@ -119,6 +119,34 @@ export function projection(
       depth: p.z,
     };
   };
+  const traySurfaceY = axis.y;
+  const traySurfaceRy = arcDepth;
+  return {
+    axis,
+    lane,
+    radius,
+    height,
+    step,
+    ballRadius,
+    zScale,
+    arcDepth,
+    trayCurve,
+    traySurfaceY,
+    traySurfaceRy,
+    point,
+  };
+}
+
+const stablePlatterCache = new Map<string, { y: number; ry: number }>();
+function restingSurface(
+  frame: ReturnType<typeof projectionFrame>,
+  side: number,
+) {
+  const { radius, point, trayCurve } = frame;
+  const ellipseRadiusX = trayCurve.rx,
+    edge = side - 1;
+  const curve = (x: number) =>
+    Math.sqrt(Math.max(0, 1 - (x / ellipseRadiusX) ** 2));
   // The arrangement arc is not the platter outline. Fit an independent,
   // minimum-height surface to the complete foot perimeter with 2 px clearance.
   const footRy = radius * 0.3 + Math.max(1.5, radius * 0.08) / 2;
@@ -165,18 +193,59 @@ export function projection(
   let traySurfaceY = -Infinity;
   for (const p of samples)
     traySurfaceY = Math.max(traySurfaceY, p.y - traySurfaceRy * p.c);
-  return {
-    axis,
-    lane,
-    radius,
-    height,
-    step,
-    ballRadius,
-    zScale,
-    arcDepth,
-    trayCurve,
-    traySurfaceY,
-    traySurfaceRy,
-    point,
+  return { y: traySurfaceY, ry: traySurfaceRy };
+}
+export function projection(
+  side: number,
+  width: number,
+  top: number,
+  bottom: number,
+  angle: number,
+  maxCapacity = 5,
+) {
+  const frame = projectionFrame(side, width, top, bottom, angle, maxCapacity);
+  const key = [side, width, top, bottom, maxCapacity].join(":");
+  let surface = stablePlatterCache.get(key);
+  if (!surface) {
+    surface = restingSurface(
+      projectionFrame(side, width, top, bottom, 0, maxCapacity),
+      side,
+    );
+    if (stablePlatterCache.size >= 32)
+      stablePlatterCache.delete(stablePlatterCache.keys().next().value!);
+    stablePlatterCache.set(key, surface);
+  }
+  const fixed = surface,
+    rx = frame.trayCurve.rx;
+  const phase =
+    ((angle % ((Math.PI * 2) / 3)) + (Math.PI * 2) / 3) % ((Math.PI * 2) / 3);
+  const atRest = Math.min(phase, (Math.PI * 2) / 3 - phase) < 1e-9;
+  const footRy = frame.radius * 0.3 + Math.max(1.5, frame.radius * 0.08) / 2;
+  const point = (t: Pick<Tube, "q" | "r">) => {
+    const p = frame.point(t);
+    if (atRest) return p;
+    const dx = p.x - frame.axis.x,
+      dy = p.y - 2 - fixed.y;
+    const fits = (scale: number) => {
+      for (let k = 0; k < 32; k++) {
+        const a = (k * Math.PI) / 16;
+        const u = (dx * scale + (frame.radius + 0.5) * Math.cos(a)) / rx;
+        const v = (dy * scale + (footRy + 0.5) * Math.sin(a)) / fixed.ry;
+        if (u * u + v * v > 1) return false;
+      }
+      return true;
+    };
+    if (fits(1)) return p;
+    // Continuous radial convergence into the stationary platter, during turns only.
+    // A whole tube translates as one unit; radius, spacing and depth order stay fixed.
+    let lo = 0,
+      hi = 1;
+    for (let i = 0; i < 22; i++) {
+      const mid = (lo + hi) / 2;
+      if (fits(mid)) lo = mid;
+      else hi = mid;
+    }
+    return { ...p, x: frame.axis.x + dx * lo, y: fixed.y + 2 + dy * lo };
   };
+  return { ...frame, traySurfaceY: fixed.y, traySurfaceRy: fixed.ry, point };
 }

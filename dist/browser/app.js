@@ -1369,7 +1369,7 @@
       z: -p.x * Math.sin(angle) + p.z * Math.cos(angle)
     };
   }
-  function projection(side, width, top, bottom, angle, maxCapacity = 5) {
+  function projectionFrame(side, width, top, bottom, angle, maxCapacity = 5) {
     const edge = side - 1;
     const lane = (width - 20) / (2 * edge / Math.sqrt(3) + 1), radius = lane / 2;
     const originalDepth = Math.min(108, edge * 18, (bottom - top) * 0.24);
@@ -1440,6 +1440,28 @@
         depth: p.z
       };
     };
+    const traySurfaceY = axis.y;
+    const traySurfaceRy = arcDepth;
+    return {
+      axis,
+      lane,
+      radius,
+      height,
+      step,
+      ballRadius,
+      zScale,
+      arcDepth,
+      trayCurve,
+      traySurfaceY,
+      traySurfaceRy,
+      point
+    };
+  }
+  var stablePlatterCache = /* @__PURE__ */ new Map();
+  function restingSurface(frame, side) {
+    const { radius, point, trayCurve } = frame;
+    const ellipseRadiusX = trayCurve.rx, edge = side - 1;
+    const curve = (x) => Math.sqrt(Math.max(0, 1 - (x / ellipseRadiusX) ** 2));
     const footRy = radius * 0.3 + Math.max(1.5, radius * 0.08) / 2;
     const samples = [];
     for (let q = 0; q <= edge; q++)
@@ -1477,20 +1499,48 @@
     let traySurfaceY = -Infinity;
     for (const p of samples)
       traySurfaceY = Math.max(traySurfaceY, p.y - traySurfaceRy * p.c);
-    return {
-      axis,
-      lane,
-      radius,
-      height,
-      step,
-      ballRadius,
-      zScale,
-      arcDepth,
-      trayCurve,
-      traySurfaceY,
-      traySurfaceRy,
-      point
+    return { y: traySurfaceY, ry: traySurfaceRy };
+  }
+  function projection(side, width, top, bottom, angle, maxCapacity = 5) {
+    const frame = projectionFrame(side, width, top, bottom, angle, maxCapacity);
+    const key2 = [side, width, top, bottom, maxCapacity].join(":");
+    let surface = stablePlatterCache.get(key2);
+    if (!surface) {
+      surface = restingSurface(
+        projectionFrame(side, width, top, bottom, 0, maxCapacity),
+        side
+      );
+      if (stablePlatterCache.size >= 32)
+        stablePlatterCache.delete(stablePlatterCache.keys().next().value);
+      stablePlatterCache.set(key2, surface);
+    }
+    const fixed = surface, rx = frame.trayCurve.rx;
+    const phase = (angle % (Math.PI * 2 / 3) + Math.PI * 2 / 3) % (Math.PI * 2 / 3);
+    const atRest = Math.min(phase, Math.PI * 2 / 3 - phase) < 1e-9;
+    const footRy = frame.radius * 0.3 + Math.max(1.5, frame.radius * 0.08) / 2;
+    const point = (t) => {
+      const p = frame.point(t);
+      if (atRest) return p;
+      const dx = p.x - frame.axis.x, dy = p.y - 2 - fixed.y;
+      const fits = (scale) => {
+        for (let k = 0; k < 32; k++) {
+          const a = k * Math.PI / 16;
+          const u = (dx * scale + (frame.radius + 0.5) * Math.cos(a)) / rx;
+          const v = (dy * scale + (footRy + 0.5) * Math.sin(a)) / fixed.ry;
+          if (u * u + v * v > 1) return false;
+        }
+        return true;
+      };
+      if (fits(1)) return p;
+      let lo = 0, hi = 1;
+      for (let i = 0; i < 22; i++) {
+        const mid = (lo + hi) / 2;
+        if (fits(mid)) lo = mid;
+        else hi = mid;
+      }
+      return { ...p, x: frame.axis.x + dx * lo, y: fixed.y + 2 + dy * lo };
     };
+    return { ...frame, traySurfaceY: fixed.y, traySurfaceRy: fixed.ry, point };
   }
 
   // src/render/scene.ts
@@ -1514,6 +1564,7 @@
       __publicField(this, "foreground", true);
       __publicField(this, "decorationLast", null);
       __publicField(this, "selectedDifficulty", 0);
+      __publicField(this, "boardInputAfter", 0);
       __publicField(this, "trackObjects", []);
       __publicField(this, "misclickFeedback", null);
       __publicField(this, "tubeGlass", null);
@@ -2491,30 +2542,35 @@
         );
       }
       if (g.phase === "intro" || g.phase === "ready") {
-        this.rect(
-          18,
-          Math.max(100, boardBottom - 103),
-          w - 36,
-          92,
-          "#fffbed",
-          18
-        );
+        this.buttons = [];
+        this.targets = [];
+        c.fillStyle = "#342b496e";
+        c.fillRect(0, 0, w, h);
+        const panelY = Math.max(90, h * 0.36);
+        this.rect(22, panelY, w - 44, 174, "#fff8e9", 22);
+        this.text("\u51C6\u5907\u597D\u4E86\u5417\uFF1F", w / 2, panelY + 40, 25, "#70452f", "center");
         this.text(
-          "\u70B9\u9876\u7403 \xB7 \u4E09\u9897\u540C\u8272\u6D88\u9664",
+          "\u70B9\u51FB\u6B63\u9762\u9876\u7403\uFF0C\u4E09\u9897\u540C\u8272\u6D88\u9664",
           w / 2,
-          boardBottom - 73,
-          13,
-          "#29495e",
+          panelY + 74,
+          14,
+          "#6f655b",
           "center"
         );
         this.button(
           "begin",
           g.phase === "intro" ? "\u8DF3\u8FC7\u5F00\u573A" : "\u5F00\u59CB \xB7 05:00",
-          32,
-          boardBottom - 58,
-          w - 64,
-          42,
-          () => g.phase === "intro" ? g.skipIntro() : g.begin(),
+          44,
+          panelY + 98,
+          w - 88,
+          48,
+          () => {
+            if (g.phase === "intro") g.skipIntro();
+            else {
+              this.boardInputAfter = g.now() + 250;
+              g.begin();
+            }
+          },
           false,
           true
         );
@@ -2808,7 +2864,7 @@
         const { t, x, y } = item;
         const previous = g.phase === "resolving" ? g.state.history.at(-1)?.tubes.find((old) => old.id === t.id) : void 0;
         const visibleCountBase = previous && previous.balls.length > t.balls.length ? previous.balls.length : t.balls.length;
-        const height = visibleCountBase * step + 20, ty = y - height, front = visible.has(t.id) || g.phase === "resolving" && !t.balls.length && !!previous && faceVisible(g.state.history.at(-1), view).has(t.id);
+        const height = t.capacity * step + 20, ty = y - height, front = visible.has(t.id) || g.phase === "resolving" && !t.balls.length && !!previous && faceVisible(g.state.history.at(-1), view).has(t.id);
         const capped = !accessible.has(t.id) && !visible.has(t.id);
         this.capStates.push({ id: t.id, closed: capped, x, y: ty });
         if (!front) {
@@ -4393,7 +4449,7 @@
         if (!button.disabled) button.act();
         return;
       }
-      if (this.game.locked) return;
+      if (this.game.locked || this.game.now() < this.boardInputAfter) return;
       const nearest = [...this.targets].sort(
         (a, b) => Math.hypot(x - a.x, y - a.y) - Math.hypot(x - b.x, y - b.y)
       );

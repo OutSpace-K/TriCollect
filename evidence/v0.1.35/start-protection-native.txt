@@ -1,0 +1,102 @@
+TriCollect clock units/ms 1
+TriCollect frame interrupted Error: injected sprite fault
+    at Proxy.drawImage (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:48:19)
+    at Scene.ball (evalmachine.<anonymous>:2456:15)
+    at Scene.drawBoard (evalmachine.<anonymous>:3532:18)
+    at Scene.render (evalmachine.<anonymous>:2787:12)
+    at evalmachine.<anonymous>:5092:17
+    at frame (evalmachine.<anonymous>:472:9)
+    at Object.render (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:344:5)
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:551:5)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+TriCollect audio unavailable Error: injected audio failure
+    at Object.play (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:271:34)
+    at Controller.playSound (evalmachine.<anonymous>:4992:15)
+    at Controller.pick (evalmachine.<anonymous>:1441:16)
+    at Scene.tap (evalmachine.<anonymous>:4850:19)
+    at Object.end (evalmachine.<anonymous>:5062:40)
+    at Object.tapTube (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:407:16)
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:556:5)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+TriCollect audio unavailable Error: injected audio failure
+    at Object.play (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:271:34)
+    at Controller.playSound (evalmachine.<anonymous>:4992:15)
+    at Controller.pick (evalmachine.<anonymous>:1441:16)
+    at Scene.tap (evalmachine.<anonymous>:4850:19)
+    at Object.end (evalmachine.<anonymous>:5062:40)
+    at Object.tapTube (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:407:16)
+    at TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:559:5)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+✔ native RAF survives one rendering exception and audio exception never aborts pick (220.020309ms)
+TriCollect clock units/ms 1
+✔ native animation wall-clock deadlines at 1 units/ms (2184.779024ms)
+TriCollect clock units/ms 1000
+✔ native animation wall-clock deadlines at 1000 units/ms (2145.198688ms)
+TriCollect startup failed Error: Clock calibration failed; no reliable progressing clock
+    at calibrateClock (evalmachine.<anonymous>:464:11)
+    at async boot (evalmachine.<anonymous>:4965:19)
+TriCollect clock units/ms 1
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:456:21)
+    at Controller.tick (evalmachine.<anonymous>:1373:24)
+    at evalmachine.<anonymous>:5086:14
+    at frame (evalmachine.<anonymous>:472:9)
+    at Object.render (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:344:5)
+    at driveUntil (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:584:7)
+    at async TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:694:23)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect clock units/ms 1
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:456:21)
+    at Controller.tick (evalmachine.<anonymous>:1373:24)
+    at evalmachine.<anonymous>:5086:14
+    at frame (evalmachine.<anonymous>:472:9)
+    at Object.render (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:344:5)
+    at driveUntil (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:584:7)
+    at async TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:694:23)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+✔ native frozen-clock intro/transfer fail safely at 1 units/ms (4308.670551ms)
+TriCollect startup failed Error: Clock calibration failed; no reliable progressing clock
+    at calibrateClock (evalmachine.<anonymous>:464:11)
+    at async boot (evalmachine.<anonymous>:4965:19)
+TriCollect clock units/ms 1000
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:456:21)
+    at Controller.tick (evalmachine.<anonymous>:1373:24)
+    at evalmachine.<anonymous>:5086:14
+    at frame (evalmachine.<anonymous>:472:9)
+    at Object.render (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:344:5)
+    at driveUntil (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:584:7)
+    at async TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:694:23)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect clock units/ms 1000
+TriCollect frame interrupted Error: Monotonic clock stopped
+    at Controller.now (evalmachine.<anonymous>:456:21)
+    at Controller.tick (evalmachine.<anonymous>:1373:24)
+    at evalmachine.<anonymous>:5086:14
+    at frame (evalmachine.<anonymous>:472:9)
+    at Object.render (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:344:5)
+    at driveUntil (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:584:7)
+    at async TestContext.<anonymous> (/workspace/scratch/dd1dd67953e4/tricollect-visual-release/tests/wechat-smoke.test.ts:694:23)
+    at async Test.run (node:internal/test_runner/test:1409:7)
+    at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+TriCollect clock units/ms 1
+✔ native frozen-clock intro/transfer fail safely at 1000 units/ms (4421.582971ms)
+TriCollect clock units/ms 1
+TriCollect clock units/ms 1000
+✔ native image asset loads and image failure leaves gameplay available (250.824105ms)
+✔ native start tap protection blocks immediate ball input then releases (132.082719ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14168.49001

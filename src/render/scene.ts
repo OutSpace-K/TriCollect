@@ -27,6 +27,7 @@ export class Scene {
   private foreground = true;
   private decorationLast: number | null = null;
   private selectedDifficulty = 0;
+  private boardInputAfter = 0;
   trackObjects: { x: number; y: number; r: number }[] = [];
   get decorationTime() {
     return this.mascotTime;
@@ -1214,30 +1215,36 @@ export class Scene {
       );
     }
     if (g.phase === "intro" || g.phase === "ready") {
-      this.rect(
-        18,
-        Math.max(100, boardBottom - 103),
-        w - 36,
-        92,
-        "#fffbed",
-        18,
-      );
+      // A genuine modal layer: underlying game controls and ball targets are not interactive.
+      this.buttons = [];
+      this.targets = [];
+      c.fillStyle = "#342b496e";
+      c.fillRect(0, 0, w, h);
+      const panelY = Math.max(90, h * 0.36);
+      this.rect(22, panelY, w - 44, 174, "#fff8e9", 22);
+      this.text("准备好了吗？", w / 2, panelY + 40, 25, "#70452f", "center");
       this.text(
-        "点顶球 · 三颗同色消除",
+        "点击正面顶球，三颗同色消除",
         w / 2,
-        boardBottom - 73,
-        13,
-        "#29495e",
+        panelY + 74,
+        14,
+        "#6f655b",
         "center",
       );
       this.button(
         "begin",
         g.phase === "intro" ? "跳过开场" : "开始 · 05:00",
-        32,
-        boardBottom - 58,
-        w - 64,
-        42,
-        () => (g.phase === "intro" ? g.skipIntro() : g.begin()),
+        44,
+        panelY + 98,
+        w - 88,
+        48,
+        () => {
+          if (g.phase === "intro") g.skipIntro();
+          else {
+            this.boardInputAfter = g.now() + 250;
+            g.begin();
+          }
+        },
         false,
         true,
       );
@@ -1593,8 +1600,8 @@ export class Scene {
         previous && previous.balls.length > t.balls.length
           ? previous.balls.length
           : t.balls.length;
-      // Only the vessel shortens. World-space slots and projection remain fixed.
-      const height = visibleCountBase * step + 20,
+      // Fixed-capacity glass stays full height while remaining balls reveal in place.
+      const height = t.capacity * step + 20,
         ty = y - height,
         front =
           visible.has(t.id) ||
@@ -3333,7 +3340,7 @@ export class Scene {
       if (!button.disabled) button.act();
       return;
     }
-    if (this.game.locked) return;
+    if (this.game.locked || this.game.now() < this.boardInputAfter) return;
     const nearest = [...this.targets].sort(
       (a, b) => Math.hypot(x - a.x, y - a.y) - Math.hypot(x - b.x, y - b.y),
     );

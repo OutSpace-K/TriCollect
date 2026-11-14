@@ -2,6 +2,7 @@
 const { createCanvas, loadImage, GlobalFonts } = await import(
   process.env.TRICOLLECT_CANVAS_MODULE ?? "@napi-rs/canvas"
 );
+import { CONFIG } from "../src/config";
 import { Scene } from "../src/render/scene";
 import { Controller } from "../src/controller";
 import { viewport } from "../src/platform/viewport";
@@ -66,8 +67,13 @@ for (const [w, h] of [
   s.setTurntable((await loadImage("assets/turntable.png")) as any);
   s.setBackground(home as any);
   s.setPlayBackground(play as any);
-  for (const page of ["home", "difficulty", "game", "pause"]) {
+  for (const page of ["home", "difficulty", "ready", "game", "pause"]) {
     if (page === "difficulty") s.homePanel = "difficulty";
+    if (page === "ready") {
+      s.homePanel = null;
+      g.start(process.env.TRICOLLECT_PREVIEW_NORMAL ? 1 : 2);
+      g.skipIntro();
+    }
     if (page === "game") {
       s.homePanel = null;
       g.start(process.env.TRICOLLECT_PREVIEW_NORMAL ? 1 : 2);
@@ -75,6 +81,10 @@ for (const [w, h] of [
         g.state.muralVariant = Number(process.env.TRICOLLECT_MURAL_VARIANT);
       g.skipIntro();
       g.begin();
+      if (process.env.TRICOLLECT_PREVIEW_TURN) {
+        g.rotate(1);
+        t += CONFIG.rotateMs * Number(process.env.TRICOLLECT_PREVIEW_TURN);
+      }
     }
     if (page === "pause") g.pause();
     ctx.save();
@@ -83,7 +93,7 @@ for (const [w, h] of [
     s.render();
     ctx.restore();
     writeFileSync(
-      `evidence/style-preview/${w}-${page}${process.env.TRICOLLECT_PREVIEW_NORMAL ? "-normal" : ""}.png`,
+      `evidence/style-preview/${w}-${page}${process.env.TRICOLLECT_PREVIEW_TURN ? "-turn" : ""}${process.env.TRICOLLECT_PREVIEW_NORMAL ? "-normal" : ""}.png`,
       c.toBuffer("image/png"),
     );
   }

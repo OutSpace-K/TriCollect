@@ -477,7 +477,7 @@ test("glass artwork retains targets and never reveals hidden-ball colors", () =>
     assert.ok(!visible.has(hidden.id));
 });
 
-test("dynamic vessel shrinks only after transfer while all remaining fixed slots stay put", () => {
+test("fixed-capacity vessel stays full height through transfer and undo with fixed ball slots", () => {
   const x = setup(2);
   const target = x.scene.targets[0];
   const id = target.id;
@@ -488,7 +488,6 @@ test("dynamic vessel shrinks only after transfer while all remaining fixed slots
     );
   const before = positions();
   const oldTop = top();
-  const step = before[0].r * 1.94;
   x.game.pick(id);
   x.scene.render();
   assert.equal(x.game.phase, "resolving");
@@ -499,7 +498,7 @@ test("dynamic vessel shrinks only after transfer while all remaining fixed slots
       before.find((b) => b.id === p.id),
     );
   x.advance(250);
-  assert.ok(Math.abs(top() - oldTop - step) < 1e-8);
+  assert.equal(top(), oldTop);
   for (const p of positions())
     assert.deepEqual(
       p,
@@ -568,4 +567,40 @@ test("last-ball vessel persists through flight without target then disappears an
     x.scene.targets.find((t) => t.id === id),
     target,
   );
+});
+
+test("ready modal owns all input and start tap cannot fall through to a ball", () => {
+  for (const [width, height] of [
+    [320, 568],
+    [390, 844],
+    [430, 932],
+  ]) {
+    const x = setup(1, width, height);
+    const oldTarget = x.scene.targets[0];
+    x.game.start(1);
+    x.game.skipIntro();
+    x.scene.render();
+    const count = () =>
+      x.game.board.tubes.reduce((n, t) => n + t.balls.length, 0);
+    const before = count();
+    assert.equal(x.game.phase, "ready");
+    assert.deepEqual(
+      x.scene.buttons.map((b) => b.id),
+      ["begin"],
+    );
+    assert.equal(x.scene.targets.length, 0);
+    x.scene.tap(oldTarget.x, oldTarget.y);
+    assert.equal(count(), before);
+    const begin = x.scene.buttons[0];
+    x.scene.tap(begin.x + begin.w / 2, begin.y + begin.h / 2);
+    assert.equal(x.game.phase, "active");
+    assert.equal(count(), before);
+    x.scene.render();
+    const target = x.scene.targets[0];
+    x.scene.tap(target.x, target.y);
+    assert.equal(count(), before);
+    x.advance(260);
+    x.scene.tap(target.x, target.y);
+    assert.equal(count(), before - 1);
+  }
 });

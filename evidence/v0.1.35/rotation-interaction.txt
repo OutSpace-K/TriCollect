@@ -1,0 +1,42 @@
+✔ idle selectable spheres have no persistent outline; invalid sphere gives one bounded neutral pulse (104.457286ms)
+✔ background and UI taps never start feedback; valid pick and lifecycle clear transient feedback (60.02203ms)
+✔ confirmed display name and home effect lettering fit a narrow viewport (38.002379ms)
+✔ play backdrop is distinct with home fallback; decorative tray never selects or pulses (43.389124ms)
+✔ compact HUD omits seed, tube numbering and routine narration; modal controls fit narrow screens (51.030703ms)
+✔ home difficulty modal groups tiers and never overwrites resume without confirmation (40.558288ms)
+✔ decorative motion freezes offscreen and returns without a large elapsed jump (36.274845ms)
+✔ transient controls retain color while input lock and real unavailable undo remain enforced (38.748235ms)
+✔ caps depend on shared-lattice front access, never on transient pick locks (38.674863ms)
+✔ custom title uses curved glyph strokes and vertical-axis projection, never an enclosing circle (35.64917ms)
+✔ new title and toy drawing restore transforms after paint exceptions (34.88779ms)
+✔ held-ball control stays above tray and visually steady through pick/turn locks without accepting input (39.815925ms)
+✔ phone-sized touch halos accept near misses without stealing lower or hidden balls (272.445205ms)
+✔ overlapping touch halos choose the nearest legal top rather than paint order (86.2576ms)
+✔ glass artwork retains targets and never reveals hidden-ball colors (85.565892ms)
+✔ fixed-capacity vessel stays full height through transfer and undo with fixed ball slots (82.948056ms)
+✔ inner-wall sticker front arc stays below the lowest visible sphere (88.539884ms)
+✔ last-ball vessel persists through flight without target then disappears and undo restores it (41.854223ms)
+✔ ready modal owns all input and start tap cannot fall through to a ball (246.226737ms)
+✔ resting faces retain centered rigid geometry; turn paths stay within screen (145.244962ms)
+✔ five fixed ball slots touch without crossing tube walls at mobile sizes (2.20979ms)
+✔ enlarged spheres retain wall clearance, fixed height and touching slots (0.461259ms)
+✔ v0.1.28 spends recovered vertical margins on larger phone balls (3.400264ms)
+✔ front-row arc is symmetric, tray-aligned and keeps ball size through turns (29.828823ms)
+✔ front tube bases follow the shared turntable ellipse in all three views (0.642945ms)
+✔ rotating tube feet remain inside the shared decorative ellipse (257.671684ms)
+✔ whole tube foot is inside calibrated cream surface at every angle (749.11587ms)
+✔ front foot arc matches measured proposal sag across mobile widths (0.546809ms)
+✔ reference arc never crops fixed ball slots at any turn on short phones (1308.775634ms)
+✔ platter fit is independent of the arrangement curvature (0.303523ms)
+✔ platter retains artwork aspect ratio and chooses highest feasible center (0.282755ms)
+✔ platter geometry is constant through full rotations on multiple viewports (2774.882142ms)
+✔ all three resting faces preserve original projection exactly (1.249397ms)
+✔ turn convergence is continuous and repeated midpoint evaluation never snaps back (517.545984ms)
+ℹ tests 34
+ℹ suites 0
+ℹ pass 34
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6179.807417

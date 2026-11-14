@@ -7,7 +7,7 @@ import {
 } from "../src/render/projection";
 import { createLevel } from "../src/core/generation";
 import { faceCoordinates } from "../src/core/rules";
-test("bundle rotates rigidly about its geometric center with no horizontal scale", () => {
+test("resting faces retain centered rigid geometry; turn paths stay within screen", () => {
   for (const preset of [0, 2]) {
     const b = createLevel(preset).board;
     for (const angle of [
@@ -21,16 +21,18 @@ test("bundle rotates rigidly about its geometric center with no horizontal scale
     ]) {
       const f = projection(b.side, 320, 147, 487, angle),
         points = b.tubes.map(f.point);
-      assert.ok(
-        Math.abs(
-          points.reduce((s, p) => s + p.x, 0) / points.length - f.axis.x,
-        ) < 1e-9,
-      );
-      assert.ok(
-        Math.abs(
-          points.reduce((s, p) => s + p.y, 0) / points.length - f.axis.y,
-        ) < 1e-9,
-      );
+      if (Math.abs(Math.sin(angle * 1.5)) < 1e-9) {
+        assert.ok(
+          Math.abs(
+            points.reduce((s, p) => s + p.x, 0) / points.length - f.axis.x,
+          ) < 1e-9,
+        );
+        assert.ok(
+          Math.abs(
+            points.reduce((s, p) => s + p.y, 0) / points.length - f.axis.y,
+          ) < 1e-9,
+        );
+      }
       for (const t of b.tubes) {
         const p = worldPosition(t, b.side),
           r = rotateWorld(p, angle),
@@ -248,7 +250,11 @@ test("reference arc never crops fixed ball slots at any turn on short phones", (
 
 test("platter fit is independent of the arrangement curvature", () => {
   const p = projection(6, 390, 127, 549, 0, 7);
-  assert.ok(p.traySurfaceRy < p.arcDepth * 0.8);
+  // A fixed full-rotation envelope may be deeper than a resting-angle fit.
+  // It remains independent of the arrangement ellipse, rather than following it.
+  const turned = projection(6, 390, 127, 549, 0.37, 7);
+  assert.equal(p.traySurfaceRy, turned.traySurfaceRy);
+  assert.equal(p.traySurfaceY, turned.traySurfaceY);
   assert.ok(p.traySurfaceY > p.trayCurve.y);
 });
 
@@ -258,4 +264,104 @@ test("platter retains artwork aspect ratio and chooses highest feasible center",
       const p = projection(side, width, 127, 549, 0, 7);
       assert.ok(p.traySurfaceRy >= (p.trayCurve.rx * 84) / 380 - 1e-8);
     }
+});
+
+test("platter geometry is constant through full rotations on multiple viewports", () => {
+  for (const side of [6, 8])
+    for (const width of [320, 390, 500])
+      for (const space of [294, 422]) {
+        const start = projection(side, width, 127, 127 + space, 0, 7);
+        for (let degree = 0; degree < 360; degree += 0.25) {
+          const p = projection(
+            side,
+            width,
+            127,
+            127 + space,
+            (degree * Math.PI) / 180,
+            7,
+          );
+          assert.equal(p.traySurfaceY, start.traySurfaceY);
+          assert.equal(p.traySurfaceRy, start.traySurfaceRy);
+          assert.equal(p.trayCurve.rx, start.trayCurve.rx);
+          const footRy = p.radius * 0.3 + Math.max(1.5, p.radius * 0.08) / 2;
+          for (let q = 0; q < side; q++)
+            for (let r = 0; r < side - q; r++) {
+              const t = p.point({ q, r });
+              for (let k = 0; k < 32; k++) {
+                const a = (k * Math.PI) / 16,
+                  u =
+                    (t.x + p.radius * Math.cos(a) - p.axis.x) / p.trayCurve.rx;
+                const v =
+                  (t.y - 2 + footRy * Math.sin(a) - p.traySurfaceY) /
+                  p.traySurfaceRy;
+                assert.ok(
+                  u * u + v * v < 1,
+                  `foot ${side}/${width}/${space}/${degree}`,
+                );
+              }
+            }
+        }
+      }
+});
+test("all three resting faces preserve original projection exactly", () => {
+  for (const side of [6, 8])
+    for (const width of [320, 390, 500])
+      for (let face = 0; face < 3; face++) {
+        const angle = (face * Math.PI * 2) / 3,
+          p = projection(side, width, 127, 549, angle, 7);
+        const all = [];
+        let mean = 0;
+        for (let q = 0; q < side; q++)
+          for (let r = 0; r < side - q; r++) {
+            const t = { q, r },
+              rotated = rotateWorld(worldPosition(t, side), angle);
+            const curve = Math.sqrt(
+              Math.max(0, 1 - ((rotated.x * p.lane) / p.trayCurve.rx) ** 2),
+            );
+            mean += curve;
+            all.push({ t, rotated, curve });
+          }
+        mean /= all.length;
+        for (const { t, rotated, curve } of all) {
+          const actual = p.point(t);
+          assert.equal(actual.x, p.axis.x + rotated.x * p.lane);
+          assert.equal(
+            actual.y,
+            p.axis.y - rotated.z * p.zScale + p.arcDepth * (curve - mean),
+          );
+        }
+      }
+});
+test("turn convergence is continuous and repeated midpoint evaluation never snaps back", () => {
+  for (const side of [6, 8]) {
+    const before = projection(side, 390, 127, 549, 0, 7);
+    let last = before;
+    for (let degree = 0.1; degree <= 120; degree += 0.1) {
+      const p = projection(side, 390, 127, 549, (degree * Math.PI) / 180, 7);
+      for (let q = 0; q < side; q++)
+        for (let r = 0; r < side - q; r++) {
+          const a = last.point({ q, r }),
+            b = p.point({ q, r });
+          assert.ok(Math.hypot(a.x - b.x, a.y - b.y) < 1, `jump ${degree}`);
+        }
+      last = p;
+    }
+    for (const end of [0, (Math.PI * 2) / 3, (Math.PI * 4) / 3]) {
+      const exact = projection(side, 390, 127, 549, end, 7);
+      for (const delta of [-1e-6, 1e-6]) {
+        const near = projection(side, 390, 127, 549, end + delta, 7);
+        for (let q = 0; q < side; q++)
+          for (let r = 0; r < side - q; r++) {
+            const a = exact.point({ q, r }),
+              b = near.point({ q, r });
+            assert.ok(Math.hypot(a.x - b.x, a.y - b.y) < 0.001);
+          }
+      }
+    }
+    const mid = projection(side, 390, 127, 549, 0.73, 7),
+      again = projection(side, 390, 127, 549, 0.73, 7);
+    assert.deepEqual(mid.point({ q: 0, r: 0 }), again.point({ q: 0, r: 0 }));
+    assert.equal(mid.ballRadius, before.ballRadius);
+    assert.equal(mid.step, before.step);
+  }
 });
