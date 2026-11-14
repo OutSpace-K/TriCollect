@@ -604,3 +604,19 @@ test("ready modal owns all input and start tap cannot fall through to a ball", (
     assert.equal(count(), before - 1);
   }
 });
+
+test("home subtitle adds only small decorative 消除 letters and no new hit area", () => {
+  for (const [width, height] of [
+    [320, 660],
+    [390, 748],
+    [430, 836],
+  ]) {
+    const x = setup(0, width, height);
+    assert.ok(!x.labels.includes("消") && !x.labels.includes("除"));
+    x.game.home();
+    x.scene.render();
+    assert.ok(x.labels.includes("消") && x.labels.includes("除"));
+    assert.ok(!x.scene.buttons.some((b) => b.id.includes("subtitle")));
+    assert.equal(x.scene.targets.length, 0);
+  }
+});

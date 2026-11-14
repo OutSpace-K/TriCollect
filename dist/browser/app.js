@@ -4212,10 +4212,40 @@
         () => this.homePanel = null
       );
     }
+    homeSubtitle() {
+      const c = this.ctx;
+      const logoWidth = Math.min(this.width - 26, 420, this.height * 0.5);
+      const y = this.homeLogo ? 70 + logoWidth * 0.5 + 14 : 211 + this.homeGroupOffset;
+      c.save();
+      c.font = '900 26px "Arial Rounded MT Bold", "Noto Sans CJK SC", sans-serif';
+      c.textAlign = "center";
+      c.textBaseline = "middle";
+      c.lineJoin = "round";
+      const colors = [
+        ["#ffd5df", "#fa727e"],
+        ["#f6ff9b", "#9edb32"]
+      ];
+      for (const [i, char] of [..."\u6D88\u9664"].entries()) {
+        const x = this.width / 2 + (i - 0.5) * 31;
+        c.strokeStyle = "#fffbee";
+        c.lineWidth = 7;
+        c.strokeText(char, x, y);
+        c.strokeStyle = "#60301f";
+        c.lineWidth = 4;
+        c.strokeText(char, x, y);
+        const fill = c.createLinearGradient(0, y - 13, 0, y + 13);
+        fill.addColorStop(0, colors[i][0]);
+        fill.addColorStop(1, colors[i][1]);
+        c.fillStyle = fill;
+        c.fillText(char, x, y);
+      }
+      c.restore();
+    }
     home() {
       const w = this.width, h = this.height;
       this.animateHome();
       this.homeTitle();
+      this.homeSubtitle();
       this.button("records", "\u6218\u7EE9", 18, 18, 60, 34, () => {
         this.homePanel = "records";
         this.recordPage = 0;
