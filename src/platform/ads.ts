@@ -1,5 +1,7 @@
 export type AdOutcome = "completed" | "cancelled" | "failed";
 export interface AdService {
+  /** Explicit offline assistance mode. Never represents a completed video. */
+  free?: boolean;
   available: boolean;
   label: string;
   request(): Promise<AdOutcome>;
@@ -73,5 +75,16 @@ export function createAdService(
     return new WeChatAd(create(unit));
   } catch {
     return new UnavailableAd("广告暂不可用");
+  }
+}
+
+/** No ad SDK/request is needed; Controller grants explicit free assistance. */
+export class NoAdsService implements AdService {
+  readonly free = true;
+  readonly available = false;
+  readonly label = "免费辅助";
+  request(): Promise<AdOutcome> {
+    // Defensive only: free assistance must never call the ad request path.
+    return Promise.resolve("failed");
   }
 }

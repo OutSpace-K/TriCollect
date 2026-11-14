@@ -10,8 +10,7 @@ import { calibrateClock } from "./platform/clock";
 import { startFrames } from "./platform/frame";
 import { Controller } from "./controller";
 import { Scene } from "./render/scene";
-import { createAdService, type Video } from "./platform/ads";
-declare const AD_UNIT: string;
+import { NoAdsService } from "./platform/ads";
 const canvas = wx.createCanvas();
 const info = wx.getWindowInfo();
 const width = info.windowWidth,
@@ -37,10 +36,7 @@ wx.onAudioInterruptionEnd?.(() => {
   audioInterrupted = false;
   music.setInterrupted(false);
 });
-const ads = createAdService(
-  AD_UNIT,
-  (unit) => wx.createRewardedVideoAd({ adUnitId: unit }) as unknown as Video,
-);
+const ads = new NoAdsService();
 async function boot() {
   ctx.fillStyle = "#dbe6cf";
   ctx.fillRect(0, 0, width, height);
@@ -59,6 +55,7 @@ async function boot() {
       set: (k, v) => wx.setStorageSync(k, v),
     },
     {
+      free: true,
       get available() {
         return ads.available;
       },

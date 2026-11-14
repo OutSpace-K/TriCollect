@@ -2,6 +2,7 @@
 const { createCanvas, loadImage, GlobalFonts } = await import(
   process.env.TRICOLLECT_CANVAS_MODULE ?? "@napi-rs/canvas"
 );
+import { NoAdsService } from "../src/platform/ads";
 import { CONFIG } from "../src/config";
 import { Scene } from "../src/render/scene";
 import { Controller } from "../src/controller";
@@ -33,7 +34,7 @@ for (const [w, h] of [
         storage.set(key, value);
       },
     },
-    { available: false, label: "none", request: async () => "failed" },
+    new NoAdsService(),
   );
   const s = new Scene(
     ctx as any,

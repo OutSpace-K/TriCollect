@@ -1,6 +1,6 @@
 import { build } from "esbuild";
 import { mkdir, writeFile, readFile, cp } from "node:fs/promises";
-let platform = { appId: "", rewardedVideoAdUnitId: "", environment: "prod" };
+let platform = { appId: "", environment: "prod" };
 try {
   platform = {
     ...platform,
@@ -9,15 +9,9 @@ try {
 } catch (error) {
   if (error.code !== "ENOENT") throw error;
 }
-if (
-  typeof platform.appId !== "string" ||
-  typeof platform.rewardedVideoAdUnitId !== "string"
-)
-  throw Error("Platform IDs must be strings");
+if (typeof platform.appId !== "string") throw Error("AppID must be a string");
 if (platform.environment !== "prod")
-  throw Error(
-    "WeChat builds require environment=prod; use browser preview for mock ads",
-  );
+  throw Error("WeChat builds require environment=prod");
 await mkdir("dist/wechat/assets", { recursive: true });
 await mkdir("dist/browser", { recursive: true });
 await build({
@@ -26,7 +20,6 @@ await build({
   outfile: "dist/wechat/game.js",
   format: "iife",
   target: "es2018",
-  define: { AD_UNIT: JSON.stringify(platform.rewardedVideoAdUnitId) },
   legalComments: "none",
 });
 await build({

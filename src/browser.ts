@@ -3,12 +3,12 @@ import { gesture } from "./platform/gesture";
 import { startFrames } from "./platform/frame";
 import { Controller } from "./controller";
 import { Scene } from "./render/scene";
-import { MockAd } from "./platform/mock-ad";
+import { NoAdsService } from "./platform/ads";
 import { createLevel } from "./core/generation";
 const canvas = document.querySelector("canvas")!,
   ctx = canvas.getContext("2d")!;
 let audio: AudioContext | undefined;
-const ads = new MockAd();
+const ads = new NoAdsService();
 const game = new Controller(
   () => performance.now(),
   {
@@ -16,6 +16,7 @@ const game = new Controller(
     set: (k, v) => localStorage.setItem(k, v),
   },
   {
+    free: true,
     get available() {
       return ads.available;
     },

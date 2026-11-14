@@ -1,0 +1,10 @@
+TriCollect clock units/ms 1000
+✔ no-ad native release: free pocket, two timeout extensions and retry remain usable (291.329183ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 687.579701

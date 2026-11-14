@@ -1183,7 +1183,28 @@
     }
     async liftBall() {
       this.tick();
-      if (!this.canLift || !this.ads.available) return;
+      if (!this.canLift || !this.ads.free && !this.ads.available) return;
+      if (this.ads.free) {
+        const session2 = this.state.session;
+        const id2 = `${session2}:assist:${++this.state.sequence}`;
+        const after = lift(this.board, id2);
+        if (after === this.board) return;
+        this.state.rewards.push({
+          id: id2,
+          session: session2,
+          kind: "lift",
+          state: "completed",
+          redeemed: true
+        });
+        this.state.board = after;
+        this.state.history = [];
+        this.state.undoAvailable = false;
+        this.phase = "paused";
+        this.hint = null;
+        this.message = "\u672B\u7403\u5DF2\u514D\u8D39\u5BC4\u5B58\uFF0C\u70B9\u51FB\u7EE7\u7EED\u540E\u53EF\u653E\u56DE\uFF08\u6BCF\u5C40\u4E00\u6B21\uFF09";
+        this.checkpoint();
+        return;
+      }
       const session = this.state.session, id = `${session}:reward:${++this.state.sequence}`;
       this.state.rewards.push({
         id,
@@ -1223,8 +1244,26 @@
     }
     async extend() {
       this.tick();
-      if (this.phase !== "expired" || this.state.extensions >= CONFIG.maxExtensions || !this.ads.available)
+      if (this.phase !== "expired" || this.state.extensions >= CONFIG.maxExtensions || !this.ads.free && !this.ads.available)
         return;
+      if (this.ads.free) {
+        const session2 = this.state.session;
+        const id2 = `${session2}:assist:${++this.state.sequence}`;
+        this.state.rewards.push({
+          id: id2,
+          session: session2,
+          kind: "extend",
+          state: "completed",
+          redeemed: true
+        });
+        this.state.extensions++;
+        this.state.added += CONFIG.extraMs;
+        this.state.remaining += CONFIG.extraMs;
+        this.phase = "paused";
+        this.message = `\u5DF2\u514D\u8D39\u589E\u52A0 30 \u79D2\uFF0C\u70B9\u51FB\u7EE7\u7EED\uFF08${this.state.extensions}/${CONFIG.maxExtensions}\uFF09`;
+        this.checkpoint();
+        return;
+      }
       const session = this.state.session, id = `${session}:reward:${++this.state.sequence}`;
       this.state.rewards.push({
         id,
@@ -2621,16 +2660,19 @@
       this.text("\u5BC4\u5B58\u6CE1\u6CE1", w / 2, y + 83, 24, "#29495e", "center");
       const used = g.state.rewards.some((r) => r.kind === "lift" && r.redeemed);
       const allowed = !used && !g.board.pocket?.length && g.board.tray.length > 0;
-      const lines = used ? ["\u672C\u5C40\u5DF2\u4F7F\u7528\u4E00\u6B21", "\u5BC4\u5B58\u7403\u653E\u56DE\u540E\u4E5F\u4E0D\u4F1A\u91CD\u590D\u53D1\u653E"] : !g.ads.available ? ["\u5E7F\u544A\u6682\u4E0D\u53EF\u7528\uFF0C\u672C\u6B21\u65E0\u6CD5\u4F7F\u7528", "\u4E0D\u4F1A\u6263\u9664\u6B21\u6570\uFF0C\u4ECD\u53EF\u514D\u8D39\u64A4\u9500\u6216\u7EE7\u7EED"] : !g.board.tray.length ? ["\u5148\u628A\u4E00\u9897\u7403\u653E\u5165\u6682\u5B58\u69FD", "\u518D\u4F7F\u7528\u9053\u5177\u817E\u51FA\u4E00\u683C"] : ["\u5B8C\u6574\u89C2\u770B\u5E7F\u544A\uFF0C\u79FB\u51FA\u6682\u5B58\u69FD\u672B\u7403", "\u6BCF\u5C40\u4E00\u6B21 \xB7 \u4E4B\u540E\u53EF\u514D\u8D39\u653E\u56DE"];
+      const lines = used ? ["\u672C\u5C40\u5DF2\u4F7F\u7528\u4E00\u6B21", "\u5BC4\u5B58\u7403\u653E\u56DE\u540E\u4E5F\u4E0D\u4F1A\u91CD\u590D\u53D1\u653E"] : !g.ads.free && !g.ads.available ? ["\u5E7F\u544A\u6682\u4E0D\u53EF\u7528\uFF0C\u672C\u6B21\u65E0\u6CD5\u4F7F\u7528", "\u4E0D\u4F1A\u6263\u9664\u6B21\u6570\uFF0C\u4ECD\u53EF\u514D\u8D39\u64A4\u9500\u6216\u7EE7\u7EED"] : !g.board.tray.length ? ["\u5148\u628A\u4E00\u9897\u7403\u653E\u5165\u6682\u5B58\u69FD", "\u518D\u4F7F\u7528\u9053\u5177\u817E\u51FA\u4E00\u683C"] : [
+        g.ads.free ? "\u514D\u8D39\u79FB\u51FA\u6682\u5B58\u69FD\u672B\u7403\uFF0C\u817E\u51FA\u4E00\u683C" : "\u5B8C\u6574\u89C2\u770B\u5E7F\u544A\uFF0C\u79FB\u51FA\u6682\u5B58\u69FD\u672B\u7403",
+        "\u6BCF\u5C40\u4E00\u6B21 \xB7 \u4E4B\u540E\u53EF\u514D\u8D39\u653E\u56DE"
+      ];
       lines.forEach(
         (line, i) => this.text(line, w / 2, y + 123 + i * 25, 13, "#4e6877", "center")
       );
-      const canRequest = allowed && g.ads.available;
+      const canRequest = allowed && (g.ads.free || g.ads.available);
       if (canRequest) {
         this.text(g.ads.label, w / 2, y + 181, 11, "#617366", "center");
         this.button(
           "tool-confirm",
-          "\u770B\u5E7F\u544A\u4F7F\u7528",
+          g.ads.free ? "\u514D\u8D39\u4F7F\u7528 \xB7 \u6BCF\u5C40\u4E00\u6B21" : "\u770B\u5E7F\u544A\u4F7F\u7528",
           40,
           y + 201,
           w - 80,
@@ -4418,9 +4460,9 @@
       if (g.phase === "expired") {
         add(
           "extend",
-          g.ads.available ? "\u770B\u5E7F\u544A +30\u79D2" : g.ads.label,
+          g.ads.free ? g.state.extensions >= CONFIG.maxExtensions ? "\u672C\u5C40\u52A0\u65F6\u5DF2\u7528\u5B8C" : `\u514D\u8D39 +30\u79D2\uFF08\u5269${CONFIG.maxExtensions - g.state.extensions}\u6B21\uFF09` : g.ads.available ? "\u770B\u5E7F\u544A +30\u79D2" : g.ads.label,
           () => void g.extend(),
-          !g.ads.available || g.state.extensions >= CONFIG.maxExtensions
+          !g.ads.free && !g.ads.available || g.state.extensions >= CONFIG.maxExtensions
         );
         this.text(g.ads.label, w / 2, y + 151, 11, "#5c7059", "center");
         by += 8;
@@ -4479,18 +4521,15 @@
     }
   };
 
-  // src/platform/mock-ad.ts
-  var MockAd = class {
+  // src/platform/ads.ts
+  var NoAdsService = class {
     constructor() {
-      __publicField(this, "available", true);
-      __publicField(this, "label", "\u5F00\u53D1\u6A21\u62DF\uFF08\u65E0\u771F\u5B9E\u5E7F\u544A\uFF09");
+      __publicField(this, "free", true);
+      __publicField(this, "available", false);
+      __publicField(this, "label", "\u514D\u8D39\u8F85\u52A9");
     }
     request() {
-      return Promise.resolve(
-        window.confirm(
-          "\u5F00\u53D1\u6A21\u62DF\u5E7F\u544A\uFF1A\u786E\u5B9A = \u6A21\u62DF\u5B8C\u6210\uFF1B\u53D6\u6D88 = \u672A\u5B8C\u6210\u3002\u4E0D\u4F1A\u5C55\u793A\u771F\u5B9E\u5E7F\u544A\u3002"
-        ) ? "completed" : "cancelled"
-      );
+      return Promise.resolve("failed");
     }
   };
 
@@ -4498,7 +4537,7 @@
   var canvas = document.querySelector("canvas");
   var ctx = canvas.getContext("2d");
   var audio;
-  var ads = new MockAd();
+  var ads = new NoAdsService();
   var game = new Controller(
     () => performance.now(),
     {
@@ -4506,6 +4545,7 @@
       set: (k, v) => localStorage.setItem(k, v)
     },
     {
+      free: true,
       get available() {
         return ads.available;
       },

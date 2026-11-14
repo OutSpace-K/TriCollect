@@ -1300,20 +1300,25 @@ export class Scene {
     const allowed = !used && !g.board.pocket?.length && g.board.tray.length > 0;
     const lines = used
       ? ["本局已使用一次", "寄存球放回后也不会重复发放"]
-      : !g.ads.available
+      : !g.ads.free && !g.ads.available
         ? ["广告暂不可用，本次无法使用", "不会扣除次数，仍可免费撤销或继续"]
         : !g.board.tray.length
           ? ["先把一颗球放入暂存槽", "再使用道具腾出一格"]
-          : ["完整观看广告，移出暂存槽末球", "每局一次 · 之后可免费放回"];
+          : [
+              g.ads.free
+                ? "免费移出暂存槽末球，腾出一格"
+                : "完整观看广告，移出暂存槽末球",
+              "每局一次 · 之后可免费放回",
+            ];
     lines.forEach((line, i) =>
       this.text(line, w / 2, y + 123 + i * 25, 13, "#4e6877", "center"),
     );
-    const canRequest = allowed && g.ads.available;
+    const canRequest = allowed && (g.ads.free || g.ads.available);
     if (canRequest) {
       this.text(g.ads.label, w / 2, y + 181, 11, "#617366", "center");
       this.button(
         "tool-confirm",
-        "看广告使用",
+        g.ads.free ? "免费使用 · 每局一次" : "看广告使用",
         40,
         y + 201,
         w - 80,
@@ -3309,9 +3314,16 @@ export class Scene {
     if (g.phase === "expired") {
       add(
         "extend",
-        g.ads.available ? "看广告 +30秒" : g.ads.label,
+        g.ads.free
+          ? g.state.extensions >= CONFIG.maxExtensions
+            ? "本局加时已用完"
+            : `免费 +30秒（剩${CONFIG.maxExtensions - g.state.extensions}次）`
+          : g.ads.available
+            ? "看广告 +30秒"
+            : g.ads.label,
         () => void g.extend(),
-        !g.ads.available || g.state.extensions >= CONFIG.maxExtensions,
+        (!g.ads.free && !g.ads.available) ||
+          g.state.extensions >= CONFIG.maxExtensions,
       );
       this.text(g.ads.label, w / 2, y + 151, 11, "#5c7059", "center");
       by += 8;

@@ -1,0 +1,18 @@
+✔ no-ads service explicitly advertises free assistance, never a video completion (0.910004ms)
+✔ free lift is atomic, once per round, paused, durable, and return undo cannot duplicate it (124.857862ms)
+✔ free extension is expired-only, twice at 30 seconds, durable and paused until continued (90.307001ms)
+✔ new rounds reset free allowances and stale callbacks cannot grant anything (90.234151ms)
+✔ unconfigured non-free ad service retains unavailable behavior (47.429859ms)
+✔ lift cancelled/failed/unconfigured keeps exact board, time and retry eligibility (235.814062ms)
+✔ completed lift is once-only, session fenced, restart durable and free return undoable (65.809385ms)
+✔ restart while requested fails pending reward without moving a ball (68.915145ms)
+✔ 300 seeded rounds across three tiers preserve identities and finish with held ball (19087.129855ms)
+✔ full tray lift reopens play; immediate free return can block and single undo restores pocket (106.351132ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 20633.774111

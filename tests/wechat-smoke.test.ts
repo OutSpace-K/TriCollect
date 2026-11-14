@@ -1011,3 +1011,39 @@ test("native start tap protection blocks immediate ball input then releases", as
   r.advance(250_000);
   assert.equal(decode(r.storage.get(SAVE_KEY)!)!.sequence, 1);
 });
+
+test("no-ad native release: free pocket, two timeout extensions and retry remain usable", async () => {
+  const source = readFileSync("dist/wechat/game.js", "utf8");
+  assert.ok(!source.includes("createRewardedVideoAd"));
+  const r = await boot();
+  beginRuntime(r);
+  r.advance(260_000);
+  r.tapTube(1);
+  r.advance(250_000);
+  r.tap("寄存", true);
+  assert.ok(!r.labels.some((l) => /广告/.test(l.s)));
+  r.tap("免费使用 · 每局一次", true);
+  assert.equal(decode(r.storage.get(SAVE_KEY)!)!.board.pocket?.length, 1);
+  r.tap("继续游戏");
+  r.tap("免费放回", true);
+  r.advance(250_000);
+  assert.equal(decode(r.storage.get(SAVE_KEY)!)!.board.pocket?.length ?? 0, 0);
+  for (let i = 0; i < 2; i++) {
+    r.advance(301_000_000);
+    assert.ok(r.labels.some((l) => l.s === "时间到"));
+    assert.ok(!r.labels.some((l) => /广告/.test(l.s)));
+    r.tap("免费 +30秒");
+    const saved = decode(r.storage.get(SAVE_KEY)!)!;
+    assert.equal(saved.extensions, i + 1);
+    assert.equal(saved.remaining, 30_000);
+    r.tap("继续游戏");
+  }
+  r.advance(31_000_000);
+  assert.ok(r.labels.some((l) => l.s === "本局加时已用完"));
+  r.tap("结束本局");
+  r.tap("再来一局");
+  const next = decode(r.storage.get(SAVE_KEY)!)!;
+  assert.equal(next.extensions, 0);
+  assert.equal(next.rewards.length, 0);
+  assert.equal(next.remaining, 300_000);
+});

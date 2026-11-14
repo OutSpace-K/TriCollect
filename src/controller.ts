@@ -507,7 +507,29 @@ export class Controller {
   }
   async liftBall() {
     this.tick();
-    if (!this.canLift || !this.ads.available) return;
+    if (!this.canLift || (!this.ads.free && !this.ads.available)) return;
+    if (this.ads.free) {
+      const session = this.state.session;
+      const id = `${session}:assist:${++this.state.sequence}`;
+      const after = lift(this.board, id);
+      if (after === this.board) return;
+      // Completion of a local assistance action, not evidence of an ad view.
+      this.state.rewards.push({
+        id,
+        session,
+        kind: "lift",
+        state: "completed",
+        redeemed: true,
+      });
+      this.state.board = after;
+      this.state.history = [];
+      this.state.undoAvailable = false;
+      this.phase = "paused";
+      this.hint = null;
+      this.message = "末球已免费寄存，点击继续后可放回（每局一次）";
+      this.checkpoint();
+      return;
+    }
     const session = this.state.session,
       id = `${session}:reward:${++this.state.sequence}`;
     this.state.rewards.push({
@@ -556,9 +578,27 @@ export class Controller {
     if (
       this.phase !== "expired" ||
       this.state.extensions >= CONFIG.maxExtensions ||
-      !this.ads.available
+      (!this.ads.free && !this.ads.available)
     )
       return;
+    if (this.ads.free) {
+      const session = this.state.session;
+      const id = `${session}:assist:${++this.state.sequence}`;
+      this.state.rewards.push({
+        id,
+        session,
+        kind: "extend",
+        state: "completed",
+        redeemed: true,
+      });
+      this.state.extensions++;
+      this.state.added += CONFIG.extraMs;
+      this.state.remaining += CONFIG.extraMs;
+      this.phase = "paused";
+      this.message = `已免费增加 30 秒，点击继续（${this.state.extensions}/${CONFIG.maxExtensions}）`;
+      this.checkpoint();
+      return;
+    }
     const session = this.state.session,
       id = `${session}:reward:${++this.state.sequence}`;
     this.state.rewards.push({
